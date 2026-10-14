@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · 自己会发现错 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a class="active" href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html" aria-current="page">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · 自己会发现错</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>程序不对时，按什么顺序找</a>
+  <a class="toc-sub" href="#s7-1-1">先把「不对」分成三种</a>
+  <a class="toc-sub" href="#s7-1-2">第一步永远是比输出</a>
+  <a class="toc-sub" href="#e7-1">例题：五个人的平均分</a>
+  <a class="toc-sub" href="#s7-1-3">第一处不一样的地方，不等于病根</a>
+  <a class="toc-sub" href="#s7-1-4">砍半：把程序砍到最小</a>
+  <a class="toc-sub" href="#s7-1-5">一次只改一处</a>
+  <a class="toc-sub" href="#s7-1-6">练习</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>打印调试：把中间结果打出来看</a>
+  <a class="toc-sub" href="#s7-2-1">最土的一招，也最好用</a>
+  <a class="toc-sub" href="#s7-2-2">打什么：值，加上它叫什么</a>
+  <a class="toc-sub" href="#s7-2-3">打在哪：卡在「以为」和「实际」中间</a>
+  <a class="toc-sub" href="#s7-2-4">打印了却看不见</a>
+  <a class="toc-sub" href="#s7-2-5">打完记得删</a>
+  <a class="toc-sub" href="#s7-2-6">练习</a>
+  <a class="toc-l" href="#l7-3"><span class="n">7.3</span>读别人的代码：从哪一行开始看</a>
+  <a class="toc-sub" href="#s7-3-1">从 main 开始，不从第一行开始</a>
+  <a class="toc-sub" href="#s7-3-2">现场读一份没名字没注释的代码</a>
+  <a class="toc-sub" href="#s7-3-3">读函数：先看签名</a>
+  <a class="toc-sub" href="#s7-3-4">读循环：先看边界</a>
+  <a class="toc-sub" href="#s7-3-5">读不懂的写法，先跳过去</a>
+  <a class="toc-sub" href="#s7-3-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>自己会发现错</h1>
+  <p class="part-lead">
+    前六部分教你写程序。这一部分教你一件更值钱的事：<b>写错了怎么办。</b>
+    程序不对是常态，不是意外——真写代码的人，大半时间花在这儿。
+    好消息是它有固定动作：先比输出、再砍半、一次只改一处。
+    照着走，比盯着屏幕瞎改快十倍。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>程序不对时，按什么顺序找</h2>
+
+<p>
+这一课要给你的是一套<b>顺序</b>。不是「多想想」，是三步一步都不能跳的顺序。
+</p>
+
+<h3 id="s7-1-1">先把「不对」分成三种</h3>
+
+<p>
+「不对」不是一件事，是三种。三种的找法完全不同，所以第一件事是分清你碰上的是哪一种。
+</p>
+
+<table>
+  <tr><th>哪一种，长什么样</th><th>第一步做什么</th></tr>
+  <tr>
+    <td><b>编译不过</b>　编译器不让你跑，屏幕上全是红字</td>
+    <td>读<b>最上面那条</b> <code>error</code>——0.3 讲过怎么读。三种里最省事</td>
+  </tr>
+  <tr>
+    <td><b>结果不对</b>　跑完了，但打出来的东西不是你要的</td>
+    <td>比输出，找第一个不一样的地方（这一课的正文）</td>
+  </tr>
+  <tr>
+    <td><b>跑着崩了</b>　冒出 <code>段错误</code> 或者 <code>Segmentation fault</code></td>
+    <td>先去看你碰了哪些盒子：越界了没有？指针是不是空的？</td>
+  </tr>
+</table>
+
+<p>
+第三种的两个来源你都学过：<b>第 4 部分</b>的数组越界写，<b>第 6 部分</b>的空指针。
+它们不是「运气不好」，是两个具体动作：往不存在的格子里写、顺着空门牌号找过去。
+</p>
+
+<p>
+这一课剩下讲的全是第二种。<b>它最费时间，也最常见。</b>
+</p>
+
+<h3 id="s7-1-2">第一步永远是比输出</h3>
+
+<p>
+碰上结果不对，绝大多数人的第一反应是：<b>从头把代码读一遍，看看哪儿写错了。</b>
+</p>
+
+<p>
+这一招基本没用。你已经盯着这段代码看了半小时，能看出来的早看出来了。
+而且代码越长越没用——二十行的循环，你读到第八行就忘了前面是什么。
+</p>
+
+<p>
+<b>要比的不是代码，是结果。</b>把程序打出来的东西，和你想要的东西，一行一行并排看。
+看到第一个对不上的地方，就停下。
+</p>
+
+<div class="eg" id="e7-1">
+  <div class="eg-h">例题 · 五个人的平均分</div>
+  <p>
+    题目：五个人的分数是 <code>80 91 76 88 65</code>，打印总分和平均分。
+  </p>
+  <p>
+    下面这份程序，编译一声没吭，跑也跑完了。可它打出来的数不对：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int scores[5] = {80, 91, 76, 88, 65};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = sum + scores[i];
+    }
+
+    int avg = sum / 5;
+
+    std::cout &lt;&lt; "总分：" &lt;&lt; sum &lt;&lt; std::endl;
+    std::cout &lt;&lt; "平均分：" &lt;&lt; avg &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <p>
+    你要的，和它打的，摆在一起：
+  </p>
+  <pre class="out" data-label="你要的">总分：400
+平均分：80</pre>
+  <pre class="out" data-label="它打的">总分：335
+平均分：67</pre>
+  <p>
+    <b>第一行就对不上了。</b>那就不用往下看了——第二行是错的，但它是被第一行带错的。
+  </p>
+  <p>
+    顺着「总分是谁算出来的」往回找，就找到上面那个循环。
+    数一数它跑了几圈：<code>i</code> 从 0 开始，条件是 <code>i &lt; 4</code>，
+    所以跑的是 0、1、2、3 四圈。<code>scores[4]</code> 那个 65 从头到尾没被加进去。
+  </p>
+  <p>
+    <b>这就是全部。</b>把 <code>i &lt; 4</code> 改成 <code>i &lt; 5</code>，两行全对：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int scores[5] = {80, 91, 76, 88, 65};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        sum = sum + scores[i];
+    }
+
+    int avg = sum / 5;
+
+    std::cout &lt;&lt; "总分：" &lt;&lt; sum &lt;&lt; std::endl;
+    std::cout &lt;&lt; "平均分：" &lt;&lt; avg &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总分：400
+平均分：80</pre>
+</div>
+
+<p>
+回头看这个过程，值钱的地方在这儿：
+<b>「平均分也错了」这条信息，一点用都没有。</b>
+它是总分错的结果，不是另一个病。
+你要是先盯着平均分看，会怀疑除法——说不定还去查了整数除法、去查了 <code>int</code> 和
+<code>double</code>，白花半小时。
+</p>
+
+<p>
+<b>一个错地方，会让后面好几行都跟着不对。</b>
+所以找第一个，别管后面的。
+</p>
+
+<h3 id="s7-1-3">第一处不一样的地方，不等于病根</h3>
+
+<p>
+上面那题里，「总分」那一行就是病根露头的地方，往回一步就找到了。
+但有时候要多走几步。
+</p>
+
+<p>
+比如一个函数该把外面那个盒子改掉，实际上没改。那么第一个不一样的地方，
+是你最后打印它的那一行——<b>可那一行本身一点错都没有</b>，
+它老老实实把盒子里的东西打了出来。错的是「这个盒子为什么会是那个值」。
+</p>
+
+<p>
+所以准确的问法不是「这一行写错了什么」，而是：
+<b>这一行的值，是从哪儿来的？</b>
+顺着这个「哪儿」往回找一步。要是那一步也没错，再往回一步。
+</p>
+
+<div class="aside">
+  <b>两种错，名字不一样</b>
+  <p>
+    一种是这行代码本来就写错了（<code>i &lt; 4</code>）；
+    另一种是这行代码没错，可它拿到的值已经是错的（打印 <code>a</code> 的那行）。
+    前者要改这一行，后者要往回走。
+    分不清这两种，就会干出「把打印语句改了又改」这种事。
+  </p>
+</div>
+
+<h3 id="s7-1-4">砍半：把程序砍到最小</h3>
+
+<p>
+第一处不一样的地方找到了，可它归哪一段代码管，还是看不清——程序太长，
+中间隔着三四个函数，数据绕来绕去。
+</p>
+
+<p>
+这时候用<b>砍半</b>：把跟那一行<b>无关</b>的代码，一段一段删掉。
+删完还编译、还能跑出同一个错，就说明删掉的那部分跟这个错没关系，扔了不心疼。
+</p>
+
+<p>
+接着删。一直删到<b>删不动为止</b>——再删一行，错就不见了或者程序跑不起来了。
+剩下的那十几行，就是完整的一份「能重现这个错」的最小程序。
+</p>
+
+<p>
+上面那个平均分的例子，砍完就是这样：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int scores[5] = {80, 91, 76, 88, 65};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = sum + scores[i];
+    }
+
+    std::cout &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">335</pre>
+
+<p>
+打印、平均分、那两句中文，全删了，错照样在。
+<b>九行。毛病就摆在明面上。</b>
+</p>
+
+<p>
+砍半还有第二个好处：砍完的这份，你要是实在看不出来，可以直接拿去问人。
+「这一份打 335，我以为是 400」——比贴四十行过去有用得多。
+</p>
+
+<h3 id="s7-1-5">一次只改一处</h3>
+
+<p>
+到最后一步了，改的时候守两条规矩。
+</p>
+
+<p>
+<b>第一条：一次只改一处，改完立刻跑。</b>
+一次改五处，跑完还是不对，你就不知道是哪一处没改对——
+甚至不知道刚才那五处里有没有一处改对了。本来只要试两次的事，会变成试三十次。
+</p>
+
+<p>
+<b>第二条：改之前，你得说得出「我觉得是这儿，因为……」。</b>
+说不出这个「因为」，就说明你还在猜。
+猜也不是完全不行，但猜的时候你心里要清楚：<b>我在猜，不是在找。</b>
+一件事猜过三次还没中，就别猜了，回到上面第一步重新比输出。
+</p>
+
+<div class="aside">
+  <b>有一种错，第一步比不了</b>
+  <p>
+    有些程序一会儿对一会儿错——同样的输入，跑两遍结果不一样。
+    第 4 部分那两个越界读的例子里，多出来的那个数每次都不同，就是这个样子。
+    碰上这种，<b>先想办法让它稳定地错</b>：换个数组大小、换个输入、
+    反复跑上十几遍，直到它每次都能错出来。
+    重现不出来的错，改完你也不知道好没好。
+  </p>
+</div>
+
+<h3 id="s7-1-6">练习</h3>
+
+<p>
+下面每一份都是<b>能编译、能跑，只是结果不对</b>的那种。
+按 7.1 的顺序来：先比输出，找到第一处不一样的地方，再往回找病根。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 7-1（找错）</div>
+  <p>
+    它打 <code>总和：40</code>，可你要的是 <code>总和：100</code>。
+    <b>先别编译</b>，说清楚病根在哪一行、为什么，该怎么改。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[4] = {10, 20, 30, 40};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总和：100</pre>
+  <p>
+    提示：输出只有一行，所以「第一处不一样」就是这一行的值。
+    往回问一句：<code>sum</code> 最后装的是谁？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[4] = {10, 20, 30, 40};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>病根是那一行：</b></p>
+      <pre><code>sum = a[i];</code></pre>
+      <p>
+        它没有「加上」，只有「换成」。第 0 轮跑完 <code>sum</code> 是 10，
+        第 1 轮被 20 盖掉，第 2 轮被 30 盖掉，第 3 轮被 40 盖掉——
+        循环一跑完，<code>sum</code> 里只剩最后一个数。
+      </p>
+      <p>
+        左边那个 <code>sum</code> 一个字都不能少：
+        <code>sum = sum + a[i];</code> 的意思是<b>「把 sum 和 a[i] 加起来，
+        结果放回 sum」</b>。等号不是「等于」，是「放进去」，
+        1.1 那句「先算右边，再放进左边」在这儿又用上了。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-2（找错）</div>
+  <p>
+    它打 <code>最小值：0</code>，可这五个数里最小的明明是 3。
+    病根在哪一行、为什么？
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {7, 3, 9, 4, 6};
+    int mn = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        if (a[i] &lt; mn) {
+            mn = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最小值：" &lt;&lt; mn &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">最小值：3</pre>
+  <p>
+    提示：这一行的值是谁算出来的？那个 <code>if</code> 里的条件，
+    五轮里成立过几回？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {7, 3, 9, 4, 6};
+    int mn = a[0];
+
+    for (int i = 0; i &lt; 5; i++) {
+        if (a[i] &lt; mn) {
+            mn = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最小值：" &lt;&lt; mn &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>病根是那一行：</b></p>
+      <pre><code>int mn = 0;</code></pre>
+      <p>
+        五个数全是正数，而 0 比它们<b>都</b>小。
+        所以 <code>if (a[i] &lt; mn)</code> 五轮里一次都没成立过，
+        <code>mn</code> 从头到尾没人碰过，最后打出来的就是它一开始那个 0。
+      </p>
+      <p>
+        改成 <code>a[0]</code> 之后的意思是：<b>先认定第 0 个最小，
+        再拿后面每一个来挑战它。</b>这才是 4.3 那个找最值的走法。
+      </p>
+      <p>
+        顺带一句：这一题要是一直盯着最后那行打印看，会一直看不出来——
+        <b>那一行没错，它只是把 <code>mn</code> 原样打了出来。</b>
+        往回走一步，才走到那个 <code>0</code> 上。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-3（找错）</div>
+  <p>
+    它打 <code>a = 5</code>，可你要的是 6。
+    <b>这道题的病根，不在你以为是的那一行。</b>
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+void addOne(int x) {
+    x = x + 1;
+}
+
+int main() {
+    int a = 5;
+
+    addOne(a);
+
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">a = 6</pre>
+  <p>
+    提示：第一处不一样就在这一行，但<b>病根不在这一行</b>——
+    这一行只是把 <code>a</code> 打了出来，它没错。错的是 <code>a</code> 为什么会是 5。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样（只多了一个 <code>&amp;</code>）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+void addOne(int&amp; x) {
+    x = x + 1;
+}
+
+int main() {
+    int a = 5;
+
+    addOne(a);
+
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>这一题的重点不是那个 <code>&amp;</code>，
+        是「第一处不一样的地方，不等于病根」。</b>
+      </p>
+      <p>
+        第一处不一样的就是打 <code>a</code> 的那一行。可它没错：
+        <code>a</code> 里装的确实就是 5，它老老实实打了出来。
+        错的是「<code>a</code> 为什么还是 5」——往回走一步，走到 <code>addOne(a);</code>。
+      </p>
+      <p>
+        那行也没写错，它确实调了。再往回一步，走到函数里那句
+        <code>x = x + 1;</code>，它也确实跑了。
+        <b>三行都没错，那错在哪儿？</b>——错在参数表上那个 <code>int x</code>：
+        它收的是一份抄件，改的也是抄件，函数一走完就扔了。
+      </p>
+      <p>
+        加上 <code>&amp;</code> 之后，<code>x</code> 不再是抄件，
+        而是 <code>a</code> 的另一个名字（3.5 和 6.2 都讲过），改它等于改 <code>a</code>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-4（找错）</div>
+  <p>
+    想把 <code>a</code> 和 <code>b</code> 换个位置，结果两个都成了 2。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 1;
+    int b = 2;
+
+    a = b;
+    b = a;
+
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; "，b = " &lt;&lt; b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">a = 2，b = 1</pre>
+  <p>
+    提示：想想 4.4 那个第三个盒子。这一题要加两行、动一行，
+    但按规矩，还是一处一处来，改完就跑。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 1;
+    int b = 2;
+    int t = 0;
+
+    t = a;
+    a = b;
+    b = t;
+
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; "，b = " &lt;&lt; b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>病根是少了一个盒子：</b></p>
+      <pre><code>a = b;
+b = a;</code></pre>
+      <p>
+        第一句跑完，<code>a</code> 里原来那个 1 <b>就没了</b>——被 2 盖掉了。
+        第二句 <code>b = a;</code> 里的 <code>a</code> 已经是 2 了，
+        所以 <code>b</code> 也成了 2。<b>两个都成了 2。</b>
+      </p>
+      <p>
+        这就是 4.4 那个「为什么需要第三个盒子」：换之前得有个地方先放 1，
+        <code>t</code> 就是那个地方。
+      </p>
+      <p>
+        至于「一次只改一处」——这一题要动三行，顺序还不能反。
+        真写的时候可以这么拆：先把 <code>a = b;</code> 改成 <code>t = a;</code> 跑一遍
+        （这时候 <code>a</code> 还是 1、<code>t</code> 是 1、<code>b</code> 是 2，看着没变就对了），
+        再往下加一句，一句一句来。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-5（找错）</div>
+  <p>
+    前三个答案都对，第四个该是 3.5，它打了 3。
+    病根只有一行，而且改完之后，前三行得照样对。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 7;
+    int b = 2;
+
+    std::cout &lt;&lt; "和：" &lt;&lt; a + b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "差：" &lt;&lt; a - b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "积：" &lt;&lt; a * b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "商：" &lt;&lt; a / b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">和：9
+差：5
+积：14
+商：3.5</pre>
+  <p>
+    提示：前三行都对上了，第一处不一样在第四行。病根只有一行，
+    而且改完之后前三行得照样对。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样（只动了第二行）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 7;
+    double b = 2;
+
+    std::cout &lt;&lt; "和：" &lt;&lt; a + b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "差：" &lt;&lt; a - b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "积：" &lt;&lt; a * b &lt;&lt; std::endl;
+    std::cout &lt;&lt; "商：" &lt;&lt; a / b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>病根是这一行：</b></p>
+      <pre><code>int b = 2;</code></pre>
+      <p>
+        <code>b</code> 是 <code>int</code>，<code>a</code> 也是 <code>int</code>，
+        两个整数相除，结果一定是整数——1.3 那个坑。
+        <code>7 / 2</code> 交回来的是 3，小数那位直接扔了。
+      </p>
+      <p>
+        改成 <code>double b = 2;</code>，那么 <code>a / b</code> 就是
+        7 除以 2.0，交回来 3.5。
+      </p>
+      <p>
+        有意思的是前三行：<code>a + b</code> 这时候算出来是 9.0，
+        可 <code>std::cout</code> 打出来还是 <code>9</code>——
+        <b>所以「改完之后前三行得照样对」这条要求，自动就满足了。</b>
+        这一题要你先看清「第一处不一样在第四行」，也是在提醒你：
+        病根在前面的第二行，症状出现在后面的第四行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>程序不对的时候，你手里有顺序了——
+  先分清是三种里的哪一种，再一行一行比输出、找到<b>第一处</b>不一样的地方，
+  顺着「这个值是从哪儿来的」往回走，必要时把程序砍到最小。
+  改的时候一次只改一处，改完立刻跑。
+  <b>这套动作比「把代码再读一遍」有用得多，而且它不靠灵感。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>打印调试：把中间结果打出来看</h2>
+
+<p>
+7.1 的第二步是「顺着值往回找」。可有时候你往回走不了——程序跑到一半，
+你不知道某个盒子里装的是几，也没有一行输出能让它露出来。
+</p>
+
+<p>
+这时候只剩一招，也是最土的一招：<b>把那个值打出来。</b>
+</p>
+
+<h3 id="s7-2-1">最土的一招，也最好用</h3>
+
+<p>
+先看一份不对的程序。它要算四个数的和，该打 14，它打 4：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[4] = {3, 5, 2, 4};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = 0;
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">总和：4</pre>
+
+<p>
+这一份你盯着看，也可能看出那句 <code>sum = 0;</code>——但先假装没看出来。
+按 7.1 的走法：只有一行输出，第一处不一样就是它。
+往回找，找到循环。<b>然后卡住了：循环里发生了什么，屏幕上一点都看不见。</b>
+</p>
+
+<p>
+那就让它现出来。<b>一个字都不改，只往循环里加一句 <code>std::cout</code>：</b>
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[4] = {3, 5, 2, 4};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：加之前 sum = " &lt;&lt; sum;
+        sum = 0;
+        sum = sum + a[i];
+        std::cout &lt;&lt; "，加完 " &lt;&lt; a[i] &lt;&lt; " 之后 sum = " &lt;&lt; sum &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">第 0 轮：加之前 sum = 0，加完 3 之后 sum = 3
+第 1 轮：加之前 sum = 3，加完 5 之后 sum = 5
+第 2 轮：加之前 sum = 5，加完 2 之后 sum = 2
+第 3 轮：加之前 sum = 2，加完 4 之后 sum = 4
+总和：4</pre>
+
+<p>
+看第二行：<b>加之前是 3，加完 5 之后是 5。</b>3 加 5 应该是 8。
+第三行也一样：5 加 2 变成 2。第四行：2 加 4 变成 4。
+</p>
+
+<p>
+<b>每一轮「加之前」的那个数，跟上一轮「加完」的对得上；
+可「加完」之后，就只剩这一轮的 <code>a[i]</code> 了。</b>
+这说明两件事：加之前 <code>sum</code> 是接着上一轮的；中间那句把它清成了 0，然后才加的。
+</p>
+
+<p>
+病根就是这么找到的。看见之后，删掉两句打印、拿掉那一行 <code>sum = 0;</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[4] = {3, 5, 2, 4};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">总和：14</pre>
+
+<p>
+<b>打印调试和「凭感觉改」的区别就在这儿：</b>
+凭感觉改是「我猜是这句，删了试试」；打印是<b>我给程序装了一只眼睛，
+让它自己告诉我它干了什么。</b>改之前你已经知道答案了。
+</p>
+
+<h3 id="s7-2-2">打什么：值，加上它叫什么</h3>
+
+<p>
+新手打印，常犯一个错：只打值，不打名字。
+</p>
+
+<pre><code>    std::cout &lt;&lt; sum &lt;&lt; std::endl;</code></pre>
+
+<p>
+屏幕上出来一个 <code>335</code>。这时候你只知道「有个东西是 335」——
+是你想的那个盒子吗？是这一轮的吗？中间隔了三行打印，回头就对不上号了。
+</p>
+
+<p>
+所以每一句打印都要<b>带标签</b>：打的是谁、在哪一轮、什么时候。
+刚才那份加好的打印就是标准样子：
+</p>
+
+<pre><code>    std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：加之前 sum = " &lt;&lt; sum &lt;&lt; std::endl;</code></pre>
+
+<p>
+它把三样东西装在了一行里：<b>轮次（<code>i</code>）、盒子的名字（<code>sum</code>）、
+盒子的值。</b>单独看某一行也读得懂，这是好打印的标准。
+</p>
+
+<div class="aside">
+  <b>打标签这件事，1.4 早就埋好了</b>
+  <p>
+    1.4 那句「<code>std::cout</code> 只打你让它打的东西，一个字符都不多打」——
+    名字你没送进去，它就是不在，赖不着别人。
+    调试打印是同一个道理，只不过看的人是你自己，
+    而且是半小时以后的你。
+  </p>
+</div>
+
+<h3 id="s7-2-3">打在哪：卡在「以为」和「实际」中间</h3>
+
+<p>
+加打印的位置，有一个特别省事的判断法：
+</p>
+
+<p>
+<b>找那句「我以为这里是 A，可实际是 B」，把打印加在 A 和 B 中间。</b>
+</p>
+
+<p>
+拿刚才那份说：「我以为加完是 8，实际是 5」。这两件事中间隔着
+<code>sum = 0;</code> 和 <code>sum = sum + a[i];</code> 两行。
+所以打印加在这两行的<b>两头</b>：一句话打「加之前」，一句话打「加完」。
+中间那两行干了什么，一眼就看出来了。
+</p>
+
+<p>
+如果一条缝不够，就把打印往里挪：在缝的正中间再插一句，
+看这一句打出来的值，跟 A 像还是跟 B 像。
+<b>每一句打印，只负责回答一个问题。</b>别一次打八个值，
+那样屏幕会变成一团，你还是得猜。
+</p>
+
+<div class="aside">
+  <b>崩掉的程序，怎么加打印</b>
+  <p>
+    程序跑着跑着崩了（<code>段错误</code>），屏幕上没有哪一行是「不对」的，
+    只有一行是「打到这儿为止」。这时候打印的作用反过来：
+    <b>在几处地方各打一句话，看最后打出来的是哪一句。</b>
+    崩掉的地方，就在那两句打印中间。
+    再往这两句中间插，几次就缩小到一行了——和 7.1 的砍半是一回事，
+    只不过砍的是「范围」，不是代码。
+  </p>
+</div>
+
+<h3 id="s7-2-4">打印了却看不见</h3>
+
+<p>
+有一种情况能让人卡很久：<b>你明明加了打印，可屏幕上没有它。</b>
+</p>
+
+<p>
+这不是错觉。看这一份——它故意崩（<b>空门牌号</b>那个动作，第 6 部分见过）：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int* p = nullptr;
+
+    std::cout &lt;&lt; "endl 这句" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "换行符这句" &lt;&lt; "\n";
+
+    std::cout &lt;&lt; *p &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+跑的时候把输出存进文件（判题机就是这么干的）：
+</p>
+
+<pre><code>./a.out &gt; out.txt</code></pre>
+
+<pre class="out" data-label="cat out.txt 的结果">endl 这句</pre>
+
+<p>
+<b>第二句没了。</b>它不是没执行——它执行了，字也送到了，只是还停在缓冲区里没刷出去。
+程序一崩，缓冲区跟着一起没了。
+</p>
+
+<p>
+1.4 说过：<code>std::endl</code> 除了换行，还多做一件事——<b>催一下</b>，
+让字立刻出去。那一课还说「平时你感觉不到，因为本来就立刻就出来了」。
+</p>
+
+<p>
+<b>崩掉的这一次，你就感觉到了。</b>
+</p>
+
+<p>
+所以调试打印的规矩很简单：<b>每一句都用 <code>std::endl</code> 收尾。</b>
+等你哪天为了赶时间把整份程序改成 <code>"\n"</code>，记住这条：
+<b>正在查错的那几句，先留着 <code>std::endl</code>。</b>
+</p>
+
+<h3 id="s7-2-5">打完记得删</h3>
+
+<p>
+毛病找到、改完之后，那些打印要删掉。不删会怎么样，看这份：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[3] = {2, 4, 6};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 3; i++) {
+        std::cout &lt;&lt; "DEBUG i=" &lt;&lt; i &lt;&lt; std::endl;
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">DEBUG i=0
+DEBUG i=1
+DEBUG i=2
+总和：12</pre>
+
+<p>
+数是对的，可输出里多了三行。<b>在你自己的屏幕上，这只是难看；
+交出去的程序，这就是错的</b>——判题机比的是整份输出，多一个字符都不算过。
+</p>
+
+<p>
+所以有条规矩：<b>毛病一好，马上把打印删掉。</b>别想着「先留着，等下再一起清」——
+你等下会忘。要是舍不得删（怕待会儿还要查），就把它注释掉，或者干脆存成另一份文件。
+</p>
+
+<h3 id="s7-2-6">练习</h3>
+
+<p>
+这一组练的是「问程序一个问题」。每一题先想清楚：<b>我要知道什么？
+该在哪一行加打印？打哪几个东西？</b>想好了再动手。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 7-6（加打印）</div>
+  <p>
+    它打 <code>及格人数：1</code>，可五个分数 <code>60 55 72 60 48</code> 里，
+    60 分和 60 分也该算及格，一共 3 个。
+  </p>
+  <p>
+    说清楚：<b>打印加在哪一行后面？打哪几个东西？</b>
+    然后加进去跑一遍——打印会自己告诉你病根在哪。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int scores[5] = {60, 55, 72, 60, 48};
+    int pass = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        if (scores[i] &gt; 60) {
+            pass = pass + 1;
+        }
+    }
+
+    std::cout &lt;&lt; "及格人数：" &lt;&lt; pass &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">及格人数：3</pre>
+  <p>
+    提示：打印加在 <code>if</code> 那句后面——这一轮拿到的是几分、
+    加完它之后 <code>pass</code> 是几，都打出来。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        打印加在 <code>if</code> 那句<b>后面</b>——这一轮拿到几分、
+        加完它之后 <code>pass</code> 是几，都在一行里：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int scores[5] = {60, 55, 72, 60, 48};
+    int pass = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        if (scores[i] &gt;= 60) {
+            pass = pass + 1;
+        }
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 个是 " &lt;&lt; scores[i]
+                  &lt;&lt; "，加完它之后 pass = " &lt;&lt; pass &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "及格人数：" &lt;&lt; pass &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>这一份是改对之后的。改之前，同样这句打印打出来是这样：</p>
+      <pre class="out" data-label="还没改大于号的时候">第 0 个是 60，加完它之后 pass = 0
+第 1 个是 55，加完它之后 pass = 0
+第 2 个是 72，加完它之后 pass = 1
+第 3 个是 60，加完它之后 pass = 1
+第 4 个是 48，加完它之后 pass = 1
+及格人数：1</pre>
+      <p>
+        <b>第 0 个是 60，可 pass 还是 0。</b>一看就知道这个 60 没被算进去。
+        第 3 个又是 60，pass 还是没动。两个 60 分，一个都没进去。
+      </p>
+      <p>
+        病根就是那一行的 <code>&gt;</code>——
+        <b>「大于 60」和「大于等于 60」差着一个字，差着两个人。</b>
+        改成 <code>&gt;=</code> 之后，同一句打印就变成：
+      </p>
+      <pre class="out" data-label="预期输出">第 0 个是 60，加完它之后 pass = 1
+第 1 个是 55，加完它之后 pass = 1
+第 2 个是 72，加完它之后 pass = 2
+第 3 个是 60，加完它之后 pass = 3
+第 4 个是 48，加完它之后 pass = 3
+及格人数：3</pre>
+      <p>
+        注意打印放在了 <code>if</code> <b>后面</b>，不是前面：
+        放前面打的是「还没算这个数」的 <code>pass</code>，
+        你会先看到 0，反而要多想一步才知道是谁没进去。
+        <b>打印放在哪一行，本身也是要挑的。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-7（从打印里读病根）</div>
+  <p>
+    这一份<b>作者自己加了打印</b>，跑出来是这样：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {4, 7, 1, 9, 3};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 4; i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：加上 " &lt;&lt; a[i] &lt;&lt; std::endl;
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="实际输出">第 0 轮：加上 4
+第 1 轮：加上 7
+第 2 轮：加上 1
+第 3 轮：加上 9
+总和：21</pre>
+  <p>
+    <b>这些打印够你看出来了：病根在哪一行？</b>该打的应该是 24。
+  </p>
+  <pre class="out" data-label="预期输出">总和：24</pre>
+  <p>
+    提示：数一数打印有几行，再看最后一行的编号是几。
+    五个格子，编号该到几？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样（打印留着没动，只改了一个数字）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {4, 7, 1, 9, 3};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：加上 " &lt;&lt; a[i] &lt;&lt; std::endl;
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>改之前那份的打印已经把话说完了：</b></p>
+      <pre class="out" data-label="还没改上限的时候">第 0 轮：加上 4
+第 1 轮：加上 7
+第 2 轮：加上 1
+第 3 轮：加上 9
+总和：21</pre>
+      <p>
+        <b>最后一行打印的编号是 3。</b>五个格子，编号该到 4——
+        <code>a[4]</code> 那个 3 从头到尾没被加过。21 加上 3 正好是 24，对得上。
+      </p>
+      <p>
+        <b>病根是 <code>i &lt; 4</code> 那个 4。</b>
+        循环从 0 数到 3，走了四圈；要五个格子都走到，上限得写 5。
+      </p>
+      <p>上限改成 5 之后，打印会多出第 4 轮那一行：</p>
+      <pre class="out" data-label="预期输出">第 0 轮：加上 4
+第 1 轮：加上 7
+第 2 轮：加上 1
+第 3 轮：加上 9
+第 4 轮：加上 3
+总和：24</pre>
+      <p>
+        这一题最能说明打印调试好在哪儿：<b>你根本不用去数循环</b>——
+        程序自己把「我走了几轮」打给你看了。
+        光看代码，<code>i &lt; 4</code> 和 <code>i &lt; 5</code> 长得差不多；
+        看输出，一眼就分得清。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-8（加打印）</div>
+  <p>
+    它要找出最大的数，还有它在第几个。数找错了，位置也找错了。
+  </p>
+  <p>
+    先想好：<b>要看清什么，打印该加在哪？</b>加完跑一遍，
+    打印会直接告诉你哪一句漏了东西。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {12, 45, 7, 33, 28};
+    int mx = a[0];
+    int idx = 0;
+
+    for (int i = 1; i &lt; 5; i++) {
+        if (a[i] &gt; mx) {
+            idx = i;
+        }
+    }
+
+    std::cout &lt;&lt; "最大值：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "它在第 " &lt;&lt; idx &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">最大值：45
+它在第 1 个</pre>
+  <p>
+    提示：在循环里打一句 <code>mx</code>，看看它有没有变过。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        打印加在循环开头——每一轮进 <code>if</code> 之前，
+        先把 <code>a[i]</code> 和 <code>mx</code> 摆出来：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {12, 45, 7, 33, 28};
+    int mx = a[0];
+    int idx = 0;
+
+    for (int i = 1; i &lt; 5; i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：a[" &lt;&lt; i &lt;&lt; "] = " &lt;&lt; a[i]
+                  &lt;&lt; "，mx = " &lt;&lt; mx &lt;&lt; std::endl;
+        if (a[i] &gt; mx) {
+            mx = a[i];
+            idx = i;
+        }
+    }
+
+    std::cout &lt;&lt; "最大值：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "它在第 " &lt;&lt; idx &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>这一份是改对之后的。改之前，同样这句打印打出来是这样：</p>
+      <pre class="out" data-label="还没补 mx 的时候">第 1 轮：a[1] = 45，mx = 12
+第 2 轮：a[2] = 7，mx = 12
+第 3 轮：a[3] = 33，mx = 12
+第 4 轮：a[4] = 28，mx = 12
+最大值：12
+它在第 4 个</pre>
+      <p>
+        <b>四轮的 <code>mx</code> 全是 12。</b>45 比 12 大，33 比 12 大，
+        28 也比 12 大——可 <code>mx</code> 一次都没变。
+        这说明 <code>if</code> 里头改了别的东西，没改 <code>mx</code>。
+      </p>
+      <p>
+        <b>病根在 <code>if</code> 里面：</b>只写了 <code>idx = i;</code>，
+        把「第几个」记下来了，却没把「多大」记下来。补上 <code>mx = a[i];</code> 就对了。
+      </p>
+      <p>
+        最后那个「它在第 4 个」是怎么来的？<code>mx</code> 一直是 12，
+        凡是比 12 大的都算「赢」，<code>idx</code> 就一路被改写，
+        停在最后一个赢家身上。<b><code>mx</code> 错，<code>idx</code> 就跟着错——
+        又一个「一个错地方带歪两行输出」的例子。</b>
+      </p>
+      <p>补上 <code>mx = a[i];</code> 之后，同一句打印变成：</p>
+      <pre class="out" data-label="预期输出">第 1 轮：a[1] = 45，mx = 12
+第 2 轮：a[2] = 7，mx = 45
+第 3 轮：a[3] = 33，mx = 45
+第 4 轮：a[4] = 28，mx = 45
+最大值：45
+它在第 1 个</pre>
+      <p>
+        第 1 轮打的还是 <code>mx = 12</code>，看着像没改对——
+        <b>因为打印摆在 <code>if</code> 前面，打的是这一轮「还没比」的时候。</b>
+        45 是这一轮比完才放进 <code>mx</code> 的，所以从第 2 轮起它才变成 45。
+        这也是 7.2 那句「打印放在哪一行，本身也是要挑的」的另一面：
+        <b>看到的值是「哪个时刻」的，得看打印站在哪儿。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-9（找错）</div>
+  <p>
+    这份程序，数算对了。它还有哪儿不对？该怎么弄？
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[3] = {2, 4, 6};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 3; i++) {
+        std::cout &lt;&lt; "DEBUG i=" &lt;&lt; i &lt;&lt; std::endl;
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总和：12</pre>
+  <p>
+    提示：先问一句：那个数本身对不对？数对了，那多出来的是什么？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>把三行 <code>DEBUG</code> 删掉，就是这份：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[3] = {2, 4, 6};
+    int sum = 0;
+
+    for (int i = 0; i &lt; 3; i++) {
+        sum = sum + a[i];
+    }
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>数没错。</b>2 + 4 + 6 = 12，它老老实实算对了——
+        所以这一题不是「找错」，是「找出不该留的东西」。
+      </p>
+      <p>
+        错在<b>把调试用的打印留在了程序里</b>。你自己在终端里跑，
+        顶多觉得难看；可这份东西一旦交出去，<b>那边是拿整份输出去比的</b>，
+        多一行 <code>DEBUG i=0</code> 就是一个字符都对不上。
+      </p>
+      <p>
+        规矩就一句：<b>毛病一好，马上把打印删掉。</b>
+        舍不得删就注释掉，或者另存一份文件——
+        反正不能让它在正式跑的时候出现。
+      </p>
+      <p>
+        顺带一个习惯：那三行都以 <code>DEBUG</code> 开头，不是随手打的。
+        这样等你回头找它们的时候，一眼就能认出来。
+        <b>调试打印带个记号</b>，免得跟正式输出混在一起分不清。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-10（加打印）</div>
+  <p>
+    它要算 1 到 5 的和，打出来是 10——少了一个 5。
+    循环看着明明没写错，那就别猜了，<b>让程序自己说它每轮是几。</b>
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 5;
+    int sum = 0;
+    int i = 1;
+
+    while (i &lt; n) {
+        sum = sum + i;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "1 到 5 的和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">1 到 5 的和：15</pre>
+  <p>
+    提示：在循环里打一句 <code>i</code>，看它走到几就停了。
+    你要的是 1 到 5，5 进过循环吗？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>打印加在循环开头，看每一轮的 <code>i</code> 是几：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 5;
+    int sum = 0;
+    int i = 1;
+
+    while (i &lt;= n) {
+        std::cout &lt;&lt; "这一轮 i = " &lt;&lt; i &lt;&lt; std::endl;
+        sum = sum + i;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "1 到 5 的和：" &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>这一份是改对之后的。改之前，同样这句打印打出来是这样：</p>
+      <pre class="out" data-label="还没改边界的时候">这一轮 i = 1
+这一轮 i = 2
+这一轮 i = 3
+这一轮 i = 4
+1 到 5 的和：10</pre>
+      <p>
+        <b>最后一句是 <code>i = 4</code>，5 从来没出现过。</b>
+        你要的是 1 到 5，可 5 压根没进过循环。
+      </p>
+      <p>
+        <b>病根是那个条件：</b><code>i &lt; n</code>，而 <code>n</code> 是 5。
+        <code>i</code> 走到 5 的时候，<code>5 &lt; 5</code> 不成立，循环就停了。
+        要它走到 5，得上 <code>i &lt;= n</code>。
+      </p>
+      <p>改成 <code>i &lt;= n</code> 之后，打印就多了一行：</p>
+      <pre class="out" data-label="预期输出">这一轮 i = 1
+这一轮 i = 2
+这一轮 i = 3
+这一轮 i = 4
+这一轮 i = 5
+1 到 5 的和：15</pre>
+      <p>
+        「从 1 开始、到 n 为止」和「从 0 开始、到 n 之前」是两种数法，
+        <b>混着用就会少一个数。</b>
+        0 起头配 <code>&lt;</code>，1 起头配 <code>&lt;=</code>——这一题是后面那种。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>看不清的地方，你能让程序自己说话——
+  在「以为」和「实际」中间加一句带标签的打印，一次只问一个问题，
+  崩了的程序就用几句打印把范围夹出来。
+  你还知道 <code>std::endl</code> 那一下「催」是什么意思，
+  也知道调试打印用完必须删。
+  <b>这一招不高级，但真写代码的人天天在用。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-3">
+<h2><span class="no">7.3</span>读别人的代码：从哪一行开始看</h2>
+
+<p>
+最后一课。前面六部分里的程序，全是你自己写的——每一行当时为什么那么写，
+你心里都有数。可往后你要读的代码，大部分不是你写的：
+同学写的、网上抄来的、你自己三个月前写的。
+</p>
+
+<p>
+读别人的代码有一件事得先说清楚：<b>它不是从第一行读到最后一行。</b>
+那样读，读到第十行就迷路了，因为你还不知道这些盒子是干什么用的。
+</p>
+
+<h3 id="s7-3-1">从 main 开始，不从第一行开始</h3>
+
+<p>
+一个程序里，<b>所有事情都是从 <code>main</code> 开始的</b>——这件事 0.2 就讲过，
+现在要用它当入口。
+</p>
+
+<p>
+<code>main</code> 常常不在文件开头（函数一般写在前面），
+所以第一步是<b>往下找到 <code>int main()</code></b>，从那儿开始读。
+</p>
+
+<p>
+然后在 <code>main</code> 里看三样东西，按这个顺序：
+</p>
+
+<ol>
+  <li><b>它开了哪几个盒子</b>——名字和初值，是理解全部代码的线索。</li>
+  <li><b>它调了哪几个函数</b>——先别进去，只记下「调了谁、给了什么、结果放进哪个盒子」。</li>
+  <li><b>它打了什么</b>——输出是这份代码的「目的」。看完这三样，你大概就知道这个程序在干什么了。</li>
+</ol>
+
+<p>
+<b>这时候再回头去看那些函数。</b>而且是带着问题去看的：
+「<code>x</code> 是 <code>f1(s, n)</code> 交回来的，那 <code>f1</code> 到底算了个什么？」
+</p>
+
+<h3 id="s7-3-2">现场读一份没名字没注释的代码</h3>
+
+<p>
+下面这份是「别人的代码」的标准长相：名字没头没脑，一句注释都没有。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int f1(int a[], int n) {
+    int m = a[0];
+
+    for (int i = 1; i &lt; n; i++) {
+        if (a[i] &lt; m) {
+            m = a[i];
+        }
+    }
+
+    return m;
+}
+
+int f2(int a[], int n, int t) {
+    int c = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] == t) {
+            c = c + 1;
+        }
+    }
+
+    return c;
+}
+
+int main() {
+    int s[8] = {72, 58, 91, 58, 66, 43, 80, 43};
+    int n = 8;
+
+    int x = f1(s, n);
+    int y = f2(s, n, x);
+
+    std::cout &lt;&lt; x &lt;&lt; std::endl;
+    std::cout &lt;&lt; y &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">43
+2</pre>
+
+<p>
+按上面的顺序走一遍。
+</p>
+
+<p>
+<b>第一步，找到 <code>main</code>。</b>它在最下面。里面开了四个盒子：
+<code>s</code> 是八个分数，<code>n</code> 是 8，还有两个空的 <code>x</code> 和 <code>y</code>。
+</p>
+
+<p>
+<b>第二步，看它调了什么。</b>两次：
+<code>x = f1(s, n);</code> 和 <code>y = f2(s, n, x);</code>。
+两次都给了一样的开头两样东西（<code>s</code> 和 <code>n</code>），
+第二次还多塞了一个 <code>x</code> 进去。
+</p>
+
+<p>
+<b>第三步，看它打了什么。</b>两行，一行 <code>x</code>，一行 <code>y</code>。
+所以这个程序的目的就是算出这两个数——<b>现在只剩一个问题：它们各是什么。</b>
+</p>
+
+<p>
+带着这个问题进 <code>f1</code>。<code>int f1(int a[], int n)</code>：
+收一个数组和它的个数，交回来一个 <code>int</code>。
+里面是一个 <code>m</code>，一开始是 <code>a[0]</code>；然后从 <code>i = 1</code> 开始走一遍，
+<b>谁比 <code>m</code> 小就把 <code>m</code> 换掉</b>。
+这不就是 4.3 学的找最小值吗？<b>只是名字起成了 <code>f1</code>。</b>
+</p>
+
+<p>
+八个分数里最小的是 43，所以 <code>x</code> 是 43。输出第一行对上了。
+</p>
+
+<p>
+再看 <code>f2</code>。<code>int f2(int a[], int n, int t)</code>：
+一样的数组和个数，第三个是个 <code>t</code>。
+里面是一个 <code>c</code>，从 0 开始；走一遍，<b>谁等于 <code>t</code> 就把 <code>c</code> 加一</b>。
+</p>
+
+<p>
+<code>t</code> 是什么？看调用那行：<code>f2(s, n, x)</code>——是刚才算出来的 43。
+所以 <code>y</code> 是「这八个数里有几个等于 43」，数出来 2 个。第二行也对上了。
+</p>
+
+<p>
+<b>整份程序干的事：找出最低分，再数出有几个人是这个分。</b>
+逐行读名字没用的那种代码，读到最后是读懂了。
+</p>
+
+<div class="aside">
+  <b>名字烂这件事，本身也是信息</b>
+  <p>
+    <code>f1</code>、<code>f2</code>、<code>x</code>、<code>y</code>、<code>m</code>、<code>c</code>——
+    这些名字一个线索都不给。可线头从来没断过：<b><code>f1</code> 里 <code>return</code> 的那个 <code>m</code>，
+    和 <code>main</code> 里接它的那个 <code>x</code>，是同一个值。</b>
+    顺着这条线走，名字起成什么样都不影响。
+  </p>
+</div>
+
+<h3 id="s7-3-3">读函数：先看签名</h3>
+
+<p>
+「签名」就是那一行 <code>int f1(int a[], int n)</code>——
+<b>返回什么、要什么、几个</b>。读函数先读这一行，读完这行你常常就不用往里看了。
+</p>
+
+<p>
+看这几个：
+</p>
+
+<table>
+  <tr><th>签名</th><th>不用看里面就知道</th></tr>
+  <tr><td><code>int f1(int a[], int n)</code></td><td>给它一堆数和个数，它交回来一个整数</td></tr>
+  <tr><td><code>void printAll(int a[], int n)</code></td><td>给它一堆数，它什么都不交回来——那它多半是往屏幕上打的</td></tr>
+  <tr><td><code>void addOne(int&amp; x)</code></td><td>参数里有个 <code>&amp;</code>：它要的是<b>盒子本人</b>，不是抄件——所以它能把外面那个盒子改掉（3.5 讲的）</td></tr>
+  <tr><td><code>bool isSorted(int a[], int n)</code></td><td>交回来一个 <code>bool</code>——问它一个是非题</td></tr>
+</table>
+
+<p>
+有个名字起得好的函数，比什么都省事。<code>void printAll</code> 一眼就知道是「全打出来」；
+<code>f2</code> 得读进去才知道是「数个数」。
+</p>
+
+<p>
+<b>所以你自己写函数的时候，名字起好一点。</b>
+三个月以后回来读这份代码的人，是你自己。
+</p>
+
+<h3 id="s7-3-4">读循环：先看边界，再看里面</h3>
+
+<p>
+循环是代码里最容易藏错的地方。读的时候分两步，别一上来就钻进循环体。
+</p>
+
+<p>
+<b>第一步，只看那一行 <code>for</code>。</b>问三件事：
+</p>
+
+<ol>
+  <li><b>从哪儿开始</b>：<code>i = 0</code> 还是 <code>i = 1</code>？</li>
+  <li><b>到哪儿停</b>：<code>i &lt; n</code> 还是 <code>i &lt;= n</code>？</li>
+  <li><b>每一轮挪多少</b>：<code>i++</code> 还是别的？</li>
+</ol>
+
+<p>
+三个答案凑起来，循环跑几圈就定死了。上面那份代码里
+<code>for (int i = 1; i &lt; n; i++)</code>，<code>n</code> 是 8——
+从 1 开始，到 7 结束，七圈，格子 0 没走。
+<b>它这样写是对的</b>（<code>m</code> 已经是 <code>a[0]</code> 了，不用跟自己比），
+可你得先算出来，才知道它是对的。
+</p>
+
+<p>
+<b>第二步，才看循环体里干什么。</b>这时候你心里已经有底了：
+一共七轮，每轮拿 <code>a[i]</code> 去跟 <code>m</code> 比一下。
+</p>
+
+<p>
+7.1 那份平均分的程序，错就错在这一步的顺序上——<b>没算圈数，直接读里面去了。</b>
+</p>
+
+<h3 id="s7-3-5">读不懂的写法，先跳过去</h3>
+
+<p>
+读别人的代码一定会撞上你没学过的写法。这时候别停下来死磕——
+<b>先跳过，继续往下读。</b>
+</p>
+
+<p>
+这不是偷懒。一份代码里，你认识的部分通常占九成；
+把那一成不认识的东西<b>先当成一个黑盒子</b>（「它大概是干这个的」），
+九成读懂之后，剩下那一成的意思往往自己就浮出来了。
+</p>
+
+<p>
+真到要弄明白的时候，用 7.2 那一招：<b>把它单独抠出来，加一句打印，跑一遍。</b>
+跑一遍看到的，比盯着看十分钟管用。
+</p>
+
+<p>
+<b>其实 7.1 到 7.3 是一件事的三面：</b>
+7.1 是「先找哪里不一样」，7.2 是「看不清就打印」，
+7.3 是「从入口顺着数据走」。三条路都通向同一句话——
+<b>别猜，去看。</b>
+</p>
+
+<h3 id="s7-3-6">练习</h3>
+
+<p>
+这一组全是别人写的代码。前几道不用跑，读完直接说答案；
+后面几道里面藏着错，按 7.1 的顺序找。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 7-11（预测输出）</div>
+  <p>
+    <b>先别编译、先别看答案。</b>读完它，说出它打什么。
+    然后编译一遍，对一下你读得对不对。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[6] = {3, 1, 4, 1, 5, 9};
+    int k = 0;
+
+    for (int i = 0; i &lt; 6; i++) {
+        if (a[i] &gt; a[k]) {
+            k = i;
+        }
+    }
+
+    std::cout &lt;&lt; k &lt;&lt; " " &lt;&lt; a[k] &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">5 9</pre>
+  <p>
+    提示：盯住 <code>k</code>。它装的不是最大的数，是最大的那个数的<b>编号</b>。
+    读完加一句打印，看它依次是几。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>它打 <code>5 9</code>。加一句打印，看 <code>k</code> 是怎么一格一格挪的：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[6] = {3, 1, 4, 1, 5, 9};
+    int k = 0;
+
+    for (int i = 0; i &lt; 6; i++) {
+        if (a[i] &gt; a[k]) {
+            k = i;
+        }
+        std::cout &lt;&lt; "i = " &lt;&lt; i &lt;&lt; " 时，k = " &lt;&lt; k &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; k &lt;&lt; " " &lt;&lt; a[k] &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="预期输出">i = 0 时，k = 0
+i = 1 时，k = 0
+i = 2 时，k = 2
+i = 3 时，k = 2
+i = 4 时，k = 4
+i = 5 时，k = 5
+5 9</pre>
+      <p>
+        <b><code>k</code> 装的不是「最大的数」，是「最大的那个数的编号」。</b>
+        搞清楚这一点，后面全通了。
+      </p>
+      <p>
+        比较那一行写的是 <code>a[i] &gt; a[k]</code>——
+        拿<b>当前这个</b>跟<b>目前冠军</b>比。谁赢谁当冠军，<code>k</code> 记下它的编号。
+        打印里看得清清楚楚：编号 2 的 4 赢了 3，编号 4 的 5 赢了 4，
+        编号 5 的 9 赢了 5，冠军最后停在 5。
+      </p>
+      <p>
+        输出那句打的是「编号」和「那个编号上的数」，所以是 <code>5 9</code>。
+        <b>要是没看清 <code>k</code> 装的是编号，很容易只答一个 9。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-12（读代码）</div>
+  <p>
+    只看这个函数，不用跑，说清楚两件事：
+    <b>它是干什么用的？</b>给它 <code>{4, 7, 2, 9, 6}</code> 和 5，它交回来几？
+  </p>
+  <pre><code>int g(int a[], int n) {
+    int s = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] % 2 == 0) {
+            s = s + a[i];
+        }
+    }
+
+    return s;
+}</code></pre>
+  <pre class="out" data-label="预期输出">12</pre>
+  <p>
+    提示：看 <code>return</code> 交回来的那个 <code>s</code> 是怎么攒起来的——
+    哪些数被加进去了，哪些被跳过去了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><b>它是把所有偶数加起来。</b>给它 <code>{4, 7, 2, 9, 6}</code>，
+      交回来 12——4 + 2 + 6，7 和 9 是奇数，跳过去了。</p>
+      <p>补一个 <code>main</code> 叫它一次，就能跑给你看：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int g(int a[], int n) {
+    int s = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] % 2 == 0) {
+            s = s + a[i];
+        }
+    }
+
+    return s;
+}
+
+int main() {
+    int a[5] = {4, 7, 2, 9, 6};
+
+    std::cout &lt;&lt; g(a, 5) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        读它的顺序：先看 <code>return</code> 交回来的是 <code>s</code>，
+        再看 <code>s</code> 是怎么攒起来的——只有进得了 <code>if</code> 的才加。
+        那个 <code>if</code> 的条件是 <code>a[i] % 2 == 0</code>，
+        也就是「这个数除以 2 余 0」，即<b>偶数</b>。
+      </p>
+      <p>
+        <code>%</code> 是 1.3 学的取余。这一题没有循环边界上的坑，
+        五圈一圈不少，也不越界——<b>它是拿来练「怎么把一段代码读明白」的，
+        不是找错的。</b>
+      </p>
+      <p>
+        留个对照：这里的 <code>a[i] % 2 == 0</code> 问的是「这个<b>数</b>是偶数」，
+        7-14 那道 <code>i % 2 == 0</code> 问的是「这个<b>编号</b>是偶数」。
+        <b>一个字母之差，问的是两回事。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-13（读代码）</div>
+  <p>
+    这份要读输入。给它喂这一行：
+  </p>
+  <pre class="out" data-label="样例输入">5 12 7 30 4 19</pre>
+  <p>
+    <b>先读代码。</b>它一共读几个数？第一个 <code>cin</code> 读进来的是数据吗？
+    它打什么？
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int a[20];
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    for (int i = 1; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最大的是 " &lt;&lt; mx &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">最大的是 30</pre>
+  <p>
+    提示：两个 <code>cin</code> 里，第一个读进来的是数还是「有几个数」？
+    后面那个循环跑几圈？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>它打 <code>最大的是 30</code>。</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int a[20];
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    for (int i = 1; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最大的是 " &lt;&lt; mx &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>第一个 <code>cin</code> 读进来的不是数据。</b>
+        它读进 <code>n</code>，而 <code>n</code> 的意思是「接下来有几个数」——
+        这一行 <code>5 12 7 30 4 19</code> 里，5 是说「后面还有 5 个数」。
+      </p>
+      <p>
+        后面那个循环就是拿 <code>n</code> 当圈数用的：
+        <code>for (int i = 0; i &lt; n; i++)</code> 跑五圈，
+        把 12、7、30、4、19 装进 <code>a[0]</code> 到 <code>a[4]</code>。
+        然后才轮到找最大值，走的还是 4.3 那个路子。
+      </p>
+      <p>
+        <b>「第一个数是长度」这个写法，4.5 那道真题里见过</b>——
+        当时它是当陷阱用的。读别人的代码碰见它，
+        第一件事就是分清「哪个数是数据、哪个数是数据的个数」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-14（预测输出）</div>
+  <p>
+    读它，说出打出来的数是什么，<b>再说清它是哪几个格子加起来的。</b>
+    <b>别一眼扫过去就答</b>——这一题就是给「一眼扫过去」准备的。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[6] = {2, 4, 6, 8, 10, 12};
+    int s = 0;
+
+    for (int i = 0; i &lt; 6; i++) {
+        if (i % 2 == 0) {
+            s = s + a[i];
+        }
+    }
+
+    std::cout &lt;&lt; s &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">18</pre>
+  <p>
+    提示：<code>i % 2 == 0</code> 问的是「编号是不是偶数」。
+    编号 0、1、2、3、4、5 里，哪几个会被加进去？
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>它打 <code>18</code>。加进去的是编号 0、2、4 三个格子：2 + 6 + 10 = 18。</p>
+      <p>加一句打印，把每一轮的 <code>i</code> 和 <code>s</code> 都摆出来：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a[6] = {2, 4, 6, 8, 10, 12};
+    int s = 0;
+
+    for (int i = 0; i &lt; 6; i++) {
+        if (i % 2 == 0) {
+            s = s + a[i];
+        }
+        std::cout &lt;&lt; "i = " &lt;&lt; i &lt;&lt; " 时，s = " &lt;&lt; s &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; s &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="预期输出">i = 0 时，s = 2
+i = 1 时，s = 2
+i = 2 时，s = 8
+i = 3 时，s = 8
+i = 4 时，s = 18
+i = 5 时，s = 18
+18</pre>
+      <p>
+        <b>关键在那个条件：<code>i % 2 == 0</code>，判断的是 <code>i</code>，
+        不是 <code>a[i]</code>。</b>
+        所以它挑的是「编号是偶数」的格子——0、2、4；
+        而不是「值是偶数」的那些（这一份里六个数全是偶数，两种读法特别容易混）。
+      </p>
+      <p>
+        打印里看得最清楚：<code>s</code> 只在第 0、2、4 轮往上跳，
+        第 1、3、5 轮一动不动。
+      </p>
+      <p>
+        想验一验自己读得对不对，换个数组最省事：把六个数改成有奇有偶
+        （比如 <code>{1, 4, 3, 8, 5, 12}</code>）再跑一遍——
+        <b>如果它挑的是编号，结果还是 1 + 3 + 5 = 9；
+        要是挑的是值，那会变成 4 + 8 + 12 = 24。</b>
+        换个输入再跑一遍，是「读懂了」最硬的证据。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-15（读代码，里面有个错）</div>
+  <p>
+    这一份是别人写的，<b>里面有个错</b>。「总和」那一行是对的，「平均」那一行不对。
+    找出错在哪儿。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int f1(int a[], int n) {
+    int s = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        s = s + a[i];
+    }
+
+    return s;
+}
+
+int main() {
+    int a[5] = {10, 20, 30, 40, 50};
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; f1(a, 5) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "平均：" &lt;&lt; f1(a, 4) / 4 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总和：150
+平均：30</pre>
+  <p>
+    提示：两行调的是同一个函数，参数却不一样——先把这两行并排看一遍。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样（第二行那两处 <code>4</code> 都改成 <code>5</code>）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int f1(int a[], int n) {
+    int s = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        s = s + a[i];
+    }
+
+    return s;
+}
+
+int main() {
+    int a[5] = {10, 20, 30, 40, 50};
+
+    std::cout &lt;&lt; "总和：" &lt;&lt; f1(a, 5) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "平均：" &lt;&lt; f1(a, 5) / 5 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>先看那个函数：<code>f1</code> 本身一点错都没有。</b>
+        它收几个数就把前几个加起来，循规蹈矩。
+      </p>
+      <p>病根在调用它的地方。两行并排看：</p>
+      <pre><code>std::cout &lt;&lt; "总和：" &lt;&lt; f1(a, 5) &lt;&lt; std::endl;
+std::cout &lt;&lt; "平均：" &lt;&lt; f1(a, 4) / 4 &lt;&lt; std::endl;</code></pre>
+      <p>
+        第一行传 5，第二行传 4——<b>同一个函数、同一份数组，
+        两次却给了不同的个数。</b>4 个数的和是 100，除以 4 得 25；
+        5 个数的和是 150，除以 5 得 30。
+      </p>
+      <p>
+        这一题要练的是读代码时的一个动作：<b>看见同一个函数被调用两次，
+        就把两次的参数并排看一眼。</b>
+        函数体里翻不出毛病的时候，错多半就藏在调用那一行上——
+        因为读函数的时候，人会默认「调用方给的东西是对的」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>别人写的代码，你知道从 <code>main</code> 进去，
+  先看数据、再看调了谁、最后看输出；读函数先读签名；
+  读循环先算圈数；认不出来的写法先当黑盒子放着。
+  读不懂的地方，你能用 7.2 的办法把它跑起来看。
+  <b>这一部分三课其实是一句话：别猜，去看。</b>
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="08-章末检测.html">第 8 部分 · 章末检测 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+
+</body>
+</html>

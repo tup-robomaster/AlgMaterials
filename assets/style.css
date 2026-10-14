@@ -1,0 +1,1207 @@
+/* ============================================================
+   TUP 算法组 · C++ 基础课
+   手写样式表。没有框架，没有外部字体，断网可用。
+
+   设计原则：这是给人读的东西，不是给人点的东西。
+   所以——没有卡片、没有徽章、没有进度条、没有侧栏抽屉。
+   顶上一条窄栏：左边是课名，中间是各部分，最右边是换配色的按钮。
+   往下是正文、代码、例题、练习，和一条安静的目录。
+   顶栏高度住在 --topbar-h，目录吸在哪、跳转落在哪、toc.js 的判定线，
+   三处都跟着它走，改高度只改那一处。
+   ============================================================ */
+
+/* ---------- 1. 颜色与度量 ---------- */
+
+/* 亮色是默认值，也是「<html> 上什么属性都没挂」时的样子。
+   暗色挂在 :root[data-theme="dark"] 上，由 theme.js 在 <head> 里挂。
+   两套颜色都只写一遍，改颜色的时候不会漏掉一处。
+
+   为什么不用 @media (prefers-color-scheme: dark) 直接判：因为要留给学生
+   一个自己换的按钮，系统的偏好只是「默认值」，不是「最终裁决」。
+   color-scheme 管的是滚动条和表单控件那类浏览器自己画的东西，
+   它得跟着页面走，不能跟着系统走——页面能跟系统不一样了。 */
+:root {
+  color-scheme: light;
+  --paper:      #fdfdfc;   /* 纸面。比纯白暖一点，长文不刺眼 */
+  --ink:        #1c1c1a;   /* 正文 */
+  --ink-soft:   #4a4a46;   /* 次要文字 */
+  --ink-faint:  #8a8a84;   /* 标注、行号 */
+  --ink-mid:    #6b6b66;   /* 目录里的小节。--ink-faint 太浅，当链接读着累 */
+  --rule:       #e4e2dc;   /* 分隔线 */
+  --rule-strong:#c9c6be;   /* 强调用的线 */
+  --accent:     #2c5f8a;   /* 唯一的强调色。链接、课号、练习标签 */
+  --accent-soft:#eef3f8;
+  --code-bg:    #f7f7f5;
+  --warn:       #9a4a2f;   /* 「坑」用 */
+  --tip:        #3f6b4a;   /* 「技巧」用 */
+  --eg:         #6a5490;   /* 「例题」用。老师做给你看的那一块 */
+  --eg-soft:    #f4f1f9;
+
+  /* 等宽字体栈。代码块和「预期输出」块共用。
+   * 字号也得跟着落到 pre 上：输出块按约定没有 <code> 子元素，只靠 pre code
+   * 那条规则盖不住它，它会退回正文的 17px——比它上面的代码还大一圈。 */
+  --mono: "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas,
+          "Noto Sans Mono CJK SC", "Sarasa Mono SC", monospace;
+
+  --measure:    43rem;     /* 正文栏宽。约 40 个汉字 */
+  --gap:        1.6rem;
+  --topbar-h:   3.4rem;    /* 顶栏高度。目录吸在哪、跳转落在哪、toc.js 的判定线，都跟着它 */
+
+  /* 三栏那套（第 3 节的 .wrap）。两栏的宽度都从这儿走，
+     3 节里的 max-width 和断点都是拿它俩算的。 */
+  --rail-l:     16rem;     /* 左树栏宽。按树里最长的一条课名留出富余 */
+  --rail-r:     14rem;     /* 目录栏宽。再窄，中标题就要折行；再宽，那两条栏就比正文还抢眼了 */
+
+  /* 代码块。深色的：跟「机器说的话」（pre.out / pre.diag，浅色虚线框）
+     摆在一起，一眼就分得出哪块是自己写的、哪块是机器打的。
+     三个值都按深底定的，别拿去当浅色用。 */
+  --code-ground:#0d1117;
+  --code-ink:   #e6edf3;
+  --code-dim:   #8b949e;   /* 行号和复制按钮。对深底 6.2:1——行号是拿来读的 */
+  --code-rule:  #21262d;
+  --code-lh:    1.5;       /* 代码行高。正文的 1.8 太散，长程序要滚很久 */
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper:      #17181a;
+  --ink:        #e6e4df;
+  --ink-soft:   #b3b0a9;
+  --ink-faint:  #7d7a74;
+  --ink-mid:    #98958e;
+  --rule:       #2e3033;
+  --rule-strong:#43464a;
+  --accent:     #7fb0dd;
+  --accent-soft:#1d2530;
+  --code-bg:    #1e2023;
+  --warn:       #d98b6a;
+  --tip:        #86b894;
+  --eg:         #b4a2dc;
+  --eg-soft:    #221f2b;
+  /* 代码块在暗色下也得跟纸面分得开。暗色纸面是 #17181a，
+     底色稍微往蓝里压一点，不然两块糊在一起。 */
+  --code-ground:#101419;
+  --code-rule:  #232a33;
+}
+
+/* ---------- 2. 基础 ---------- */
+
+* { box-sizing: border-box; }
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+               "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+  font-size: 17px;
+  line-height: 1.8;
+  text-rendering: optimizeLegibility;
+}
+
+p { margin: 0 0 1.1em; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+a:hover { border-bottom-color: var(--accent); }
+
+strong, b { font-weight: 600; }
+
+/* ---------- 3. 页面骨架：顶栏 + 目录 + 正文 ---------- */
+
+/* 顶栏。最左边是战队，接着课程名，中间各部分，最右边是换配色的按钮。
+
+   用 sticky 不用 fixed：它自己占着页面最上面那一行，底下的东西自然被推下来，
+   不用到处补 padding-top，也不用给锚点加 scroll-padding。
+
+   它必须是实心的。半透明的顶栏（加上毛玻璃那种）会让正文从底下透出来，
+   读长文的时候很分心——这是唯一一件压在正文上面的东西，压干净点。 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: var(--topbar-h);
+  padding: 0 1.5rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* 最左边是战队，不是课程名。以后要加新课程，战队是父级、课程是子级——
+   所以战队这一组是站点级的锚，课程名跟着一条分隔线排在它后面。 */
+.topbar .team {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  border: 0;
+  white-space: nowrap;
+}
+.topbar .team:hover { color: var(--accent); }
+
+/* 队标。原图是白字黑底的方图，裁到笔画边界之后把亮度取作 alpha——
+   黑底压成透明，边缘那圈抗锯齿原样留着，所以它在浅色底上是深色的字。
+   暗色主题不用出第二份文件：filter: invert 只翻 RGB、不动 alpha。
+
+   顶栏矮，这个高度是它作为队标还认得出的下限，别再往下压。 */
+.topbar .logo { flex: none; height: 1.375rem; width: auto; }
+:root[data-theme="dark"] .topbar .logo { filter: invert(1); }
+
+.topbar .sep {
+  flex: none;
+  width: 1px;
+  height: 1.25rem;
+  background: var(--rule-strong);
+  margin: 0 0.5rem;
+}
+
+/* 顶栏里两组链接——`.nav-parts` 是「这一门课的部分」，`.nav-courses` 是
+   「站里所有课」——外面套一层 .topbar-navs 共用一条带子。
+   不套的话两组各自 overflow-x:auto，就是两个独立的滚动区：窄屏上看着
+   像两条断掉的链接，滑哪条都不对。只有外面这一层滚。
+
+   当前那门课在课程排里带 .active。 */
+.topbar-navs {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar-navs::-webkit-scrollbar { display: none; }
+.topbar-navs > nav { flex: none; overflow: visible; }
+
+/* 两组之间隔一道。部分链接和课程链接长得一模一样，不隔开就是十六个
+   链接连成一串，「第 3 部分」之后换了一批谁也看不出来。
+   挑「部分 + 课程」这个相邻关系写，两道都得在才隔：
+     · 宽屏上部分那排收起来了（见下面那条 @media），写 .nav-courses
+       一个的话，隔断线会孤零零挂在第一个课程链接左边；
+     · TUP.html 上压根没有部分那排，同理。 */
+@media (max-width: 880px) {
+  .topbar-navs > nav.nav-parts + nav.nav-courses {
+    margin-left: 0.55rem;
+    padding-left: 0.55rem;
+    border-left: 1px solid var(--rule);
+  }
+}
+
+.topbar nav {
+  display: flex;
+  gap: 0.1rem;
+  min-width: 0;
+  overflow-x: auto;      /* 部分写多了窄屏放不下，就横着滑，不换行 */
+  scrollbar-width: none;
+}
+.topbar nav::-webkit-scrollbar { display: none; }
+
+.topbar nav a {
+  color: var(--ink-soft);
+  border: 0;
+  border-radius: 4px;
+  padding: 0.28rem 0.6rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.topbar nav a:hover { color: var(--accent); background: var(--code-bg); }
+.topbar nav a.active { color: var(--ink); background: var(--code-bg); font-weight: 600; }
+
+.topbar .spacer { flex: 1; }
+
+/* 三栏：左边那棵课程树 + 正文 + 右边这一页的目录。
+   DOM 顺序是「左树 → 目录 → 正文」——十页都是这个顺序，靠 grid-area 摆位，
+   不搬块。少了一样（比如以后新加的页忘了带那段 <nav class="rail-tree">），
+   那一格就空着，不会有人替你补上。
+
+   max-width 是算出来的：左树 + 正文（--measure）+ 目录 + 两条 3rem 的沟，
+   再加 .wrap 自己左右各 1.5rem 的留白（box-sizing 是 border-box，那 3rem
+   也算在 max-width 里）。凑够这个宽，正文就是整整一条 --measure。
+   不写死数字——栏宽改了这里跟着走。
+   这一档是最宽的，82rem 往上才用得上。1280px 到 82rem 之间沟窄一截，
+   是底下那条窄版三栏。 */
+.wrap {
+  display: grid;
+  grid-template-columns: var(--rail-l) minmax(0, 1fr) var(--rail-r);
+  gap: 3rem;
+  max-width: calc(var(--measure) + var(--rail-l) + var(--rail-r) + 9rem);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.wrap > .rail-tree { grid-area: 1 / 1; }
+.wrap > main       { grid-area: 1 / 2; }
+.wrap > .toc       { grid-area: 1 / 3; }
+
+/* 窄版三栏：82rem 到 1280px 之间那一档。
+   三栏本来要 82rem 才摆得下，可 1280px 的窗口差着一小截，那条目录栏就
+   直接没了——而 1280 是笔记本上最常见的一个宽度。所以这一档把两条沟从
+   3rem 收到 1.5rem，别的数一个不动，正文仍是整整一条 --measure。
+
+   断点写 1280px 这个整数，是因为媒体查询量的是窗口宽、量不到滚动条。 */
+@media (min-width: 1280px) and (max-width: 82rem) {
+  .wrap {
+    gap: 1.5rem;
+    max-width: calc(var(--measure) + var(--rail-l) + var(--rail-r) + 6rem);
+  }
+}
+
+/* 再窄就摆不下三条栏，撤目录栏——两栏只要 65rem。断点正好取在
+   「窄版三栏刚够宽」那一点上，所以两边正文都是 --measure，跨过断点不会
+   忽然一窄。「不是 1280px 及以上」= 1280px 以下，和上面那条严丝合缝。 */
+@media not all and (min-width: 1280px) {
+  .wrap {
+    grid-template-columns: var(--rail-l) minmax(0, 1fr);
+    max-width: calc(var(--measure) + var(--rail-l) + 6rem);
+  }
+  .wrap > .toc { display: none; }
+}
+
+/* 宽屏下顶栏那排「第 N 部分」收起来：它和左边那棵树是同一份东西，摆两遍
+   只是重复。880px 那条断点把树收起来，顶栏这排就得回来当导航，所以这条
+   从 881px 起、那条到 880px 止，接得上。
+
+   只收 .nav-parts。课程那一排（.nav-courses）多宽都得在——它是这一页
+   唯一能换门课的地方，收起来就没了。 */
+@media (min-width: 881px) {
+  body:has(.wrap) .topbar nav.nav-parts { display: none; }
+}
+
+main {
+  max-width: var(--measure);
+  padding: 3.5rem 0 6rem;
+  min-width: 0;
+}
+
+/* 目录：宽屏吸附在顶栏下面，窄屏整个收起来 */
+.toc {
+  position: sticky;
+  top: var(--topbar-h);
+  align-self: start;
+  max-height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  padding: 3.5rem 0 2rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.toc-part {
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+/* 目录两级：.toc-l 是中标题（正文里的 h2），.toc-sub 是它底下的小标题（h3）。
+   四道一起上，层级才说得清楚：字重、颜色、字号、缩进；再加上组间那道空当，
+   让「一个中标题 + 它底下那几条」读成一块，而不是一长串平铺的链接。 */
+.toc a.toc-l {
+  display: block;
+  padding: 0.22rem 0 0.22rem 0.7rem;
+  border: 0;
+  border-left: 2px solid var(--rule);
+  color: var(--ink);
+  font-weight: 600;
+}
+.toc a.toc-l:hover {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+/* 亮起来只换颜色和那条线。字重不用再提一次——中标题平时就是 600 */
+.toc a.toc-l.here {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.toc a.toc-l .n {
+  color: var(--ink-faint);
+  font-size: 0.82em;
+  margin-right: 0.45em;
+}
+
+/* 小标题。缩进到课名里侧，不加左边那条线——那条线是留给课的，
+   层级靠缩进、字号、颜色和字重说，不靠再加一条线。
+   平时退到背景里，你指到它、或者走到它那儿，它才亮。 */
+.toc a.toc-sub {
+  display: block;
+  padding: 0.06rem 0 0.06rem 1.5rem;
+  border: 0;
+  color: var(--ink-mid);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.toc a.toc-sub:hover {
+  color: var(--accent);
+}
+.toc a.toc-sub.here {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 组与组之间的空当。挂在小标题和中标题的相邻关系上——「一条小标题，紧接着
+   换个中标题」，只有组与组的分界长这样。
+   这十页的目录是平铺的一串 <a>，一组外面没有容器可挂，所以只能写相邻关系。
+   代价说在这儿：要是以后有一节一条小标题都不挂，它前面就不长这道空当。 */
+.toc a.toc-sub + a.toc-l { margin-top: 0.6rem; }
+
+/* 从目录跳过去之后，目标停在顶栏底下，不要钻到它后面去。
+   这个值 toc.js 会读出来当「已经到这儿了」的判定线，所以改这里就够，
+   那边不用跟着改。 */
+main [id] { scroll-margin-top: calc(var(--topbar-h) + 1.5rem); }
+
+/* 换配色的按钮，在顶栏最右边。
+   按下去会变成什么，就写什么——写「现在是暗色」那种，还得先教人认状态。
+   字归 CSS 管、不归 JS 管：theme.js 在 <head> 里就把 data-theme 挂好了，
+   这里跟着那个属性写，第一笔画出来就是对的字，不会先闪一下再改口。 */
+.theme-btn {
+  flex: none;
+  display: none;              /* 没有 JS 时它是个按不动的摆设，不如不显示 */
+  font: inherit;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 0.28rem 0.6rem;
+  color: var(--ink-mid);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.js .theme-btn { display: block; }
+.theme-btn:hover { color: var(--accent); border-color: var(--accent); }
+.theme-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+:root[data-theme="light"] .theme-btn::after { content: "换成暗色"; }
+:root[data-theme="dark"] .theme-btn::after  { content: "换成亮色"; }
+
+/* 窄到这儿就全撤了，退回单栏——两边的栏都收起来，导航交给顶栏那排。
+   左树和目录各占 260px 和 216px，880px 时正文只剩 525px，撤了反而回到
+   整条 43rem，所以断点划在这儿。
+
+   main 那句 grid-area 得显式抹掉：上面写的是「正文在第 2 格」，而这一格
+   在单栏下是隐式生成的（grid-auto-columns 默认 auto），正文会按内容宽度
+   缩在右边、左上角空出一条。抹成 auto 才回到自动排布、落进第一格。 */
+@media (max-width: 880px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; }
+  .wrap > .rail-tree { display: none; }
+  .toc { display: none; }
+  .wrap > main { grid-area: auto; padding-top: 2rem; }
+}
+
+/* ---------- 4. 标题 ---------- */
+
+.part-head { margin-bottom: 3.5rem; }
+
+.part-no {
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.4rem;
+}
+
+h1 {
+  font-size: 2.1rem;
+  line-height: 1.3;
+  font-weight: 600;
+  margin: 0 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+.part-lead {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* 一课。落点由上面那条 main [id] 统一管，这里不再单写一遍 */
+.lesson { margin: 0 0 4.5rem; }
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 1.4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+.lesson:first-of-type h2 { border-top: 0; padding-top: 0; }
+
+h2 .no {
+  color: var(--accent);
+  font-weight: 600;
+  margin-right: 0.6em;
+  font-variant-numeric: tabular-nums;
+}
+
+h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 2.2rem 0 0.9rem;
+}
+
+/* h4 用在「三条规矩」这类小分条上，比 h3 轻一档 */
+h4 {
+  font-size: 0.97rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 1.9rem 0 0.7rem;
+}
+
+/* ---------- 5. 代码 ---------- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+/* 行内代码：只做极轻的底色，不抢眼 */
+p code, li code, td code, h3 code {
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.05em 0.32em;
+  font-size: 0.86em;
+}
+
+pre {
+  background: var(--code-bg);
+  border-left: 3px solid var(--rule-strong);
+  margin: 1.4rem 0;
+  padding: 0.95rem 1.1rem;
+  overflow-x: auto;
+  line-height: 1.65;
+  /* 和 pre code 同一个字号，输出块和代码块才对得齐 */
+  font-family: var(--mono);
+  font-size: 0.87rem;
+}
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.87rem;
+}
+
+/* 预期输出：和普通代码块区分开，用虚线 */
+pre.out {
+  background: transparent;
+  border-left: 3px solid var(--accent);
+  border-top: 1px dashed var(--rule-strong);
+  border-bottom: 1px dashed var(--rule-strong);
+  color: var(--ink-soft);
+}
+pre.out::before {
+  content: attr(data-label);
+  display: block;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+/* 代码里我们想让你盯住的那一行 */
+pre .hl {
+  display: inline-block;
+  width: 100%;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  margin: 0 -1.1rem;
+  padding: 0 1.1rem;
+}
+
+/* 终端对话里「你敲的那几行」。
+ *
+ * 1.5 开始程序会停下来等人，屏幕上就有了两种字：程序打的、你敲的。
+ * 光看一坨等宽字分不出来，学生照着对输出就会懵——所以敲进去的
+ * 那几行单独标出来，底下顺手加一条下划线（终端里输入的东西通常
+ * 也是这么标的）。只用在 <pre> 里，正文里不用。 */
+pre .typed {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-underline-offset: 0.28em;
+}
+
+/* ---------- 6. 提示块 ---------- */
+
+/* 只有一条左边框，不铺底色——铺了底色，一页里出现三次就变吵 */
+.aside {
+  border-left: 3px solid var(--rule-strong);
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  margin: 1.6rem 0;
+  color: var(--ink-soft);
+}
+.aside > b {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  margin-right: 0.6em;
+}
+.aside.warn { border-left-color: var(--warn); }
+.aside.warn > b { color: var(--warn); }
+.aside.tip { border-left-color: var(--tip); }
+.aside.tip > b { color: var(--tip); }
+.aside p:last-child { margin-bottom: 0; }
+
+/* ---------- 7. 练习 ---------- */
+
+.ex {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  /* 内边距收得比较紧：这一栏的宽度要先留给代码，
+     代码块右边不该出现横向滚动条。 */
+  padding: 1.1rem 1rem 0.6rem;
+  margin: 2rem 0;
+}
+.ex-h {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+.ex pre { margin: 1rem 0 1.2rem; background: var(--paper); }
+.ex > :last-child { margin-bottom: 0.5rem; }
+
+/* ---------- 7b. 例题 ---------- */
+
+/* 和练习同一副骨架，换个颜色：练习是做给你的，例题是做给你看的。
+   每节课的练习前面都放一个，作用是先把代码结构在你眼前过一遍。 */
+.eg {
+  border-left: 3px solid var(--eg);
+  background: var(--eg-soft);
+  /* 和练习盒同一组数，和 .ex 那条一起改：例题盒里装的是同一种代码块，
+     两边的内边距不一样宽，代码在两种盒子里就会一个横滚一个不横滚。 */
+  padding: 1.1rem 1rem 0.6rem;
+  margin: 2rem 0;
+}
+.eg-h {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--eg);
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+.eg pre { margin: 1rem 0 1.2rem; background: var(--paper); }
+.eg > :last-child { margin-bottom: 0.5rem; }
+
+/* ---------- 7c. 练习答案（藏在练习块里面） ---------- */
+
+/* 答案是压在练习块里面的，默认不展开。用一个 <details>：
+   不开的时候只占一行，开了才把内容铺出来。
+   不铺底色、不再加一条左边框——练习块自己已经有一条了，一个块里套两条
+   边框会开始打结。就用一条虚线把它和题目分开。
+   不用 JS 是因为它必须断网也能开：学生双击 HTML 就该看得见。 */
+.ans {
+  margin: 1.3rem 0 0.7rem;
+  border-top: 1px dashed var(--rule-strong);
+  padding-top: 0.8rem;
+}
+.ans > summary {
+  display: inline-block;
+  list-style: none;                 /* 去掉浏览器那个默认三角 */
+  cursor: pointer;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border-bottom: 1px dotted currentColor;
+  user-select: none;
+}
+.ans > summary::-webkit-details-marker { display: none; }
+.ans > summary::before {
+  content: "▸ ";
+  font-size: 0.75em;
+}
+.ans[open] > summary::before { content: "▾ "; }
+.ans > summary:hover { color: var(--ink); }
+.ans > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* 展开之后的内容。第一行和最后一行不留多余的空，免得和上面的虚线脱开 */
+.ans-b { margin-top: 1rem; }
+.ans-b > :first-child { margin-top: 0; }
+.ans-b > :last-child { margin-bottom: 0.4rem; }
+
+/* 编译器输出（答案里抄的那些）。这类块让它自己折行，代码块不许折。
+
+   为什么区别对待：代码是给人照抄的，一折行「哪一行是第几行」就说不清了，
+   所以代码块永远是横着滚（见上面 pre 的 overflow-x）。
+   报错信息正相反——它本来就没有「行」这回事，终端遇到太长的行也是自己折的。
+   切掉一行字尾比折行坏得多：折行只是难看，切掉是让信息悄悄消失。
+
+   折的位置有个讲究：连字符 `-` 本身就是一个合法的断行点，所以形如
+   `[-fpermissive]` 的开关会在横杠后面断开。这不是 overflow-wrap 干的，
+   也改不掉——真要挪开，就得往正文里塞不可见字符，那是为排版去改编译器原话。
+
+   overflow-wrap 留着是给极窄窗口兜底：万一有一长串没有空格的路径，
+   也保证它不会把页面撑出横向滚动条。 */
+pre.diag {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* ---------- 8. 表格 ---------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 0.94rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.9rem 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th {
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  border-bottom-color: var(--rule-strong);
+}
+
+/* 速查表（附录 A 和 B）：列宽定死。
+ *
+ * 为什么不用默认的自动布局：中文能在任意一个字符处断行，所以一列里只要
+ * 有中文，它在浏览器眼里的「最小宽度」就是一个字宽。自动布局按
+ * （想要多宽 − 最小能多宽）来分剩余空间，于是中文那一列永远是被压的那一列。
+ * 定死布局之后，说多少就是多少，两边都不争。
+ *
+ * 每一张速查表都是两列或三列，宽度由表上的 col 元素说了算（下面给个默认）。 */
+table.lookup {
+  table-layout: fixed;
+}
+table.lookup th, table.lookup td {
+  padding-right: 1.6rem;
+}
+table.lookup th:first-child, table.lookup td:first-child {
+  width: 30%;
+}
+
+/* ---------- 9. 列表 ---------- */
+
+ul, ol { margin: 0 0 1.1em; padding-left: 1.4em; }
+li { margin-bottom: 0.4em; }
+li::marker { color: var(--ink-faint); }
+
+/* ---------- 10. 「你现在能写什么」 ---------- */
+
+.can {
+  margin-top: 2.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.94rem;
+  color: var(--ink-soft);
+}
+.can b { color: var(--ink); }
+
+/* ---------- 11. 翻页 ---------- */
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule-strong);
+  font-size: 0.95rem;
+}
+.pager a { border: 0; }
+.pager .spacer { flex: 1; }
+
+/* ---------- 12. 目录页（index.html） ---------- */
+
+.sec-plain {
+  border: 0;
+  padding: 0;
+  margin: 2.6rem 0 1.2rem;
+  font-size: 1.25rem;
+}
+
+.cover { margin-bottom: 4rem; }
+.cover h1 { font-size: 2.4rem; }
+.cover .part-lead { font-size: 1.1rem; }
+
+.outline-part {
+  margin: 0 0 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+}
+.outline-part h2 {
+  border: 0;
+  padding: 0;
+  margin-bottom: 0.4rem;
+  font-size: 1.25rem;
+}
+.outline-part h2 a { border: 0; color: inherit; }
+.outline-part h2 a:hover { color: var(--accent); }
+.outline-part .part-note {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  margin-bottom: 1.1rem;
+}
+
+/* .ol-list 是**目录页专用的**：底下那条 grid 是「3.2rem 的编号栏 + 正文栏」，
+   所以每条必须是 <span class="n">3.1</span><span class="body">…</span> 两格。
+   课页正文里别用它——那边没有 <span class="n">，唯一那个 .body 会落进第一列，
+   整段字被挤进 3.2rem 宽的条里，右边一大片空着。
+   课页里要编号列表就用普通 <ol>。 */
+
+.ol-list { list-style: none; padding: 0; margin: 0; }
+.ol-list li {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 0.6rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.95rem;
+  margin: 0;
+}
+.ol-list li:first-child { border-top: 0; }
+.ol-list .n {
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+.ol-list .body { min-width: 0; }
+.ol-list .t { display: block; color: var(--ink); line-height: 1.6; }
+.ol-list a.t {
+  border-bottom: 1px solid var(--rule-strong);
+  width: fit-content;
+}
+.ol-list a.t:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.ol-list .d {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.87em;
+  line-height: 1.62;
+}
+.ol-list .d code { font-size: 0.95em; }
+.ol-list .star {
+  color: var(--accent);
+  font-size: 0.8em;
+  margin-left: 0.45em;
+  white-space: nowrap;
+}
+.ol-list li.todo .t,
+.ol-list li.todo .d { color: var(--ink-faint); }
+.ol-list li.todo .t::after {
+  content: "还没写";
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0.02em 0.4em;
+  margin-left: 0.6em;
+  vertical-align: 0.12em;
+}
+
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+}
+
+/* ---------- 13. 数据流动画 ---------- */
+
+.viz {
+  border: 1px solid var(--rule-strong);
+  border-radius: 5px;
+  margin: 2rem 0;
+  overflow: hidden;
+  outline: none;
+}
+.viz:focus-visible { border-color: var(--accent); }
+
+/* 代码 */
+.viz-code {
+  background: var(--code-bg);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.7rem 0;
+  font-family: "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas,
+               "Noto Sans Mono CJK SC", "Sarasa Mono SC", monospace;
+  font-size: 0.85rem;
+  line-height: 1.62;
+  overflow-x: auto;
+}
+.viz-code .ln {
+  display: flex;
+  white-space: pre;
+  transition: background 0.18s;
+}
+.viz-code .ln-no {
+  flex: 0 0 2.4rem;
+  text-align: right;
+  padding-right: 0.9rem;
+  color: var(--ink-faint);
+  user-select: none;
+  font-size: 0.9em;
+}
+.viz-code .ln-src { padding-right: 1rem; }
+.viz-code .ln.on {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.viz-code .ln.on .ln-no { color: var(--accent); font-weight: 600; }
+
+/* 内存 + 屏幕 */
+.viz-panels {
+  position: relative;
+  display: grid;
+  /* 屏幕这一栏的宽度是按最长的一行输出定的，不是拍的：3.3 那个动画要打
+     「show 里 local = 7」，等宽字下这一行再加上两边内边距，就是这么多。
+     收窄之前先把最长的那些输出行量一遍——裁掉一截，学生看见的输出
+     就和课里写的不一样了。 */
+  grid-template-columns: minmax(0, 1fr) 11.5rem;
+  gap: 1px;
+  background: var(--rule);
+}
+@media (max-width: 620px) {
+  .viz-panels { grid-template-columns: 1fr; }
+}
+
+.viz-stage {
+  position: relative;
+  background: var(--paper);
+  padding: 2.6rem 1.1rem 1.2rem;
+  min-height: 8rem;
+}
+.viz-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.viz-arrow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.viz-arrow-head {
+  fill: var(--accent);
+  opacity: 0.85;
+}
+
+.viz-mem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* 一个内存盒子 */
+.viz-box {
+  min-width: 3.6rem;
+  border: 2px solid var(--rule-strong);
+  border-radius: 4px;
+  text-align: center;
+  transition: border-color 0.25s, background 0.25s, transform 0.25s;
+}
+.viz-box-name {
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.12rem 0.5rem;
+  letter-spacing: 0.04em;
+}
+.viz-box-val {
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem 0.4rem;
+  min-height: 2.1rem;
+  line-height: 1.4;
+}
+.viz-box.is-new   { border-style: dashed; border-color: var(--accent); }
+.viz-box.is-write { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.viz-box.is-read  { border-color: var(--accent); border-style: dashed; }
+.viz-box.changed  { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+/* 盒子要没了的那一步（3.3 用）。
+ * 光把盒子从 mem 里拿掉，屏幕上就是「刷」一下少一个，看不出发生过什么。
+ * 先灰一步、再拿走，才有「它刚刚还在这儿」的感觉——这一课讲的就是这个。 */
+.viz-box.is-gone {
+  opacity: 0.32;
+  border-style: dotted;
+  filter: grayscale(1);
+}
+.viz-box.is-gone .viz-box-val { text-decoration: line-through; }
+
+@keyframes viz-bump {
+  0%   { transform: translateY(0)    scale(1); }
+  45%  { transform: translateY(-5px) scale(1.13); }
+  100% { transform: translateY(0)    scale(1); }
+}
+.viz-box-val.bump { animation: viz-bump 0.5s ease-out; display: inline-block; }
+
+@keyframes viz-appear {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.viz-box.appear { animation: viz-appear 0.32s ease-out; }
+
+/* 屏幕 */
+.viz-screen {
+  background: var(--code-bg);
+  display: flex;
+  flex-direction: column;
+}
+.viz-screen-h {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  padding: 0.45rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+}
+.viz-screen-b {
+  padding: 0.6rem 0.9rem;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  flex: 1;
+}
+/* 屏幕上的输出行。
+   pre 保住空格（输出里的对齐靠它），但**不能用 nowrap 那种裁法**：
+   真终端遇到长行是折行的，这里跟着折，学生看到的就是终端的样子；
+   不折的话字会被右边缘悄悄吃掉一截，而「少一截」和「折成两行」
+   比起来，前者才是真骗人。overflow-wrap: anywhere 是给那种
+   一整行没有空格的输出留的后路——那种情况 pre-wrap 也不会折。 */
+.viz-screen-line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.viz-screen-line.bump { animation: viz-bump 0.45s ease-out; }
+.viz-screen-empty { color: var(--ink-faint); font-size: 0.8rem; font-family: inherit; }
+
+/* 说明 */
+.viz-note {
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  min-height: 3.4rem;
+}
+.viz-note b { color: var(--ink); }
+
+/* 控制条 */
+.viz-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+  flex-wrap: wrap;
+}
+.viz-btn {
+  font: inherit;
+  font-size: 0.86rem;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.viz-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.viz-btn:disabled { opacity: 0.35; cursor: default; }
+.viz-btn-play { border-color: var(--accent); color: var(--accent); }
+.viz-btn-play.on { background: var(--accent); color: var(--paper); }
+.viz-btn-ghost { border-color: transparent; color: var(--ink-faint); }
+.viz-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.viz-missing {
+  padding: 1rem 1.2rem;
+  color: var(--warn);
+  font-size: 0.92rem;
+}
+
+/* ---------- 14. 打印 ---------- */
+
+@media print {
+  .toc, .pager, .topbar, .rail-tree { display: none; }
+  /* 上面那条是给屏幕写的。这一条得照着 .js 一起写——
+     media query 不加权重，单写 .theme-btn 压不过 .js .theme-btn。 */
+  .js .theme-btn { display: none; }
+  .wrap { display: block; max-width: none; padding: 0; }
+  main { max-width: none; padding: 0; }
+  body { font-size: 11pt; background: #fff; color: #000; }
+  pre { border-left-color: #999; }
+  .lesson { page-break-inside: avoid; }
+}
+
+/* ---------- 15. 左树 + 代码块外壳 ----------
+
+   这一节全是新类名。左树由 HTML 里那段 <nav class="rail-tree"> 带进来，
+   代码块外壳由 assets/code.js 在页面加载后套上去——所以没引 code.js 的页
+   不会多出代码块那一层。
+   **新加一页时，这段 <nav class="rail-tree"> 和 code.js 都得跟着带**
+   （三栏骨架在第 3 节，那一格空着不会有人报错，只会看着少一块）。
+
+   code.js 里写的类名是 .code / .code-bar / .code-lang / .copy /
+   .line / .ln / .tok-*，改名字要两边一起改。 */
+
+/* ── 左树：顶栏那排「第 N 部分」竖过来 ──────────────────
+   十页各一段，除了 href 的前缀和哪一条带 aria-current 之外一模一样。
+   里面只有跨页链接，不带 id、也不带页内锚点——这一栏是整页导航，
+   按「第 N 部分」一条一条排，掺进页内锚点就乱了。
+   高度、吸顶这些跟着 .toc 走，两条并排站着得一样。 */
+.rail-tree {
+  position: sticky;
+  top: var(--topbar-h);
+  align-self: start;
+  max-height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  padding: 3.5rem 0 2rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* 栏头。和 .toc-part 一个样子——两条栏并排站着，头得一样高 */
+.rail-h {
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+/* 一条一部分。左边那条 2px 的线是留给「你现在在哪」的，
+   平时是淡的，指过去或者走到它那儿才染上强调色——和目录里 .toc-l 同一套。 */
+.rail-tree a.tree-l {
+  display: block;
+  padding: 0.22rem 0 0.22rem 0.7rem;
+  border: 0;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-soft);
+}
+.rail-tree a.tree-l:hover {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.rail-tree a.tree-l[aria-current="page"] {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
+/* ── 代码块外壳（code.js 套上去的） ──────────────────── */
+.code {
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--code-ground);
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--code-rule);
+}
+
+.code-lang {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--code-dim);
+}
+
+.code pre {
+  margin: 0;
+  padding: 0.75rem 0;
+  border: 0;
+  background: none;
+  color: var(--code-ink);
+  line-height: var(--code-lh);
+  /* 斜杠零：手抄的时候 0 和 O 要分得开 */
+  font-feature-settings: "zero" 1;
+  tab-size: 4;
+}
+
+/* 复制按钮。点了之后变绿闪一下，写「已复制」不写「复制成功」——
+   它就在按钮上，不用一句完整的话。 */
+.copy {
+  display: inline-flex;
+  align-items: center;
+  height: 1.625rem;
+  padding: 0 0.5625rem;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--code-dim);
+  background: transparent;
+  border: 1px solid var(--code-rule);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.copy:hover { color: var(--code-ink); border-color: var(--code-dim); }
+.copy[data-copied] { color: #7ee787; border-color: #7ee787; }
+
+/* 一行一块。行号是显示出来的，不在文本里——所以把行号删掉之后，
+   剩下的就是能直接粘进编辑器的一整段代码。 */
+.code .line { display: block; padding: 0 1rem; }
+/* 报错说「第 11 行」，点行号跳过来，跳到的这一行自己亮一下 */
+.code .line:target { background: rgba(44, 95, 138, 0.5); }
+
+.code .ln {
+  display: inline-block;
+  /* 行号格 + 右边距 + 左边距一共 44px，是从每一行代码里让出来的：
+     刚好够最长的那条代码放下，再多就得让正文栏跟着变宽。
+     这三个数要一起挪，单挪一个救不回来。 */
+  width: 1rem;
+  margin-right: 0.75rem;
+  text-align: right;
+  user-select: none;
+  /* 得同时压过 a（颜色）和它那条下划线。行号是拿来读的，
+     不能按链接色染成淡蓝 */
+  border: 0;
+  color: var(--code-dim);
+}
+.code .ln:hover { color: var(--code-ink); }
+
+.code .tok-kw  { color: #ff7b72; }
+.code .tok-str { color: #a5d6ff; }
+.code .tok-num { color: #79c0ff; }
+.code .tok-fn  { color: #d2a8ff; }
+.code .tok-cm  { color: #8b949e; }
+
+/* 三栏骨架和三处断点都在第 3 节（.wrap 那一块），这里只放新组件。 */
+
+/* 纸上不能是深色的。
+   底色浏览器默认不打，字却是近白的 —— 印出来是一整片白。
+   所以纸上把字改回黑，着色和复制按钮都收掉：那些是给屏幕的。
+   这一段必须排在 .code pre 后面，不然同一档权重压不过它。 */
+@media print {
+  .code { background: none; border: 1px solid #999; }
+  .code-bar { display: none; }
+  .code pre { color: #000; }
+  .code .ln { color: #666; }
+  .code .tok-kw, .code .tok-str, .code .tok-num,
+  .code .tok-fn, .code .tok-cm { color: inherit; }
+}

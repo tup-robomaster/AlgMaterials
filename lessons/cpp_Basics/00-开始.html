@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 部分 · 开始 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a class="active" href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html" aria-current="page">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 0 部分 · 开始</div>
+  <a class="toc-l" href="#l0-1"><span class="n">0.1</span>让第一个程序跑起来</a>
+  <a class="toc-sub" href="#s0-1-1">确认环境</a>
+  <a class="toc-sub" href="#s0-1-2">第一次运行</a>
+  <a class="toc-sub" href="#s0-1-3">编译和运行</a>
+  <a class="toc-sub" href="#s0-1-4">常见卡点</a>
+  <a class="toc-sub" href="#e0-1">例题：改一句话</a>
+  <a class="toc-sub" href="#s0-1-5">练习</a>
+  <a class="toc-l" href="#l0-2"><span class="n">0.2</span>程序的骨架</a>
+  <a class="toc-sub" href="#s0-2-1">逐行看</a>
+  <a class="toc-sub" href="#s0-2-2">从上往下执行</a>
+  <a class="toc-sub" href="#e0-2">例题：三行输出</a>
+  <a class="toc-sub" href="#s0-2-3">练习</a>
+  <a class="toc-l" href="#l0-3"><span class="n">0.3</span>报错怎么读</a>
+  <a class="toc-sub" href="#s0-3-1">报错的格式</a>
+  <a class="toc-sub" href="#s0-3-2">三条规矩</a>
+  <a class="toc-sub" href="#s0-3-3">必认识的词</a>
+  <a class="toc-sub" href="#s0-3-4">缺分号的例子</a>
+  <a class="toc-sub" href="#s0-3-5">开头那行是什么</a>
+  <a class="toc-sub" href="#e0-3">例题：忘了 std::</a>
+  <a class="toc-sub" href="#s0-3-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 0 部分</div>
+  <h1>开始</h1>
+  <p class="part-lead">
+    这三课不教语法。它们只解决一件事：<b>让你的屏幕亮起来</b>。
+    上完这三课，你能写出、编译、运行、并在出错时自己看明白报错的程序。
+    没有这一步，后面全是纸上谈兵。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-1">
+<h2><span class="no">0.1</span>让第一个程序跑起来</h2>
+
+<p>
+目标很简单：屏幕上出现一行 <code>Hello, C++!</code>。
+</p>
+
+<h3 id="s0-1-1">先花 5 秒确认一件事</h3>
+
+<p>
+打开 VS Code 的终端（菜单 <b>Terminal → New Terminal</b>，或者按 <code>Ctrl</code> + <code>Shift</code> + 反引号键），敲：
+</p>
+
+<pre><code>g++ --version</code></pre>
+
+<p>
+<b>如果它打印出版本号</b>（类似 <code>g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0</code>），说明编译器装好了，往下走。
+</p>
+
+<p>
+<b>如果它说 <code>未找到命令</code></b>（英文系统上是 <code>command not found</code>），
+说明编译器没装。在终端里敲这一条装上：
+</p>
+
+<pre><code>sudo apt install g++</code></pre>
+
+<p>
+会问你要密码。<b>输密码的时候屏幕上什么都不会显示</b>——不打星号，光标也不动。这是正常的，
+照常输完按回车就行。装完再敲一次 <code>g++ --version</code> 确认。
+</p>
+
+<p>
+<b>这一步没通，后面所有课都上不了</b>，所以先把它解决掉，别的都往后放。
+</p>
+
+<h3 id="s0-1-2">三步跑出第一行字</h3>
+
+<p>
+<b>第一步：建一个文件夹，在里面建一个文件。</b>
+</p>
+
+<p>
+文件夹叫什么随便，就叫 <code>cpp课</code> 吧。别用鼠标点来点去，<b>回终端敲</b>，更快也更不容易错：
+</p>
+
+<pre><code>mkdir -p ~/cpp课
+cd ~/cpp课
+touch hello.cpp</code></pre>
+
+<p>
+三条命令分别做的事：建文件夹、进入这个文件夹、建一个叫 <code>hello.cpp</code> 的空文件。
+（<code>~</code> 是「你的主目录」的意思。）
+</p>
+
+<p>
+然后让 VS Code 打开这个文件夹：
+</p>
+
+<pre><code>code .</code></pre>
+
+<p>
+<code>code</code> 后面那个点表示「当前这个文件夹」。如果它说 <code>未找到命令</code>，
+用菜单 <b>File → Open Folder</b> 选到 <code>cpp课</code> 也一样。
+</p>
+
+<div class="aside warn">
+  <b>坑</b>
+  <p>
+    文件名必须是 <code>hello.cpp</code>，<b>扩展名不能少、也不能多</b>。
+    如果存成了 <code>hello.cpp.txt</code>，编译时会说找不到 <code>hello.cpp</code>。
+  </p>
+  <p>
+    在终端里敲 <code>ls</code>，就能看见当前文件夹里到底有哪些文件、名字到底是什么。
+    <b>与其猜，不如看一眼。</b>看见 <code>hello.cpp.txt</code> 就说明存错了。
+  </p>
+</div>
+
+<p>
+<b>第二步：在 VS Code 里把下面这段敲进去。</b>
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, C++!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+<b>第三步：在终端里敲两条命令。</b>
+</p>
+
+<pre><code>g++ -Wall hello.cpp -o hello</code></pre>
+
+<p>
+中间那个 <code>-Wall</code> 先原样照抄，<b>以后每一次编译都带着它</b>。
+它是「把该说的话都说给我听」的意思（W 是 warning 警告，all 是全部）。
+为什么非带不可，0.3 讲警告的时候你就知道了——<b>不带着它，
+编译器有些话会瞒着你</b>，而那些话往往正是你要的。
+</p>
+
+<p>
+敲完这一条，如果<b>什么都不打印</b>，那是好事——编译器没话说就表示成功了。
+然后敲第二条：
+</p>
+
+<pre><code>./hello</code></pre>
+
+<p>
+（<code>./</code> 的意思是「当前文件夹里的」。<b>Linux 不会直接执行当前文件夹里的东西</b>，
+前面必须写 <code>./</code>，只敲 <code>hello</code> 会说不认识这个命令。这一条新手最容易漏。）
+</p>
+
+<p>
+屏幕上应该出现：
+</p>
+
+<pre class="out" data-label="预期输出">Hello, C++!</pre>
+
+<h3 id="s0-1-3">编译和运行，是两件事</h3>
+
+<p>
+很多人以为「运行代码」就是一个动作。不是的，中间隔着一步：
+</p>
+
+<table>
+  <tr><th>命令</th><th>干什么</th><th>不成功会怎样</th></tr>
+  <tr>
+    <td><code>g++ -Wall hello.cpp -o hello</code></td>
+    <td><b>编译</b>。把 <code>hello.cpp</code> 这段给人看的文字，翻译成机器能直接执行的程序，存成 <code>hello</code></td>
+    <td>翻译不过去，终端里刷一片红色的 <code>error</code>。<b>这时候根本没有程序存在</b>，谈不上运行</td>
+  </tr>
+  <tr>
+    <td><code>./hello</code></td>
+    <td><b>运行</b>。执行刚才编译出来的那个程序</td>
+    <td>程序会跑，但可能跑出你不想要的结果</td>
+  </tr>
+</table>
+
+<p>
+<b>分清这两件事很重要</b>，因为它们的「错」完全不是一回事：
+</p>
+
+<ul>
+  <li><b>编译不过</b>——你的代码写得不符合 C++ 的语法。编译器直接告诉你哪儿不对，<b>有行号</b>。0.3 专门讲。</li>
+  <li><b>编译过了，结果不对</b>——语法没问题，是你想错了。编译器<b>不会</b>帮你发现这种错，
+    它根本不知道你想要什么。这是后面每一课真正要练的东西。</li>
+</ul>
+
+<h3 id="s0-1-4">常见卡点</h3>
+
+<table>
+  <tr><th>你看到的</th><th>什么意思</th></tr>
+  <tr>
+    <td><code>bash: g++: 未找到命令</code></td>
+    <td>编译器没装。回到本节开头敲 <code>sudo apt install g++</code></td>
+  </tr>
+  <tr>
+    <td><code>bash: code: 未找到命令</code></td>
+    <td>VS Code 的命令行入口没注册。不影响学习，用菜单 File → Open Folder 打开文件夹就行</td>
+  </tr>
+  <tr>
+    <td><code>bash: hello: 未找到命令</code><br>（注意：<code>hello</code> 前面没有 <code>./</code>）</td>
+    <td>忘了 <code>./</code>。bash 只会在系统的命令目录里找，不会在当前文件夹里找，
+        所以它不认识 <code>hello</code>。要敲 <code>./hello</code></td>
+  </tr>
+  <tr>
+    <td><code>bash: ./hello: 没有那个文件或目录</code></td>
+    <td>这里确实没有叫 <code>hello</code> 的文件。多半是上一步编译就没成功（往上翻，
+        看有没有 <code>error</code>），或者你不在放代码的那个文件夹里。敲 <code>ls</code> 看这里有什么</td>
+  </tr>
+  <tr>
+    <td><code>cc1plus: fatal error: hello.cpp: 没有那个文件或目录</code></td>
+    <td>当前文件夹里没有 <code>hello.cpp</code>。多半是文件建在别处了。<br>
+        敲 <code>ls</code> 看这里有什么，敲 <code>pwd</code> 看你现在在哪个文件夹</td>
+  </tr>
+  <tr>
+    <td>敲了 <code>g++ ...</code> 之后什么都没发生</td>
+    <td>这是对的。你还要再敲 <code>./hello</code> 才会看到输出</td>
+  </tr>
+  <tr>
+    <td>出来几行 <code>warning</code>，可没看到 <code>error</code></td>
+    <td>警告。<b>程序照样生成了</b>，接着敲 <code>./hello</code> 就行。
+        但别把它划过去——先读完它说了什么。0.3 教你怎么读</td>
+  </tr>
+  <tr>
+    <td>一大堆 <code>error</code></td>
+    <td>代码写错了。下一课就是讲这个</td>
+  </tr>
+</table>
+
+<p>
+  <b>注意上面这几行是中文的。</b>bash 和编译器的启动部分会跟着你系统的语言走，
+  所以中文系统上就是中文（上面写的都是中文系统的真实样子）。
+  你装的要是英文系统，同样的错会写成
+  <code>bash: g++: command not found</code>、
+  <code>cc1plus: fatal error: hello.cpp: No such file or directory</code>——
+  <b>意思一模一样，认一个就行。</b>至于真正的 C++ 报错，<b>永远是英文的</b>。
+</p>
+
+<div class="eg" id="e0-1">
+  <div class="eg-h">例题 · 改一句话</div>
+  <p>
+    题目：把屏幕上那一行 <code>Hello, C++!</code> 改成 <code>Hello, World!</code>。
+  </p>
+  <p>
+    要动的只有一处——<b>双引号里面的那几个字</b>。程序里其他每一个字符都别碰。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, World!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <p>
+    然后<b>重新编译一遍，再运行</b>：
+  </p>
+  <pre><code>g++ -Wall hello.cpp -o hello
+./hello</code></pre>
+  <pre class="out" data-label="预期输出">Hello, World!</pre>
+  <p>
+    五行里只有引号中间的字变了，其他全是原样。
+    <b>后面所有的课，都是在这同一副骨架上加东西</b>——
+    骨架本身你以后不用再想，手会自己写出来。
+  </p>
+</div>
+
+<h3 id="s0-1-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 0-1</div>
+  <p>
+    把 <code>Hello, C++!</code> 换成你自己的名字，重新编译运行一遍。
+  </p>
+  <p>
+    <b>注意：改完代码要重新编译</b>（再敲一次 <code>g++ -Wall hello.cpp -o hello</code>），
+    不然你跑的还是上一次那个程序。这一点新手经常忘。
+  </p>
+  <pre class="out" data-label="预期输出">Hello, 张三!</pre>
+  <details class="ans" data-run="示例代码/答案/0-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>跟你自己那份只差引号里的几个字：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, 张三!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        换成你自己的名字当然也行。这题没别的意思，就是让你把
+        「改代码 → 重新编译 → 再跑」这个循环走顺——顺带说一句，
+        课里每道练习的答案程序都在 <code>示例代码/答案/</code> 里，
+        文件名就是练习号，懒得敲的时候可以直接编译它。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-2</div>
+  <p>
+    让程序输出两行，第二行是你的专业。比如：
+  </p>
+  <pre class="out" data-label="预期输出">Hello, 张三!
+我是飞行器设计专业的</pre>
+  <p>
+    要加一行 <code>std::cout</code>。注意每一行末尾的 <code>;</code> 别忘。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>一行一个 <code>std::cout</code>，一行的末尾一个分号：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, 张三!" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "我是飞行器设计专业的" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        第二行末尾那个分号也别落下。这两行是<b>两句</b>话，不是一句——
+        少一个分号，编译器就不知道该在哪儿断句。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能写出程序、编译它、运行它，知道编译不过和结果不对是两回事。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-2">
+<h2><span class="no">0.2</span>程序的骨架</h2>
+
+<p>
+上一课那个程序，除了 <code>Hello, C++!</code> 之外还有五行。这五行到底是什么？
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, C++!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<h3 id="s0-2-1">逐行看</h3>
+
+<p>
+<b><code>#include &lt;iostream&gt;</code></b> —— 借工具。
+</p>
+
+<p>
+<code>iostream</code> 是「<b>i</b>nput <b>o</b>utput <b>stream</b>」的缩写，输入输出流。
+屏幕上打字的那个 <code>cout</code>，就是从这个文件里借来的。
+<b>不写这一行，程序不认识 <code>cout</code>，编译就会报错。</b>
+</p>
+
+<p>
+<b><code>std::</code></b> —— 名字住在哪儿。
+</p>
+
+<p>
+注意上面那行 <code>std::cout</code>：<code>cout</code> 前面挂着一个 <code>std::</code>。
+</p>
+
+<p>
+C++ 自带的东西（打印、算数、字符串……）都住在一个叫 <code>std</code> 的
+<b>命名空间</b>（namespace）里，<code>std</code> 是 standard（标准）的缩写。
+<code>::</code> 读作「<b>的</b>」，所以 <code>std::cout</code> 读成「<b>std 里的 cout</b>」。
+</p>
+
+<p>
+它像个路标，告诉你这个名字是从哪儿来的。程序长到几百行以后，
+你会看到一个 <code>sort</code>——<b>有没有 <code>std::</code>，决定了它是标准库的，还是你自己或者别人写的。</b>
+</p>
+
+<p>
+现在你只要照写：<b>凡是 C++ 自带的东西，前面都加 <code>std::</code></b>。
+少写了会编译不过，而且编译器会直接告诉你该补什么——0.3 里有一个例题专门讲这个。
+</p>
+
+<div class="aside">
+  <b>拓展：你可能会看到别人这么写</b>
+  <p>
+    有些教材和别人的代码，会在开头写一行 <code>using namespace std;</code>。
+    它的意思是「下面我提到的名字，都先去 <code>std</code> 里找一遍」——
+    写了它，就能省掉所有的 <code>std::</code>，直接写 <code>cout</code>。
+  </p>
+  <p>
+    <b>但我们不这么写。</b>省下的是五个字符，代价是 <code>std</code> 里成百上千个名字
+    一股脑倒进你的程序：你自己起的名字跟它们撞车时，报错会变得莫名其妙；
+    读代码的人也分不清 <code>count</code> 是你写的还是标准库的。
+  </p>
+  <p>
+    出了这门课，你会在别人的代码里见到它。<b>见到认识就行，自己不要写。</b>
+  </p>
+</div>
+
+<p>
+<b><code>int main() { ... }</code></b> —— 程序的入口。
+</p>
+
+<p>
+程序从 <code>main</code> 开始跑。<b>花括号里面的东西，就是要干的事。</b>
+一个程序必须有 <code>main</code>，而且只能有一个。
+</p>
+
+<p>
+<b><code>std::cout &lt;&lt; "Hello, C++!" &lt;&lt; std::endl;</code></b> —— 往屏幕上打东西。
+</p>
+
+<p>
+<code>cout</code> 读作「C out」，意思是「往外送到屏幕」。
+两个 <code>&lt;&lt;</code> 像两个箭头，把右边的内容送进 <code>cout</code>：
+先送 <code>"Hello, C++!"</code>，再送 <code>std::endl</code>。
+</p>
+
+<p>
+<code>endl</code> 是「end line」，<b>换行</b>。不写它，下一次输出会接着这一行往后挤。
+</p>
+
+<p>
+<b><code>return 0;</code></b> —— 告诉系统「我正常结束了」。
+</p>
+
+<p>
+说实话，<b>这一行不写也能编译能跑</b>。C++ 规定 <code>main</code> 不写 <code>return</code> 时自动返回 0。
+但建议写——别人读你的代码时，一眼就知道这里是正常结束。
+</p>
+
+<div class="aside tip">
+  <b>要不要背</b>
+  <p>
+    不用背。这五行你接下来一个月天天见，写到手酸。到时候手比脑子先写出来。
+  </p>
+</div>
+
+<h3 id="s0-2-2">骨架里最重要的一件事：从上往下，一行一行</h3>
+
+<p>
+<b>程序就是一行一行往下执行的。</b>先说第一行，做完做第二行，再做第三行。
+没有「跳回去」，没有「同时做」。
+</p>
+
+<p>
+这句话现在看着是废话，但它其实是后面所有东西的地基——
+循环是「跳回去再来一遍」，函数是「跳到别处做完再跳回来」，
+判断是「满足条件就跳过某几行」。
+<b>全都建立在「默认是一行一行往下走」之上。</b>
+</p>
+
+<div class="eg" id="e0-2">
+  <div class="eg-h">例题 · 让屏幕出三行</div>
+  <p>
+    题目：让程序在屏幕上打三行字——<code>第一行</code>、<code>第二行</code>、<code>第三行</code>。
+  </p>
+  <p>
+    一行 <code>std::cout</code> 管一行。要三行，就写三句：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "第一行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第二行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第三行" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">第一行
+第二行
+第三行</pre>
+  <p>
+    三句话长得一模一样，只有引号里的字不同。<b>这就是「一行一行往下走」的样子</b>：
+    先执行第一句，再第二句，屏幕就按这个顺序出三行。
+  </p>
+  <p>
+    每句末尾的 <code>std::endl</code> 管换行，<b>不写它，三行会挤成一行。</b>
+    另外注意每一句末尾的分号——少一个就编译不过（0.3 整课都在讲这个）。
+  </p>
+</div>
+
+<h3 id="s0-2-3">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 0-3</div>
+  <p>
+    在上面基础上加第四行输出 <code>第四行</code>。
+  </p>
+  <pre class="out" data-label="预期输出">第一行
+第二行
+第三行
+第四行</pre>
+  <details class="ans" data-run="示例代码/答案/0-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>加一行，就是在 <code>return 0;</code> 前面再插一句一模一样的 <code>std::cout</code>：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "第一行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第二行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第三行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第四行" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-4</div>
+  <p>
+    把「第三行」和「第一行」那两句<b>调换位置</b>（注意：整句一起换）。
+    输出会变成什么？先写下来，再跑。
+  </p>
+  <pre class="out" data-label="预期输出">第三行
+第二行
+第一行</pre>
+  <p>
+    这题没什么难度，但它证明了一件事：<b>输出的顺序就是你写代码的顺序。</b>
+    程序不会帮你整理。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>对调的是<b>整整两行</b>——从 <code>std::cout</code> 到分号，一个字符不漏地换位置：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "第三行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第二行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第一行" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        只换引号里的字、不换整行，跑出来是一样的。但整行换更像你以后真会做的事：
+        要挪动一段逻辑，挪的就是一整句。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能看懂一个最基本的 C++ 程序的每一行在干什么，
+  知道程序是从上往下一行一行跑的。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-3">
+<h2><span class="no">0.3</span>报错怎么读</h2>
+
+<p>
+这是第 0 部分最重要的一课。
+</p>
+
+<p>
+新手看到一堆红字就慌，然后去搜「这个报错什么意思」。
+其实报错<b>本身就是写给你看的</b>，它有固定的格式，读懂了不用问任何人。
+</p>
+
+<h3 id="s0-3-1">报错的格式</h3>
+
+<pre><code>文件名:行号:列号: error: 具体信息</code></pre>
+
+<p>
+就这四段。比如 <code>hello.cpp:4:18: error: ‘count’ was not declared in this scope</code>，
+意思是：<b>hello.cpp 的第 4 行、第 18 列，有一个错误</b>——
+那里用了一个叫 <code>count</code> 的名字，而编译器不认识它。
+</p>
+
+<div class="aside tip">
+  <b>别被引号绊住</b>
+  <p>
+    上面 <code>count</code> 外面那对引号是弯的（<code>‘ ’</code>），不是你键盘上那个直的（<code>' '</code>）。
+    编译器用的是弯引号。你的键盘打不出来，也不用打——<b>那是它打印给你看的，不是你敲进去的。</b>
+  </p>
+</div>
+
+<h3 id="s0-3-2">三条读报错的规矩</h3>
+
+<h4>一、先看第一个 error，后面的常常是连锁反应</h4>
+
+<p>
+这条规矩要对着真东西才看得懂。下面这个程序，<b>故意删掉了 <code>#include &lt;iostream&gt;</code> 那一行</b>，
+别的一个字符都没动——整个程序就三行：
+</p>
+
+<pre><code>int main() {
+    std::cout &lt;&lt; "你好" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+它编译不过。这是编译器说的话：
+</p>
+
+<pre><code>0.3-err-c-no-include.cpp: In function ‘int main()’:
+0.3-err-c-no-include.cpp:2:10: error: ‘cout’ is not a member of ‘std’
+    2 |     std::cout &lt;&lt; "你好" &lt;&lt; std::endl;
+      |          ^~~~
+0.3-err-c-no-include.cpp:1:1: note: ‘std::cout’ is defined in header
+      ‘&lt;iostream&gt;’; did you forget to ‘#include &lt;iostream&gt;’?
+  +++ |+#include &lt;iostream&gt;
+0.3-err-c-no-include.cpp:2:33: error: ‘endl’ is not a member of ‘std’
+    2 |     std::cout &lt;&lt; "你好" &lt;&lt; std::endl;
+      |                                 ^~~~
+0.3-err-c-no-include.cpp:1:1: note: ‘std::endl’ is defined in header
+      ‘&lt;ostream&gt;’; did you forget to ‘#include &lt;ostream&gt;’?</code></pre>
+
+<p>
+<b>源码三行，报错十行。</b>把这两段并排看一眼，就知道新手为什么一看到红字就慌了。
+</p>
+
+<p>
+数一下：<b>两个 error，两个 note</b>。可你只犯了一个错——忘了 <code>#include</code>。
+<b>两条报错，一个原因。</b>
+</p>
+
+<p>
+第一条 <code>error</code> 说 <code>‘cout’ is not a member of ‘std’</code>，字面意思是
+「<code>std</code> 里面没有叫 <code>cout</code> 的东西」。这话看着别扭——<code>cout</code> 明明就是标准库的。
+</p>
+
+<p>
+别扭在哪：<b><code>#include &lt;iostream&gt;</code> 那一行的作用，是把「标准库里有这些东西」的名单交给编译器。</b>
+你把名单也一起删了，它当然说没有。
+</p>
+
+<p>
+第二条 <code>endl</code> 的错，同样出自这一个原因。
+</p>
+
+<div class="aside warn">
+  <b>这里有个陷阱</b>
+  <p>
+    第二个 <code>note</code> 建议你补 <code>#include &lt;ostream&gt;</code>。<b>别照做。</b>
+    你真正缺的是 <code>&lt;iostream&gt;</code> 那一个——补上它，两个错一起消失，
+    因为 <code>&lt;iostream&gt;</code> 本来就把 <code>&lt;ostream&gt;</code> 包含在里面了。
+  </p>
+  <p>
+    如果你去改第二个错，就会在一个根本不该动的地方加一行。这正是
+    <b>「只改第一个 error」</b>的原因：后面那些错的修法，往往是错的。
+  </p>
+</div>
+
+<p>
+所以：<b>从最上面那个 error 开始改，改完重新编译，让报错重新来一遍。</b>
+不要试图一口气改完所有的错。
+</p>
+
+
+<h4>二、注意看 note</h4>
+
+<p>
+回头看上面那个例子，第一个 <code>note</code> 直接把答案说出来了：
+「<code>std::cout</code> 定义在 <code>&lt;iostream&gt;</code> 里，你是不是忘了 <code>#include &lt;iostream&gt;</code>？」
+下面那行 <code>+++ |+#include &lt;iostream&gt;</code> 更直接——<b>它把该补的那一行都替你写好了。</b>
+</p>
+
+<p>
+编译器不只告诉你错了，还顺手告诉你怎么改。<b>看到 <code>note</code> 就一定要读。</b>
+</p>
+
+<p>
+（上面那个 <code>note</code> 在终端里其实是<b>很长的一行</b>，是终端自己折行的。
+课里为了让你读得下，也把它折开了。你在自己屏幕上看到的不一定断在同一个位置——
+那不是两条 <code>note</code>，是一条。）
+</p>
+
+<h4>三、报错的行号，不一定是出错的行号</h4>
+
+<p>
+这是最容易把人卡住的一条。源码先摆出来——<b>你先自己找找，哪一行有问题：</b>
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3
+    int b = 5;
+    std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+编译器的反应是：
+</p>
+
+<pre><code>0.3-err-d-wrongline.cpp:5:5: error: expected ‘,’ or ‘;’ before ‘int’
+    5 |     int b = 5;
+      |     ^~~
+0.3-err-d-wrongline.cpp:6:22: error: ‘b’ was not declared in this scope
+    6 |     std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+      |                      ^</code></pre>
+
+<p>
+它说第 <b>5</b> 行有问题。可第 5 行 <code>int b = 5;</code> 本身一点毛病都没有——
+真正的问题在第 <b>4</b> 行末尾，少了一个分号。
+</p>
+
+<p>
+为什么？因为编译器读到第 5 行的 <code>int</code> 时才发现
+「等等，上一句话好像还没说完」。
+<b>它报的是「我在这里发现不对」，不是「你在这里写错了」。</b>
+</p>
+
+<p>
+顺便把规矩一也用上了：第二条 <code>‘b’ was not declared</code> 是<b>真的连锁反应</b>——
+分号一少，<code>int b = 5;</code> 这句就没被读进去，后面用到 <code>b</code> 自然就不认识了。
+<b>两条报错，还是同一个分号的事。</b>
+</p>
+
+<div class="aside warn">
+  <b>所以</b>
+  <p>
+    报错指向某一行、而你看那一行怎么看都没错的时候——
+    <b>往上翻一行，看上一行的末尾有没有少分号、少括号、少逗号。</b>
+    这一招能解决新手遇到的很大一部分报错。
+  </p>
+</div>
+
+<h3 id="s0-3-3">几个必认识的词</h3>
+
+<table>
+  <tr><th>报错里的话</th><th>意思</th></tr>
+  <tr><td><code>error</code></td><td>错误。<b>必须解决</b>，否则编译不过，程序根本不会生成</td></tr>
+  <tr><td><code>warning</code></td><td>警告。程序<b>还能编译</b>，但这里有隐患。<b>别养成无视它的习惯</b>——0.1 让你一直带着 <code>-Wall</code>，就是为了让这些话能说出来</td></tr>
+  <tr><td><code>note</code></td><td>提示。编译器在帮你，一定读</td></tr>
+  <tr><td><code>expected ...</code></td><td>「这里应该有一个……」。<code>expected ‘;’</code> = 这里该有分号</td></tr>
+  <tr><td><code>... was not declared</code><br><code>... is not defined</code></td><td>用了一个不存在的名字。要么拼错了，要么忘了定义，要么忘了 <code>#include</code>，要么忘了写 <code>std::</code></td></tr>
+  <tr><td><code>... is not a member of ‘std’</code></td><td><code>std</code> 里没有这个东西。多半是忘了 <code>#include</code> 对应的头文件</td></tr>
+  <tr><td><code>did you mean ...?</code></td><td>「你指的是不是这个？」编译器直接给出它猜的正确写法，照它改</td></tr>
+  <tr><td><code>in this scope</code></td><td>「在这个范围里」——配合上一行用，说明这个名字在这里看不见</td></tr>
+  <tr><td><code>没有那个文件或目录</code><br>（英文系统：<code>No such file or directory</code>）</td><td>找不到文件。<b>这不是说你代码写错了</b>，是文件名写错或路径不对。最常见的就是 <code>#include</code> 里的头文件名打错</td></tr>
+</table>
+
+<p>
+你代码的报错永远是英文的，改不了。但常用的就这些词，见几次就认识了。
+（最后一条是系统在说话，不是编译器在说话，所以它会跟着系统语言走。）
+</p>
+
+<h3 id="s0-3-4">还有一个例子：缺分号，但这次编译器指对了</h3>
+
+<p>
+同样是少一个分号，源码：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "你好" &lt;&lt; std::endl
+    return 0;
+}</code></pre>
+
+<p>
+编译器这次的反应是：
+</p>
+
+<pre><code>0.3-err-a-semicolon.cpp:4:37: error: expected ‘;’ before ‘return’
+    4 |     std::cout &lt;&lt; "你好" &lt;&lt; std::endl
+      |                                     ^
+      |                                     ;
+    5 |     return 0;
+      |     ~~~~~~</code></pre>
+
+<p>
+这次它说第 4 行，问题确实在第 4 行末尾。注意那个孤零零的 <code>;</code>——
+编译器把该补的东西都替你画出来了。最后两行是把第 5 行的 <code>return 0;</code>
+整个划了出来，意思是「我是在读到这儿才发现前面不对的」。
+</p>
+
+<h3 id="s0-3-5">每段报错开头那行是什么</h3>
+
+<p>
+你会发现上面三个例子的第一行都是同一个样子：
+</p>
+
+<pre><code>0.3-err-a-semicolon.cpp: In function ‘int main()’:</code></pre>
+
+<p>
+这一行没有行号，它说的是「<b>下面这些错，都发生在 <code>main</code> 这个函数里</b>」。
+程序大了、函数多了以后，这一行能帮你快速知道是哪个函数出的问题。
+现在你只有一个 <code>main</code>，所以它看起来像是废话，<b>跳过它往下看就行。</b>
+</p>
+
+<p>
+对比一下这两个例子你就能感觉到：<b>报错的质量参差不齐，有的很准，有的会指偏。</b>
+所以不能死盯着行号，要结合「这个地方按语法说不说得通」来判断。
+</p>
+
+<div class="eg" id="e0-3">
+  <div class="eg-h">例题 · 忘了写 std:: —— 用三条规矩读一遍</div>
+  <p>
+    题目：下面这个程序是照着 0.2 的骨架写的，但漏了东西。先自己找一遍，再看下面的报错。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    cout &lt;&lt; "你好" &lt;&lt; endl;
+    return 0;
+}</code></pre>
+  <p>
+    漏的是两处 <code>std::</code>。编译一下，编译器是这样说的：
+  </p>
+  <pre><code>0.3-err-e-no-std.cpp: In function ‘int main()’:
+0.3-err-e-no-std.cpp:4:5: error: ‘cout’ was not declared
+      in this scope; did you mean ‘std::cout’?
+    4 |     cout &lt;&lt; "你好" &lt;&lt; endl;
+      |     ^~~~
+      |     std::cout
+0.3-err-e-no-std.cpp:4:23: error: ‘endl’ was not declared
+      in this scope; did you mean ‘std::endl’?
+    4 |     cout &lt;&lt; "你好" &lt;&lt; endl;
+      |                       ^~~~
+      |                       std::endl</code></pre>
+  <p>
+    （上面那两条 <code>error</code> 在终端里各是<b>很长的一行</b>，课里折开了——和规矩二里说的一样。
+    真实的报错在这后面还有几行，指到系统头文件里的具体位置，路径里带着编译器的版本号，
+    <b>那几行现在不用看</b>。有用的是上面这两条。）
+  </p>
+  <p>
+    <b>规矩一</b>——只看第一条：<code>‘cout’ was not declared in this scope</code>，
+    「这个范围里没有叫 <code>cout</code> 的东西」。
+  </p>
+  <p>
+    <b>规矩二</b>——这条 <code>error</code> 自己就把答案说了：<code>did you mean ‘std::cout’?</code>
+    「你指的是不是 <code>std::cout</code>？」下面那行 <code>std::cout</code>，
+    是编译器替你把该写的样子摆了出来。<b>照它改就行。</b>
+  </p>
+  <p>
+    <b>规矩三</b>——这次行号是准的，就是第 4 行，<code>cout</code> 和 <code>endl</code> 都在这一行上。
+  </p>
+  <p>
+    补上两处 <code>std::</code>，重新编译，两条报错一起消失。
+    这就是 0.2 里那句话的意思：<b>凡是 C++ 自带的东西，前面都加 <code>std::</code>。</b>
+    漏了它不算什么大事——编译器不但会告诉你，还会顺手把该写的样子给你看。
+  </p>
+</div>
+
+<h3 id="s0-3-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 0-5</div>
+  <p>
+    把 0.2 那个程序的任意一行末尾的分号删掉，重新编译。
+    <b>把报错信息完整抄下来</b>，然后自己判断：
+    它指的是哪一行？真正出错的是哪一行？两者一样吗？
+  </p>
+  <p>
+    改完记得把分号加回去，重新编译确认恢复正常。
+  </p>
+  <details class="ans" data-err="示例代码/答案/0-5-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>我删的是<b>第一行末尾</b>那个分号（整个文件的第 4 行）。改完是这样：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "第一行" &lt;&lt; std::endl
+    std::cout &lt;&lt; "第二行" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>编译器说的话：</p>
+      <pre class="diag"><code>0-5-err.cpp: In function ‘int main()’:
+0-5-err.cpp:4:39: error: expected ‘;’ before ‘std’
+    4 |     std::cout &lt;&lt; "第一行" &lt;&lt; std::endl
+      |                                       ^
+      |                                       ;
+    5 |     std::cout &lt;&lt; "第二行" &lt;&lt; std::endl;
+      |     ~~~
+</code></pre>
+      <p>
+        读一遍：<code>expected ‘;’ before ‘std’</code>，字面意思是
+        「在 <code>std</code> 前面该有个分号」。它指的第 4 行，<b>就是真正出错的那一行</b>。
+        下面那个孤零零的 <code>;</code> 是它替你画出来的——告诉你补在哪儿。
+      </p>
+      <div class="aside">
+        <b>你屏幕上显示的文件名和我的不一样</b>
+        <p>
+          上面每行开头的 <code>0-5-err.cpp</code>，是你的文件名。
+          你那份叫什么，那里就显示什么——除此之外一个字都不差。
+        </p>
+      </div>
+      <p>
+        但这题的重点在下半句：<b>报的行号不总是这么准。</b>
+        0.3 里那个 <code>int b = 5</code> 缺分号的例子，编译器指的就是<b>下一行</b>。
+        所以真正的判断方法不是看行号，是问自己一句：
+        <b>「这一行按语法说得通吗？」</b>
+        第 4 行末尾少个分号，这一行读不通，答案就在这一行。
+      </p>
+      <p>
+        你删的那一行如果跟我不一样，报的行号也会不一样，这很正常——
+        把上面这套读法套上去就行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-6</div>
+  <p>
+    下面这段代码有一处错。先别编译，<b>自己找出来</b>，然后猜编译器会说什么，
+    最后再编译验证你的猜测。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+    int b = 5
+    std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <p>
+    提示：想想上一题你抄下来的报错长什么样。
+  </p>
+  <p>
+    <b>这题的重点不是改对，是「猜到编译器会说什么」。</b>
+    猜对了，说明你已经开始会用编译器的眼睛看代码了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-6.cpp" data-err="示例代码/答案/0-6-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>错在第 5 行：<code>int b = 5</code> 末尾少一个分号。补上就好：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+    int b = 5;
+    std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>补上之后输出：</p>
+      <pre class="out" data-label="预期输出">8</pre>
+      <p>回头看那个错的样子——这是这道题真正要你看见的东西：</p>
+      <pre class="diag"><code>0-6-err.cpp: In function ‘int main()’:
+0-6-err.cpp:6:5: error: expected ‘,’ or ‘;’ before ‘std’
+    6 |     std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+      |     ^~~
+0-6-err.cpp:4:9: warning: unused variable ‘a’ [-Wunused-variable]
+    4 |     int a = 3;
+      |         ^
+0-6-err.cpp:5:9: warning: unused variable ‘b’ [-Wunused-variable]
+    5 |     int b = 5
+      |         ^
+</code></pre>
+      <p>
+        三件事，一件一件看：
+      </p>
+      <p>
+        <b>一、它报的是第 6 行，出错的是第 5 行。</b>
+        为什么这回指到下一行去了？因为少分号的是<b>一句声明</b>（<code>int b = 5</code> 这句还没说完），
+        编译器读到第 6 行的 <code>std::cout</code> 才发现「上一句没收尾」。
+        0-5 那题少分号的是<b>一句输出</b>，它就在那一行断的。
+        两题合起来才是这条规矩的全貌：<b>它报的是「我在这里发现不对」。</b>
+      </p>
+      <p>
+        <b>二、那两条 <code>unused variable</code> 警告是假的。</b>
+        <code>a</code> 和 <code>b</code> 明明都用到了——只是因为在编译器眼里这两句声明压根没成立，
+        它才觉得「定义了没用」。<b>它们不是新问题，是那一个分号的连锁反应。</b>
+      </p>
+      <p>
+        <b>三、改的时候只动第 5 行。</b>去第 6 行加东西、或者删掉那两句声明，
+        都只会把事情弄得更乱。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能写出、编译、运行程序；
+  遇到报错能自己读出是哪一行、什么毛病，而不是复制粘贴去问别人。
+  <b>这一条比记住十个语法点有用得多。</b>
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="01-数字和字.html">第 1 部分 · 数字和字 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

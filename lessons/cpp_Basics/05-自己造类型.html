@@ -1,0 +1,4105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 5 部分 · 自己造类型 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a class="active" href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html" aria-current="page">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 5 部分 · 自己造类型</div>
+  <a class="toc-l" href="#l5-1"><span class="n">5.1</span>struct：把几个东西捆在一起</a>
+  <a class="toc-sub" href="#s5-1-1">一个人，三样东西</a>
+  <a class="toc-sub" href="#s5-1-2">把它们捆成一个盒子</a>
+  <a class="toc-sub" href="#s5-1-3">一排盒子，每盒装一整份</a>
+  <a class="toc-sub" href="#e5-1">例题：一张三个人的名单</a>
+  <a class="toc-sub" href="#s5-1-4">练习</a>
+  <a class="toc-l" href="#l5-2"><span class="n">5.2</span>class：让盒子自己会干活</a>
+  <a class="toc-sub" href="#s5-2-1">打印这件事，该住在哪儿</a>
+  <a class="toc-sub" href="#s5-2-2">函数能住进盒子里</a>
+  <a class="toc-sub" href="#s5-2-3">struct 和 class，差的到底是什么</a>
+  <a class="toc-sub" href="#e5-2">例题：打印的时候顺便说一句</a>
+  <a class="toc-sub" href="#s5-2-4">练习</a>
+  <a class="toc-l" href="#l5-3"><span class="n">5.3</span>构造函数、析构函数、private、this</a>
+  <a class="toc-sub" href="#s5-3-1">对象出生的时候，里面是什么</a>
+  <a class="toc-sub" href="#s5-3-2">构造函数：出生时自动跑的那一段</a>
+  <a class="toc-sub" href="#s5-3-3">对象死的时候：析构函数</a>
+  <a class="toc-sub" href="#s5-3-4">把数据藏起来</a>
+  <a class="toc-sub" href="#s5-3-5">名字撞上了：this</a>
+  <a class="toc-sub" href="#e5-3">例题：名单短下来了</a>
+  <a class="toc-sub" href="#s5-3-6">练习</a>
+  <a class="toc-l" href="#l5-4"><span class="n">5.4</span>继承：让一个类基于另一个类</a>
+  <a class="toc-sub" href="#s5-4-1">研究生也是学生</a>
+  <a class="toc-sub" href="#s5-4-2">冒号后面写父类名</a>
+  <a class="toc-sub" href="#s5-4-3">父类那部分，谁来装</a>
+  <a class="toc-sub" href="#s5-4-4">出生有先后，死亡也有先后</a>
+  <a class="toc-sub" href="#s5-4-5">子类改掉父类的做法</a>
+  <a class="toc-sub" href="#s5-4-6">virtual：父类引用指着子类对象</a>
+  <a class="toc-sub" href="#s5-4-7">override：让编译器替你盯着</a>
+  <a class="toc-sub" href="#s5-4-8">protected：给子类留的那一档</a>
+  <a class="toc-sub" href="#e5-4">例题：名单里多了一种人</a>
+  <a class="toc-sub" href="#s5-4-9">练习</a>
+  <a class="toc-l" href="#l5-5"><span class="n">5.5</span>【综合练习二·类版】把找最小值装进 MyClass</a>
+  <a class="toc-sub" href="#s5-5-1">先把题目看清楚</a>
+  <a class="toc-sub" href="#s5-5-2">版本一：照题目写</a>
+  <a class="toc-sub" href="#s5-5-3">版本二：数据也住进盒子里</a>
+  <a class="toc-sub" href="#s5-5-4">自己给自己出几组输入</a>
+  <a class="toc-sub" href="#s5-5-5">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 5 部分</div>
+  <h1>自己造类型</h1>
+  <p class="part-lead">
+    前面四部分，用的全是 C++ 已经给你准备好的东西：<code>int</code>、
+    <code>double</code>、<code>string</code>、数组、<code>vector</code>。
+    这一部分反过来——<b>你自己造类型。</b>
+    把几样东西捆成一样，给它起个名字，然后像用 <code>int</code> 一样用它。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l5-1">
+<h2><span class="no">5.1</span>struct：把几个东西捆在一起</h2>
+
+<p>
+4.6 收尾那份程序里，一个 <code>vector&lt;int&gt;</code> 装了一堆成绩。
+可成绩只是一样东西。真要记一个人，你得记三样：
+<b>叫什么、学号多少、考了多少分。</b>
+这一课就干这一件事——把三样捆成一样。
+</p>
+
+<h3 id="s5-1-1">一个人，三样东西</h3>
+
+<p>
+名单上三个人。用第 4 部分学的东西，最直接的写法是开三排盒子：
+</p>
+
+<pre><code>std::string names[3] = {"小明", "小红", "小刚"};
+int ids[3] = {101, 102, 103};
+int scores[3] = {90, 85, 95};</code></pre>
+
+<p>
+「小明」的三样东西分别住在 <code>names[0]</code>、<code>ids[0]</code>、
+<code>scores[0]</code>。它们之间<b>什么关系都没有</b>——
+全靠一件事撑着：<b>你记得它们下标一样。</b>
+</p>
+
+<p>
+现在换个位置。老师说按成绩重排一下，你把第 0 个和第 2 个换过来：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string names[3] = {"小明", "小红", "小刚"};
+    int ids[3] = {101, 102, 103};
+    int scores[3] = {90, 85, 95};
+
+    std::string t1 = names[0];
+    names[0] = names[2];
+    names[2] = t1;
+
+    int t2 = scores[0];
+    scores[0] = scores[2];
+    scores[2] = t2;
+
+    // ids[0] 和 ids[2] 忘了换
+
+    for (int i = 0; i &lt; 3; i++) {
+        std::cout &lt;&lt; names[i] &lt;&lt; " " &lt;&lt; ids[i] &lt;&lt; " " &lt;&lt; scores[i] &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>编译干净，一个警告都没有，退出码 0。</b>打出来是：
+</p>
+
+<pre class="out" data-label="预期输出">小刚 101 95
+小红 102 85
+小明 103 90</pre>
+
+<p>
+看出来了吗——<b>小刚的学号是 101，小明的学号是 103。</b>
+这两个学号都错了，它们是从换之前那儿剩下来的。
+换名字的时候换了两个盒子，换成绩的时候换了两个盒子，学号那一排<b>没动</b>，
+于是它就跟名字那一排错开了。
+</p>
+
+<p>
+程序不知道这三排盒子是一伙的。在它眼里那就是三个互不相干的数组，
+你在第二个数组里少写两行，它凭什么管你。
+</p>
+
+<p>
+<b>「一个人」这个东西，在你的程序里根本不存在。</b>
+存在的是三排分开的盒子，是你脑子里那个「它们下标一样」的约定
+在替它们维持关系。约定这种东西，写的时候记得，改的时候就忘了。
+</p>
+
+<h3 id="s5-1-2">把它们捆成一个盒子</h3>
+
+<p>
+C++ 有一个办法，能让你真的造出「一个人」这样东西：
+</p>
+
+<pre><code>struct Student {
+    std::string name;
+    int id;
+    int score;
+};</code></pre>
+
+<p>
+<code>struct</code> 是「造一个新类型」的意思。这三行读作：
+</p>
+
+<p>
+<b>有一种东西，叫 <code>Student</code>；它里面装着三样：
+一样叫 <code>name</code>，是 <code>string</code>；
+一样叫 <code>id</code>，是 <code>int</code>；
+一样叫 <code>score</code>，是 <code>int</code>。</b>
+</p>
+
+<p>
+末尾那个分号别忘。它不是可有可无的装饰——<b>大括号后面那个
+<code>;</code> 是整个定义的一部分。</b>漏了的话，报错会指到你后面好几行去，
+看着像别的地方出了问题（0.3 里见过这种「指着别处」的报错）。
+</p>
+
+<p>
+造出来之后，它用起来和 <code>int</code> 是一回事：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student a;
+
+    a.name = "小明";
+    a.id = 101;
+    a.score = 90;
+
+    std::cout &lt;&lt; a.name &lt;&lt; " " &lt;&lt; a.id &lt;&lt; " " &lt;&lt; a.score &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90</pre>
+
+<p>
+新东西只有一个：<b>那个点。</b>
+<code>a.name</code> 读作「<code>a</code> 的 <code>name</code>」。
+点号左边是一个 <code>Student</code>，右边是它里面装着的那样东西。
+</p>
+
+<p>
+整个程序里最重要的其实是第 9 行那句
+<code>Student a;</code>——
+<b>它跟 <code>int a;</code> 是同一个句式。</b>
+你现在有了一个自己造的类型，而且它跟 <code>int</code> 平起平坐。
+</p>
+
+<h3 id="s5-1-3">一排盒子，每盒装一整份</h3>
+
+<p>
+既然 <code>Student</code> 和 <code>int</code> 平起平坐，
+那第 4 部分那些写法就全都用得上。比如开一排：
+</p>
+
+<pre><code>Student s[3];      // 三个学生</code></pre>
+
+<p>
+访问里面某一个人的某一样东西，就是两个点号的事：
+</p>
+
+<pre><code>s[0].name = "小明";
+s[0].id = 101;
+
+s[1].name = "小红";
+s[1].id = 102;</code></pre>
+
+<p>
+<code>s[0]</code> 先取出第 0 个学生，
+<code>s[0].name</code> 再取出他的姓名。
+<b>顺序是「先找到人，再找他的东西」，别反过来。</b>
+</p>
+
+<p>
+还有一件第 4 部分留下来的好东西，在这儿照样管用：
+</p>
+
+<pre><code>Student a = s[0];      // 整个复制过去</code></pre>
+
+<p>
+4.4 讲交换两个元素的时候，你用的是「多开一个盒子先存着」。
+当时那个盒子里装的是 <code>int</code>。现在装 <code>Student</code>——
+三个盒子还是那三个盒子，写法一个字都没变。
+这是 <code>struct</code> 最值钱的地方：<b>盒子里装的东西变大了，
+可操作它们的写法不用跟着变。</b>
+</p>
+
+<div class="eg" id="e5-1">
+  <div class="eg-h">例题 · 一张三个人的名单</div>
+  <p>
+    把上面几样凑一起——<code>struct</code> 加数组加遍历：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student s[3];
+
+    s[0].name = "小明";
+    s[0].id = 101;
+    s[0].score = 90;
+
+    s[1].name = "小红";
+    s[1].id = 102;
+    s[1].score = 85;
+
+    s[2].name = "小刚";
+    s[2].id = 103;
+    s[2].score = 95;
+
+    for (int i = 0; i &lt; 3; i++) {
+        std::cout &lt;&lt; s[i].name &lt;&lt; " " &lt;&lt; s[i].id &lt;&lt; " " &lt;&lt; s[i].score &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+小刚 103 95</pre>
+
+  <p>
+    跟这一课开头那份反例摆在一起看，差别在这儿：
+  </p>
+
+  <pre><code>三排数组版              捆起来之后
+------------------      ------------------
+names[i]                s[i].name
+ids[i]                  s[i].id
+scores[i]               s[i].score
+
+想拿一个人的全部，    想拿一个人的全部，
+得写三个下标           写一个 s[i] 就够了</code></pre>
+
+  <p>
+    <b>三个下标的意思是你得同时记住三件事。一个下标的意思是只要记住一件。</b>
+  </p>
+
+  <p>
+    还有一个不那么明显的好处：现在「一个学生」能整个递出去了。
+    三排数组那会儿，你想把「一个学生」递给别的地方，
+    得递三个参数，还得保证它们仨不错位。
+    现在它就是一样东西，<b>像递一个 <code>int</code> 那样递它就行。</b>
+    这一点在 5.2 会变得很重要。
+  </p>
+</div>
+
+<h3 id="s5-1-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 5-1</div>
+  <p>
+    定义一个 <code>struct Point</code>，里面装两个 <code>int</code>：
+    <code>x</code> 和 <code>y</code>。
+    然后开一个 <code>Point</code>，把它的 <code>x</code> 设成 3、
+    <code>y</code> 设成 4，打出来。
+  </p>
+  <pre class="out" data-label="预期输出">3 4</pre>
+  <p>
+    提示：这题就是本课那个 <code>Student</code> 的简化版——
+    两样东西，全是 <code>int</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两个 <code>int</code>，装进一个叫 <code>Point</code> 的盒子里：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+struct Point {
+    int x;
+    int y;
+};
+
+int main() {
+    Point p;
+
+    p.x = 3;
+    p.y = 4;
+
+    std::cout &lt;&lt; p.x &lt;&lt; " " &lt;&lt; p.y &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        看 <code>main</code> 那四行：<code>p</code> 是一个盒子，
+        <code>p.x</code> 是它里面那一格。
+        <b>跟用一个 <code>int</code> 没什么两样，只是名字前面多了个
+        <code>p.</code></b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-2</div>
+  <p>
+    先读一个整数 <code>n</code>，表示有几个人；
+    接着读进来 <code>n</code> 个人的姓名、学号、成绩；
+    最后按读进来的顺序，一行一个，原样打出去。
+  </p>
+  <p>输入 <code>3 小明 101 90 小红 102 85 小刚 103 95</code>。</p>
+  <pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+小刚 103 95</pre>
+  <p>
+    提示：读的时候是三样一起读：
+    <code>std::cin &gt;&gt; s[i].name &gt;&gt; s[i].id &gt;&gt; s[i].score;</code>。
+    每一段之间用空格隔开就行，<code>cin</code> 自己会跳过去。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>读的时候也是三样连着读：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+
+    Student s[100];
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; s[i].name &gt;&gt; s[i].id &gt;&gt; s[i].score;
+    }
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cout &lt;&lt; s[i].name &lt;&lt; " " &lt;&lt; s[i].id &lt;&lt; " " &lt;&lt; s[i].score &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        一句 <code>cin</code> 读三样，中间的空格它自己跳过去——
+        跟单读一个 <code>int</code> 时一样，你不用管空格。
+      </p>
+      <p>
+        注意循环里那三处是 <code>s[i].name</code>、<code>s[i].id</code>、
+        <code>s[i].score</code>：<b>先找到第 i 个盒子，再点它里面那一格。</b>
+        两个下标是同一个 <code>i</code>，所以名字和学号不可能错开——
+        这正是 5.1 开头那三排数组做不到的事。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-3</div>
+  <p>
+    名单还是那三个人（小明 90、小红 85、小刚 95），
+    找出成绩最高的那个，<b>只把他的姓名打出来</b>。
+  </p>
+  <pre class="out" data-label="预期输出">小刚</pre>
+  <p>
+    提示：这就是 4.3 那个擂台，一个字都不用改思路——
+    只是擂台上站的不再是一个分数，是<b>一整个学生</b>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>跟 4.3 那个擂台摆在一起看，只有一处换了：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student s[3];
+
+    s[0].name = "小明";
+    s[0].id = 101;
+    s[0].score = 90;
+
+    s[1].name = "小红";
+    s[1].id = 102;
+    s[1].score = 85;
+
+    s[2].name = "小刚";
+    s[2].id = 103;
+    s[2].score = 95;
+
+    int best = 0;
+    for (int i = 1; i &lt; 3; i++) {
+        if (s[i].score &gt; s[best].score) {
+            best = i;
+        }
+    }
+
+    std::cout &lt;&lt; s[best].name &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        4.3 里比的是 <code>a[i] &gt; a[best]</code>，
+        这里比的是 <code>s[i].score &gt; s[best].score</code>。
+        <b>擂台上站的不再是一个分数，是一整个学生；比的还是分数那一样。</b>
+      </p>
+      <p>
+        最后打的是 <code>s[best].name</code>——
+        记住的是<b>位置</b>，想要哪一样，就从那个位置上取哪一样。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-4</div>
+  <p>
+    名单还是那三个人。把第 0 个和第 2 个学生<b>整个换过来</b>，
+    然后把三个人打一遍。
+  </p>
+  <pre class="out" data-label="预期输出">小刚 103 95
+小红 102 85
+小明 101 90</pre>
+  <p>
+    提示：对照本课开头那份反例的输出——
+    那一份换完是 <code>小刚 101</code>，学号落下了。
+    这一份里学号应该跟着人走，你自己核一遍。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>三个盒子照样用，只是这回盒子里装的是整个学生：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student s[3];
+
+    s[0].name = "小明";
+    s[0].id = 101;
+    s[0].score = 90;
+
+    s[1].name = "小红";
+    s[1].id = 102;
+    s[1].score = 85;
+
+    s[2].name = "小刚";
+    s[2].id = 103;
+    s[2].score = 95;
+
+    Student t = s[0];
+    s[0] = s[2];
+    s[2] = t;
+
+    for (int i = 0; i &lt; 3; i++) {
+        std::cout &lt;&lt; s[i].name &lt;&lt; " " &lt;&lt; s[i].id &lt;&lt; " " &lt;&lt; s[i].score &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>Student t = s[0];</code> 这一句就把名字、学号、成绩
+        <b>三样一起搬走</b>了。
+      </p>
+      <p>
+        要是还像 5.1 开头那样分三排存，换两个人就得换三遍，
+        每一遍都得自己记着下标别写歪。<b>捆成一个盒子之后，
+        这些东西自己跟着走。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能自己造一个类型了，而且能把它当 <code>int</code> 用——
+  开一个、开一排、整个复制、整个递出去。
+  再碰上「这几样东西总是一起出现」的场面，你会想到给它们造个盒子，
+  而不是开三排数组、靠下标硬对齐。
+  下一课把这个盒子往前推一步：<b>让它自己会干活。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l5-2">
+<h2><span class="no">5.2</span>class：让盒子自己会干活</h2>
+
+<p>
+5.1 那份名单程序里，打印那一行挺长：
+</p>
+
+<pre><code>std::cout &lt;&lt; s[i].name &lt;&lt; " " &lt;&lt; s[i].id &lt;&lt; " " &lt;&lt; s[i].score &lt;&lt; std::endl;</code></pre>
+
+<p>
+写一遍还行，写三遍就烦了。3.2 教过办法——把它包成一个函数：
+</p>
+
+<h3 id="s5-2-1">打印这件事，该住在哪儿</h3>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+void printStudent(Student s) {
+    std::cout &lt;&lt; s.name &lt;&lt; " " &lt;&lt; s.id &lt;&lt; " " &lt;&lt; s.score &lt;&lt; std::endl;
+}
+
+int main() {
+    Student a;
+    a.name = "小明";
+    a.id = 101;
+    a.score = 90;
+
+    printStudent(a);
+
+    return 0;
+}</code></pre>
+
+<p>
+能用。但看调用那一行：
+</p>
+
+<pre><code>printStudent(a);</code></pre>
+
+<p>
+你得<b>把 <code>a</code> 递进去</b>。函数住在盒子外面，
+它要看盒子里的东西，只能你递给它。而且 3.4 讲过，
+这么递进去的是一个<b>复印件</b>——函数里改 s，外面的 a 不会变。
+</p>
+
+<p>
+可「打印一个学生」这件事，<b>除了学生它什么都不干。</b>
+那它为什么不能住在学生里面？
+</p>
+
+<h3 id="s5-2-2">函数能住进盒子里</h3>
+
+<p>
+能。把那个函数原样搬进 <code>struct</code> 的大括号里面就行：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int id;
+    int score;
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a;
+    a.name = "小明";
+    a.id = 101;
+    a.score = 90;
+
+    a.print();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90</pre>
+
+<p>
+跟上面那份比，两处不一样，都在 <code>struct</code> 那一段里：
+</p>
+
+<p>
+<b>一、</b><code>void print()</code> 这四行现在写在大括号里面了。
+</p>
+
+<p>
+<b>二、</b>函数体里写的是 <code>name</code>、<code>id</code>、<code>score</code>，
+<b>前面没有 <code>s.</code></b>。
+</p>
+
+<p>
+第二点是这一课真正的新东西。<code>print()</code> 不用接收一个学生——
+<b>它自己就是那个学生的一部分。</b>
+它读的 <code>name</code>，就是它所在那个盒子里装着的 <code>name</code>。
+</p>
+
+<p>
+调用也跟着变了：
+</p>
+
+<pre><code>printStudent(a);      →      a.print();</code></pre>
+
+<p>
+一个是「<b>打印学生 <code>a</code></b>」——把 <code>a</code> 递出去，交给外人办。
+一个是「<b><code>a</code>，打印你自己</b>」——让盒子自己动手。
+右边那个读起来，主语从函数变成了盒子。
+</p>
+
+<p>
+名字也跟着换了：<code>a.print()</code> 和 <code>b.print()</code> 写起来一模一样，
+可干的事不一样——<b>打的是各自盒子里的东西。</b>
+同一个 <code>print()</code>，它在哪个盒子里，就打印哪个盒子。
+</p>
+
+<p>
+这有个正式名字：<b>成员函数（member function）</b>。
+住在大括号里面的函数，就是这个类型的一个成员。
+<code>name</code>、<code>id</code>、<code>score</code> 是成员，
+<code>print</code> 也是成员——<b>成员就是「这个盒子里装着的东西」，
+不管它是数据还是函数。</b>
+</p>
+
+<h3 id="s5-2-3">struct 和 class，差的到底是什么</h3>
+
+<p>
+到现在为止用的都是 <code>struct</code>。可你翻别人的 C++ 代码，
+见到的基本都是 <code>class</code>：
+</p>
+
+<pre><code>class Student {
+    ...
+};</code></pre>
+
+<p>
+这两个词在 C++ 里只差一条。把上面那份里的 <code>struct</code>
+换成 <code>class</code>，别的什么都不动：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student a;
+
+    a.name = "小明";
+
+    std::cout &lt;&lt; a.name &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>编译不过了：</b>
+</p>
+
+<pre class="diag"><code>5.2-class-err.cpp: In function ‘int main()’:
+5.2-class-err.cpp:13:7: error: ‘std::string Student::name’ is private within this context
+   13 |     a.name = "小明";
+      |       ^~~~
+5.2-class-err.cpp:5:17: note: declared private here
+    5 |     std::string name;
+      |                 ^~~~
+5.2-class-err.cpp:15:20: error: ‘std::string Student::name’ is private within this context
+   15 |     std::cout &lt;&lt; a.name &lt;&lt; std::endl;
+      |                    ^~~~
+5.2-class-err.cpp:5:17: note: declared private here
+    5 |     std::string name;
+      |                 ^~~~
+</code></pre>
+
+<p>
+报错里那句话拆开读：
+</p>
+
+<pre><code>‘std::string Student::name’ is private within this context
+  ^^^^^^^^^^^ ^^^^^^^ ^^^^^^
+  它的类型     属于谁  哪一样      私有</code></pre>
+
+<p>
+意思是：<code>name</code> 是 <code>Student</code> 的<b>私有</b>成员，
+你（<code>main</code>）没资格碰。下面那句 <code>note</code> 更直接——
+<code>declared private here</code>，尖号指着第 5 行，
+说的是「<b>它就是在这一行被定成私有的</b>」。
+</p>
+
+<p>
+可你哪儿也没写 <code>private</code> 啊。
+</p>
+
+<p>
+这就是 <code>struct</code> 和 <code>class</code> 唯一的差别：
+</p>
+
+<pre><code>struct   里面默认全是 public  （公开的，谁都能碰）
+class    里面默认全是 private （私有的，只有自己人能碰）</code></pre>
+
+<p>
+<b>注意是「默认」。</b>你没写，它就按默认的来。
+写 <code>struct</code> 的时候默认是公开的，所以 5.1 一路畅通；
+换成 <code>class</code>，默认反过来，当场就拦。
+</p>
+
+<p>
+那就把默认改回来——在开头写一行 <code>public:</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a;
+    a.name = "小明";
+    a.id = 101;
+    a.score = 90;
+
+    a.print();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90</pre>
+
+<p>
+这次过了，输出跟 <code>struct</code> 那版一模一样。
+</p>
+
+<p>
+<code>public:</code> 后面那个冒号别漏。它<b>不是一句命令，是一个标签</b>——
+「从这儿往下，都是公开的」。它一直管到下一个标签出现为止
+（后面还会见到 <code>private:</code>，写法一样）。
+</p>
+
+<div class="aside tip">
+<b>那到底该写哪个</b>
+<p>
+两个都能用，写出来的程序都能跑，这一课到这里为止它们没有区别。
+</p>
+<p>
+实际写 C++ 的时候：只是把几样数据凑一块儿的，
+比如「一个点」「一条边」，写 <code>struct</code> 的不少；
+带一堆函数、要管住自己数据的，基本都写 <code>class</code>，
+然后在开头来一行 <code>public:</code>。
+</p>
+<p>
+<b>你以后看别人的代码，见到的会是 <code>class</code>。</b>
+所以后面几课我们都写 <code>class</code>。
+</p>
+</div>
+
+<div class="eg" id="e5-2">
+  <div class="eg-h">例题 · 打印的时候顺便说一句</div>
+  <p>
+    名单上三个人，打出来的时候顺便标一句及格没有：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    bool isPass() {
+        return score &gt;= 60;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; score &lt;&lt; " ";
+        if (isPass()) {
+            std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+        } else {
+            std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+        }
+    }
+};
+
+int main() {
+    Student s[3];
+
+    s[0].name = "小明";
+    s[0].score = 90;
+
+    s[1].name = "小红";
+    s[1].score = 55;
+
+    s[2].name = "小刚";
+    s[2].score = 77;
+
+    for (int i = 0; i &lt; 3; i++) {
+        s[i].print();
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">小明 90 及格
+小红 55 不及格
+小刚 77 及格</pre>
+
+  <p>
+    两个地方值得停一下。
+  </p>
+
+  <p>
+    <b>一、成员函数也能交回东西。</b><code>bool isPass()</code> 跟 3.2 学的函数一样：
+    括号里收什么、前面写交回什么，规矩完全没变，只是它住在盒子里。
+  </p>
+
+  <p>
+    <b>二、<code>print()</code> 里写了 <code>isPass()</code>，
+    前面也没有 <code>s.</code></b>。
+    它俩住在同一个盒子里，互相说话不用点名——
+    <code>print()</code> 里的 <code>isPass()</code>，说的就是「我这个盒子的
+    <code>isPass()</code>」。
+  </p>
+
+  <p>
+    这就是「把数据和操作它的函数捆在一起」的具体样子：
+    <code>score</code> 住在盒子里，<code>isPass()</code> 也住在盒子里，
+    <code>print()</code> 也在。<b>它们离得最近，谁也不用把谁递进来。</b>
+  </p>
+</div>
+
+<h3 id="s5-2-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 5-5</div>
+  <p>
+    给练习 5-1 那个 <code>Point</code> 加一个成员函数
+    <code>print()</code>，然后把 <code>p.print()</code> 打出来。
+  </p>
+  <pre class="out" data-label="预期输出">3 4</pre>
+  <p>
+    提示：函数体里写 <code>x</code> 和 <code>y</code>，前面别加 <code>p.</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>把 <code>print</code> 搬进盒子里：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+struct Point {
+    int x;
+    int y;
+
+    void print() {
+        std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Point p;
+
+    p.x = 3;
+    p.y = 4;
+
+    p.print();
+
+    return 0;
+}</code></pre>
+      <p>
+        函数体里写的是光秃秃的 <code>x</code> 和 <code>y</code>，
+        <b>前面没有 <code>p.</code></b>——它就在盒子里面，它自己就是那个点。
+      </p>
+      <p>
+        外面调用的时候才要写 <code>p.print()</code>：
+        <b>先点出是哪个盒子，再让它干活。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-6</div>
+  <p>
+    给 <code>Student</code> 加一个成员函数 <code>isPass()</code>，
+    交回一个 <code>bool</code>：成绩到 60 就是及格。
+    然后在 <code>main</code> 里<b>直接调用它</b>，
+    按结果打印「及格」或「不及格」。
+  </p>
+  <p>小红 55 分。</p>
+  <pre class="out" data-label="预期输出">不及格</pre>
+  <p>
+    提示：<code>isPass()</code> 交回来的是个 <code>bool</code>，
+    所以能直接放进 <code>if</code> 的括号里——
+    跟 2.2 里写 <code>a &gt; b</code> 是同一个位置。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这一题看的不是结果，是那个调用：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Student {
+    std::string name;
+    int score;
+
+    bool isPass() {
+        return score &gt;= 60;
+    }
+};
+
+int main() {
+    Student s;
+    s.name = "小红";
+    s.score = 55;
+
+    if (s.isPass()) {
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>s.isPass()</code> 交回来一个 <code>bool</code>，
+        <b>跟调用一个普通函数一模一样，只是前面多了个 <code>s.</code></b>。
+        所以它能直接放进 <code>if</code> 的括号里——
+        那个位置本来就是留给一个是非题的。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-7</div>
+  <p>
+    给 <code>Student</code> 加一个成员函数
+    <code>void addScore(int d)</code>，把成绩加上 <code>d</code> 分。
+    小红原本 55 分，加 10 分平时分，然后打出来。
+  </p>
+  <pre class="out" data-label="预期输出">小红 65</pre>
+  <p>
+    提示：<code>addScore</code> 里那句 <code>score = score + d;</code>——
+    左边那个 <code>score</code> 是<b>盒子里那一个</b>，不是参数。
+    <code>d</code> 才是从外面递进来的。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><code>addScore</code> 改的是<b>自己那个</b> <code>score</code>：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int score;
+
+    void addScore(int d) {
+        score = score + d;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student s;
+    s.name = "小红";
+    s.score = 55;
+
+    s.addScore(10);
+    s.print();
+
+    return 0;
+}</code></pre>
+      <p>
+        看那一句 <code>score = score + d;</code>：
+        <b>左右两边那个 <code>score</code> 都是盒子里那一格</b>，
+        只有 <code>d</code> 是从外面递进来的。
+      </p>
+      <p>
+        至于改的是<b>哪一个</b>盒子，由外面那句
+        <code>s.addScore(10);</code> 说了算。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-8</div>
+  <p>
+    把 5.1 例题那份名单（<code>struct</code> 版、<code>cout</code> 写在循环里）
+    改一改：换成 <code>class</code>，给 <code>Student</code> 加一个
+    成员函数 <code>print()</code>，循环里改成调用它。
+  </p>
+  <pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+小刚 103 95</pre>
+  <p>
+    提示：要动的地方有两处——顶上那个关键字（<code>class</code> 得配一行
+    <code>public:</code>），还有循环里那句长长的 <code>cout</code>。
+    数据那几行一个字都不用改。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>跟 5.1 例题那份比，只动了三处：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student s[3];
+
+    s[0].name = "小明";
+    s[0].id = 101;
+    s[0].score = 90;
+
+    s[1].name = "小红";
+    s[1].id = 102;
+    s[1].score = 85;
+
+    s[2].name = "小刚";
+    s[2].id = 103;
+    s[2].score = 95;
+
+    for (int i = 0; i &lt; 3; i++) {
+        s[i].print();
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        顶上 <code>struct</code> 换成 <code>class</code> 并补一行
+        <code>public:</code>；那个长长的 <code>cout</code> 搬进
+        <code>print()</code>；<code>main</code> 里最后那个循环
+        从「每次写三样」变成了 <code>s[i].print();</code>。
+      </p>
+      <p>
+        那九行赋值一个字都没改。
+        <b>动的是「谁负责打」，不是「数据长什么样」。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能让一个类型自己会干活了。
+  该把哪个函数搬进盒子里，你也有了判断的依据——
+  <b>它是不是只围着这一样东西转。</b>
+  下一课解决这个盒子现在最大的毛病：<b>它出生的时候，里面是空的。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l5-3">
+<h2><span class="no">5.3</span>构造函数、析构函数、private、this</h2>
+
+<p>
+这一课三样东西，都是冲着 5.1 / 5.2 留下来的毛病去的。
+一个一个来。
+</p>
+
+<h3 id="s5-3-1">对象出生的时候，里面是什么</h3>
+
+<p>
+前面两课里，<code>Student</code> 都是这么用的：
+</p>
+
+<pre><code>Student a;
+a.name = "小明";
+a.id = 101;
+a.score = 90;</code></pre>
+
+<p>
+三行赋值，一行都不能少。少一行会怎样？
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+};
+
+int main() {
+    Student a;
+
+    std::cout &lt;&lt; a.id &lt;&lt; " " &lt;&lt; a.score &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>编译干净，一个警告都没有。</b>跑出来是这样(连续运行6次):
+</p>
+
+<pre class="out" data-label="实际输出">591103920 32766
+1388658272 32767
+-387367632 32766
+-1814972880 32766
+-1106362832 32766
+163683616 32764</pre>
+
+<p>
+<b>六行没有一行是一样的。</b>跟 4.2 那次读越界是同一回事：
+那两个格子里装着的是内存里剩下的旧东西，
+你的程序从没往那儿放过东西，它就把别人留下的读出来了。
+</p>
+
+<p>
+这里有条分界线，先记下来：<b>上面那些垃圾数，全是 <code>int</code> 打出来的。</b>
+盒子里那个 <code>name</code> 要是也打出来，你会发现它每次都是空的、
+一点都不随机——<code>std::string</code> 是个类，它自己带着一个
+「出生的时候先把自己收拾干净」的办法，没人碰它，它也不会是垃圾。
+<b>基本类型没这个待遇，类类型有。</b>
+这条线后面讲 <code>this</code> 的那一节会明说，到时候回来对一下。
+</p>
+
+<p>
+你可能觉得「那我记得填不就行了」。
+可这跟 5.1 开头那个「三排数组靠下标对齐」是同一种毛病——
+<b>全靠你记得。</b>名单上有三十个人，你就得记得三十遍。
+</p>
+
+<p>
+这事儿不该让我们操心。
+</p>
+
+<h3 id="s5-3-2">构造函数：出生时自动跑的那一段</h3>
+
+<p>
+C++ 有个办法：在类里写一个<b>跟类同名、前面什么交回类型都不写</b>的函数。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a("小明", 101, 90);
+
+    a.print();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90</pre>
+
+<p>
+这个函数叫<b>构造函数（constructor）</b>。三件事记住：
+</p>
+
+<p>
+<b>一、名字跟类名一模一样</b>，叫 <code>Student</code>。
+</p>
+
+<p>
+<b>二、前面不写交回什么</b>——连 <code>void</code> 都不写。
+它不是 <code>void print()</code> 那种句式，它就是光秃秃一个 <code>Student(...)</code>。
+</p>
+
+<p>
+<b>三、你不主动调用它。</b>
+</p>
+
+<p>
+第三条是关键。看 <code>main</code> 里那一行：
+</p>
+
+<pre><code>Student a("小明", 101, 90);</code></pre>
+
+<p>
+它跟 5.1 里那个 <code>Student a;</code> 是同一个句式，只是后面多了个括号。
+<b>括号里递进去的东西，就是给构造函数的参数。</b>
+它在你写下这一行的<b>那一刻</b>自动跑一遍——你没写
+<code>a.Student(...)</code>，也写不出来这么一句。
+</p>
+
+<p>
+所以构造函数的写法和调用都跟普通函数不一样。它只干一件事：
+<b>保证这个盒子被造出来的时候，里面不是空的。</b>
+</p>
+
+<h3 id="s5-3-3">对象死的时候：析构函数</h3>
+
+<p>
+构造函数管出生。反过来，C++ 里还有一个函数管<b>死亡</b>，叫
+<b>析构函数（destructor）</b>。
+</p>
+
+<p>
+写法跟构造函数几乎是照镜子：<b>类名前加一个 <code>~</code></b>，
+不写交回类型，也<b>不收参数</b>。
+</p>
+
+<pre><code>class Student {
+public:
+    std::string name;
+
+    Student(std::string n) {      // 出生时跑的那一段
+        name = n;
+        std::cout &lt;&lt; name &lt;&lt; " 报到" &lt;&lt; std::endl;
+    }
+
+    ~Student() {                  // 死的时候跑的那一段
+        std::cout &lt;&lt; name &lt;&lt; " 走了" &lt;&lt; std::endl;
+    }
+};</code></pre>
+
+<p>
+两个名字就差一个 <code>~</code>（键盘左上角那个波浪号）：
+<code>Student</code> 是构造函数，<code>~Student</code> 是析构函数。
+</p>
+
+<p>
+它什么时候跑？<b>对象活到头的时候。</b>
+局部对象（在一个函数里开的盒子）活到<b>那个函数结束</b>。看这份：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+
+    Student(std::string n) {
+        name = n;
+        std::cout &lt;&lt; name &lt;&lt; " 出生了" &lt;&lt; std::endl;
+    }
+
+    ~Student() {
+        std::cout &lt;&lt; name &lt;&lt; " 没了" &lt;&lt; std::endl;
+    }
+};
+
+void speak() {
+    Student t("临时同学");
+
+    std::cout &lt;&lt; t.name &lt;&lt; " 说了一句话" &lt;&lt; std::endl;
+}
+
+int main() {
+    Student a("小明");
+    Student c("小刚");
+
+    speak();
+
+    std::cout &lt;&lt; "main 要结束了" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 出生了
+小刚 出生了
+临时同学 出生了
+临时同学 说了一句话
+临时同学 没了
+main 要结束了
+小刚 没了
+小明 没了</pre>
+
+<p>
+八行，从上往下对着看：
+</p>
+
+<p>
+<b>前三行</b>：<code>main</code> 里开了 <code>a</code> 和 <code>c</code>，
+<code>speak()</code> 里开了 <code>t</code>。
+三个盒子都在，其中「临时同学」是最后出生的。
+</p>
+
+<p>
+<b>第四、五行</b>：<code>speak()</code> 里那句话打完，函数体走完，
+<code>t</code> 就地销毁。<b>你没写过任何一句「删掉 t」</b>——它到点了，自己走。
+</p>
+
+<p>
+<b>第六行</b>：<code>main</code> 打出「main 要结束了」。
+</p>
+
+<p>
+<b>最后两行</b>：<code>main</code> 也到头了。
+<code>c</code> 比 <code>a</code> 晚出生，却比 <code>a</code> 先走——
+<b>同一个函数里开的盒子，死的顺序跟出生正好倒过来。</b>
+</p>
+
+<p>
+「临时同学」排在所有人前面走，是因为它生在 <code>speak()</code> 里面：
+<b>谁生在里层，谁先走。</b>
+</p>
+
+<p>
+跟构造函数一样，它也不是你叫的，是 C++ 自己在那一刻叫的。
+（硬写一句 <code>a.~Student();</code> 语法上确实能过，
+但那等于趁人还活着就把葬礼办了，等它真到点的时候 C++ 还会再办一次。
+没人这么写。）
+</p>
+
+<p>
+两条跟构造函数不一样的地方：
+</p>
+
+<p>
+<b>一、析构函数不收参数</b>，所以一个类里<b>只有一个</b>析构函数。
+构造函数可以有好几个版本（收三个参数的、收两个的），析构函数不行。
+</p>
+
+<p>
+<b>二、你不写，编译器就给你补一个空的。</b>
+5.1 到现在那些类一个都没写，照样好好的，就是这么回事。
+</p>
+
+<p>
+那什么时候要自己写？<b>对象活着的时候从外面拿了东西的时候。</b>
+比如问系统要了一块内存、打开了一个文件。这些东西不在盒子里面，
+盒子没了它们也不会跟着没——得有人在盒子消失之前把它们还回去。
+这种「拿的时候记一笔，走的时候还回去」的事，就写在析构函数里。
+</p>
+
+<p>
+（要内存那件事得用到 6.3 的指针，到时候你会回来找这一段。）
+</p>
+
+<h3 id="s5-3-4">把数据藏起来</h3>
+
+<p>
+现在回头收拾 5.2 留下的一件事。
+5.2 说过 <code>class</code> 里面默认是私有的，我们当时加了一行
+<code>public:</code> 把默认改回来，然后就接着往下写了。
+</p>
+
+<p>
+能不能反过来用？<b>把数据设成私有的，不给外面碰。</b>
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+private:
+    std::string name;
+    int score;
+
+public:
+    Student(std::string n, int s) {
+        name = n;
+        score = s;
+    }
+
+    int getScore() {
+        return score;
+    }
+};
+
+int main() {
+    Student a("小明", 90);
+
+    std::cout &lt;&lt; a.getScore() &lt;&lt; std::endl;
+
+    a.score = 100;
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>最后那一行编译不过：</b>
+</p>
+
+<pre class="diag"><code>5.3-private-err.cpp: In function ‘int main()’:
+5.3-private-err.cpp:25:7: error: ‘int Student::score’ is private within this context
+   25 |     a.score = 100;
+      |       ^~~~~
+5.3-private-err.cpp:7:9: note: declared private here
+    7 |     int score;
+      |         ^~~~~
+5.3-private-err.cpp:25:7: note: field ‘int Student::score’ can be accessed via ‘int Student::getScore()’
+   25 |     a.score = 100;
+      |       ^~~~~
+      |       getScore()
+</code></pre>
+
+<p>
+注意最后那三行。编译器不光是拦你，它还在告诉你：
+</p>
+
+<pre><code>field ‘int Student::score’ can be accessed via ‘int Student::getScore()’
+                                              ^^^^^^^^^^^^
+                                        「你可以走 getScore() 那道门」</code></pre>
+
+<p>
+这个盒子留了门，你偏要翻墙。
+</p>
+
+<p>
+那这道门留着干嘛？看这一份：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+private:
+    std::string name;
+    int score;
+
+public:
+    Student(std::string n, int s) {
+        name = n;
+        score = s;
+    }
+
+    int getScore() {
+        return score;
+    }
+
+    void addScore(int d) {
+        score = score + d;
+        if (score &gt; 100) {
+            score = 100;
+        }
+    }
+};
+
+int main() {
+    Student a("小明", 95);
+
+    a.addScore(10);
+
+    std::cout &lt;&lt; a.getScore() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">100</pre>
+
+<p>
+小明原来 95 分，加了 10 分平时分——<b>95 + 10 该是 105</b>。
+可成绩最高就是 100，<code>addScore</code> 里那句
+<code>if (score &gt; 100) { score = 100; }</code> 把它封住了。
+</p>
+
+<p>
+<b>这就是 private 值钱的地方。</b>成绩藏起来以后，
+外面想改它只有一条路：走 <code>addScore</code>。
+而这道门是你写的，你想在里面加什么检查就加什么检查。
+</p>
+
+<p>
+要是 <code>score</code> 是公开的，外面来一句 <code>a.score = 105;</code>，
+谁也拦不住——<b>而且写那一行的人可能是三个月后的你自己。</b>
+你管得住今天写的代码，管不住以后随手改的那一下。
+</p>
+
+<p>
+这一套有个名字，叫<b>封装（encapsulation）</b>：
+<b>数据藏起来，只留几道门，门由盒子里自己管。</b>
+外面想知道成绩，走 <code>getScore()</code>；想加分，走 <code>addScore()</code>。
+</p>
+
+<h3 id="s5-3-5">名字撞上了：this</h3>
+
+<p>
+写构造函数的时候，很容易起这样的参数名：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+private:
+    std::string name;
+    int score;
+
+public:
+    Student(std::string name, int score) {
+        name = name;
+        score = score;
+    }
+
+    void print() {
+        std::cout &lt;&lt; "[" &lt;&lt; name &lt;&lt; "] " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a("小明", 90);
+
+    a.print();
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>看着挺对，其实什么也没干。</b>编译干净，一个警告都没有。连跑四遍：
+</p>
+
+<pre class="out" data-label="实际输出">[] -1701915728
+[] 2009293792
+[] -740887328
+[] -774683600</pre>
+
+<p>
+名字是空的，分数那几位数字每遍都不一样。
+两个格子看起来都空着，<b>可空的原因不一样</b>。
+先说分数：它跟这一课开头那份是同一种东西，
+那个格子从来没人往里放过东西。
+</p>
+
+<div class="aside warn">
+  <b>名字那个格子，是被管过的。</b>
+  <code>std::string</code> 是个类，它自己带一个默认构造函数。
+  <code>Student</code> 一出生，它就跑了一遍，把 <code>name</code>
+  稳稳装成一个空字符串——<b>换哪台机器、哪个编译器，它都是空的，不会崩。</b>
+  <code>int score</code> 就没这个待遇：基本类型没有构造函数，没人管它，
+  读出来才是内存里剩下的旧东西。
+  <b>这正好就是这一课在讲的那件事本身：构造函数会自己跑，你不写它也在。</b>
+</div>
+
+<p>
+为什么？<b>名字撞上了。</b>参数叫 <code>name</code>，成员也叫 <code>name</code>，
+函数体里那个 <code>name</code> 说的是<b>近的那个</b>，也就是参数。
+所以 <code>name = name;</code> 是「参数赋给参数」，
+成员那个 <code>name</code> 从头到尾一个字都没被碰过。
+（3.3 讲过的同名遮蔽，在这儿又撞上了。）
+</p>
+
+<p>
+加三个字符就分开了：
+</p>
+
+<pre><code>    Student(std::string name, int score) {
+        this-&gt;name = name;
+        this-&gt;score = score;
+    }</code></pre>
+
+<p>
+箭头左边是「我这个盒子的」，右边是递进来的参数：
+</p>
+
+<pre><code>this-&gt;score = score;
+^^^^^ 左边的   ^^^^^ 右边的
+我这个盒子的   参数</code></pre>
+
+<p>
+上面那份错的，改对一共要动两处：构造函数里这两行，
+还有 <code>print()</code> 里那对中括号——那份错的名字是空的，
+不加中括号，空名字打出来就是行首多一个空格，看不出来。
+跑出来是：
+</p>
+
+<pre class="out" data-label="预期输出">小明 90</pre>
+
+<p>
+<code>this</code> 就是「这个盒子自己」。
+<code>this-&gt;score</code> 读作「<b>我自己的</b> score」。
+加了箭头，两样东西就分得开了。
+</p>
+
+<p>
+在你现在用得到的范围里，<code>this</code> 就是干这个的：
+<b>分清楚说的是哪一个。</b>
+参数名跟成员名不起冲突的时候，你根本不用写它——
+所以你在别人代码里见到的 <code>this-&gt;</code> 也不多。
+</p>
+
+<div class="eg" id="e5-3">
+  <div class="eg-h">例题 · 名单短下来了</div>
+  <p>
+    5.1 例题那份名单，用上构造函数以后：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+private:
+    std::string name;
+    int id;
+    int score;
+
+public:
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student s[3] = {
+        Student("小明", 101, 90),
+        Student("小红", 102, 85),
+        Student("小刚", 103, 95)
+    };
+
+    for (int i = 0; i &lt; 3; i++) {
+        s[i].print();
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+小刚 103 95</pre>
+
+  <p>
+    跟 5.1 那份摆一起看，<code>main</code> 里这一段：
+  </p>
+
+  <pre><code>5.1 例题                        这一份
+--------------------------      --------------------------
+Student s[3];                   Student s[3] = {
+
+s[0].name = "小明";                 Student("小明", 101, 90),
+s[0].id = 101;                      Student("小红", 102, 85),
+s[0].score = 90;                    Student("小刚", 103, 95)
+                                };
+s[1].name = "小红";
+...（后面两组一样）</code></pre>
+
+  <p>
+    九行赋值变成三行构造。但真正的好处不是短，是这一条：
+  </p>
+
+  <p>
+    <b>这三行没法只写一半。</b>
+    你不可能造出一个「填了名字、忘了学号」的学生——
+    少给一个参数试试，编译器当场就拦，
+    报错里那句是 <code>candidate expects 3 arguments, 2 provided</code>
+    （要 3 个，给了 2 个）。
+  </p>
+
+  <p>
+    <b>构造函数把「别忘了填」这件事，从「靠你记得」变成了「编译器盯着」。</b>
+    这是它和 5.1 那个下标约定最根本的差别。
+  </p>
+</div>
+
+<h3 id="s5-3-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 5-9</div>
+  <p>
+    给 <code>Point</code> 加一个构造函数，收两个 <code>int</code>。
+    然后用 <code>Point p(3, 4);</code> 造一个点，打出来。
+  </p>
+  <pre class="out" data-label="预期输出">3 4</pre>
+  <p>
+    提示：参数名跟成员名一样的话，两句都得写 <code>this-&gt;</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>构造函数加上，那两行赋值就不用写了：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+struct Point {
+    int x;
+    int y;
+
+    Point(int x, int y) {
+        this-&gt;x = x;
+        this-&gt;y = y;
+    }
+
+    void print() {
+        std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Point p(3, 4);
+
+    p.print();
+
+    return 0;
+}</code></pre>
+      <p>
+        参数名跟成员名起成了一样的（<code>x</code> 对 <code>x</code>、
+        <code>y</code> 对 <code>y</code>），所以<b>两句都得写
+        <code>this-&gt;</code></b>。不写就是 5.3 里那份「参数赋给参数」——
+        编译干净、一个警告都没有，跑出来是垃圾数。
+      </p>
+      <p>
+        也可以给参数换个名字（<code>Point(int nx, int ny)</code>），
+        那就一个 <code>this-&gt;</code> 都不用写。两种都对。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-10</div>
+  <p>
+    把 <code>Point</code> 的 <code>x</code> 和 <code>y</code> 挪到
+    <code>private</code> 下面，再留两道门 <code>getX()</code> 和
+    <code>getY()</code>。造一个 <code>(3, 4)</code> 的点，从门里读出来打出去。
+  </p>
+  <pre class="out" data-label="预期输出">3 4</pre>
+  <p>
+    提示：写完之后，试着在 <code>main</code> 里加一句 <code>p.x = 5;</code>
+    编译一下，看看报什么。看完把那句删掉。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><code>x</code> 和 <code>y</code> 挪到 <code>private</code> 下面，
+      外面留两道门：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Point {
+private:
+    int x;
+    int y;
+
+public:
+    Point(int x, int y) {
+        this-&gt;x = x;
+        this-&gt;y = y;
+    }
+
+    int getX() {
+        return x;
+    }
+
+    int getY() {
+        return y;
+    }
+};
+
+int main() {
+    Point p(3, 4);
+
+    std::cout &lt;&lt; p.getX() &lt;&lt; " " &lt;&lt; p.getY() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        写完之后在 <code>main</code> 里加一句 <code>p.x = 5;</code> 试试，
+        报的就是 5.3 里那三行：<code>is private within this context</code>。
+        看完把那句删掉。
+      </p>
+      <p>
+        <code>getX()</code> 短得只有一句 <code>return</code>，看着像白写的。
+        <b>它值钱的地方不在今天，在以后</b>——
+        哪一天你想在「读坐标」这件事上加一句话，有一道门可以改；
+        没有门，就得去找散在程序各处的每一个 <code>p.x</code>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-11</div>
+  <p>
+    给 <code>Student</code> 加一个 <code>addScore(int d)</code>，
+    要求它守两条规矩：<b>传进来的负数直接不理</b>，
+    <b>加完超过 100 就封顶</b>。
+  </p>
+  <p>
+    小明原来 80 分。先 <code>addScore(-50)</code>，打一次；
+    再 <code>addScore(30)</code>，再打一次。
+  </p>
+  <pre class="out" data-label="预期输出">80
+100</pre>
+  <p>
+    提示：这题的重点不是语法，是<b>门该开在哪儿</b>。
+    分数藏在 <code>private</code> 里，外面就只能走这一道门，
+    两条规矩也就绕不过去。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两条规矩都写在门里：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+private:
+    std::string name;
+    int score;
+
+public:
+    Student(std::string name, int score) {
+        this-&gt;name = name;
+        this-&gt;score = score;
+    }
+
+    int getScore() {
+        return score;
+    }
+
+    void addScore(int d) {
+        if (d &lt; 0) {
+            return;
+        }
+        score = score + d;
+        if (score &gt; 100) {
+            score = 100;
+        }
+    }
+};
+
+int main() {
+    Student a("小明", 80);
+
+    a.addScore(-50);
+    std::cout &lt;&lt; a.getScore() &lt;&lt; std::endl;
+
+    a.addScore(30);
+    std::cout &lt;&lt; a.getScore() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        负数那句是 <code>return;</code>。
+        一个前面写 <code>void</code>（不交回东西）的函数，想提前走，
+        写这么一句就行——交回值的那种才需要 <code>return 值;</code>。
+      </p>
+      <p>
+        重点在这句：<code>score</code> 藏在 <code>private</code> 里，
+        外面想改分数<b>只有 <code>addScore</code> 一条路</b>。
+        两条规矩摆在这条路上，就再也绕不过去了。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-12</div>
+  <p>
+    写一个 <code>Rect</code>（矩形）：宽和高藏在 <code>private</code> 里，
+    构造函数收两个数，加一个 <code>area()</code> 交回面积，
+    再加一个 <code>print()</code>，把宽、高、面积打在一行。
+  </p>
+  <p>造一个宽 3、高 4 的矩形，打印出来。</p>
+  <pre class="out" data-label="预期输出">3 4 12</pre>
+  <p>
+    提示：这一课学的东西基本都用得上——<code>private</code> 藏数据、
+    构造函数负责出生、<code>area()</code> 交回一个数、
+    <code>print()</code> 里可以直接写 <code>area()</code>（同一家人，不用点名）。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这一课学的东西基本都用上了：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Rect {
+private:
+    int w;
+    int h;
+
+public:
+    Rect(int w, int h) {
+        this-&gt;w = w;
+        this-&gt;h = h;
+    }
+
+    int area() {
+        return w * h;
+    }
+
+    void print() {
+        std::cout &lt;&lt; w &lt;&lt; " " &lt;&lt; h &lt;&lt; " " &lt;&lt; area() &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Rect r(3, 4);
+
+    r.print();
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>w</code> 和 <code>h</code> 藏在 <code>private</code> 里，
+        外面拿不到宽高本身，只能问它面积是多少。
+      </p>
+      <p>
+        <code>print()</code> 里那句 <code>area()</code> 直接叫就行，
+        <b>不用写 <code>r.area()</code></b>——它俩是一家人，
+        住在同一个盒子里，互相看得见。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能写出一个「出生就是完整的」的盒子了，
+  也知道该把什么藏起来、该留哪几道门。
+  <b>从这一课起，一个类型里只有数据、没有规矩，你会觉得少了点什么。</b>
+  下一课让一个类站在另一个类肩上：两个类有一大半是一样的，
+  不用抄两遍。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l5-4">
+<h2><span class="no">5.4</span>继承：让一个类基于另一个类</h2>
+
+<p>
+5.1 治的是「三样东西散着放，靠下标对齐」。
+这一课治的是另一种散：<b>两个类有一大半是一模一样的，抄了两遍。</b>
+</p>
+
+<h3 id="s5-4-1">研究生也是学生</h3>
+
+<p>
+名单上现在不只有本科生，还有研究生。
+研究生也是学生——有名字、有学号、有成绩——只多一样：导师。
+</p>
+
+<p>
+不学新东西的话，只能这么写：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent {
+public:
+    std::string name;
+    int id;
+    int score;
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv) {
+        name = n;
+        id = i;
+        score = s;
+        advisor = adv;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a("小明", 101, 90);
+    a.print();
+
+    GradStudent b("小红", 102, 85, "王老师");
+    b.print();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+导师：王老师</pre>
+
+<p>
+<b>这份能跑，输出也对。</b>问题不在能不能跑，在这儿：
+</p>
+
+<pre><code>Student 有的      抄到 GradStudent 里的
+--------------    -------------------------
+name              name
+id                id
+score             score
+构造函数          GradStudent(n, i, s, adv)   多一个参数
+print()           print()                     多一行</code></pre>
+
+<p>
+五样东西抄了两遍，只有 <code>advisor</code> 是真正新的。
+</p>
+
+<p>
+抄两遍本身不难。难的是<b>以后要改的时候</b>。
+哪一天「学生」这件事要动一下——比如学号前面要加个 <code>#</code>——
+你就得记住两个地方都要改。改了本科生那份、忘了研究生那份，
+程序照样跑，只是名单里两种人从此长得不一样。
+</p>
+
+<p>
+这跟 4.1 那个「三排数组靠下标对齐」是同一个病：
+<b>该是一件事的东西，被拆成了好几份，然后靠你记得。</b>
+</p>
+
+<h3 id="s5-4-2">冒号后面写父类名</h3>
+
+<p>
+C++ 有个办法，能把「研究生<b>是一种</b>学生」这句话直接写进代码里：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }
+
+    void printAll() {
+        print();
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    GradStudent b("小红", 102, 85, "王老师");
+
+    b.printAll();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小红 102 85
+导师：王老师</pre>
+
+<p>
+跟上面那份比，<code>GradStudent</code> 里只剩下一个 <code>advisor</code>
+和一个 <code>printAll()</code>。那三样东西和 <code>print()</code> 呢？
+看那一行：
+</p>
+
+<pre><code>class GradStudent : public Student {
+                    ^
+                    冒号，读作「是一种」</code></pre>
+
+<p>
+写完之后，<code>GradStudent</code> <b>自动就有了</b> <code>Student</code>
+里的每一样东西：三个成员、构造函数、<code>print()</code>。
+一个字都不用抄。
+</p>
+
+<p>
+所以 <code>printAll()</code> 里那句光秃秃的 <code>print()</code> 才叫得出来——
+它就是 <code>Student</code> 那个，是继承来的。
+<b>你先在自己家里找，找不到就往上问一层。</b>
+（3.3 讲作用域、5.3 讲 <code>this</code> 时，说的「近的那个先」，是同一套规矩。）
+</p>
+
+<div class="aside tip">
+  <b>那一小截 <code>public</code> 是干嘛的。</b>
+  它说的是「父类公开的东西，继承过来也还是公开的」。
+  换个写法（默认的那种），继承来的东西从外面就点不到了——
+  <code>main</code> 里那句 <code>b.printAll()</code> 会编译不过，
+  可 <code>printAll()</code> 里面那句 <code>print()</code> 照样好使。
+  <b>现在记住一条就够：继承一律写 <code>public</code>。</b>
+  你在实际代码里见到的继承，基本都是这么写的。
+</div>
+
+<h3 id="s5-4-3">父类那部分，谁来装</h3>
+
+<p>
+上面那份里还有一处没讲。构造函数长这样：
+</p>
+
+<pre><code>    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }</code></pre>
+
+<p>
+研究生出生的时候，盒子里装着两摊东西：
+「学生那部分」和「导师那部分」。
+导师那部分归 <code>GradStudent</code> 自己（<code>advisor = adv;</code>），
+<b>学生那部分归 <code>Student</code> 管——得有人去叫它的构造函数。</b>
+</p>
+
+<p>
+冒号后面那句 <code>Student(n, i, s)</code> 就是干这个的。
+它排在函数体前面，先跑。
+</p>
+
+<p>
+不写会怎样？有人觉得「继承都继承了，父类那部分应该自动就装好了吧」，
+于是写成这样：
+</p>
+
+<pre><code>    GradStudent(std::string n, int i, int s, std::string adv) {
+        name = n;
+        id = i;
+        score = s;
+        advisor = adv;
+    }</code></pre>
+
+<p>
+<b>编译不过：</b>
+</p>
+
+<pre class="diag"><code>5.4-no-parent-ctor-err.cpp: In constructor ‘GradStudent::GradStudent(std::string, int, int, std::string)’:
+5.4-no-parent-ctor-err.cpp:21:63: error: no matching function for call to ‘Student::Student()’
+   21 |     GradStudent(std::string n, int i, int s, std::string adv) {
+      |                                                               ^
+5.4-no-parent-ctor-err.cpp:10:5: note: candidate: ‘Student::Student(std::string, int, int)’
+   10 |     Student(std::string n, int i, int s) {
+      |     ^~~~~~~
+5.4-no-parent-ctor-err.cpp:10:5: note:   candidate expects 3 arguments, 0 provided
+</code></pre>
+
+<p>
+第一句的意思：<b>它想给你造一个「不收参数」的 <code>Student</code>，
+可 <code>Student</code> 里没有这样的构造函数。</b>
+——5.3 写的那份是要三个参数的，它一个都凑不出来。
+</p>
+
+<p>
+为什么会想造一个不收参数的？因为每个对象出生前，
+<b>父类那部分总得先装好</b>，而你没告诉它该递什么进去，
+它就按最省事的来：什么都不递。
+可 <code>Student</code> 偏偏没有「什么都不用递」的那个版本，于是卡住。
+</p>
+
+<p>
+（报错里还列了 <code>Student(const Student&amp;)</code> 和
+<code>Student(Student&amp;&amp;)</code> 两条。那是编译器自己给每个类生成的、
+用来「照着一个已有的对象再造一个」的构造函数，这一课不用管。）
+</p>
+
+<p>
+最后一行的 <code>candidate expects 3 arguments, 0 provided</code>，
+跟 5.3 少给构造函数参数时报的是同一句：
+<b>要 3 个，给了 0 个。</b>
+</p>
+
+<h3 id="s5-4-4">出生有先后，死亡也有先后</h3>
+
+<p>
+上一段那份报错的根子，其实是件很简单的事：
+<b>父类那部分得先装好，子类那部分才有地方长。</b>
+</p>
+
+<p>
+所以出生是有顺序的：<b>先父类，后子类。</b>
+上一段那句 <code>Student(n, i, s)</code> 排在函数体前面先跑，
+就是这件事的写法。
+</p>
+
+<p>
+死亡是这个顺序倒过来：<b>先子类，后父类。</b>
+道理也一样——子类那部分是搭在父类那部分上面的，
+拆的时候只能从上面往下拆。
+</p>
+
+<p>
+光说没用，让程序自己打出来看：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class Student {
+public:
+    Student() {
+        std::cout &lt;&lt; "先装学生那部分" &lt;&lt; std::endl;
+    }
+
+    ~Student() {
+        std::cout &lt;&lt; "最后拆学生那部分" &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent() {
+        std::cout &lt;&lt; "再装研究生那部分" &lt;&lt; std::endl;
+    }
+
+    ~GradStudent() {
+        std::cout &lt;&lt; "先拆研究生那部分" &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    GradStudent b;
+
+    std::cout &lt;&lt; "—— 出生结束，下面是死亡 ——" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">先装学生那部分
+再装研究生那部分
+—— 出生结束，下面是死亡 ——
+先拆研究生那部分
+最后拆学生那部分</pre>
+
+<p>
+前两行：装的时候，学生那部分先进去，研究生那部分后进去。
+</p>
+
+<p>
+后两行：<code>main</code> 走到 <code>return 0;</code>，<code>b</code> 到点了。
+拆的时候<b>研究生那部分先走，学生那部分后走</b>，跟装的顺序正好相反。
+</p>
+
+<p>
+这份里 <code>GradStudent</code> 的构造函数没写冒号后面那句。
+为什么能省？因为这里的 <code>Student</code> 有一个<b>不收参数</b>的构造函数。
+上一段那份报错喊的「找不到」，找的就是这样一个函数——父类有了它，
+子类不写那句也接得上，编译器自己会去叫。
+</p>
+
+<h3 id="s5-4-5">子类改掉父类的做法</h3>
+
+<p>
+现在回头看那份抄两遍的代码里，还有一件没解决的事：
+研究生那个 <code>print()</code> 里多了一行「导师：」。
+继承版里我们躲开了它，另外起了个名字叫 <code>printAll()</code>。
+</p>
+
+<p>
+那如果我就是想让它叫 <code>print()</code> 呢？
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }
+
+    void print() {
+        Student::print();
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student a("小明", 101, 90);
+    a.print();
+
+    GradStudent b("小红", 102, 85, "王老师");
+    b.print();
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+导师：王老师</pre>
+
+<p>
+<code>GradStudent</code> 自己写了一个 <code>print()</code>，
+<b>父类那个就被盖住了</b>。
+<code>main</code> 里 <code>a.print()</code> 和 <code>b.print()</code>
+长得一模一样，各叫各的：
+<code>a</code> 是本科生，叫的是 <code>Student::print()</code>；
+<code>b</code> 是研究生，叫的是 <code>GradStudent::print()</code>。
+</p>
+
+<p>
+还是那条规矩：<b>近的那个先。</b>
+</p>
+
+<p>
+那 <code>GradStudent::print()</code> 里想叫父类那个怎么办？
+直接写 <code>print()</code> 会叫到自己，转不出来。得点名叫：
+</p>
+
+<pre><code>Student::print();</code></pre>
+
+<p>
+两个冒号，读作「<b><code>Student</code> 家里的那个 <code>print</code></b>」。
+跟 5.3 的 <code>this-&gt;</code> 是一回事，都是「指名道姓」：
+</p>
+
+<pre><code>3.3 变量遮蔽    名字一样的变量，近的赢
+5.3 this        写出 this-&gt; 指名道姓
+5.4 覆盖        名字一样的函数，近的赢
+                写 Student:: 指名道姓</code></pre>
+
+<p>
+同一件事，换了个地方又出现一次。
+</p>
+
+<h3 id="s5-4-6">virtual：父类引用指着子类对象</h3>
+
+<p>
+上面那份里 <code>a.print()</code> 和 <code>b.print()</code> 各叫各的，
+是因为 <code>a</code> 和 <code>b</code> 的盒子上写着什么，编译器一眼就看得见。
+</p>
+
+<p>
+现在换个写法：函数参数收的是「一个学生的引用」
+（跟 3.5 那个 <code>int&amp; x</code> 是一回事，只是这次收的是个对象）。
+</p>
+
+<pre><code>void show(Student&amp; s) {
+    s.print();
+}</code></pre>
+
+<p>
+递一个本科生进去，它打本科生那份。递一个研究生进去呢？
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }
+
+    void print() {
+        Student::print();
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+void show(Student&amp; s) {
+    s.print();
+}
+
+int main() {
+    Student a("小明", 101, 90);
+    GradStudent b("小红", 102, 85, "王老师");
+
+    show(a);
+    show(b);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90
+小红 102 85</pre>
+
+<p>
+<b>「导师：王老师」那行不见了。</b>
+</p>
+
+<p>
+递进去的明明是研究生，为什么叫的是学生那个 <code>print()</code>？
+因为写 <code>s.print()</code> 那一句的时候，编译器看得见的只有
+<code>s</code> 的类型——参数表上写着 <code>Student</code>，
+它就认定了叫 <code>Student::print()</code>。
+<b>你的代码里白纸黑字写着 <code>Student</code>，它凭什么猜你想叫别的。</b>
+</p>
+
+<p>
+那要是我就想让它按「实际递进来的是什么」来叫呢？
+在父类那个函数前面加一个 <code>virtual</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    virtual void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }
+
+    void print() {
+        Student::print();
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+void show(Student&amp; s) {
+    s.print();
+}
+
+int main() {
+    Student a("小明", 101, 90);
+    GradStudent b("小红", 102, 85, "王老师");
+
+    show(a);
+    show(b);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+导师：王老师</pre>
+
+<p>
+<b>只多了一个词，研究生那行回来了。</b>
+</p>
+
+<p>
+<code>virtual</code> 的意思是一句话：<b>这个函数，子类要是也写了一个一样的，
+那就以「实际递进来的那个对象」为准，别看我这个引用上写的是什么类型。</b>
+</p>
+
+<p>
+父类里加了 <code>virtual</code> 的函数叫<b>虚函数（virtual function）</b>；
+子类里再写一个名字一样的，就叫<b>覆盖（override）</b>掉它。
+</p>
+
+<p>
+这两份程序只差一个 <code>virtual</code>，输出差一行。
+摆在一起看，这就是它的全部作用。
+</p>
+
+<p>
+这一节管的是「怎么让覆盖真的生效」。下一节管另一件事：
+<b>怎么保证你真的覆盖上了。</b>
+</p>
+
+<h3 id="s5-4-7">override：让编译器替你盯着</h3>
+
+<p>
+<code>virtual</code> 让覆盖真的生效了。可覆盖这件事本身还有个更容易踩的坑：
+<b>你以为你覆盖上了，其实没有。</b>
+</p>
+
+<p>
+看这份。研究生里那个函数写成了 <code>Print</code>，大写 P——
+打字的时候手滑，或者脑子里想着别的事，很容易就这么写下去了。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+
+    Student(std::string n) {
+        name = n;
+    }
+
+    virtual void print() {
+        std::cout &lt;&lt; name &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent(std::string n) : Student(n) {}
+
+    void Print() {
+        std::cout &lt;&lt; name &lt;&lt; "（研究生）" &lt;&lt; std::endl;
+    }
+};
+
+void show(Student&amp; s) {
+    s.print();
+}
+
+int main() {
+    GradStudent b("小红");
+
+    show(b);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小红</pre>
+
+<p>
+<b>编译一声不吭，跑起来也不报错，就是结果不对。</b>
+</p>
+
+<p>
+<code>Print</code> 跟 <code>print</code> 不是一个名字，所以它
+<b>根本没盖住父类那个</b>，只是给研究生自己新加了一个函数，没人叫它。
+<code>show(b)</code> 叫的还是父类那个 <code>print</code>，
+「（研究生）」那三个字自然出不来。
+</p>
+
+<p>
+这种错最难查：程序编得过、跑得动，你盯着输出看半天，
+也想不到是「名字差了一个字母」。
+</p>
+
+<p>
+第二份就是同一个程序，只多写了一个 <code>override</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+
+    Student(std::string n) {
+        name = n;
+    }
+
+    virtual void print() {
+        std::cout &lt;&lt; name &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent(std::string n) : Student(n) {}
+
+    void Print() override {
+        std::cout &lt;&lt; name &lt;&lt; "（研究生）" &lt;&lt; std::endl;
+    }
+};
+
+void show(Student&amp; s) {
+    s.print();
+}
+
+int main() {
+    GradStudent b("小红");
+
+    show(b);
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>编译不过：</b>
+</p>
+
+<pre class="diag"><code>5.4-override-err.cpp:30:10: error: ‘void GradStudent::Print()’ marked ‘override’, but does not override
+   30 |     void Print() override {
+      |          ^~~~~
+</code></pre>
+
+<p>
+读一遍那句话：<b>「<code>Print()</code> 标着 <code>override</code>，
+可它谁也没盖住。」</b>
+</p>
+
+<p>
+<code>override</code> 是写给编译器的一句交代：<b>「我这是在盖父类那个函数，
+你替我核一下。」</b> 编译器一核，发现父类里没有叫 <code>Print</code>
+的虚函数，当场把这一处指出来。
+</p>
+
+<p>
+<b>区别就在时候：</b>不写 <code>override</code>，这个错要等到你盯着输出
+怀疑人生的时候才发现；写了它，这个错在按下编译的那一秒就送到你眼前。
+</p>
+
+<p>
+这两份摆在一起，就是 <code>override</code> 的全部意义：
+<b>它不改变程序干什么，它让「没改成」这件事没法悄悄溜过去。</b>
+</p>
+
+<h3 id="s5-4-8">protected：给子类留的那一档</h3>
+
+<p>
+5.3 讲过 <code>private</code>：数据设成私有的，外面碰不到。
+现在学了继承，有个问题得问清楚：<b>那子类碰得到吗？</b>
+</p>
+
+<p>
+试一下。把 5.3 那份改一改，让研究生自己去动成绩：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class Student {
+private:
+    int score;
+
+public:
+    Student(int s) {
+        score = s;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent(int s) : Student(s) {}
+
+    void addBonus() {
+        score = score + 5;
+    }
+
+    int getScore() {
+        return score;
+    }
+};
+
+int main() {
+    GradStudent b(85);
+
+    b.addBonus();
+
+    std::cout &lt;&lt; b.getScore() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>编译不过：</b>
+</p>
+
+<pre class="diag"><code>5.4-private-err.cpp: In member function ‘void GradStudent::addBonus()’:
+5.4-private-err.cpp:25:9: error: ‘int Student::score’ is private within this context
+   25 |         score = score + 5;
+      |         ^~~~~
+5.4-private-err.cpp:12:9: note: declared private here
+   12 |     int score;
+      |         ^~~~~
+</code></pre>
+
+<p>
+<code>private</code> 的意思是「<b>只有我自己家能用</b>」。
+在 C++ 眼里，<b>子类不算「我自己家」。</b>
+</p>
+
+<p>
+（报错里同样的两行还会再出现两次：这一行里 <code>score</code>
+出现了两次，读一次、写一次，各自报一遍；
+下面 <code>getScore()</code> 里还读了一次。一共三处。
+这里只贴第一处，一处一处改完，报错才会消。）
+</p>
+
+<p>
+那父类的数据，子类就是碰不到了？也不是——中间还有一档，
+叫 <b><code>protected</code></b>。把那个 <code>private</code> 换成它：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class Student {
+protected:
+    int score;
+
+public:
+    Student(int s) {
+        score = s;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent(int s) : Student(s) {}
+
+    void addBonus() {
+        score = score + 5;
+    }
+
+    int getScore() {
+        return score;
+    }
+};
+
+int main() {
+    GradStudent b(85);
+
+    b.addBonus();
+
+    std::cout &lt;&lt; b.getScore() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">90</pre>
+
+<p>
+<b>同样的程序，只换了一个关键字，这次编得过，打出 90。</b>
+<code>score</code> 设成 <code>protected</code> 之后，
+<code>GradStudent</code> 的成员函数里就能直接写 <code>score</code> 了。
+</p>
+
+<p>
+那它挡谁？<b>挡外面。</b>再改一处：去 <code>main</code> 里直接碰
+<code>score</code>。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class Student {
+protected:
+    int score;
+
+public:
+    Student(int s) {
+        score = s;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    GradStudent(int s) : Student(s) {}
+
+    void addBonus() {
+        score = score + 5;
+    }
+
+    int getScore() {
+        return score;
+    }
+};
+
+int main() {
+    GradStudent b(85);
+
+    b.score = 100;
+
+    return 0;
+}</code></pre>
+
+<p>
+<b>又编译不过：</b>
+</p>
+
+<pre class="diag"><code>5.4-protected-err.cpp: In function ‘int main()’:
+5.4-protected-err.cpp:41:7: error: ‘int Student::score’ is protected within this context
+   41 |     b.score = 100;
+      |       ^~~~~
+5.4-protected-err.cpp:17:9: note: declared protected here
+   17 |     int score;
+      |         ^~~~~
+</code></pre>
+
+<p>
+三档齐了，摆在一起看：
+</p>
+
+<pre><code>public      谁都能碰
+protected   子类能碰，外面不能
+private     只有自己家能碰，子类也不行</code></pre>
+
+<p>
+什么时候用哪一档？大致是这么分的：
+</p>
+
+<p>
+<b>数据</b>一般写 <code>private</code>，藏得最严实；子类确实要直接拿来用的，
+才放到 <code>protected</code>。外面想读想改，走你留出来的那些
+<code>public</code> 函数——像 5.3 那个 <code>getScore()</code>。
+</p>
+
+<p>
+<b>函数</b>分两种：给外面叫的写 <code>public</code>
+（<code>addBonus</code> 就是要给外面叫的）；只想给子类用的工具函数写
+<code>protected</code>。
+</p>
+
+<div class="eg" id="e5-4">
+  <div class="eg-h">例题 · 名单里多了一种人</div>
+  <p>
+    5.1 / 5.3 那份名单，现在加一个研究生：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    std::string name;
+    int id;
+    int score;
+
+    Student(std::string n, int i, int s) {
+        name = n;
+        id = i;
+        score = s;
+    }
+
+    void print() {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; id &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+    }
+};
+
+class GradStudent : public Student {
+public:
+    std::string advisor;
+
+    GradStudent(std::string n, int i, int s, std::string adv)
+        : Student(n, i, s) {
+        advisor = adv;
+    }
+
+    void print() {
+        Student::print();
+        std::cout &lt;&lt; "导师：" &lt;&lt; advisor &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Student s[3] = {
+        Student("小明", 101, 90),
+        Student("小红", 102, 85),
+        Student("小刚", 103, 95)
+    };
+
+    for (int i = 0; i &lt; 3; i++) {
+        s[i].print();
+    }
+
+    GradStudent g("小美", 201, 88, "王老师");
+    g.print();
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">小明 101 90
+小红 102 85
+小刚 103 95
+小美 201 88
+导师：王老师</pre>
+
+  <p>
+    本科生那三行一个字都没动。研究生只写了它新加的
+    <code>advisor</code> 和一个 <code>print()</code>。
+  </p>
+
+  <p>
+    <b>「学生」这件事——叫什么、学号是什么、成绩怎么打——
+    从此只有一处定义。</b>
+    以后要改，改 <code>Student</code> 那一处，两种人一起变。
+  </p>
+
+  <p>
+    （这一份里 <code>print()</code> 前面没有 <code>virtual</code>，不是漏写了。
+    <code>s[i].print()</code> 和 <code>g.print()</code> 都是拿着对象自己的名字直接叫的，
+    叫哪一份在编译的时候就定死了。只有把子类对象递给<b>父类的引用</b>再叫——
+    像 5.4-6 那个 <code>show()</code>——才需要 <code>virtual</code>。）
+  </p>
+
+  <p>
+    上一课把「别忘了填」从「靠你记得」变成了「编译器盯着」。
+    这一课把「两处要一起改」变成了「只有一处可改」。
+    一个类型管住自己，一个类型管住它的后代。
+  </p>
+</div>
+
+<h3 id="s5-4-9">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 5-13</div>
+  <p>
+    写一个 <code>Shape</code>：有 <code>w</code> 和 <code>h</code>，
+    构造函数收两个数，<code>area()</code> 交回面积。
+  </p>
+  <p>
+    再写一个 <code>Box : public Shape</code>，加一个 <code>depth</code>。
+    造一个 3 × 4 × 5 的盒子，把宽、高、深、面积打在一行。
+  </p>
+  <pre class="out" data-label="预期输出">3 4 5 12</pre>
+  <p>
+    提示：<code>area()</code> 一个字都不用写。
+    构造函数的冒号后面要把 <code>w</code> 和 <code>h</code> 递给父类。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><code>Box</code> 只写自己新加的那样东西：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Shape {
+public:
+    int w;
+    int h;
+
+    Shape(int w, int h) {
+        this-&gt;w = w;
+        this-&gt;h = h;
+    }
+
+    int area() {
+        return w * h;
+    }
+};
+
+class Box : public Shape {
+public:
+    int depth;
+
+    Box(int w, int h, int depth)
+        : Shape(w, h) {
+        this-&gt;depth = depth;
+    }
+};
+
+int main() {
+    Box b(3, 4, 5);
+
+    std::cout &lt;&lt; b.w &lt;&lt; " " &lt;&lt; b.h &lt;&lt; " " &lt;&lt; b.depth &lt;&lt; " " &lt;&lt; b.area() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>w</code>、<code>h</code> 和 <code>area()</code> 一个字都没写，
+        它们是 <code>Shape</code> 传下来的。
+      </p>
+      <p>
+        构造函数后面那个冒号是关键：<code>: Shape(w, h)</code>
+        把宽和高<b>递给父类的构造函数</b>，让父类先把自己那部分装好；
+        <code>depth</code> 才是 <code>Box</code> 自己装的。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-14</div>
+  <p>
+    接着上一题，给 <code>Box</code> 加一个 <code>volume()</code>，
+    交回体积。造一个 3 × 4 × 5 的盒子，打印体积。
+  </p>
+  <pre class="out" data-label="预期输出">60</pre>
+  <p>
+    提示：<code>volume()</code> 里直接写 <code>area()</code> 就行，
+    不用写 <code>Shape::area()</code>——没有重名，叫一声它就来。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>体积就是面积乘上深：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Shape {
+public:
+    int w;
+    int h;
+
+    Shape(int w, int h) {
+        this-&gt;w = w;
+        this-&gt;h = h;
+    }
+
+    int area() {
+        return w * h;
+    }
+};
+
+class Box : public Shape {
+public:
+    int depth;
+
+    Box(int w, int h, int depth)
+        : Shape(w, h) {
+        this-&gt;depth = depth;
+    }
+
+    int volume() {
+        return area() * depth;
+    }
+};
+
+int main() {
+    Box b(3, 4, 5);
+
+    std::cout &lt;&lt; b.volume() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>volume()</code> 里那句 <code>area()</code> 是从
+        <code>Shape</code> 那儿继承来的。<b>没有重名，叫一声它就来</b>，
+        不用写 <code>Shape::area()</code>。
+      </p>
+      <p>
+        这就是继承真正省下来的东西：<b>「面积怎么算」只写了一处。</b>
+        哪一天算法要改，改 <code>Shape</code> 那一处，
+        <code>Box</code> 的 <code>volume()</code> 自动跟着变。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-15</div>
+  <p>
+    写一个 <code>Point</code>：有 <code>x</code>、<code>y</code>，
+    构造函数收两个数，<code>print()</code> 把两个数打一行。
+  </p>
+  <p>
+    再写一个 <code>Point3D : public Point</code>，加一个 <code>z</code>。
+    <code>Point3D</code> 自己写一个 <code>print()</code>，
+    把三个数打在一行。
+  </p>
+  <p>造一个 <code>(1, 2, 3)</code> 的点，打印出来。</p>
+  <pre class="out" data-label="预期输出">1 2 3</pre>
+  <p>
+    提示：<code>Point3D::print()</code> 里先叫 <code>Point::print()</code>
+    把前两个数打掉，再补上 <code>z</code>。
+    别忘了那句之后要补一个空格，不然会粘在一起。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><code>Point3D</code> 自己写一个 <code>print()</code>，
+      把父类那个盖住：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Point {
+public:
+    int x;
+    int y;
+
+    Point(int x, int y) {
+        this-&gt;x = x;
+        this-&gt;y = y;
+    }
+
+    void print() {
+        std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y;
+    }
+};
+
+class Point3D : public Point {
+public:
+    int z;
+
+    Point3D(int x, int y, int z)
+        : Point(x, y) {
+        this-&gt;z = z;
+    }
+
+    void print() {
+        Point::print();
+        std::cout &lt;&lt; " " &lt;&lt; z &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    Point3D p(1, 2, 3);
+
+    p.print();
+
+    return 0;
+}</code></pre>
+      <p>
+        注意里面那句 <code>Point::print()</code>——
+        <b>直接写 <code>print()</code> 会叫到自己，转不出来</b>，得点名叫。
+        <code>Point::</code> 读作「<code>Point</code> 家里那个」。
+      </p>
+      <p>
+        还有个小地方：<code>Point::print()</code> 打完 <code>y</code>
+        之后没有换行，所以后面要先补一个空格再打 <code>z</code>，
+        不然会粘成 <code>23</code>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-16</div>
+  <p>
+    写一个 <code>Employee</code>：有 <code>name</code> 和
+    <code>monthly</code>（月薪），<code>annualSalary()</code> 交回年薪
+    （月薪 × 12）。
+  </p>
+  <p>
+    再写一个 <code>Manager : public Employee</code>，加一个
+    <code>bonus</code>（年终奖）。<code>Manager</code> 重写
+    <code>annualSalary()</code>：<b>在父类那份年薪上再加奖金。</b>
+  </p>
+  <p>
+    造一个普通员工（8000）和一个经理（8000，奖金 50000），
+    年薪各打一行。
+  </p>
+  <pre class="out" data-label="预期输出">96000
+146000</pre>
+  <p>
+    提示：<code>Manager::annualSalary()</code> 里叫一声
+    <code>Employee::annualSalary()</code>，再往上加。
+    <b>别把那十二个月的乘法再抄一遍</b>——那样就白继承了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>经理的年薪，是在父类那份上再加奖金：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee {
+public:
+    std::string name;
+    int monthly;
+
+    Employee(std::string name, int monthly) {
+        this-&gt;name = name;
+        this-&gt;monthly = monthly;
+    }
+
+    int annualSalary() {
+        return monthly * 12;
+    }
+};
+
+class Manager : public Employee {
+public:
+    int bonus;
+
+    Manager(std::string name, int monthly, int bonus)
+        : Employee(name, monthly) {
+        this-&gt;bonus = bonus;
+    }
+
+    int annualSalary() {
+        return Employee::annualSalary() + bonus;
+    }
+};
+
+int main() {
+    Employee e("小明", 8000);
+    std::cout &lt;&lt; e.annualSalary() &lt;&lt; std::endl;
+
+    Manager m("小红", 8000, 50000);
+    std::cout &lt;&lt; m.annualSalary() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>Manager::annualSalary()</code> 里那句
+        <code>Employee::annualSalary()</code>，就是「爸，你那份先算一遍」。
+        <b>那十二个月的乘法一次都没重抄。</b>
+      </p>
+      <p>
+        以后基本工资的算法要改（比如加上补贴），改 <code>Employee</code>
+        那一处，经理这边自动跟着变——因为经理的算法里
+        <b>用的就是父类那一个</b>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>两个有一大半一样的类，你能让一个站在另一个肩上，
+  重复的那份只写一遍。
+  <b>你也该开始觉得「同一件事写在两个地方」是个问题了——
+  这个感觉，比多会一个语法值钱。</b>
+  下一课是这一部分的收尾：把 4.5 那道题，整个装进一个类里。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l5-5">
+<h2><span class="no">5.5</span>【综合练习二·类版】把找最小值装进 MyClass</h2>
+
+<p>
+这一部分是收尾。4.5 那道题你已经会做了——散着的数组和循环。
+这一课把它整个装进一个类里。
+</p>
+
+<h3 id="s5-5-1">先把题目看清楚</h3>
+
+<div class="aside tip">
+  <b>题目</b>
+  <p>
+    成员函数：编写类 <code>MyClass</code>，定义成员函数 <code>fun</code>，
+    实现查找数组最小值，并将最小值与数组末尾元素互换位置。
+    主函数中录入数组长度与数组数据，实例化类对象调用该成员函数，
+    最终分别打印输出交换前后的数组
+  </p>
+  <p>
+    测试样例：<code>5, 34, 1, 2, 56, 4</code><br>
+    输出样式：<code>34, 4, 2, 56, 1</code>
+  </p>
+</div>
+
+<p>
+题目就这几句话，可它每一句都在派活。拆开看：
+</p>
+
+<pre><code>编写类 MyClass                       →  盒子叫这个名字
+定义成员函数 fun                     →  动作叫这个名字
+实现查找数组最小值
+并将最小值与数组末尾元素互换位置     →  这个动作要干的事
+
+主函数中录入数组长度与数组数据       →  main 读输入
+实例化类对象调用该成员函数           →  main 里造一个、调一下
+最终分别打印输出交换前后的数组       →  main 打两行</code></pre>
+
+<p>
+先看前两句。<b><code>MyClass</code> 和 <code>fun</code> 这两个名字，
+是题目直接给的，照抄。</b>
+不管你平时习惯把这种动作叫 <code>findMinToLast</code> 还是别的，
+交上去的东西必须叫 <code>fun</code>——这类题点名要的就是它。
+名字对不上，活儿全干对了也是白干。
+</p>
+
+<p>
+再看最后一句，这是真正的坑：<b>要打两份。</b>
+交换<b>前</b>的数组一行，交换<b>后</b>的数组一行，一共两行。
+4.5 那道题只要求打一份，这道题多要了一份，别照搬。
+</p>
+
+<p>
+剩下那个逗号。题目里输入输出都写成 <code>5, 34, 1, 2, 56, 4</code>，
+那个逗号是文档排版用的分隔符。输入那行肯定是——
+<code>std::cin &gt;&gt; n</code> 读到 5 就停，逗号它读不进去。
+所以课里统一用空格隔开，跟 4.5 一样。你要是想在输出里加逗号也行，
+那就自己拿定一个，别一半一半。
+</p>
+
+<h3 id="s5-5-2">版本一：照题目写</h3>
+
+<p>
+题目的分工写得很明白：<b>读输入、打输出是 <code>main</code> 的事，
+<code>fun</code> 只管「找最小 + 和末尾交换」这一件事。</b>
+那就照这个分工写：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+public:
+    void fun(int a[], int n) {
+        int minIdx = 0;
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+};
+
+int main() {
+    int a[100];
+    int n;
+
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    // 交换前
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    MyClass m;
+    m.fun(a, n);
+
+    // 交换后
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+输入（就是题目给的那组样例）：
+</p>
+
+<pre><code>5 34 1 2 56 4</code></pre>
+
+<pre class="out" data-label="预期输出">34 1 2 56 4
+34 4 2 56 1</pre>
+
+<p>
+第二行和题目底下那行「输出样式」<code>34, 4, 2, 56, 1</code>
+是不是一个数不差？<b>第一行是题目要的「交换前」</b>，
+拿它跟第二行对着看，交换干了什么一眼就明白。
+</p>
+
+<p>
+<b><code>main</code> 里那两段打印，长得一模一样。</b>
+先别嫌它啰嗦——这是故意的：把「打印」原样写两遍，
+中间夹一个 <code>m.fun(a, n)</code>，前后一对比，变化就看出来了。
+下面版本二会把这个重复收掉。
+</p>
+
+<p>
+再看 <code>fun</code> 的签名，这儿有个新东西：
+</p>
+
+<pre><code>void fun(int a[], int n)</code></pre>
+
+<p>
+<b>数组当参数传进去，函数里改了它，外面那个数组真的会变。</b>
+你可能想起 3.4 那句「值传递：函数里改了外面不变」——
+那条规矩没错，但它说的是 <code>int</code> 这种单个变量。
+到现在为止你见过的类型里，<b>数组是唯一一个例外</b>：
+<code>a</code> 传进去不会复制一整份（一百个盒子，复制太贵），
+函数里拿到的就是外面那个数组本身。
+</p>
+
+<p>
+凭什么这样，第 6 部分会讲透（一句话预习：数组名递过去的时候，
+真正传的是第一个盒子的地址）。现在只要认一件事：
+<b>这份程序能跑对，全靠它。</b>
+<code>fun</code> 在里头换完了，<code>main</code> 打出来的就是换过的那一串——
+上面第二行输出就是证据。
+</p>
+
+<p>
+回过头再看 <code>fun</code> 里那十来行，跟 4.5 的解法是同一套东西：
+记住下标的找最小（4.3）、三行交换（4.4）、
+<code>a[n - 1]</code> 是最后一个（4.2）。
+一个字都没变，只是换了住的地方。
+</p>
+
+<h3 id="s5-5-3">版本二：数据也住进盒子里</h3>
+
+<p>
+题目没规定 <code>fun</code> 收什么参数。所以还有另一种装法——
+<b>把数组和个数也存进盒子</b>，那 <code>fun()</code> 就一个参数都不用收了：
+它们就在自己家里，直接看得见。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+private:
+    int a[100];
+    int n;
+
+public:
+    MyClass() {
+        n = 0;
+    }
+
+    void read() {
+        std::cin &gt;&gt; n;
+
+        for (int i = 0; i &lt; n; i++) {
+            std::cin &gt;&gt; a[i];
+        }
+    }
+
+    void fun() {
+        int minIdx = 0;
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+
+    void print() {
+        std::cout &lt;&lt; a[0];
+        for (int i = 1; i &lt; n; i++) {
+            std::cout &lt;&lt; " " &lt;&lt; a[i];
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    MyClass m;
+
+    m.read();
+    m.print();
+    m.fun();
+    m.print();
+
+    return 0;
+}</code></pre>
+
+<p>
+同一份输入，输出和版本一一个字都不差：
+</p>
+
+<pre class="out" data-label="预期输出">34 1 2 56 4
+34 4 2 56 1</pre>
+
+<p>
+好处在 <code>main</code> 里一眼看得出来。版本一那两段重复的打印，
+在这儿成了三句：
+</p>
+
+<pre><code>m.print();
+m.fun();
+m.print();</code></pre>
+
+<p>
+「打一遍、换、再打一遍」——三行连着读下来就是这句话。
+<b>这就是 3.1 那句「main 不该太长」一路走到头的样子。</b>
+</p>
+
+<p>两种装法摆一起看：</p>
+
+<pre><code>                        版本一              版本二
+                        ------------------  ------------------
+数组 a 和个数 n 住在哪  main 里             盒子里
+fun 收几个参数          两个（a[] 和 n）    零个
+打印那两行谁来打        main 里的 cout      m.print()
+main 里有几句           一长串              四句</code></pre>
+
+<p>
+<b>两种都对。</b>题目没把话说死，交哪一份都行。
+要紧的是名字——<code>MyClass</code> 和 <code>fun</code> 不能改。
+</p>
+
+<p>
+有个常见的错法值得点一下：版本一的 <code>fun</code> <b>收两个参数</b>，
+版本二那个 <b>一个都不收</b>。
+把版本一的 <code>m.fun(a, n)</code> 原样搬到版本二上，编译就过不去。
+<b>签名不一样，调法就不一样，跟哪一份「更好」没关系。</b>
+</p>
+
+<h3 id="s5-5-4">自己给自己出几组输入</h3>
+
+<p>
+题目就给了一组样例。可 4.5 的练习和 5.4 都教过同一件事：
+<b>样例过了，不等于对。</b>
+下面这几组是自己该动手喂的，每一组都盯着一个特定的地方。
+表里只列「交换后」那一行（「交换前」就是你输进去的那串数，原样打一遍）：
+</p>
+
+<pre><code>输入           这一组在试什么      交换后
+-------------  ------------------  -------------
+5 34 1 2 56 4  题目给的那组        34 4 2 56 1
+5 4 9 1 7 3    最小值在中间        4 9 3 7 1
+5 4 9 3 7 1    最小值就在最后一个  4 9 3 7 1
+5 4 2 8 2 6    有两个一样小的      4 6 8 2 2
+1 7            只有一个数          7</code></pre>
+
+<p>
+第二行和第三行的输出长得一样，不是巧合：
+那串数本来就已经是 <code>4 9 3 7 1</code>，最小值在最后一个，
+交换等于没换。可它照样值得跑——
+<b>要是程序把别的格子当成了最小值，这一组就未必还一样。</b>
+</p>
+
+<p>
+第四行试的是「有两个一样的数」。
+<code>4 2 8 2 6</code> 里有两个 2，程序认的是靠前那个（编号 1），
+和末尾的 6 换，于是 <code>6</code> 落到了第二位。
+你这组要是打出来不一样，先别怀疑自己，把下标一个个念出来对。
+</p>
+
+<p>
+最后一行更要紧。<b>只有一个数的时候最容易出事</b>——
+<code>a[n - 1]</code> 和 <code>a[minIdx]</code> 是同一个格子，
+交换那三行等于自己和自己换。这组过了，
+说明你没把「至少有两个数」当成理所当然。
+</p>
+
+<h3 id="s5-5-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 5-17</div>
+  <p>
+    把上面这道题自己做一遍：写一个 <code>MyClass</code>，
+    里面有一个 <code>fun</code>，管「找最小值 + 和末尾交换」。
+    数组和个数放 <code>main</code> 里（版本一那种装法）。
+  </p>
+  <p>输入（题目给的那组）</p>
+  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="预期输出">34 1 2 56 4
+34 4 2 56 1</pre>
+  <p>
+    <b>先别往回翻。</b>写完编译一下、跑一遍，对不上再回头看上面那份。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>跟 5.5 版本一是同一份。三处最容易写岔：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+public:
+    void fun(int a[], int n) {
+        int minIdx = 0;
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+};
+
+int main() {
+    int a[100];
+    int n;
+
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    // 交换前
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    MyClass m;
+    m.fun(a, n);
+
+    // 交换后
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>一、名字。</b>类叫 <code>MyClass</code>、动作叫 <code>fun</code>——
+        两个名字都是题目点名要的。写成 <code>findMinToLast</code> 之类，
+        活儿全对也是白干。
+      </p>
+      <p>
+        <b>二、<code>int minIdx = 0;</code></b>——从第 0 个开始当候选。
+        写成 <code>1</code> 就是找错那道题（练习 5-20）。
+      </p>
+      <p>
+        <b>三、交换走的是 <code>a[n - 1]</code></b>，不是 <code>a[n]</code>。
+        最后一个格子的下标是 <code>n - 1</code>（4.2 那条规矩：
+        下标是「从开头数第几个」，从 0 数）。
+      </p>
+      <p>
+        还有一件不在代码里的事：<b>那两行都打出来了吗？</b>
+        「交换前」一行、「交换后」一行。只打一行，是这道题最常见的错法。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-18</div>
+  <p>
+    接着上一题，给盒子加一个动作 <code>sum(int a[], int n)</code>，
+    交回这串数的总和。在「交换后」那一行底下再打一行总和。
+  </p>
+  <p>输入（题目给的那组）</p>
+  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="预期输出">34 1 2 56 4
+34 4 2 56 1
+97</pre>
+  <p>
+    提示：<code>sum</code> 跟 <code>fun</code> 是兄弟，住在同一个盒子里。
+    它也要收 <code>a[]</code> 和 <code>n</code>——数据在 <code>main</code> 那儿，
+    不递进去它看不见。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>加一个动作，跟 <code>fun</code> 并排住：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+public:
+    void fun(int a[], int n) {
+        int minIdx = 0;
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+
+    int sum(int a[], int n) {
+        int total = 0;
+        for (int i = 0; i &lt; n; i++) {
+            total = total + a[i];
+        }
+        return total;
+    }
+};
+
+int main() {
+    int a[100];
+    int n;
+
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    // 交换前
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    MyClass m;
+    m.fun(a, n);
+
+    // 交换后
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; m.sum(a, n) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>sum</code> 也得收 <code>a[]</code> 和 <code>n</code>——
+        数据住在 <code>main</code> 那儿，不递进去它看不见。
+        这是版本一那种装法必然要付的代价：
+        <b>谁想碰这串数，谁就得先把它接过来。</b>
+      </p>
+      <p>
+        （版本二里数据在盒子里面，<code>sum()</code> 才能一个参数都不收。）
+      </p>
+      <p>
+        调用那行 <code>m.sum(a, n)</code> 写在最后，所以总和排在
+        「交换后」底下。换位置不改总和，那三行的先后其实随便。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-19</div>
+  <p>
+    把 <code>fun</code> 里那个「找最小」改成「找<b>最大</b>」，
+    其它的一个字都别动（包括函数名）。
+  </p>
+  <p>输入（还是题目那组）</p>
+  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="预期输出">34 1 2 56 4
+34 1 2 4 56</pre>
+  <p>
+    提示：位置那套写法（记住下标的那个变量）一个字都不用动——
+    找最大和找最小是同一件事，只是那个小于号朝哪边。
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-19.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>只改了两处：比较的方向，和那个变量名。</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+public:
+    void fun(int a[], int n) {
+        int maxIdx = 0;
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &gt; a[maxIdx]) {
+                maxIdx = i;
+            }
+        }
+
+        int t = a[maxIdx];
+        a[maxIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+};
+
+int main() {
+    int a[100];
+    int n;
+
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    // 交换前
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    MyClass m;
+    m.fun(a, n);
+
+    // 交换后
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>maxIdx</code> 的初始化、那个循环、交换那三行，
+        <b>跟找最小那份一个字都没差</b>。
+        找最大和找最小本来就是同一件事，只是那个大于号朝哪边。
+      </p>
+      <p>
+        <b>函数名没动，还是 <code>fun</code>。</b>
+        题目把名字定死了——换的是它干的活，不是它的名字。
+      </p>
+      <p>
+        交换后是 <code>34 1 2 4 56</code>：题目那组数里最大的是 56
+        （编号 3），和最后一位的 4 换了。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-20（找错）</div>
+  <p>
+    下面这份 <code>fun</code> 也是「找最小值并和末尾交换」。它编译干净，
+    一个警告都没有。喂进去 <code>5 1 9 3 7 4</code>，它打的是
+    <code>1 9 4 7 3</code>，应该是 <code>4 9 3 7 1</code>。找出问题，改对。
+  </p>
+  <pre><code>    void fun(int a[], int n) {
+        int minIdx = 1;
+
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }</code></pre>
+  <p>输入 <code>5 1 9 3 7 4</code>，改对之后的输出应该是：</p>
+  <pre class="out" data-label="预期输出">1 9 3 7 4
+4 9 3 7 1</pre>
+  <p>
+    提示：a. 错在那一行里头，只改一个数字。
+    b. <b>这份最坑的地方是——拿题目给的那组样例
+    <code>5 34 1 2 56 4</code> 跑，它又是对的。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/5-20.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>只改一个数：<code>int minIdx = 1;</code> 改成 <code>0</code>。</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class MyClass {
+public:
+    void fun(int a[], int n) {
+        int minIdx = 0;
+
+        for (int i = 1; i &lt; n; i++) {
+            if (a[i] &lt; a[minIdx]) {
+                minIdx = i;
+            }
+        }
+
+        int t = a[minIdx];
+        a[minIdx] = a[n - 1];
+        a[n - 1] = t;
+    }
+};
+
+int main() {
+    int a[100];
+    int n;
+
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    // 交换前
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    MyClass m;
+    m.fun(a, n);
+
+    // 交换后
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        病根是<b>第 0 个格子被排除在候选之外了</b>。
+        本来该先认定第 0 个最小，再拿后面每一个去挑战它；
+        写成 1 之后，第一个格子从头到尾没人比过。
+      </p>
+      <p>
+        为什么拿题目那组样例跑又是对的？<code>5 34 1 2 56 4</code> 里，
+        最小值 1 正好落在<b>编号 1</b> 上——错的那份就是从编号 1 开始找的，
+        撞对了。换一组让最小值落在第 0 个的（<code>5 1 9 3 7 4</code>），
+        它当场露馅。
+      </p>
+      <p>
+        <b>这一类错最坑，也最常见：样例过了不等于对。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>给你一个类名、一个动作名、一句要求，
+  你能把它填成一个能跑的程序，
+  数据在里面还是在外面，两种装法你都写得出来。
+  <b>给你一个名字，你能让那个名字底下真长出东西来。</b>
+  往回想一遍：5.1 把三样东西捆起来，5.2 让盒子自己会干活，
+  5.3 管住出生和规矩，5.4 让一个盒子站在另一个肩上，
+  5.5 把这件事装了进去。<b>你自己造类型这件事，到这儿就够用了。</b>
+  下一部分换一个方向：变量到底住在哪儿，以及怎么把地址递来递去。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="06-指针与引用.html">第 6 部分 · 指针与引用 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 部分 · 把代码拆开 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a class="active" href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html" aria-current="page">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 3 部分 · 把代码拆开</div>
+  <a class="toc-l" href="#l3-1"><span class="n">3.1</span>为什么 main 不该太长</a>
+  <a class="toc-sub" href="#s3-1-1">一份交上来的作业</a>
+  <a class="toc-sub" href="#s3-1-2">它其实做了三件事</a>
+  <a class="toc-sub" href="#s3-1-3">想单独跑其中一件</a>
+  <a class="toc-sub" href="#s3-1-4">件与件之间会串味</a>
+  <a class="toc-sub" href="#s3-1-5">每一件都该有自己的名字</a>
+  <a class="toc-sub" href="#s3-1-6">练习</a>
+  <a class="toc-l" href="#l3-2"><span class="n">3.2</span>函数：参数和返回值</a>
+  <a class="toc-sub" href="#s3-2-1">你早就在叫函数了</a>
+  <a class="toc-sub" href="#s3-2-2">自己造一个</a>
+  <a class="toc-sub" href="#s3-2-3">括号里那个 int n</a>
+  <a class="toc-sub" href="#s3-2-4">要带回一个结果</a>
+  <a class="toc-sub" href="#s3-2-5">函数要写在 main 上面</a>
+  <a class="toc-sub" href="#e3-2">例题：及格线</a>
+  <a class="toc-sub" href="#s3-2-6">练习</a>
+  <a class="toc-l" href="#l3-3"><span class="n">3.3</span>变量能活多久：作用域</a>
+  <a class="toc-sub" href="#s3-3-1">一个盒子只在它的地盘里活着</a>
+  <a class="toc-sub" href="#s3-3-2">跟着动画走一遍</a>
+  <a class="toc-sub" href="#s3-3-3">大括号就是地盘</a>
+  <a class="toc-sub" href="#s3-3-4">出了地盘，编译器直接拦</a>
+  <a class="toc-sub" href="#s3-3-5">两个同名的盒子</a>
+  <a class="toc-sub" href="#s3-3-6">这一课最该记住的一句话</a>
+  <a class="toc-sub" href="#s3-3-7">练习</a>
+  <a class="toc-l" href="#l3-4"><span class="n">3.4</span>传参（上）：值传递</a>
+  <a class="toc-sub" href="#s3-4-1">复印件，不是原件</a>
+  <a class="toc-sub" href="#s3-4-2">跟着动画走一遍</a>
+  <a class="toc-sub" href="#s3-4-3">一个不声不响的失败</a>
+  <a class="toc-sub" href="#s3-4-4">编译器为什么一声不吭</a>
+  <a class="toc-sub" href="#s3-4-5">写到这儿该问自己一句什么</a>
+  <a class="toc-sub" href="#s3-4-6">练习</a>
+  <a class="toc-l" href="#l3-5"><span class="n">3.5</span>传参（下）：引用传递</a>
+  <a class="toc-sub" href="#s3-5-1">一个 &amp; 的区别</a>
+  <a class="toc-sub" href="#s3-5-2">那个交换，加上 &amp; 就对了</a>
+  <a class="toc-sub" href="#s3-5-3">&amp; 到底干了什么</a>
+  <a class="toc-sub" href="#s3-5-4">什么时候用，什么时候别用</a>
+  <a class="toc-sub" href="#s3-5-5">练习</a>
+  <a class="toc-l" href="#l3-6"><span class="n">3.6</span>动手拆：把乘法表拆成函数</a>
+  <a class="toc-sub" href="#s3-6-1">回到 2.6 那张表</a>
+  <a class="toc-sub" href="#s3-6-2">拆成两块</a>
+  <a class="toc-sub" href="#s3-6-3">拆完，结果一模一样</a>
+  <a class="toc-sub" href="#s3-6-4">拆的时候脑子里在想什么</a>
+  <a class="toc-sub" href="#s3-6-5">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 3 部分</div>
+  <h1>把代码拆开</h1>
+  <p class="part-lead">
+    前两部分的程序，都是一路往下堆的：变量、判断、循环，全堆在 main 里。
+    这一部分教你把这一堆剪成几块，一块装一个盒子，盒子上贴个名字。
+    治的就是「所有代码都塞在 main 里」。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-1">
+<h2><span class="no">3.1</span>为什么 main 不该太长</h2>
+
+<p>
+先说清楚：这一课不教新语法，一行新语法都没有。
+它只让你看见一件你已经干过的事——<b>把好几道题写在一个 main 里</b>，
+然后跟你算一算，这么写要付什么代价。
+</p>
+
+<h3 id="s3-1-1">一份交上来的作业</h3>
+
+<p>
+先看一份东西。这不是我编出来当反面教材的——<b>作业里最常见的就是这个样子</b>：
+把几道练习的答案写在一个文件里，全塞进 main。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+
+int main() {
+    int i = 1;
+    int j = 1;
+
+    // ── 第一件：打一个星号直角三角形（2.5 的例题） ──
+    i = 1;
+    while (i &lt;= 4) {
+        j = 1;
+        while (j &lt;= i) {
+            std::cout &lt;&lt; "*";
+            j = j + 1;
+        }
+        std::cout &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 第二件：1 加到 100（2.4 的例题） ──
+    int sum = 0;
+    i = 1;
+    while (i &lt;= 100) {
+        sum = sum + i;
+        i = i + 1;
+    }
+    std::cout &lt;&lt; "1 到 100 是 " &lt;&lt; sum &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 第三件：9×9 乘法表（2.6 那道综合练习） ──
+    i = 1;
+    while (i &lt;= 9) {
+        j = 1;
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+编译干净，跑起来是这样：
+</p>
+
+<pre class="out" data-label="真实输出">*
+**
+***
+****
+----
+1 到 100 是 5050
+----
+1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+……
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+
+<p>
+<b>三件都出来了，一个字没错。</b>
+所以这一课要说的不是「哪里写错了」——它没写错。
+</p>
+
+<h3 id="s3-1-2">它其实做了三件事</h3>
+
+<p>
+数一数这个 main 里装了几件事：
+</p>
+
+<ol>
+  <li>打一个星号三角形</li>
+  <li>把 1 加到 100</li>
+  <li>打一张 9×9 乘法表</li>
+</ol>
+
+<p>
+三件事互相没关系：第二件跟三角形没关系，乘法表跟加法也没关系。
+<b>可它们全挤在一个盒子里。</b>
+</p>
+
+<p>
+<code>main</code> 这个名字的意思是「主函数」——程序从它开始跑。
+名字里有「主」，是因为它是<b>入口</b>，
+不是因为它该装下所有东西。
+</p>
+
+<p>
+这三件事长得也很像：每一件都是「先 <code>i = 1;</code>，再一个 while」。
+像归像，<b>它们是三件事</b>——
+改乘法表的时候不该动到加法，讲加法的时候不该扯上三角形。
+</p>
+
+<h3 id="s3-1-3">想单独跑其中一件</h3>
+
+<p>
+假设同学问你：「你那个 1 加到 100 是怎么写的？给我看看。」
+</p>
+
+<p>
+你只能这么回答：<b>「从第 22 行开始看，看到第 29 行，前面那些别管。」</b>
+乘法表那段是第 33 行到第 43 行。
+</p>
+
+<p>
+或者，你想单独把加法跑一遍看看数对不对：得把第一件和第三件都<b>注释掉</b>，
+跑完，再一句句取消注释。取消的时候漏了一行，文件就废了。
+</p>
+
+<p>
+<b>这就是第一个代价：想单独动一件，得先碰另外两件。</b>
+一件事该能单独跑、单独看、单独改——挤在一起的时候就做不到。
+</p>
+
+<h3 id="s3-1-4">件与件之间会串味</h3>
+
+<p>
+还有第二个代价，比第一个隐蔽。<b>看那几句 <code>i = 1;</code>。</b>
+</p>
+
+<p>
+第一件开头有一句，第二件开头有一句，第三件开头还有一句。
+同一个动作抄了三遍——为什么要抄三遍？
+</p>
+
+<p>
+因为 <code>i</code> 是<b>三件共用</b>的一个盒子。第一件用完了它，
+<code>i</code> 停在 5；第二件接手的时候不拨回 1，就得从 5 开始加。
+所以每开一件，都得先把共用的盒子拨回原位。
+</p>
+
+<p>
+<b>少拨一次会怎么样？</b>真的少拨一次给你看——那就是练习 3-2。
+</p>
+
+<h3 id="s3-1-5">每一件都该有自己的名字</h3>
+
+<p>
+想让第一件单独跑，不用注释别的行；
+想让同学看加法那一段，不用报行号；
+想让 <code>i</code> 别跟别人抢——
+<b>办法只有一个：把每一件从 main 里剪出来，单独装进一个盒子，盒子上贴个名字。</b>
+</p>
+
+<p>
+那个盒子就叫<b>函数（function）</b>。下一课就造它。
+</p>
+
+<h3 id="s3-1-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-1</div>
+  <p>
+    把上面那份作业里的<b>第三件</b>（乘法表）剪出来，单独写成一个程序，
+    编译、跑一遍。
+  </p>
+  <p>
+    它的输出，应该和上面那份作业里从第二个 <code>----</code> 往下的部分
+    <b>逐字一样</b>。
+  </p>
+  <pre class="out" data-label="预期输出">1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+  <p>
+    提示：第三件里那两句 <code>int i = 1; int j = 1;</code> 现在是<b>它自己的</b>了，
+    不再跟别人共用——所以开头那句 <code>i = 1;</code> 可以省掉，
+    声明的时候放到 1 上就行。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第三件整段搬过来，它自己就是全部了：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    int i = 1;
+    int j = 1;
+
+    while (i &lt;= 9) {
+        j = 1;
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        开头那两句和原文不一样：原文是
+        <code>int i = 1; int j = 1;</code> 之后再补一句 <code>i = 1;</code>，
+        这里是<b>声明的时候直接放在 1 上</b>。
+      </p>
+      <p>
+        为什么能省掉那句？因为这两个盒子现在是<b>它自己的</b>——
+        不像原文那样要跟另外两件共用。新开的盒子本来就该从 1 开始，
+        不用再拨一遍。
+      </p>
+      <p>
+        <b>这就是拆开的第一个好处：想跑它，直接跑。</b>
+        不用先注释掉另外两件，跑完再一句句取消注释。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-2</div>
+  <p>
+    有人交了一份：把上面那份作业<b>改了一处</b>，别的一个字没动。
+    交上来之前他自己跑过，前两件一字不差，
+    <b>乘法表整个不见了</b>——第二个 <code>----</code> 底下什么都没有。
+  </p>
+  <p>
+    跑出来是这样：
+  </p>
+  <pre class="out" data-label="预期输出">*
+**
+***
+****
+----
+1 到 100 是 5050
+----</pre>
+  <p>
+    找出他改的是哪一处，说清楚为什么一改就成这样。
+  </p>
+  <p>
+    提示：盯着三件各自的开头看。第一件、第二件、第三件，开头的第一句分别是什么？
+    数一数——是每件都有，还是有一件少了？
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        改的是<b>第三件开头那句 <code>i = 1;</code></b>——
+        第一件有、第二件有，第三件没了。那一份长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+
+int main() {
+    int i = 1;
+    int j = 1;
+
+    // ── 第一件：打一个星号直角三角形 ──
+    i = 1;
+    while (i &lt;= 4) {
+        j = 1;
+        while (j &lt;= i) {
+            std::cout &lt;&lt; "*";
+            j = j + 1;
+        }
+        std::cout &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 第二件：1 加到 100 ──
+    int sum = 0;
+    i = 1;
+    while (i &lt;= 100) {
+        sum = sum + i;
+        i = i + 1;
+    }
+    std::cout &lt;&lt; "1 到 100 是 " &lt;&lt; sum &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 第三件：9×9 乘法表（开头那句 i = 1; 抽掉了） ──
+    while (i &lt;= 9) {
+        j = 1;
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>为什么乘法表整个不见了？</b>跟着 <code>i</code> 走一遍就清楚了。
+      </p>
+      <p>
+        第一件走完，<code>i</code> 停在 5。
+        第二件开头那句 <code>i = 1;</code> 把它拨回 1，从 1 加到 100，
+        走完的时候 <code>i</code> 是 <b>101</b>——
+        最后一次是加完 100 之后又执行了一句 <code>i = i + 1</code>，
+        条件要再问一次才发现不成立。
+      </p>
+      <p>
+        第三件开口就问：<code>i &lt;= 9</code> 吗？
+        可 <code>i</code> 已经是 101 了——<b>不成立，一次都不进去。</b>
+        所以第二个 <code>----</code> 底下什么都没有。
+      </p>
+      <p>
+        <b>编译不报错、跑起来也不崩，就是少了一块。</b>
+        这种错最难逮：它不像少个分号那样有人喊你，
+        它就是安安静静地少做一件事。
+      </p>
+      <p>
+        还记得 2.6 的练习 2-26 吗？同一个病：
+        <b>盒子是共用的，忘了拨回去，下一件就从错的地方接着走。</b>
+        这就是「件与件之间会串味」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-3</div>
+  <p>
+    用你现在会的东西，写一个程序，打三个星号三角形：
+    <b>2 行的、4 行的、6 行的</b>，中间用一行 <code>----</code> 隔开。
+  </p>
+  <pre class="out" data-label="预期输出">*
+**
+----
+*
+**
+***
+****
+----
+*
+**
+***
+****
+*****
+******</pre>
+  <p>
+    提示：照着 3.1 那份作业的样子写就行，三件排成一列，
+    每一件都是「<code>i = 1;</code> + 一个 while」。
+    <b>写完了数一数它有多少行</b>——记住这个数，下一课要用。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        照老办法写，它长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+    int j = 1;
+
+    // ── 2 行的 ──
+    i = 1;
+    while (i &lt;= 2) {
+        j = 1;
+        while (j &lt;= i) {
+            std::cout &lt;&lt; "*";
+            j = j + 1;
+        }
+        std::cout &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 4 行的 ──
+    i = 1;
+    while (i &lt;= 4) {
+        j = 1;
+        while (j &lt;= i) {
+            std::cout &lt;&lt; "*";
+            j = j + 1;
+        }
+        std::cout &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    // ── 6 行的 ──
+    i = 1;
+    while (i &lt;= 6) {
+        j = 1;
+        while (j &lt;= i) {
+            std::cout &lt;&lt; "*";
+            j = j + 1;
+        }
+        std::cout &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>数一数：四十多行。</b>
+        三段的差别只有那个上限数字——2、4、6——可每一段都得整段抄一遍，
+        三十来行是同一件事抄了三遍。
+      </p>
+      <p>
+        抄出问题来的时候更麻烦。假设三角形打歪了：
+        你得先判断是<b>哪一段</b>坏的，再去那一段里找。
+        三段长得一模一样，眼睛一扫就串行——
+        改的时候还容易只改了两段，漏掉第三段。
+      </p>
+      <p>
+        <b>记住这个「四十多行」。</b>
+        下一课把它变成十几行。变的不是写法——循环还是那个循环——
+        变的是「这三段该怎么放」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>没有新东西，但你能看懂一份「全都塞在 main 里」的作业了，
+  能说出它做了几件事、哪几件在抢同一个盒子。
+  <b>这三件事本身你都会写——卡住你的从来不是语法。</b>
+  下一课给每一件造一个盒子：函数。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-2">
+<h2><span class="no">3.2</span>函数：参数和返回值</h2>
+
+<p>
+这一课只有一个新东西：<b>函数（function）</b>——
+把一件事包起来，起个名字，需要的时候叫它。
+</p>
+
+<h3 id="s3-2-1">你早就在叫函数了</h3>
+
+<p>
+<code>main</code> 是函数。你写 <code>printf("%d", x)</code> 的时候，
+<code>printf</code> 也是函数——只不过它是别人写好的，你只管叫。
+</p>
+
+<p>
+叫一个函数的样子永远是<b>名字加一对括号</b>：<code>printf(...)</code>、
+<code>main()</code>。括号里放的是要递给它的东西。
+</p>
+
+<p>
+这一课要做的，就是自己造一个——名字自己起，括号里放什么自己定。
+</p>
+
+<h3 id="s3-2-2">自己造一个</h3>
+
+<p>
+把 3.1 那份作业里的<b>第一件</b>（星号三角形）剪出来，装进盒子：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+void printTriangle(int n) {
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+}
+
+int main() {
+    printTriangle(2);
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+    printTriangle(4);
+    return 0;
+}</code></pre>
+
+<p>
+跑一遍：
+</p>
+
+<pre class="out" data-label="真实输出">*
+**
+----
+*
+**
+***
+****</pre>
+
+<p>
+<b>3.1 里那 10 行，现在住在盒子里了；main 里只剩「叫它两次」。</b>
+以后想改三角形怎么打，改盒子里那 10 行，main 一个字不用动。
+</p>
+
+<p>
+看盒子的第一行，它是四个东西拼起来的：
+</p>
+
+<table>
+  <tr><th>写的</th><th>意思</th></tr>
+  <tr>
+    <td><code>void</code></td>
+    <td>它干完活<b>不交回东西</b>。void 就是「空」。干了就完了。</td>
+  </tr>
+  <tr>
+    <td><code>printTriangle</code></td>
+    <td>名字。<b>你自己起</b>，起成「它干的那件事」。</td>
+  </tr>
+  <tr>
+    <td><code>(int n)</code></td>
+    <td>递进来的东西：一个整数，在这个盒子里叫 <code>n</code>。</td>
+  </tr>
+  <tr>
+    <td><code>{ … }</code></td>
+    <td>那件事本身。2.5 那套双层循环原样搬进来了。</td>
+  </tr>
+</table>
+
+<p>
+到这儿你可能已经看出来：<b>这不是新语法，是「把已经会的东西挪个地方」。</b>
+挪出来之后多了三样：名字、括号、开头那个词。
+</p>
+
+<h3 id="s3-2-3">括号里那个 int n</h3>
+
+<p>
+把 <code>n</code> 想成这个函数<b>自己的盒子</b>。
+谁叫它，谁就往里放一个数：
+<code>printTriangle(2)</code> 就是把 2 放进去，盒子里的 <code>n</code> 就是 2；
+<code>printTriangle(4)</code> 就是 4。
+</p>
+
+<p>
+所以同一个函数，叫两次，打出来的东西不一样：
+一次 2 行，一次 4 行。
+<b>会变的那部分（打几行）留给你填，不变的那部分（怎么打）写在函数里。</b>
+</p>
+
+<p>
+放进括号的那个东西，正式的名字叫<b>实参（argument）</b>，
+函数这边接住它的那个 <code>n</code> 叫<b>形参（parameter）</b>。
+平时两个都叫「参数」，分不清也没关系——这一课你只要记住它是<b>函数自己的盒子</b>。
+</p>
+
+<p>
+还有一件事现在就得说清楚：<b>每次叫它，这个盒子都是新开的。</b>
+叫第一遍放下 2，叫第二遍放下 4，两次互不影响。
+为什么会这样，3.3 专门讲。
+</p>
+
+<h3 id="s3-2-4">要带回一个结果</h3>
+
+<p>
+打三角形是「干完就完了」。可很多事是要交结果的：算个和、比个大小。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int doubleIt(int x) {
+    return x * 2;
+    std::cout &lt;&lt; "这一行永远打不出来" &lt;&lt; std::endl;
+}
+
+int main() {
+    std::cout &lt;&lt; doubleIt(3) &lt;&lt; std::endl;
+    std::cout &lt;&lt; doubleIt(10) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+和上一个比，两处不一样：
+</p>
+
+<ul>
+  <li>
+    开头的 <code>void</code> 换成了 <code>int</code>——
+    <b>它要交回一个整数</b>。这个地方写什么类型，就得交回什么。
+  </li>
+  <li>
+    里面出现了 <code>return</code>——<b>要交回去的东西写在它后面</b>。
+  </li>
+</ul>
+
+<p>
+跑一遍：
+</p>
+
+<pre class="out" data-label="真实输出">6
+20</pre>
+
+<p>
+<b>注意输出里没有「这一行永远打不出来」这句话。</b>
+它写在程序里，可是从来没执行到过。
+</p>
+
+<p>
+<code>return</code> 干两件事：把结果交回去，然后<b>当场走人</b>。
+它底下那行代码不是「等一下再执行」，是「永远不会执行」。
+</p>
+
+<p>
+而且——刚才这次编译一声没吭，<code>-Wall</code> 也不报这个。
+<b>编译器不管你写了多少句永远轮不到的代码。</b>
+这种事只能你自己知道，或者靠跑一遍对输出。
+</p>
+
+<p>
+交回来的东西，<b>要有人接</b>。上面是直接打出来：
+<code>std::cout &lt;&lt; doubleIt(3)</code>。
+也可以先接住、再用：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int doubleIt(int x) {
+    return x * 2;
+}
+
+int main() {
+    int result = doubleIt(3);
+    std::cout &lt;&lt; result + 1 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">7</pre>
+
+<p>
+<code>doubleIt(3)</code> 交回 6，<code>result</code> 就接到 6，
+加 1 打出来是 7。
+到这一步，函数交回的东西和普通变量没区别了——
+它就是个值，跟 <code>3 + 5</code> 算出来的 8 一样。
+</p>
+
+<h3 id="s3-2-5">函数要写在 main 上面</h3>
+
+<p>
+把函数挪到 main 底下去，试试：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    printTriangle(2);
+    return 0;
+}
+
+void printTriangle(int n) {
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+}</code></pre>
+
+<p>
+编译器立刻不认：
+</p>
+
+<pre class="diag"><code>3.2-order-err.cpp: In function ‘int main()’:
+3.2-order-err.cpp:4:5: error: ‘printTriangle’ was not declared in this scope
+    4 |     printTriangle(2);
+      |     ^~~~~~~~~~~~~</code></pre>
+
+<p>
+读那行：<b>「printTriangle 在这个范围里没有声明过」</b>。
+</p>
+
+<p>
+编译器是<b>从上往下</b>读的。读到第 4 行那句 <code>printTriangle(2)</code> 的时候，
+它还没见过这个名字——底下写了不算。
+</p>
+
+<p>
+规矩就一句：<b>要用它，先定义它。</b>
+所以这门课里的程序，函数都写在 main 上面。
+</p>
+
+<div class="eg" id="e3-2">
+  <div class="eg-h">例题 · 及格线</div>
+  <p>
+    2.1 那道判分数的程序，这次写成一个函数：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+
+bool isPass(int score) {
+    if (score &gt;= 60) {
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    int score = 58;
+    if (isPass(score)) {
+        std::cout &lt;&lt; score &lt;&lt; " 分：及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; score &lt;&lt; " 分：不及格" &lt;&lt; std::endl;
+    }
+
+    score = 91;
+    if (isPass(score)) {
+        std::cout &lt;&lt; score &lt;&lt; " 分：及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; score &lt;&lt; " 分：不及格" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="真实输出">58 分：不及格
+91 分：及格</pre>
+
+  <p>
+    三样东西值得看：
+  </p>
+
+  <ul>
+    <li>
+      返回类型写的是 <code>bool</code>——它交回来一个 <code>true</code> 或
+      <code>false</code>，就是 1.2 学的那个类型。
+    </li>
+    <li>
+      <code>if (isPass(score))</code>：函数<b>叫在条件的位置上</b>。
+      它交回 <code>true</code>，if 就走及格那一路。这是最常见的用法之一。
+    </li>
+    <li>
+      <b>及格线只写了一份。</b>
+      以后要把它从 60 改成 55，改函数里那一个数字就行，
+      不用满程序找哪儿还判断过及格。
+    </li>
+  </ul>
+
+  <p>
+    顺便说：<code>isPass</code> 里那四行还能压成一行：
+    <code>return score >= 60;</code>——
+    2.2 说过，比较自己就算出一个 <code>true</code> 或 <code>false</code>，
+    直接交回去就行了。两种写法都对，先把上面那种写熟。
+  </p>
+</div>
+
+<h3 id="s3-2-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-4</div>
+  <p>
+    写一个函数 <code>void printStars(int n)</code>，
+    <b>打一行</b>，里面 <code>n</code> 个星号，打完换行。
+  </p>
+  <p>
+    在 main 里叫它两次：先 <code>printStars(8)</code>，再 <code>printStars(3)</code>。
+  </p>
+  <pre class="out" data-label="预期输出">********
+***</pre>
+  <p>
+    提示：这个函数和例题里的 <code>printTriangle</code> 是一对——
+    那个打很多行，这个只打一行。
+    想想一行的循环要不要写成两层。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        一行星号，一个循环就够——<b>不需要两层</b>：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+void printStars(int n) {
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        std::cout &lt;&lt; "*";
+    }
+    std::cout &lt;&lt; std::endl;
+}
+
+int main() {
+    printStars(8);
+    printStars(3);
+
+    return 0;
+}</code></pre>
+      <p>
+        和 3.2 的 <code>printTriangle</code> 比，少的就是外面那层。
+        外层管「打几行」，这一题没得选，只打一行——
+        那一层直接不要了，<code>n</code> 交给剩下的那层循环。
+      </p>
+      <p>
+        这也是「函数该包多大」的第一次练习：
+        <b>包进来的这件事，得说得出是一件事。</b>
+        「打一行星号」是一件事，「打一个三角形」也是一件事，
+        但「打一行星号」和「打一个三角形」不是一个盒子里的东西——
+        一个是另一个的零件。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-5</div>
+  <p>
+    写一个函数 <code>int sumTo(int n)</code>，<b>交回</b>
+    <code>1 + 2 + ... + n</code> 的结果。
+  </p>
+  <p>
+    在 main 里打出 <code>sumTo(10)</code> 和 <code>sumTo(100)</code>：
+  </p>
+  <pre class="out" data-label="预期输出">55
+5050</pre>
+  <p>
+    提示：2.3 那个「攒一个总数」的循环，原样搬进函数里，
+    最后把攒出来的那个数 <code>return</code> 出去。
+    开工前想一句：<b>那个装总和的盒子，该开在哪儿？</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        2.3 那个攒总和的循环搬进来，最后把攒出来的数交回去：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int sumTo(int n) {
+    int sum = 0;
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        sum = sum + i;
+    }
+    return sum;
+}
+
+int main() {
+    std::cout &lt;&lt; sumTo(10) &lt;&lt; std::endl;
+    std::cout &lt;&lt; sumTo(100) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        两个地方值得说：
+      </p>
+      <p>
+        <b>一、那个装总和的盒子开在函数里面。</b>
+        提示里问的就是这个。它得开在函数里——main 根本看不见它，
+        也不需要看见。函数在门里把它算完，只交出一个数。
+      </p>
+      <p>
+        <b>二、<code>return sum;</code> 交的是那个数，不是那个盒子。</b>
+        函数一走完，<code>sum</code> 这个盒子就没了（下一课讲这个），
+        交出来的 55 是它的值。
+        所以 main 接到的是 55 这个值，照样能打、能算、能存。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-6</div>
+  <p>
+    下面这份编译不过。找出问题在哪，说清楚编译器为什么拦它，
+    然后把它改对、跑一遍。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+void printStars(int n) {
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        std::cout &lt;&lt; "*";
+    }
+    std::cout &lt;&lt; std::endl;
+}
+
+int main() {
+    printStars();
+    return 0;
+}</code></pre>
+  <p>
+    提示：函数<b>本身</b>一个字都没写错。
+    读报错信息的时候，注意它说的是「参数不够」还是「名字不认识」——
+    这两种错，改的地方完全不一样。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-6.cpp" data-err="示例代码/答案/3-6-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        错在 main 里那一句调用。<b>函数本身没错，是叫它的时候没给参数</b>——
+        <code>printStars();</code>，括号是空的。
+      </p>
+      <p>
+        编译器说的话是：
+      </p>
+      <pre class="diag"><code>3-6-err.cpp: In function ‘int main()’:
+3-6-err.cpp:11:15: error: too few arguments to function ‘void printStars(int)’
+   11 |     printStars();
+      |     ~~~~~~~~~~^~
+3-6-err.cpp:3:6: note: declared here
+    3 | void printStars(int n) {
+      |      ^~~~~~~~~~
+</code></pre>
+      <p>
+        读那行：<b>「<code>printStars</code> 收到的参数太少」</b>——
+        它要一个 <code>int</code>，你一个都没给。
+        底下那条 <code>note: declared here</code> 是它在帮你：
+        <b>把函数定义在哪儿指给你看</b>，免得你在几十行里翻。
+      </p>
+      <p>
+        <b>和 3.2 那个顺序错摆在一起看，两种错就分清了：</b>
+        顺序错，它说的是「<b>这个名字我不认识</b>」（not declared）；
+        这一题，名字它认识，说的是「<b>参数不够</b>」（too few arguments）。
+      </p>
+      <p>
+        名字不认识——去查函数是不是写到 main 下面去了；
+        参数不够——去查调用那对括号里少了什么。
+        <b>报错里说的是哪个词，该改的就是哪一处。</b>
+      </p>
+      <p>
+        补上参数就对了：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+void printStars(int n) {
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        std::cout &lt;&lt; "*";
+    }
+    std::cout &lt;&lt; std::endl;
+}
+
+int main() {
+    printStars(5);
+    return 0;
+}</code></pre>
+      <p>
+        打出一行 <code>*****</code>——<code>printStars(5)</code> 给了 5。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能把一件事包成函数了——
+  想好名字、想好它要不要交回东西、想好括号里递什么进去。
+  从这一课起，<b>一段超过十来行的代码你就该问一句：这里面有几件事？</b>
+  下一课讲一件你早晚会撞上的事：变量能活多久。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-3">
+<h2><span class="no">3.3</span>变量能活多久：作用域</h2>
+
+<p>
+3.2 最后留了一句话没往下讲：<b>每次叫函数，它括号里那个盒子都是新开的。</b>
+这一课把这句话讲透。
+</p>
+
+<p>
+要讲的东西，正式的名字叫<b>作用域（scope）</b>。名字唬人，说的其实是件很朴素的事：
+<b>一个盒子，只活在声明它的那对大括号里。</b>
+大括号一关，盒子就没了——不是「值归零」，是<b>这个盒子不存在了</b>。
+</p>
+
+<h3 id="s3-3-1">一个盒子只在它的地盘里活着</h3>
+
+<p>
+看这个程序。两个函数，各声明了一个变量：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+void show() {
+    int local = 7;
+    std::cout &lt;&lt; "show 里 local = " &lt;&lt; local &lt;&lt; std::endl;
+}
+
+int main() {
+    int a = 3;
+    show();
+    std::cout &lt;&lt; "main 里 a = " &lt;&lt; a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">show 里 local = 7
+main 里 a = 3</pre>
+
+<p>
+程序里一共出现过两个盒子：
+</p>
+
+<ul>
+  <li>
+    <code>a</code> 声明在 main 的大括号里，活在那一对括号之间。
+  </li>
+  <li>
+    <code>local</code> 声明在 show 的大括号里，活在那一对括号之间。
+  </li>
+</ul>
+
+<p>
+各活各的。<code>local</code> 出生的时候 <code>a</code> 已经在；
+<code>local</code> 死掉的时候 <code>a</code> 还好好的。
+</p>
+
+<h3 id="s3-3-2">跟着动画走一遍</h3>
+
+<p>
+这一课的重点不在值，在<b>盒子什么时候冒出来、什么时候没</b>。
+按「下一步」，盯住下面那排盒子，尤其是走到大括号那两步。
+</p>
+
+<div class="viz" data-viz="scope"></div>
+
+<p>
+三步值得回头看：
+</p>
+
+<ol>
+  <li>
+    <b>进 show 那一步</b>：屏幕上多了一个盒子 <code>local</code>。
+    <code>a</code> 还在，但 show 里叫不出这个名字——它不归 show 管。
+  </li>
+  <li>
+    <b>走到 show 的 <code>}</code> 那一步</b>：<code>local</code> 变灰。
+    程序还没执行完，但它的命到头了。
+  </li>
+  <li>
+    <b>回 main 那一步</b>：<code>local</code> 没了，<code>a</code> 一动没动，还是 3。
+  </li>
+</ol>
+
+<h3 id="s3-3-3">大括号就是地盘</h3>
+
+<p>
+不是只有函数的大括号才算数。<b>随便哪一对大括号，都圈出一块地盘：</b>
+<code>if</code> 的、<code>for</code> 的、<code>while</code> 的，或者光秃秃一对也行。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 1;
+
+    {
+        int b = 2;
+        std::cout &lt;&lt; "大括号里面：a = " &lt;&lt; a &lt;&lt; "，b = " &lt;&lt; b &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "大括号外面：a = " &lt;&lt; a &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">大括号里面：a = 1，b = 2
+大括号外面：a = 1</pre>
+
+<p>
+外面那行只打了 <code>a</code>，没打 <code>b</code>——因为写到那儿的时候，
+<code>b</code> 已经没了，写不出来。
+</p>
+
+<p>
+<b>外面能看见里面，里面也能看见外面。</b>
+大括号里的代码能读 <code>a</code>（那是外面声明的），
+但外面读不到 <code>b</code>（那是里面声明的）。
+一句话：<b>谁在里谁是后来的，后来的能看见先来的，先来的看不见后来的。</b>
+</p>
+
+<h3 id="s3-3-4">出了地盘，编译器直接拦</h3>
+
+<p>
+上面是「不写」，这次故意写出来试试：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    {
+        int b = 2;
+        std::cout &lt;&lt; "里面 b = " &lt;&lt; b &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "外面 b = " &lt;&lt; b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+大括号里面那行好端端的，出来这行编译器立刻不让：
+</p>
+
+<pre class="diag"><code>3.3-out-err.cpp: In function ‘int main()’:
+3.3-out-err.cpp:16:33: error: ‘b’ was not declared in this scope
+   16 |     std::cout &lt;&lt; "外面 b = " &lt;&lt; b &lt;&lt; std::endl;
+      |                                 ^</code></pre>
+
+<p>
+这句话在 3.2 见过一次（那次是函数写在了 main 底下），
+所以你现在应该能直接读出来：<b>「b 在这个范围里没有声明过」</b>。
+</p>
+
+<p>
+<b>scope 就是「范围」。</b>编译器说的 <code>in this scope</code>，
+意思就是「在我现在站的这块地盘上，没这个名字」。
+它不是在骂你，是在告诉你 b 住哪——住上面那对大括号里，你走出来太远了。
+</p>
+
+<p>
+这个报错其实是好事：<b>它当场就把你拦住了。</b>
+要是编译器不拦，这种「用了一个已经没了的盒子」的错，
+要到程序跑起来、跑出个莫名其妙的数，你才发现。
+</p>
+
+<h3 id="s3-3-5">两个同名的盒子</h3>
+
+<p>
+既然每个函数有自己的地盘，那两边各起一个同名的盒子会怎样？
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+void show() {
+    int n = 7;
+    std::cout &lt;&lt; "show 里 n = " &lt;&lt; n &lt;&lt; std::endl;
+}
+
+int main() {
+    int n = 3;
+    show();
+    std::cout &lt;&lt; "main 里 n = " &lt;&lt; n &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">show 里 n = 7
+main 里 n = 3</pre>
+
+<p>
+两个 <code>n</code>，两个盒子，谁也不认识谁。
+show 里那个 <code>n</code> 是 7，main 里这个还是 3。
+</p>
+
+<p>
+这件事有个名字叫<b>遮蔽（shadow）</b>，但你现在不用记这个词，记住现象就行：
+<b>名字是给同一块地盘里的人用的。出了这块地盘，这个名字跟你没关系。</b>
+</p>
+
+<p>
+顺手说一句：<b>写代码的时候别故意这么起名。</b>
+人是会看糊涂的——读到 <code>n</code> 的时候还得往上翻，看这是哪个 <code>n</code>。
+函数里那个变量，起个跟外面不一样的名字，比如 <code>result</code>、<code>count</code>，
+读的人省事，你自己过两天回来看也省事。
+</p>
+
+<h3 id="s3-3-6">这一课最该记住的一句话</h3>
+
+<p>
+<b>盒子跟着大括号走：进括号开，出括号关。</b>
+</p>
+
+<p>
+这一句话能解释你后面会撞上的一连串事：
+</p>
+
+<table>
+  <tr><th>你看到的</th><th>为什么</th></tr>
+  <tr>
+    <td>函数里算出来的数，外面拿不到</td>
+    <td>那个盒子随函数的 <code>}</code> 一起没了</td>
+  </tr>
+  <tr>
+    <td>循环里声明的 <code>i</code>，循环外不能用</td>
+    <td><code>for</code> 的 <code>i</code> 住在 <code>for</code> 那对括号里</td>
+  </tr>
+  <tr>
+    <td>两个函数里的变量可以重名</td>
+    <td>两块地盘，两个盒子</td>
+  </tr>
+  <tr>
+    <td>想留在外面的东西，为什么必须在外面声明</td>
+    <td>因为它得有个活到那时候的盒子装</td>
+  </tr>
+</table>
+
+<p>
+下一课讲一件看上去差不多、其实更要命的事：
+<b>你把一个盒子递给函数，函数收到的是什么？</b>
+</p>
+
+<h3 id="s3-3-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-7</div>
+  <p>
+    下面这个程序编译不过去。<b>先别看答案</b>，自己读一遍，
+    说出是哪一行、为什么。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total = 0;
+
+    {
+        int n = 5;
+        total = total + n;
+    }
+
+    std::cout &lt;&lt; "外面：total = " &lt;&lt; total &lt;&lt; std::endl;
+    std::cout &lt;&lt; "外面：n = " &lt;&lt; n &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <p>
+    说完了，再把它改成能跑的：<code>n</code> 和 <code>total</code> 两个都要打出来。
+  </p>
+  <p>
+    改完的预期输出是：
+  </p>
+  <pre class="out" data-label="预期输出">里面：n = 5，total = 5
+外面：total = 5</pre>
+  <p>
+    里面那一行说 <code>n</code> 是 5、<code>total</code> 是 5，
+    外面那一行说 <code>total</code> 还是 5。
+  </p>
+  <p>
+    提示：<code>total</code> 那行不用动——它声明在外面，本来就活到最后。
+    要挪的是另一行。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-7.cpp" data-err="示例代码/答案/3-7-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        错在最后一句：<code>std::cout &lt;&lt; "外面：n = " &lt;&lt; n</code>。
+        <code>n</code> 是在那对大括号<b>里面</b>声明的，走出大括号它就没了，
+        外面这一行叫不出这个名字。
+      </p>
+      <p>
+        编译器说的是：
+      </p>
+      <pre class="diag"><code>3-7-err.cpp: In function ‘int main()’:
+3-7-err.cpp:12:34: error: ‘n’ was not declared in this scope
+   12 |     std::cout &lt;&lt; "外面：n = " &lt;&lt; n &lt;&lt; std::endl;
+      |                                  ^
+</code></pre>
+      <p>
+        这句话你前面见过两次了（3.3 那个报错框、
+        3.2 那个函数写反顺序的）。<b>「not declared in this scope」= 这块地盘上没这个名字。</b>
+      </p>
+      <p>
+        抬头看报错给的行号 <b>12</b>——它指的正好是<b>用 n 的那一行</b>，不是声明 n 的那一行。
+        这是条很有用的经验：
+        <b>「没声明」的报错，指的永远是用它的地方，因为问题出在那儿。</b>
+      </p>
+      <p>
+        改法：<b>把要用 <code>n</code> 的那句话搬进大括号里。</b>
+        <code>total</code> 那行不用动——它声明在外面，本来就活到最后。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total = 0;
+
+    {
+        int n = 5;
+        total = total + n;
+        std::cout &lt;&lt; "里面：n = " &lt;&lt; n &lt;&lt; "，total = " &lt;&lt; total &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "外面：total = " &lt;&lt; total &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        打出来是两行：里面那行 <code>n</code> 和 <code>total</code> 都看得见，
+        外面那行只剩 <code>total</code>。
+      </p>
+      <p>
+        <b>注意外面那行打出来的 <code>total</code> 还是 5。</b>
+        <code>total</code> 是在外面声明的，大括号里那句
+        <code>total = total + n;</code> 改的是<b>外面那个盒子</b>——
+        因为 <code>total</code> 的名字在大括号里也看得见（3.3 那节说的：
+        里面能看见外面）。
+        <b>能看见，所以能改；改的是同一个盒子，所以出去还在。</b>
+      </p>
+      <p>
+        这一条和 <code>n</code> 那条摆在一起看，就是 3.3 的全部：
+        <b>在里面声明的，出去就没了；在外面声明的，里面也看得见、也能改。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-8</div>
+  <p>
+    自己写一个程序，要求：
+  </p>
+  <ul>
+    <li>
+      main 里有一个 <code>int total = 0;</code>
+  </li>
+    <li>
+      一对大括号里，声明 <code>int step = 5;</code>，然后 <code>total = total + step;</code>，
+      打完一行 <code>第一次之后 total = ?</code>
+  </li>
+    <li>
+      再来一对大括号，声明 <code>int step = 7;</code>，同样加进去，再打一行
+  </li>
+  </ul>
+  <pre class="out" data-label="预期输出">第一次之后 total = 5
+第二次之后 total = 12</pre>
+  <p>
+    写的时候想一件事：<b>两个 <code>step</code> 是同一个盒子吗？</b>
+    想清楚了再动手，写出来会特别顺。
+  </p>
+  <p>
+    提示：两块地盘各有一个 <code>step</code>，都用完就没了。
+    能一路活下来、把两个数都记住的，只有 <code>total</code> 一个盒子。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个 <code>step</code> 都是新的盒子，各装各的：
+        第一个装 5，用完就没了；第二个装 7，跟第一个毫无关系。
+        能把两个数都记住的，只有 <code>total</code> 一个——它声明在最外面。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total = 0;
+
+    {
+        int step = 5;
+        total = total + step;
+        std::cout &lt;&lt; "第一次之后 total = " &lt;&lt; total &lt;&lt; std::endl;
+    }
+
+    {
+        int step = 7;
+        total = total + step;
+        std::cout &lt;&lt; "第二次之后 total = " &lt;&lt; total &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        打出来是 <code>5</code> 然后 <code>12</code>。
+      </p>
+      <p>
+        这一题最容易写错的地方，是想让两个大括号共用一个 <code>step</code>——
+        比如把第二个写成 <code>step = 7;</code>（不带 <code>int</code>），
+        心里想着「改一改再用」。
+      </p>
+      <p>
+        那样写会怎样？第一对大括号里确实能用，但第二对里的 <code>step</code>
+        已经没了，编译器会说 <code>not declared in this scope</code>——
+        跟练习 3-7 一模一样的错。
+      </p>
+      <p>
+        想清楚这件事，这一课就算过了：<b>盒子的命跟着大括号走，
+        想让一个值活过好几块地盘，就得把它声明在那些地盘外面。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能说出一个变量活到哪儿为止了。
+  再看到「用了没声明的名字」这种报错，你能一眼认出是<b>出界</b>，而不是别的问题——
+  这是新手卡得最久的一类错。下一课讲递参数：<b>你把盒子递出去，函数收到的是什么。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-4">
+<h2><span class="no">3.4</span>传参（上）：值传递</h2>
+
+<p>
+3.3 讲的是盒子<b>什么时候没</b>。这一课讲它<b>从哪来</b>。
+</p>
+
+<p>
+两课合起来就一句话：函数括号里那个盒子，是<b>新开的</b>，
+而且装的是<b>抄过来的一份</b>。
+</p>
+
+<h3 id="s3-4-1">复印件，不是原件</h3>
+
+<p>
+叫函数的时候，你写 <code>addOne(a)</code>。
+很多人心里想的是「把 <code>a</code> 递进去」——听着没错，其实差了一层。
+</p>
+
+<p>
+真实发生的是：<b>把 <code>a</code> 里装的值抄一份，交给函数。</b>
+函数收到的是一个新盒子，装着一份抄来的值。
+你在函数里改来改去，改的都是那份复印件。
+</p>
+
+<p>
+这个规矩有个名字叫<b>值传递（pass by value）</b>。
+「值」就是「值」，传的是值，不是那个盒子。
+</p>
+
+<h3 id="s3-4-2">跟着动画走一遍</h3>
+
+<p>
+这次盯住<b>两个盒子</b>：main 里的 <code>a</code>，和函数里的 <code>x</code>。
+按到中间那一步，看看改了 <code>x</code> 之后 <code>a</code> 变没变。
+</p>
+
+<div class="viz" data-viz="copy"></div>
+
+<p>
+整个程序的输出是两行：
+</p>
+
+<pre class="out" data-label="真实输出">函数里 x = 4
+回来 a = 3</pre>
+
+<p>
+第二行是这一课的全部。<code>x</code> 都变成 4 了，回来一看 <code>a</code> 还是 3。
+</p>
+
+<h3 id="s3-4-3">一个不声不响的失败</h3>
+
+<p>
+上一段那个程序，还只是「改了没用」。
+下面这个更典型——写的时候是真心以为它能成的：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+void swapTwo(int x, int y) {
+    int t = x;
+    x = y;
+    y = t;
+}
+
+int main() {
+    int a = 1;
+    int b = 2;
+
+    swapTwo(a, b);
+
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+函数名叫 <code>swapTwo</code>，交换两个数。<b>函数里那三行确实换成了</b>：
+</p>
+
+<pre><code>int t = x;      // t 拿到 1
+x = y;          // x 变成 2
+y = t;          // y 变回 1
+                // 到这里，x 是 2、y 是 1，换好了</code></pre>
+
+<p>
+编译一声不吭。跑一下：
+</p>
+
+<pre class="out" data-label="真实输出">1 2</pre>
+
+<p>
+<b>一动没动。</b>
+</p>
+
+<p>
+现在你应该能自己讲出原因了：<code>x</code> 和 <code>y</code> 是复印件。
+函数里那三行把两张复印件换了个遍，原件 <code>a</code> 和 <code>b</code> 从来没被碰过。
+函数一结束，<b>连复印件都跟着没了</b>（3.3 讲的），
+就像这件事压根没发生过。
+</p>
+
+<h3 id="s3-4-4">编译器为什么一声不吭</h3>
+
+<p>
+这是新手最难接受的一点：<b>编译器不管你想干什么，只管你写得合不合语法。</b>
+</p>
+
+<p>
+<code>swapTwo(a, b)</code> 这一句，语法上完全没问题：
+参数是两个 <code>int</code>，递进去两个 <code>int</code>，对得上。
+函数体那三行，语法也没问题。整份文件挑不出一个错。
+</p>
+
+<p>
+错的不是语法，是<b>想法</b>——你以为递进去的是 <code>a</code> 和 <code>b</code> 本身，
+其实递进去的是它们的值。
+</p>
+
+<p>
+<b>这一类错，编译器一个都拦不住。</b>
+它只能靠你自己知道这条规矩，或者靠跑一遍、对着输出看。
+这就是为什么这门课每段代码都要你亲手跑——
+不是走过场，是因为<b>有些错只有跑起来才现形</b>。
+</p>
+
+<h3 id="s3-4-5">写到这儿该问自己一句什么</h3>
+
+<p>
+以后你写函数，写到「想让外面发生点变化」的时候，
+停下来问自己一句：
+</p>
+
+<p>
+<b>「我这个函数，是只算个数交回去，还是要改外面那个盒子？」</b>
+</p>
+
+<table>
+  <tr><th>你想干的事</th><th>该怎么做</th></tr>
+  <tr>
+    <td>算个数交回去（求和、比大小、判断及格）</td>
+    <td>值传递就够了——3.2 的 <code>return</code> 就是干这个的</td>
+  </tr>
+  <tr>
+    <td>改外面那个盒子（交换、累加、把结果填进去）</td>
+    <td>值传递做不到，下一课讲怎么办</td>
+  </tr>
+</table>
+
+<p>
+<b>大部分函数是第一种</b>，所以值传递不是缺点，它就是默认规矩。
+只在你真的想改外面的时候，才需要别的东西。
+</p>
+
+<h3 id="s3-4-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-9</div>
+  <p>
+    下面这个程序，<b>先别跑</b>。把两行输出写在纸上，
+    然后再编译运行，看看跟你写的一样不一样。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+void doubleIt(int x) {
+    x = x * 2;
+    std::cout &lt;&lt; "函数里 x = " &lt;&lt; x &lt;&lt; std::endl;
+}
+
+int main() {
+    int a = 6;
+    doubleIt(a);
+    std::cout &lt;&lt; "回来 a = " &lt;&lt; a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">函数里 x = 12
+回来 a = 6</pre>
+  <p>
+    写对了，说明「复印件」这条规矩你已经拿到手了。
+    写错了也不要紧——把它改对，再<b>用自己的话</b>说一遍为什么第二行是 6。
+    说不清楚就回头再看一眼那个动画。
+  </p>
+  <p>
+    提示：函数里那句 <code>x = x * 2</code> 改的是函数自己的盒子。
+    main 里的 <code>a</code> 全程没被任何一行代码碰过。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        预期输出是：
+      </p>
+      <pre class="out" data-label="真实输出">函数里 x = 12
+回来 a = 6</pre>
+      <p>
+        第一行是 12，第二行是 <b>6</b>——不是 12。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+void doubleIt(int x) {
+    x = x * 2;
+    std::cout &lt;&lt; "函数里 x = " &lt;&lt; x &lt;&lt; std::endl;
+}
+
+int main() {
+    int a = 6;
+    doubleIt(a);
+    std::cout &lt;&lt; "回来 a = " &lt;&lt; a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        原因就是 3.4 那个动画里的那一步：
+        <code>doubleIt(a)</code> 递出去的是 <code>a</code> 的值（6）的抄件。
+        函数里那个 <code>x</code> 是新盒子，装的是抄来的 6。
+        <code>x = x * 2</code> 把它改成 12——
+        <b>改的是那个抄件，main 里的 a 从头到尾没被任何一行代码碰过。</b>
+      </p>
+      <p>
+        把这段和 3.4 的 <code>addOne</code> 摆一起看，两个程序的骨架一模一样，
+        输出也一个道理。换了个函数名、换了道算法，规矩没变。
+      </p>
+      <p>
+        <b>有个地方值得多想一秒：</b>函数里那句
+        <code>std::cout &lt;&lt; "函数里 x = " &lt;&lt; x</code> 打的是 12。
+        这一行没骗你——函数里 <code>x</code> 确实是 12。
+        错的是「那外面也变成 12 了吧」这个想当然。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能说清楚一个函数<u>能</u>改什么、<u>不能</u>改什么了。
+  更重要的是，你知道了<b>有一类错编译器不会告诉你</b>——
+  以后程序跑出来不对劲，你会想到先去看「是不是改了个复印件」。
+  下一课给这个毛病开方子。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-5">
+<h2><span class="no">3.5</span>传参（下）：引用传递</h2>
+
+<p>
+上一课那个交换失败的程序，改法小得让人意外：<b>参数表上补一个字符。</b>
+</p>
+
+<h3 id="s3-5-1">一个 &amp; 的区别</h3>
+
+<p>
+先看一个最简单的对比。左边是 3.4 的程序，右边只多了一个 <code>&amp;</code>：
+</p>
+
+<pre><code>void addOne(int x) {            void addOne(int&amp; x) {
+    x = x + 1;                      x = x + 1;
+    ...                             ...
+}                               }</code></pre>
+
+<p>
+左边那份，输出是 <code>函数里 x = 4</code> / <code>回来 a = 3</code>（3.4 讲过）。
+右边这份，输出是：
+</p>
+
+<pre class="out" data-label="真实输出">函数里 x = 4
+回来 a = 4</pre>
+
+<p>
+<b>只差最后一行。3 变成了 4。</b>
+</p>
+
+<p>
+函数体一个字没改。改的只有括号里：<code>int x</code> 变成 <code>int&amp; x</code>。
+</p>
+
+<h3 id="s3-5-2">那个交换，加上 &amp; 就对了</h3>
+
+<p>
+回到上一课那个不声不响的失败。函数体还是那三行，还是同样的顺序：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+void swapTwo(int&amp; x, int&amp; y) {
+    int t = x;
+    x = y;
+    y = t;
+}
+
+int main() {
+    int a = 1;
+    int b = 2;
+
+    swapTwo(a, b);
+
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">2 1</pre>
+
+<p>
+<b>换过来了。</b>
+</p>
+
+<p>
+跟 3.4 那份摆在一起看，两份文件只差一个字符——参数表上多了两个 <code>&amp;</code>。
+这件事值得你自己动手跑一遍：把两份都编译了，先后运行，看着输出从 <code>1 2</code> 变成 <code>2 1</code>。
+比读十遍文字都有用。
+</p>
+
+<p>
+注意是<b>两个都要加</b>。只加一个的话，那个还是复印件，
+换到一半就断了——你可以自己试试，看会打出什么来。
+</p>
+
+<h3 id="s3-5-3">&amp; 到底干了什么</h3>
+
+<p>
+<code>int&amp; x</code> 读作「<b>x 是一个 int 的引用</b>」。
+</p>
+
+<p>
+<b>引用（reference）不是新盒子，是给原来那个盒子起的另一个名字。</b>
+</p>
+
+<p>
+拿人打比方：你大名叫「张三」，熟人平时叫你「三儿」。
+两个名字，一个人。叫哪个，回头的都是你。
+</p>
+
+<p>
+所以 <code>int&amp; x</code> 的意思是：
+<b><code>x</code> 不是新开的盒子，它就是外面那个 <code>a</code> 的另一个名字。</b>
+往 <code>x</code> 里写，就是往 <code>a</code> 里写。改哪个名字都一样，因为是同一个人。
+</p>
+
+<table>
+  <tr><th></th><th>值传递<br><code>int x</code></th><th>引用传递<br><code>int&amp; x</code></th></tr>
+  <tr><td>函数收到的是</td><td>新盒子，装着抄来的值</td><td>外面那个盒子的另一个名字</td></tr>
+  <tr><td>函数里改 x</td><td>改复印件，外面不动</td><td>改的就是外面那个盒子</td></tr>
+  <tr><td>函数结束后</td><td>复印件连同盒子一起没了</td><td>外面的盒子还在，带着新值</td></tr>
+  <tr><td>正式叫法</td><td>pass by value</td><td>pass by reference</td></tr>
+</table>
+
+<h3 id="s3-5-4">什么时候用，什么时候别用</h3>
+
+<p>
+回到 3.4 最后那张表，现在能填满了：
+</p>
+
+<ul>
+  <li>
+    <b>只算个数交回去的</b>——用值传递（<code>int x</code>）。
+    这是绝大多数情况。函数干净，谁调它都不会把自己的盒子弄脏。
+  </li>
+  <li>
+    <b>要改外面那个盒子的</b>——用引用（<code>int&amp; x</code>）。
+    交换、累加、把算出来的结果填回到传进来的地方，都是这一类。
+  </li>
+</ul>
+
+<p>
+有一条经验值得你现在就记下：
+<b>一个函数，最好只干上面两件事里的一件。</b>
+</p>
+
+<p>
+要么它算个数交回来（有 <code>return</code>，参数都是值的），
+要么它改传进来的东西（参数用引用，不需要 <code>return</code>）。
+两样都干，叫它的人就得猜「这个函数到底会不会动我的东西」——
+猜错一次就够你找半天的。
+</p>
+
+<p>
+还有一件事：<b>用了引用，外面传进来的就不能是算出来的数了。</b>
+<code>addOne(3)</code> 是编译不过的——3 是个数字，不是盒子，没名字可起。
+必须是能装东西的变量。报错大意是
+「把常量当引用传」，你见到的时候能认出来就行。
+</p>
+
+<h3 id="s3-5-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-10</div>
+  <p>
+    下面这个函数想把它收到的数翻倍，可是 main 里的 <code>a</code> 一点没变。
+    <b>把它改对。</b>
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+void doubleIt(int x) {
+    x = x * 2;
+}
+
+int main() {
+    int a = 6;
+    doubleIt(a);
+    std::cout &lt;&lt; "现在 a = " &lt;&lt; a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">现在 a = 12</pre>
+  <p>
+    提示：函数体那一行一个字都不用改。
+    要动的地方在你上一课就觉得「明明写对了」的那个括号里。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        改法是在参数表上加一个 <code>&amp;</code>：<code>int x</code> 改成 <code>int&amp; x</code>。
+        <b>函数体一个字都没动。</b>
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+void doubleIt(int&amp; x) {
+    x = x * 2;
+}
+
+int main() {
+    int a = 6;
+    doubleIt(a);
+    std::cout &lt;&lt; "现在 a = " &lt;&lt; a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        打出来 <code>现在 a = 12</code>。
+      </p>
+      <p>
+        和 3.4 那份摆在一起，两份文件<b>只差一个字符</b>：
+        一份把 <code>a</code> 递进去当抄件，一份把它递进去当自己人。
+      </p>
+      <p>
+        <code>int&amp; x</code> 的意思是：<b><code>x</code> 不是新盒子，是外面那个
+        <code>a</code> 的另一个名字。</b>
+        往 <code>x</code> 里写，就是往 <code>a</code> 里写——同一个人，两个名字。
+      </p>
+      <p>
+        <b>这一题和第 3.4 节那道题，是同一个问题的两面。</b>
+        以后再遇到「函数里改了外面没变」，你现在有两个动作可做：
+        先想清楚<b>该不该</b>变（不该变就不用管），
+        该变的话，去参数表上找那个 <code>&amp;</code>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-11</div>
+  <p>
+    写一个函数，把传进来的两个数换个个儿。写完在 main 里这样试：
+  </p>
+  <pre><code>int main() {
+    int a = 3;
+    int b = 8;
+
+    swapTwo(a, b);
+
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">8 3</pre>
+  <p>
+    这是第 3 部分最该亲手写一遍的函数——它短到只有四行，
+    但「值传递还是引用传递」这个选择，全在里面了。
+  </p>
+  <p>
+    提示：两个参数都要加 <code>&amp;</code>，一个都不能少。
+    函数里需要一个中间盒子 <code>t</code>——为什么非要它，4.4 会专门讲。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个参数都要加 <code>&amp;</code>——一个都不能少。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+void swapTwo(int&amp; x, int&amp; y) {
+    int t = x;
+    x = y;
+    y = t;
+}
+
+int main() {
+    int a = 3;
+    int b = 8;
+
+    swapTwo(a, b);
+
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        打出来 <code>8 3</code>，换过来了。
+      </p>
+      <p>
+        函数体还是 3.4 那三行，顺序一个没变。
+        <b>变的只有参数表。</b>
+        这件事值得你自己动手验一遍：把
+        <code>示例代码/3.4-swap-fail.cpp</code> 和
+        <code>示例代码/3.5-swap.cpp</code> 各编译一遍，先后运行，
+        看着输出从 <code>1 2</code> 变成 <code>2 1</code>。
+      </p>
+      <p>
+        <b>只加一个 <code>&amp;</code> 会怎样？</b>自己试试。
+        比如只给 <code>x</code> 加：那 <code>x</code> 是 <code>a</code> 的名字了，
+        可 <code>y</code> 还是抄件。三行里的头一行
+        <code>int t = x;</code> 没问题，第二行 <code>x = y;</code>
+        把 <code>a</code> 改成了 <code>y</code> 那份抄件的值，第三行
+        <code>y = t;</code> 改的是抄件——<b>换到一半断了</b>。
+        跑一遍就知道，比看文字清楚得多。
+      </p>
+      <p>
+        中间那个 <code>t</code> 为什么非要不可（直接
+        <code>x = y; y = x;</code> 为什么不行），
+        4.4 会专门讲——那一课整课就讲这一个盒子。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能自己决定一个函数的参数该不该带 <code>&amp;</code> 了，
+  也知道两种写法各自会发生什么。
+  <b>「函数里改了外面没变」这个新手最常见的困惑，到这儿就结了。</b>
+  下一课用刚学会的东西，回去把那道综合练习拆开。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l3-6">
+<h2><span class="no">3.6</span>动手拆：把乘法表拆成函数</h2>
+
+<p>
+这一课不教新东西。把 3.2 到 3.5 学的全用上，回去收拾 2.6 那道综合练习。
+</p>
+
+<h3 id="s3-6-1">回到 2.6 那张表</h3>
+
+<p>
+这是 2.6 写出来的那份：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+它跑得没错。但按 3.1 那把尺子量一下——<b>这里面有几件事？</b>
+</p>
+
+<p>
+两件：<b>打一行</b>，和<b>打整张表</b>。
+外面的 <code>i</code> 循环是「哪几行都要打」，里面的 <code>j</code> 循环是「一行怎么打」。
+</p>
+
+<h3 id="s3-6-2">拆成两块</h3>
+
+<p>
+把这两件事各起一个名字：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+// 打一行：第 i 行，从 1×1 打到 i×i
+void printRow(int i) {
+    for (int j = 1; j &lt;= i; j = j + 1) {
+        printf("%d×%d=%2d ", j, i, i * j);
+    }
+    printf("\n");
+}
+
+// 打整张表：把 1 到 9 行都交给 printRow
+void printTable() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        printRow(i);
+    }
+}
+
+int main() {
+    printTable();
+    return 0;
+}</code></pre>
+
+<p>
+<b>内圈原封不动搬进了 <code>printRow</code></b>，连 <code>%2d</code> 和那个空格都没碰。
+外圈变成了 <code>printTable</code>，只是本来写在内圈里的那几行，
+换成了一句 <code>printRow(i)</code>。
+</p>
+
+<p>
+注意 <code>printRow</code> 收了一个 <code>int i</code>——
+「打第几行」这件事会变，所以它得从外面进来。
+而 <code>printTable</code> 不用收任何东西：它干的活是固定的，就是把 1 到 9 行都打一遍。
+</p>
+
+<h3 id="s3-6-3">拆完，结果一模一样</h3>
+
+<pre class="out" data-label="真实输出">1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+
+<p>
+跟 2.6 那张表<b>一个字都不差</b>。（每一行末尾都多一个空格，
+上面看不出来，是 <code>printf</code> 里那个空格打的。）
+</p>
+
+<p>
+这一条要记住：<b>拆函数不改变结果。</b>
+拆完跑出来的东西跟拆之前不一样，那一定是你哪一步抄错了——
+这是件好事，因为<b>你有一个现成的办法检验自己拆对没有：跑一遍，对输出。</b>
+</p>
+
+<h3 id="s3-6-4">拆的时候脑子里在想什么</h3>
+
+<p>
+拆代码不是随便找几行剪下来。有一个能用的想头：
+</p>
+
+<ol>
+  <li>
+    <b>先问「这里面有几件事」。</b>像 3.1 那样一件一件数出来。
+  </li>
+  <li>
+    <b>每件事起个名字。</b>名字要是动词——<code>printRow</code>、<code>printTable</code>、
+    <code>swapTwo</code>。念一遍这个名字，就知道它干什么。
+  </li>
+  <li>
+    <b>问这件事要什么才能干。</b>「打第 i 行」得知道 i 是几，所以参数是 <code>int i</code>。
+    「打整张表」不需要知道任何事，所以参数是空的。
+  </li>
+  <li>
+    <b>问这件事要不要交结果回来。</b>这两件事都是「打完就完了」，所以都是 <code>void</code>。
+    要是「算个和」，那就得有 <code>return</code>。
+  </li>
+</ol>
+
+<p>
+第 3 步和第 4 步，就是 3.2 讲的那两件事：
+<b>括号里写什么，开头的类型写什么。</b>
+</p>
+
+<p>
+这四步问下来，函数的架子自己就出来了。剩下的是把原来的代码搬进去——
+搬的时候一个字都别改，改了就不知道是自己搬错了还是原本就错。
+</p>
+
+<h3 id="s3-6-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 3-12</div>
+  <p>
+    把上面拆好的那份，改成打<b>矩形</b>的乘法表——每一行都是 9 个格子，
+    从 <code>1×1= 1</code> 打到 <code>9×1= 9</code>。
+  </p>
+  <p>
+    还是拆成 <code>printRow</code> 和 <code>printTable</code> 两个函数。
+    <b>只想一个地方要改</b>。
+  </p>
+  <pre class="out" data-label="预期输出（前两行和后一行）">1×1= 1 2×1= 2 3×1= 3 4×1= 4 5×1= 5 6×1= 6 7×1= 7 8×1= 8 9×1= 9
+1×2= 2 2×2= 4 3×2= 6 4×2= 8 5×2=10 6×2=12 7×2=14 8×2=16 9×2=18
+……
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+  <p>
+    提示：三角形和矩形的差别，2.6 就说过——<b>内圈的条件</b>。
+    这件事只跟「一行怎么打」有关，跟「打几行」没关系。
+    所以该动的是哪一个函数，你现在应该能一口说出来。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        要改的是 <code>printRow</code>——<b>只改内圈那个条件</b>：
+        <code>j &lt;= i</code> 改成 <code>j &lt;= 9</code>。
+        <code>printTable</code> 一个字不用动。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+void printRow(int i) {
+    for (int j = 1; j &lt;= 9; j = j + 1) {
+        printf("%d×%d=%2d ", j, i, i * j);
+    }
+    printf("\n");
+}
+
+void printTable() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        printRow(i);
+    }
+}
+
+int main() {
+    printTable();
+    return 0;
+}</code></pre>
+      <p>
+        每一行都是 9 个格子，从 <code>1×1= 1</code> 打到 <code>9×1= 9</code>。
+      </p>
+      <p>
+        为什么只动这一处？因为你改的是<b>「一行怎么打」</b>，
+        这是 <code>printRow</code> 管的事。
+        <b>「打几行」</b>由 <code>printTable</code> 管，还是 9 行，没变——
+        所以那个函数不用碰。
+      </p>
+      <p>
+        这正是拆函数最实在的好处：
+        <b>一个改动只落在一个地方。</b>
+        不拆的话，这份代码里那句条件写在内圈，
+        和外圈的 <code>i &lt;= 9</code> 挤在一起，
+        你得先读懂哪句管什么，才敢动手。
+      </p>
+      <p>
+        顺便看一眼最后一行有多宽——<code>9×9=81</code> 那一行有 70 个字符。
+        这就是 2.6 里 <code>%2d</code> 那个讲究：
+        每格长度一样，整列才对得齐。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-13</div>
+  <p>
+    最后一题，回到 3.1 那份作业。
+    它有三件事：打星号三角形、算 1 到 100 的和、打乘法表。
+    当时那三个 <code>i = 1;</code> 的重置，就是件与件在抢同一个盒子。
+  </p>
+  <p>
+    <b>现在把它拆开。</b>三件事，三个函数，main 里只剩三句调用和两条分隔线。
+  </p>
+  <pre class="out" data-label="预期输出">*
+**
+***
+****
+----
+1 到 100 是 5050
+----
+1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+  <p>
+    输出要和上面<s>一模一样</s>——就是 3.1 那份原样的输出。
+    拆函数不改结果，第 3.6 节刚说过。
+  </p>
+  <p>
+    提示：三件事都不需要参数，也都不需要交回东西，所以三个函数都是
+    <code>void</code> 加空括号。三个循环各用自己的 <code>i</code>——
+    3.1 里那三个重置，拆完自然就没地方放了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/3-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三件事，三个函数。<b>三个循环各用自己声明的 <code>i</code></b>——
+        3.1 里那三句 <code>i = 1;</code> 的重置，
+        拆完就<b>没地方放了</b>，自然消失。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+
+// 第一件：打一个星号直角三角形
+void printTriangle() {
+    for (int i = 1; i &lt;= 4; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+}
+
+// 第二件：1 加到 100
+void printSum() {
+    int sum = 0;
+    for (int i = 1; i &lt;= 100; i = i + 1) {
+        sum = sum + i;
+    }
+    std::cout &lt;&lt; "1 到 100 是 " &lt;&lt; sum &lt;&lt; std::endl;
+}
+
+// 第三件：9×9 乘法表
+void printTable() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    printTriangle();
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    printSum();
+    std::cout &lt;&lt; "----" &lt;&lt; std::endl;
+
+    printTable();
+
+    return 0;
+}</code></pre>
+      <p>
+        跑出来的东西和 3.1 那份<b>一字不差</b>：
+        四行星号、一条分隔线、<code>1 到 100 是 5050</code>、
+        再来一条分隔线、最后是那张乘法表。
+      </p>
+      <p>
+        回头对一下 3.1 那份：
+      </p>
+      <table>
+        <tr><th></th><th>3.1 那份</th><th>这一份</th></tr>
+        <tr>
+          <td>main 里有什么</td>
+          <td>三件事的代码全在里面，52 行</td>
+          <td>三句调用加两条分隔线，10 行</td>
+        </tr>
+        <tr>
+          <td>变量声明在哪</td>
+          <td><code>i</code>、<code>j</code> 开在 main 顶上</td>
+          <td>各在各的函数里，main 里一个都没有</td>
+        </tr>
+        <tr>
+          <td>那三句 <code>i = 1;</code></td>
+          <td>每件开头都得重置一次</td>
+          <td><b>没了</b>——不需要了</td>
+        </tr>
+        <tr>
+          <td>想单独跑第二件</td>
+          <td>没法跑，得先把上面那段挪开</td>
+          <td>把 main 里别的两句删掉就行</td>
+        </tr>
+      </table>
+      <p>
+        <b>最后那一行是这件事真正的价值。</b>
+        3.1 说「卡住你的从来不是语法」——第五个变量名、还是第七个，
+        一行一行往下堆而已。真正让人卡住的是：
+        <b>你没法把一件事单独拿出来看。</b>
+      </p>
+      <p>
+        拆完之后，你想看第二件，main 里注释掉另外两句运行一遍就行。
+        调试的时候这一点能省你很多时间——7.2 会再讲这件事。
+      </p>
+      <p>
+        写这一题的时候，别一次写完再跑。
+        <b>拆一件、跑一次、对一下输出</b>，再拆下一件。
+        一次全拆完再跑，出来不对你都不知道是哪一件拆坏的。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能把一段堆在一起的代码，按「一件事一个名字」拆成函数了。
+  这是 3.1 开头那份作业的毛病，也是新手最容易犯的一条——
+  <b>现在你能治它了。</b>
+  第 4 部分开始装一堆数据：数组怎么用，怎么找最大值，怎么交换两个元素。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="04-一堆数据.html">第 4 部分 · 一堆数据 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/viz.js"></script>
+<script>
+"use strict";
+
+// ── 3.3 的数据流动画 ──────────────────────────────────
+// 每一步「内存里有什么、屏幕上有什么」，都真跑出来对过。
+//
+// 这一段动画的重点不是值，是**盒子什么时候冒出来、什么时候没**：
+// local 在 show 的 { 里出生，在 show 的 } 上到头。
+VIZ.scope = {
+  code: [
+    "void show() {",                                            // 第 0 行
+    "    int local = 7;",                                       // 第 1 行
+    "    std::cout << \"show 里 local = \" << local << std::endl;",  // 第 2 行
+    "}",                                                        // 第 3 行
+    "",                                                         // 第 4 行：空行
+    "int main() {",                                             // 第 5 行
+    "    int a = 3;",                                           // 第 6 行
+    "    show();",                                              // 第 7 行
+    "    std::cout << \"main 里 a = \" << a << std::endl;",     // 第 8 行
+    "    return 0;",                                            // 第 9 行
+    "}"                                                         // 第 10 行
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "程序还没开始。全屏幕一个盒子都没有。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 5,
+      note: "从 <b>main</b> 的第一行进起。main 的大括号里，是一块地盘。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "main 的地盘上开一个盒子叫 <b>a</b>，把 3 放进去。",
+      mem: [{ name: "a", value: 3, state: "new" }],
+      screen: []
+    },
+    {
+      line: 7,
+      note: "要叫 <b>show</b> 了。控制权交给它，main 停在这一行等着。 —— " +
+            "注意：<b>a 没有跟着过去</b>，它留在 main 的地盘上。",
+      mem: [{ name: "a", value: 3, state: "read" }],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "进了 show。<b>a 还在，但 show 看不见它</b>——" +
+            "show 的地盘上没有「a」这个名字。",
+      mem: [{ name: "a", value: 3, state: "" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "show 的地盘上开一个<b>新盒子 local</b>，放 7。" +
+            "此刻 <b>a = 3、local = 7</b>，两个盒子互不相干。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "local", value: 7, state: "new" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "把 local 送到屏幕上。屏幕上出现了 <b>show 里 local = 7</b>。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "local", value: 7, state: "read" }],
+      screen: ["show 里 local = 7"],
+      flows: [{ from: "local", to: ":screen" }]
+    },
+    {
+      line: 3,
+      note: "走到 show 的 <b>}</b>——<b>local 的命到头了。</b> " +
+            "看它变灰的样子：盒子还在屏幕上，但它已经是个空壳，" +
+            "再没有哪一行代码能碰到它。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "local", value: 7, state: "gone" }],
+      screen: ["show 里 local = 7"]
+    },
+    {
+      line: 8,
+      note: "回到 main。<b>local 这个盒子没了</b>（不是变成 0，是没了），" +
+            "而 <b>a 一动没动，还是 3</b>。",
+      mem: [{ name: "a", value: 3, state: "read" }],
+      screen: ["show 里 local = 7", "main 里 a = 3"]
+    },
+    {
+      line: 9,
+      note: "<code>return 0;</code>——main 就剩这一件事了。",
+      mem: [{ name: "a", value: 3, state: "" }],
+      screen: ["show 里 local = 7", "main 里 a = 3"]
+    },
+    {
+      line: null,
+      note: "程序结束。屏幕上留下两行，盒子里<b>一个都不剩</b>——" +
+            "main 的 <code>}</code> 一关，<b>a</b> 也跟着走了。",
+      mem: [],
+      screen: ["show 里 local = 7", "main 里 a = 3"]
+    }
+  ]
+};
+
+// ── 3.4 的数据流动画 ──────────────────────────────────
+// 同样真跑对过。
+//
+// 这一段和 3.3 是**同一个骨架**（故意做成一样的）：
+// 两个函数、一个盒子递进去。区别只有一个——
+// 这次盯的不是盒子什么时候没，是**函数改了 x 之后，a 有没有跟着变**。
+VIZ.copy = {
+  code: [
+    "void addOne(int x) {",                                     // 第 0 行
+    "    x = x + 1;",                                           // 第 1 行
+    "    std::cout << \"函数里 x = \" << x << std::endl;",      // 第 2 行
+    "}",                                                        // 第 3 行
+    "",                                                         // 第 4 行：空行
+    "int main() {",                                             // 第 5 行
+    "    int a = 3;",                                           // 第 6 行
+    "    addOne(a);",                                           // 第 7 行
+    "    std::cout << \"回来 a = \" << a << std::endl;",        // 第 8 行
+    "    return 0;",                                            // 第 9 行
+    "}"                                                         // 第 10 行
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "程序还没开始，一个盒子都没有。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 5,
+      note: "从 <b>main</b> 进起。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "开一个盒子叫 <b>a</b>，放 3。<b>这是原件，整个程序里只有这一个。</b>",
+      mem: [{ name: "a", value: 3, state: "new" }],
+      screen: []
+    },
+    {
+      line: 7,
+      note: "要叫 <code>addOne(a)</code> 了。关键就在这一步：" +
+            "<b>递出去的不是 a 这个盒子，是 a 里装的值的抄件。</b>",
+      mem: [{ name: "a", value: 3, state: "read" }],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "进了 addOne。它<b>新开一个盒子 x</b>，把刚才抄来的那份放进去。" +
+            "看着箭头——<b>是从 a 抄了一份过来，不是把 a 搬过来。</b>",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "x", value: 3, state: "new" }],
+      screen: [],
+      flows: [{ from: "a", to: "x" }]
+    },
+    {
+      line: 1,
+      note: "<code>x = x + 1;</code> —— x 变成 <b>4</b>。" +
+            "<b>这一步盯紧 a：它还是 3，纹丝没动。</b>改的是那个抄件。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "x", value: 4, state: "write" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "把 x 送到屏幕上：<b>函数里 x = 4</b>。这一行是真的，x 确实是 4。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "x", value: 4, state: "read" }],
+      screen: ["函数里 x = 4"],
+      flows: [{ from: "x", to: ":screen" }]
+    },
+    {
+      line: 3,
+      note: "走到 addOne 的 <b>}</b>——x 这个抄件也要没了（3.3 讲的规矩）。",
+      mem: [{ name: "a", value: 3, state: "" },
+            { name: "x", value: 4, state: "gone" }],
+      screen: ["函数里 x = 4"]
+    },
+    {
+      line: 8,
+      note: "回到 main。函数里那通折腾，<b>一点都没留下</b>：" +
+            "x 没了，a 从头到尾没被碰过，<b>还是 3</b>。",
+      mem: [{ name: "a", value: 3, state: "read" }],
+      screen: ["函数里 x = 4", "回来 a = 3"]
+    },
+    {
+      line: null,
+      note: "程序结束。所以那种「在函数里把数改了，外面却没变」的事，" +
+            "原因就在这几步里：<b>函数拿到的一直是抄件。</b>",
+      mem: [],
+      screen: ["函数里 x = 4", "回来 a = 3"]
+    }
+  ]
+};
+</script>
+
+</body>
+</html>

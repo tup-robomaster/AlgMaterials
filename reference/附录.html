@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>附录 · 卡住的时候查 — C++ 基础课</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../TUP.html">
+    <img class="logo" src="../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="../lessons/cpp_Basics/00-开始.html">第 0 部分</a>
+      <a href="../lessons/cpp_Basics/01-数字和字.html">第 1 部分</a>
+      <a href="../lessons/cpp_Basics/02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="../lessons/cpp_Basics/03-把代码拆开.html">第 3 部分</a>
+      <a href="../lessons/cpp_Basics/04-一堆数据.html">第 4 部分</a>
+      <a href="../lessons/cpp_Basics/05-自己造类型.html">第 5 部分</a>
+      <a href="../lessons/cpp_Basics/06-指针与引用.html">第 6 部分</a>
+      <a href="../lessons/cpp_Basics/07-自己会发现错.html">第 7 部分</a>
+      <a href="../lessons/cpp_Basics/08-章末检测.html">第 8 部分</a>
+      <a class="active" href="附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="../lessons/cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../lessons/cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../lessons/other_basics/index.html">其他基础</a>
+      <a href="../lessons/opencv/index.html">OpenCV</a>
+      <a href="../lessons/python/index.html">Python</a>
+      <a href="../lessons/ros2/index.html">ROS 2</a>
+      <a href="../lessons/machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="../lessons/cpp_Basics/00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="../lessons/cpp_Basics/08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="附录.html" aria-current="page">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">附录 · 卡住的时候查</div>
+  <a class="toc-l" href="#apA"><span class="n">A</span>编译报错速查</a>
+  <a class="toc-sub" href="#sA-1">报错的一句话长什么样</a>
+  <a class="toc-sub" href="#sA-2">英文词对着查</a>
+  <a class="toc-sub" href="#sA-3">一条完整的报错，从头读到尾</a>
+  <a class="toc-sub" href="#sA-4">警告是另一回事</a>
+  <a class="toc-sub" href="#sA-5">查不到，怎么办</a>
+  <a class="toc-l" href="#apB"><span class="n">B</span>语法速查表</a>
+  <a class="toc-sub" href="#sB-1">变量与类型</a>
+  <a class="toc-sub" href="#sB-2">运算</a>
+  <a class="toc-sub" href="#sB-3">输入输出</a>
+  <a class="toc-sub" href="#sB-4">判断</a>
+  <a class="toc-sub" href="#sB-5">循环</a>
+  <a class="toc-sub" href="#sB-6">函数</a>
+  <a class="toc-sub" href="#sB-7">数组与 vector</a>
+  <a class="toc-sub" href="#sB-8">struct、class、继承</a>
+  <a class="toc-sub" href="#sB-9">指针与引用</a>
+  <a class="toc-l" href="#apC"><span class="n">C</span>std 常用</a>
+  <a class="toc-sub" href="#sC-1">数字</a>
+  <a class="toc-sub" href="#sC-2">文字：string</a>
+  <a class="toc-sub" href="#sC-3">变长数组：vector</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">附录</div>
+  <h1>卡住的时候查</h1>
+  <p class="part-lead">
+    A 是报错速查，B 是课里讲过的语法，C 是课里没讲的 std 常用。
+    平时不用读——报错了、忘了怎么写、想要个现成的写法，翻到对应那一页。
+  </p>
+</header>
+
+<section class="lesson" id="apA">
+<h2><span class="no">A</span>编译报错速查</h2>
+
+<h3 id="sA-1">报错的一句话长什么样</h3>
+
+<p>
+编译器每一条报错的<b>第一行</b>，都是同一个骨架。0.3 讲过一遍，
+这里再摆一次，因为查表之前得先知道自己在读什么：
+</p>
+
+<!-- 形状示意，不是谁的原话。真的报错原样贴在 A.3，一个字没动。 -->
+<pre><code>文件名.cpp:4:43: error: too many initializers for ‘int [5]’</code></pre>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>这一截</th><th>什么意思</th></tr>
+  <tr>
+    <td>冒号之前那一串</td>
+    <td>哪个文件。<b>出错的往往不是你正在看的那一行</b>，先看它说的是哪个文件、第几行</td>
+  </tr>
+  <tr>
+    <td>第一个数字</td>
+    <td>第几行。<b>这个数是给你指路的，不是给你定罪的</b>——真凶常在它上面一行</td>
+  </tr>
+  <tr>
+    <td>第二个数字</td>
+    <td>那一行里的第几个字符。长长的一行里，它帮你缩到具体那一处</td>
+  </tr>
+  <tr>
+    <td><code>error:</code></td>
+    <td>这是错误，程序编译不出来。<code>warning:</code> 是警告，还能编译（见下面 A.4）</td>
+  </tr>
+  <tr>
+    <td><code>note:</code> 开头的那几行</td>
+    <td>补充说明。有时它比 error 还值钱——<b>它会把该怎么改直接写给你</b></td>
+  </tr>
+  <tr>
+    <td>底下那些 <code>|</code> 和 <code>^</code></td>
+    <td>把出错那行整个印出来，再用 <code>^</code> 指到具体位置。0.3 讲过：<b>尖号指哪儿，盯哪儿看</b></td>
+  </tr>
+</table>
+
+<h3 id="sA-2">英文词对着查</h3>
+
+<p>
+报错里的英文翻来覆去就那几个词。左边这一列是你在屏幕上会看到的，
+找到它，右边两列告诉你说的是什么事、该回去看哪一课。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 31%"><col style="width: 33%"><col style="width: 36%"></colgroup>
+  <tr><th>报错里的词</th><th>它在说什么</th><th>你多半写了什么</th></tr>
+
+  <tr>
+    <td><code>expected ‘;’ before …</code></td>
+    <td>「在……前面，我等着一个分号」</td>
+    <td>上面那一行的末尾少了 <code>;</code>。尖号指的那个位置就是要补的地方</td>
+  </tr>
+  <tr>
+    <td><code>expected ‘,’ or ‘;’ before …</code></td>
+    <td>同上，逗号也认</td>
+    <td>还是少分号。它多给你一个选项，是因为有些地方逗号也对</td>
+  </tr>
+  <tr>
+    <td><code>was not declared in this scope</code></td>
+    <td>「这个名字，在这儿我不认识」</td>
+    <td>三种可能：拼错了、名字写在别的花括号里（3.3 作用域）、压根没定义过</td>
+  </tr>
+  <tr>
+    <td><code>did you mean ‘std::cout’?</code></td>
+    <td>「你是不是想写这个？」</td>
+    <td>少了 <code>std::</code>。它常常直接把全名报给你——照着抄就行</td>
+  </tr>
+  <tr>
+    <td><code>is not a member of ‘std’</code></td>
+    <td>「<code>std</code> 里没有这么个东西」</td>
+    <td>少了 <code>#include</code>。底下那条 <code>note</code> 会告诉你该 include 哪一个</td>
+  </tr>
+  <tr>
+    <td><code>too many initializers for ‘int [5]’</code></td>
+    <td>「盒子只有 5 个，你塞了 6 个」</td>
+    <td>数组长度写小了。方括号里那个数是上限（4.1）</td>
+  </tr>
+  <tr>
+    <td><code>is private within this context</code></td>
+    <td>「这是私有的，你不在这儿，碰不得」</td>
+    <td>从外面直接动私有成员了。底下那条 <code>note</code> 会写出该用哪个函数（5.3）</td>
+  </tr>
+  <tr>
+    <td><code>is protected within this context</code></td>
+    <td>同上，protected 那一档</td>
+    <td><code>protected</code> 是留给子类的，外面照样碰不得（5.4）</td>
+  </tr>
+  <tr>
+    <td><code>no matching function for call to …</code></td>
+    <td>「你这一嗓子，没有能应上的函数」</td>
+    <td>参数个数或类型对不上。底下会一条一条列出「有哪些能应的」，看第一条差在哪儿（5.4）</td>
+  </tr>
+  <tr>
+    <td><code>marked ‘override’, but does not override</code></td>
+    <td>「标了 override，可它谁也没盖住」</td>
+    <td>子类那个函数的签名和父类差了一个字母。<b>这个名字对不上，就是两个不相干的函数</b>（5.4）</td>
+  </tr>
+  <tr>
+    <td><code>declared as reference but not initialized</code></td>
+    <td>「说是引用，可没绑上」</td>
+    <td><code>int&amp; r;</code>。引用一出生就得绑一个盒子（6.2）</td>
+  </tr>
+  <tr>
+    <td><code>cannot bind … to an rvalue</code></td>
+    <td>「绑不上」</td>
+    <td><code>int&amp; r = 5;</code>。<code>5</code> 是一个数，不是一个盒子，没法给它起名字（6.2）</td>
+  </tr>
+  <tr>
+    <td><code>assignment of read-only reference</code></td>
+    <td>「这是只读的，不让改」</td>
+    <td>往 <code>const int&amp;</code> 里写东西了。前面有 <code>const</code> 就是只读（6.4）</td>
+  </tr>
+  <tr>
+    <td><code>invalid conversion from ‘…’ to ‘…’</code></td>
+    <td>「这两种类型之间，没有这种换法」</td>
+    <td>典型的 <code>char c = "A";</code>：单引号是一个字符，双引号是一串（1.2）</td>
+  </tr>
+  <tr>
+    <td><code>no match for ‘operator&lt;&lt;’</code></td>
+    <td>「没有能对上的 <code>&lt;&lt;</code>」</td>
+    <td>方向记反了：<code>std::cin &lt;&lt; a;</code> 或者 <code>std::cout &gt;&gt; a;</code>（1.5）</td>
+  </tr>
+  <tr>
+    <td><code>expected primary-expression before …</code></td>
+    <td>「这前面缺东西」</td>
+    <td>常常和上一条一起出现：<code>for</code> 的三段之间该用分号，写成了逗号（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>expected ‘;’ before ‘)’ token</code></td>
+    <td>「<code>)</code> 前面该有个分号」</td>
+    <td><code>for</code> 少写了第三段，或者前后的括号没配平（2.4）</td>
+  </tr>
+</table>
+
+<div class="aside">
+  <b>这一列里最该记住的，是第三条</b>
+  <p>
+    <code>was not declared in this scope</code>——「我不认识这个名字」。
+    这一条能顶上小一半的报错，而且它跟前面那些「缺个符号」的毛病不一样：
+    <b>少一个分号是手滑，名字不认识是脑子里的事</b>——
+    要么你以为它在那儿而它不在，要么它在那儿而你以为它在别处。
+    这两种都得回去看代码，光盯着报错没用。
+  </p>
+</div>
+
+<h3 id="sA-3">一条完整的报错，从头读到尾</h3>
+
+<p>
+挑了一条最值钱的：它有 <code>error</code>，还有一条把改法写出来的 <code>note</code>。
+这是 5.3 那份「从外面动私有成员」的程序，编译器原话，一个字没动：
+</p>
+
+<pre class="diag"><code>5.3-private-err.cpp:25:7: error: ‘int Student::score’ is private within this context
+   25 |     a.score = 100;
+      |       ^~~~~
+5.3-private-err.cpp:7:9: note: declared private here
+    7 |     int score;
+      |         ^~~~~
+5.3-private-err.cpp:25:7: note: field ‘int Student::score’ can be accessed via ‘int Student::getScore()’
+   25 |     a.score = 100;
+      |       ^~~~~
+      |       getScore()
+</code></pre>
+
+<p>
+<b>第一行。</b><code>25:7</code>，第 25 行第 7 个字符；
+<code>error</code>；然后一句话：
+</p>
+
+<pre><code>‘int Student::score’ is private within this context</code></pre>
+
+<p>
+拆开看：<code>int Student::score</code> 是<b>它的全名</b>——「
+<code>Student</code> 这个类里那个叫 <code>score</code> 的 <code>int</code>」。
+这句话要是换成中文，就是：<b>「<code>Student</code> 家的 <code>score</code>
+是私有的，你现在这个位置碰不着」。</b>
+</p>
+
+<p>
+<b>中间那两行</b>是它顺手把 25 行印出来，尖号戳在 <code>score</code> 上。
+底下紧跟着一条 <code>note</code>：<b>「私有，是在这儿声明的」</b>，
+还把那行（第 7 行）也印出来了。一头一尾都摆给你看，
+你就不用在文件里来回翻了。
+</p>
+
+<p>
+<b>最后那三行是这一条里最值钱的：</b>
+</p>
+
+<pre><code>note: field ‘int Student::score’ can be accessed via ‘int Student::getScore()’
+      |       getScore()</code></pre>
+
+<p>
+<b>它不光说「不行」，还告诉你「该用这个」。</b>
+<code>can be accessed via</code> 翻过来就是「可以用……来访问」，
+后面跟着的 <code>getScore()</code>，就是那个 public 的函数（5.3 写过）。
+底下那行 <code>|       getScore()</code>，是它替你把要改的那半句直接写出来了。
+</p>
+
+<p>
+顺带说一句，这条报错里出现了两个尖号、三种缩进、一个竖线——<b>不要被这个架势吓住。
+它从头到尾只在说一件事。</b>
+</p>
+
+<div class="aside">
+  <b>编译器读你的代码，比你读它的报错快得多</b>
+  <p>
+    一份几百行的程序，它一眼扫完，然后挑最靠前的那几处说。
+    所以报错经常是<b>一串</b>，而不是一条——头一条改完，
+    后面好几条常常自己就没了。这就是为什么 0.3 说「<b>改最上面那一条，再编一次</b>」，
+    别一口气改十条：你改的十条里，有九条本来就不是病。
+  </p>
+</div>
+
+<h3 id="sA-4">警告是另一回事</h3>
+
+<p>
+警告（<code>warning</code>）的意思是：<b>「这么写能编译，但我看着不对劲。」</b>
+编译照样过，程序照样能跑——<b>跑起来对不对是另一回事</b>。
+下面这几条是本课里出现过的，都是真编译器的原话：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>警告里的词</th><th>它在说什么</th></tr>
+  <tr>
+    <td><code>this ‘if’ clause does not guard…</code></td>
+    <td>「这个 <code>if</code> 不管着后面那一句」——缩进骗了自己（2.1）</td>
+  </tr>
+  <tr>
+    <td><code>suggest parentheses around assignment used as truth value</code></td>
+    <td>「你把 <code>=</code> 当条件了」——想写的是 <code>==</code>（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>suggest parentheses around ‘&amp;&amp;’ within ‘||’</code></td>
+    <td>「<code>&amp;&amp;</code> 和 <code>||</code> 混在一起了，加括号吧」——你是想加括号的，只是忘了（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>comparisons like ‘X&lt;=Y&lt;=Z’ do not have their mathematical meaning</code></td>
+    <td>「<code>1 &lt;= x &lt;= 100</code> 这么写，跟数学里那个不是一回事」（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>comparison of integer expressions of different signedness</code></td>
+    <td>「一个能装负数的数，和一个是不能装负数的数，在比大小」——加上 <code>int()</code> 就好（4.6）</td>
+  </tr>
+  <tr>
+    <td><code>‘sizeof’ on array function parameter … will return size of ‘int*’</code></td>
+    <td>「数组名进了函数就不知道自己是多长了，<code>sizeof</code> 量出来的是指针」——所以长度得自己传（6.5）</td>
+  </tr>
+  <tr>
+    <td><code>unknown conversion type character … in format</code></td>
+    <td>「<code>format</code> 里有个我不认识的写法」——想打百分号，写了一个 <code>%</code>，得写两个（1.6）</td>
+  </tr>
+</table>
+
+<p>
+警告分两种。一种是<b>它误会你了</b>（比如 4.6 那个
+<code>i &lt; int(v.size())</code>，你从 0 往上走，永远不会是负数），
+这种看懂了就不用管。另一种是<b>它说中了</b>——
+2.2 那两个坑、6.5 那个 <code>sizeof</code>，都是你写错了、它拦了一下、然后放你过去了。
+<b>警告值不值得改，看它说的那件事你认不认。</b>
+认，就改；不认，看懂了再往下走。别养成「看到黄字就心慌」的习惯，也别养成
+「黄字一律无视」的习惯——这两种都让你错过东西。
+</p>
+
+<h3 id="sA-5">查不到，怎么办</h3>
+
+<p>
+这张表没覆盖到，按这个顺序来：
+</p>
+
+<ol>
+  <li>
+    <b>先看尖号在哪儿。</b>不管句子多长多绕，
+    <code>^</code> 指着的那一处就是你该动的地方。十次里有八次，
+    光是看它指哪儿就明白了。
+  </li>
+  <li>
+    <b>只读最上面那一条。</b>底下那些多半是它连带的，
+    头一条改完再编一次，剩下的常常自己就没了。
+  </li>
+  <li>
+    <b>找那句话里的「名字」。</b>报错里那些 <code>‘ ’</code> 包着的，
+    都是你代码里的东西（变量名、函数名、类型名）。翻回去找到它，
+    答案一般就在那儿。
+  </li>
+  <li>
+    <b>还不明白，就用 7.1 那套。</b>把程序砍到最小——砍到只剩出问题的那几行，
+    报错往往自己就露馅了。这一招对的不是报错，是你脑子里那个「我以为」。
+  </li>
+</ol>
+
+<p>
+最后一句：<b>看不懂的报错，先原样留着，别急着乱改。</b>
+乱改一气之后，屏幕上的报错会变成另一种、更看不懂的——那时候你连
+「原来错在哪儿」都找不回来了。
+</p>
+
+</section>
+<section class="lesson" id="apB">
+<h2><span class="no">B</span>语法速查表</h2>
+
+<p>
+这张表只收本课讲过的语法，一条不多。每条末尾的括号标出它在哪一课出现过——
+<b>忘了就回去翻那一课，这张表只做索引，不替讲课</b>。
+</p>
+
+<p>
+写法一栏里，<code>名字</code>、<code>a</code>、<code>n</code> 这些是<b>占位符</b>，
+写的时候换成你自己的；花括号里的 <code>…</code> 表示此处省去的语句体，
+<b>不是要照着打三个点</b>。本课没有讲过任何可以省略的写法——写进自己的程序时，
+每一句都要写全。
+</p>
+
+<p>
+表里一律用 C++ 的标准叫法。课里那些比方说的是同一批东西：「盒子」是变量，
+「抄件」是按值传递的副本，「本人」是引用所绑定的那个变量，「父类／子类」是
+基类／派生类。两边对不上号的时候，以这张表为准。
+</p>
+
+<h3 id="sB-1">变量与类型</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>int a = 3;</code></td><td>声明整型变量 <code>a</code>，初始化为 3（1.1）</td></tr>
+  <tr><td><code>int a;</code></td><td>只声明、不初始化：<code>a</code> 的值不确定，是那块内存里留下来的数据（1.1）</td></tr>
+  <tr><td><code>a = 5;</code></td><td>赋值：把 5 存进 <code>a</code>。<b><code>=</code> 是赋值运算符，不是相等判断</b>（1.1）</td></tr>
+  <tr><td><code>double x = 1.5;</code></td><td>双精度浮点变量，用来存小数（1.2）</td></tr>
+  <tr><td><code>char c = 'A';</code></td><td>字符变量，<b>用单引号</b>；双引号包起来的是一串字符（1.2）</td></tr>
+  <tr><td><code>std::string s = "小航";</code></td><td>一串字符，<b>用双引号</b>；要写全 <code>std::string</code>，文件开头还要加 <code>#include &lt;string&gt;</code>（1.4）</td></tr>
+  <tr><td><code>bool ok = true;</code></td><td>布尔变量，取值只有 <code>true</code> 和 <code>false</code>（1.2）</td></tr>
+  <tr><td><code>const int n = 5;</code></td><td>常量：初始化之后不能再赋值（6.4）</td></tr>
+</table>
+
+<p>
+标识符的命名规则：只能用字母、数字、下划线，<b>不能以数字开头</b>，
+<b>区分大小写</b>（<code>sum</code> 和 <code>Sum</code> 是两个变量），
+不能用关键字（<code>int</code>、<code>return</code>…）当名字（1.1）。
+</p>
+
+<h3 id="sB-2">运算</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>+ - * /</code></td><td>加、减、乘、除（1.3）</td></tr>
+  <tr><td><code>7 / 2</code></td><td>两个整数相除，结果取整为 <b>3</b>，小数部分直接舍弃（1.3）</td></tr>
+  <tr><td><code>7.0 / 2</code></td><td>只要有一个操作数是小数，结果就是小数 <b>3.5</b>（1.3）</td></tr>
+  <tr><td><code>7 % 2</code></td><td>取余运算，结果是 <b>1</b>。用来判断能否整除，也能拆出某一位数字（1.3）</td></tr>
+  <tr><td><code>a + b * c</code></td><td><code>*</code> 先算。优先级不确定时就加括号：括号不改变运算结果，只是省得读的人去回想（1.3）</td></tr>
+  <tr><td><code>a = a + 1;</code></td><td>把 <code>a</code> 的值加 1，再存回 <code>a</code>（1.3）</td></tr>
+</table>
+
+<h3 id="sB-3">输入输出</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>#include &lt;iostream&gt;</code></td><td>使用 <code>std::cout</code> / <code>std::cin</code> 需要这一行（0.2）</td></tr>
+  <tr><td><code>std::cout &lt;&lt; a &lt;&lt; std::endl;</code></td><td>把 <code>a</code> 输出到屏幕，<code>std::endl</code> 换行（1.4）</td></tr>
+  <tr><td><code>std::cin &gt;&gt; a;</code></td><td>从键盘读入一个数存进 <code>a</code>。<b>箭头的方向就是数据的流向</b>（1.5）</td></tr>
+  <tr><td><code>"你好"</code></td><td>双引号里的内容原样输出，引号外的先算完再输出（1.4）</td></tr>
+  <tr><td><code>#include &lt;cstdio&gt;</code></td><td>使用 <code>printf</code> 需要这一行（1.6）</td></tr>
+  <tr><td><code>printf("%d\n", a);</code></td><td>按格式输出：<code>%d</code> 是整数占位，<code>\n</code> 是换行（1.6）</td></tr>
+  <tr><td><code>%.2f</code> / <code>%8.2f</code></td><td>浮点数：保留两位小数；总宽 8 列、保留两位。<b>那个小数点不能省</b>（1.6）</td></tr>
+  <tr><td><code>%3d</code></td><td>整数至少占 3 列，不足补空格，这样各列才对得齐（1.6）</td></tr>
+  <tr><td><code>%%</code></td><td>输出一个百分号本身（1.6）</td></tr>
+</table>
+
+<h3 id="sB-4">判断</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>if (a &gt; b) { … }</code></td><td>条件成立才执行花括号里这一段（2.1）</td></tr>
+  <tr><td><code>else if (…) { … }</code></td><td>上一条不成立时，再判断这一条（2.1）</td></tr>
+  <tr><td><code>else { … }</code></td><td>前面全部不成立时执行（2.1）</td></tr>
+  <tr><td><code>== != &lt; &gt; &lt;= &gt;=</code></td><td>相等、不等、大小比较。<b>相等判断写两个等号</b>（2.2）</td></tr>
+  <tr><td><code>&amp;&amp; || !</code></td><td>逻辑与、逻辑或、逻辑非（2.2）</td></tr>
+  <tr><td><code>if (a = 5)</code></td><td><b>这不是判断</b>：先把 5 赋给 <code>a</code>，再拿 5 的真假决定走不走（2.2）</td></tr>
+</table>
+
+<h3 id="sB-5">循环</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>while (i &lt; n) { … }</code></td><td>条件成立就再执行一圈。循环次数事先不确定时用它（2.3）</td></tr>
+  <tr><td><code>for (int i = 0; i &lt; n; i++) { … }</code></td><td>初值、条件、每轮的变化都写在头部。循环次数确定时用它（2.4）</td></tr>
+  <tr><td><code>for (…) { for (…) { … } }</code></td><td>两层嵌套：外层控制行，内层控制一行里有几个（2.5）</td></tr>
+  <tr><td><code>i++</code></td><td>和 <code>i = i + 1</code> 完全等价，写起来短（2.4）</td></tr>
+  <tr><td><code>i &lt;= 5</code> 还是 <code>i &lt; 5</code></td><td><code>&lt;=</code> 比 <code>&lt;</code> 多执行一轮循环。<b>不确定就按初值、条件、末轮各数一遍</b>（2.4）</td></tr>
+</table>
+
+<p>
+循环头部声明的变量（上面那个 <code>i</code>）<b>作用域只在这个循环内</b>。循环一结束
+它就不再存在，外面再引用，编译器会报
+<code>was not declared in this scope</code>（2.4）。
+</p>
+
+<h3 id="sB-6">函数</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>int add(int a, int b) { return a + b; }</code></td><td>有返回值的函数：返回类型写在最前面（这里是 <code>int</code>），函数体里必须有 <code>return</code>（3.2）</td></tr>
+  <tr><td><code>void show(int a) { … }</code></td><td>没有返回值：返回类型写 <code>void</code>，可以不带 <code>return</code>（3.2）</td></tr>
+  <tr><td><code>int add(int a, int b);</code></td><td>函数声明：只有签名、没有函数体，用来告诉编译器「有这个函数」。写在调用它的代码之前（3.2）</td></tr>
+  <tr><td><code>add(3, 5)</code></td><td>函数调用：实参按位置对应形参，名字不必相同（3.2）</td></tr>
+  <tr><td><code>void f(int a)</code></td><td>按值传递：<code>f</code> 拿到的是实参的副本，<b>函数内改，外面不动</b>（3.4）</td></tr>
+  <tr><td><code>void f(int&amp; a)</code></td><td>按引用传递：<code>f</code> 拿到的是原变量本身，<b>函数内改，外面跟着变</b>（3.5）</td></tr>
+</table>
+
+<p>
+花括号里声明的变量，作用域到花括号结束为止（3.3）。两个函数里的 <code>int a</code>
+是各自的 <code>a</code>，重名不冲突。
+</p>
+
+<h3 id="sB-7">数组与 vector</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>int a[5];</code></td><td>声明 5 个整数的数组，共用一个名字。<b>方括号里是元素个数</b>，5 个元素的下标是 0 到 4（4.1）</td></tr>
+  <tr><td><code>int a[5] = {90, 85, 77, 60, 95};</code></td><td>声明的同时初始化。初值的个数不能超过方括号里的个数（4.1）</td></tr>
+  <tr><td><code>a[0]</code></td><td>第一个元素。<b>下标是「离开头第几个」，所以从 0 开始</b>（4.2）</td></tr>
+  <tr><td><code>for (int i = 0; i &lt; 5; i++)</code> 里用 <code>a[i]</code></td><td>依次访问每个元素，数组的固定写法（4.2）</td></tr>
+  <tr><td><code>a[5]</code>（长度是 5 的时候）</td><td><b>下标越界，编译器不检查</b>。读到的是相邻内存里的数据，写进去会破坏别处的数据（4.2）</td></tr>
+  <tr><td><code>int t = a; a = b; b = t;</code></td><td>交换两个变量，<b>必须借助第三个变量</b>（4.4）</td></tr>
+  <tr><td><code>#include &lt;vector&gt;</code></td><td>使用 <code>std::vector</code> 需要这一行（4.6）</td></tr>
+  <tr><td><code>std::vector&lt;int&gt; v;</code></td><td>声明一个长度可变的数组，当前元素个数为 0（4.6）</td></tr>
+  <tr><td><code>v.push_back(90);</code></td><td>在末尾追加一个元素，<b>长度随时可以增加，不必事先确定</b>（4.6）</td></tr>
+  <tr><td><code>v.size()</code></td><td>当前元素个数。与 <code>int</code> 比较时套一层 <code>int()</code>，可以消掉那类警告（4.6）</td></tr>
+  <tr><td><code>v[0]</code> / <code>v[2] = 88;</code></td><td>读写方式和数组相同，但下标只能落在已有的元素上（4.6）</td></tr>
+</table>
+
+<h3 id="sB-8">struct、class、继承</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>struct P { int x; int y; };</code></td><td>把多个变量组合成一个类型。<b>末尾那个分号最容易忘</b>（5.1）</td></tr>
+  <tr><td><code>P p; p.x = 1;</code></td><td>声明一个 <code>P</code>，成员用点号访问（5.1）</td></tr>
+  <tr><td><code>P list[3];</code></td><td>结构体数组，每个元素是一整份 <code>P</code>（5.1）</td></tr>
+  <tr><td><code>class S { public: … private: … };</code></td><td><code>class</code> 的成员默认私有，所以要显式写一段 <code>public:</code>（5.2、5.3）</td></tr>
+  <tr><td><code>void Print() { … }</code> 写在 <code>class</code> 里面</td><td>成员函数。调用写成 <code>a.Print()</code>（5.2）</td></tr>
+  <tr><td><code>S(int n) { score = n; }</code></td><td>构造函数：创建对象时自动调用，没有返回类型（5.3）</td></tr>
+  <tr><td><code>~S() { … }</code></td><td>析构函数：对象销毁时调用，名字前面多个波浪线（5.3）</td></tr>
+  <tr><td><code>this-&gt;score</code></td><td>形参名和成员名相同，用 <code>this-&gt;</code> 指明这里要的是成员（5.3）</td></tr>
+  <tr><td><code>class Grad : public Student { … };</code></td><td>继承：<code>Grad</code> 派生自 <code>Student</code>，冒号后面写基类（5.4）</td></tr>
+  <tr><td><code>Grad(…) : Student(n, i, s) { … }</code></td><td>基类部分由谁初始化：写在初始化列表里，交给基类的构造函数（5.4）</td></tr>
+  <tr><td><code>virtual void Print() { … }</code></td><td>虚函数：允许派生类改写。通过基类引用调用时，执行的是派生类那一版（5.4）</td></tr>
+  <tr><td><code>void Print() override { … }</code></td><td>标明这是对基类虚函数的覆写，签名对不上编译器会当场报错（5.4）</td></tr>
+  <tr><td><code>protected: int score;</code></td><td>类外不能访问，派生类可以。介于 public 和 private 之间的一档（5.4）</td></tr>
+</table>
+
+<h3 id="sB-9">指针与引用</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>&amp;a</code></td><td>取地址：得到 <code>a</code> 的内存地址（6.1）</td></tr>
+  <tr><td><code>int&amp; r = a;</code></td><td>引用：给 <code>a</code> 起的另一个名字。<b>声明时必须绑定，绑定之后不能改指别的变量</b>（6.2）</td></tr>
+  <tr><td><code>int* p = &amp;a;</code></td><td>指针：一个变量，里面存的是另一个变量的地址（6.3）</td></tr>
+  <tr><td><code>*p</code></td><td>解引用：按这个地址找到那个变量本身。读和写都可以（6.3）</td></tr>
+  <tr><td><code>int* p = nullptr;</code></td><td>空指针：暂时不指向任何变量。<b>对空指针解引用，程序会崩溃</b>（6.3）</td></tr>
+  <tr><td><code>const int&amp; x</code></td><td>常量引用：只读，不能通过它修改原变量（6.4）</td></tr>
+  <tr><td><code>int* p</code> 参数</td><td>地址传递：函数里改 <code>*p</code>，外面跟着变（6.4）</td></tr>
+  <tr><td><code>a[i]</code> 和 <code>*(a + i)</code></td><td>两种写法完全等价（6.5）</td></tr>
+  <tr><td><code>void f(int a[])</code></td><td>数组作参数时会退化成指针，<b>函数内不知道数组有多长</b>，长度得另传一个参数（6.5）</td></tr>
+</table>
+
+</section>
+<section class="lesson" id="apC">
+<h2><span class="no">C</span>std 常用</h2>
+
+<p>
+B 那张表只收课里讲过的，这一节反过来：<b>收的全是课里没讲、但你写着写着就会想找的东西</b>。
+它们都住在 <code>std</code> 里——就是 <code>std::cout</code> 那个 <code>std</code>，
+名字前面照样要写 <code>std::</code>，用哪一样还得在文件开头 <code>#include</code> 上对应的那一行
+（每张表的第一行就是它）。
+</p>
+
+<p>
+收进来的有个共同点：<b>喂它一个值，它还你一个值</b>。不用先学什么新概念，
+看完就能写进自己的程序里试。要另外先学一套东西的（排序、查表那些），这节末尾单说。
+</p>
+
+<p>
+写法那栏的占位符和 B 一样，<code>a</code>、<code>s</code>、<code>v</code> 换成你自己的。
+括号里偶尔写着课号的，是课里提过一句的地方，回去翻那一课；
+<b>没写课号的，课里没有出现过，这张表就是它的全部说明。</b>
+</p>
+
+<h3 id="sC-1">数字</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>#include &lt;algorithm&gt;</code></td><td>用下面那三个 <code>std::min</code>、<code>std::max</code>、<code>std::swap</code> 需要这一行</td></tr>
+  <tr><td><code>#include &lt;cmath&gt;</code></td><td>用 <code>std::sqrt</code>、<code>std::pow</code>、<code>std::floor</code>、<code>std::abs</code> 这些数学函数需要这一行</td></tr>
+  <tr><td><code>std::min(a, b)</code> / <code>std::max(a, b)</code></td><td>两个里小的那个／大的那个。<b>两个的类型要一样</b>——<code>std::min(3, 4.5)</code> 编译不过，报错就是 A.2 里那条 <code>no matching function for call to …</code>，两个类型对不上，没有能应的</td></tr>
+  <tr><td><code>std::swap(a, b)</code></td><td>交换两个盒子里的值。4.4 手写的那三行，这一句就顶了（4.4）</td></tr>
+  <tr><td><code>std::abs(a)</code></td><td>绝对值，负数给它的相反数，正数原样还回来。整数、小数都能喂</td></tr>
+  <tr><td><code>std::sqrt(x)</code></td><td>平方根。<b>给的和还的都是小数</b>：<code>std::sqrt(16)</code> 打出来是 <code>4</code>，但它的类型是 <code>double</code></td></tr>
+  <tr><td><code>std::pow(x, y)</code></td><td><code>x</code> 的 <code>y</code> 次方，同样是小数运算：<code>std::pow(2, 10)</code> 打出来是 <code>1024</code></td></tr>
+  <tr><td><code>std::floor(x)</code> / <code>std::ceil(x)</code> / <code>std::round(x)</code></td><td>向下取整／向上取整／四舍五入。<b>还回来的是小数</b>，只是小数部分为 0：<code>std::floor(2.7)</code> 打出来是 <code>2</code>。负数别想当然：<code>std::floor(-2.7)</code> 是 <code>-3</code>，是往下走的那个</td></tr>
+</table>
+
+<h3 id="sC-2">文字：string</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>s.size()</code></td><td>这串文字有几个<b>字节</b>，不是几个字。<b>一个汉字算 3 个</b>：<code>s</code> 是 <code>"小航"</code> 时，<code>s.size()</code> 是 <code>6</code>。拿它数「名字有几个字」会数错。和 <code>int</code> 比大小时照样要套 <code>int()</code>（4.6）</td></tr>
+  <tr><td><code>s[i]</code></td><td>第 <code>i</code> 个字节，是个 <code>char</code>，下标从 0 起。汉字占 3 格，所以同一个 <code>"小航"</code>，<code>s[0]</code> 拿到的只是半个字，打出来是乱码——要按「字」取，用下面的 <code>substr</code></td></tr>
+  <tr><td><code>s1 + s2</code></td><td>两串接成一串，原来的两串都不动</td></tr>
+  <tr><td><code>s1 == s2</code></td><td>比的是里面的字一样不一样，<b>不是比两个盒子在哪儿</b>。和引号里的字串比也行：<code>s == "abc"</code></td></tr>
+  <tr><td><code>s.substr(起点, 个数)</code></td><td>从起点开始抄几个字节出来。<b>第二个参数是「抄几个」，不是「抄到哪儿」</b>：<code>s</code> 是 <code>"abcde"</code> 时，<code>s.substr(1, 3)</code> 是 <code>"bcd"</code>。个数写超了没事，抄到末尾为止；<b>起点越界会当场死掉</b></td></tr>
+  <tr><td><code>s.find("ab")</code></td><td>找得到就给它的位置（从 0 数），找不到给 <code>std::string::npos</code></td></tr>
+  <tr><td><code>if (s.find("ab") == std::string::npos)</code></td><td>判断「没找到」的标准写法，整句写进 <code>if</code> 里。<b>别拿 <code>-1</code> 去比</b></td></tr>
+  <tr><td><code>s.empty()</code></td><td>是不是空串。和 <code>s.size() == 0</code> 一个意思，写起来短</td></tr>
+  <tr><td><code>std::getline(std::cin, s);</code></td><td>读一整行进来，<b>中间的空格也算这一行的内容</b>。1.5 留下的那句「用到的时候再来看」，指的就是它（1.5）</td></tr>
+  <tr><td><code>std::to_string(x)</code></td><td>数字转成文字，好拼进 <code>std::cout</code> 里。<b>小数一律给六位</b>：<code>std::to_string(3.5)</code> 是 <code>"3.500000"</code>，<code>std::to_string(42)</code> 是 <code>"42"</code></td></tr>
+  <tr><td><code>std::stoi(s)</code></td><td>文字转 <code>int</code>：从开头读数字，读到不是数字为止——<code>"4x2"</code> 得到 <code>4</code>，<code>"-7"</code> 得到 <code>-7</code>。开头就不是数字（<code>"abc"</code>）会当场死掉</td></tr>
+</table>
+
+<h3 id="sC-3">变长数组：vector</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>写法</th><th>含义</th></tr>
+  <tr><td><code>std::vector&lt;int&gt; v = {1, 2, 3};</code></td><td>声明的时候直接把初值塞进去，花括号的写法和数组一样（4.1）。<code>push_back</code>、<code>size()</code>、<code>v[i]</code> 那些在 B 表里（4.6）</td></tr>
+  <tr><td><code>v.pop_back()</code></td><td>删掉末尾那一个，长度减 1。<b>空的时候别调</b></td></tr>
+  <tr><td><code>v.clear()</code></td><td>清空，长度变 0。清完还能接着 <code>push_back</code></td></tr>
+  <tr><td><code>v.empty()</code></td><td>是不是空的。和 <code>v.size() == 0</code> 一个意思，写起来短</td></tr>
+  <tr><td><code>v.front()</code> / <code>v.back()</code></td><td>第一个／最后一个，比写 <code>v[0]</code>、<code>v[int(v.size()) - 1]</code> 短。<b>空的时候别调</b></td></tr>
+</table>
+
+<p>
+<b>排序、查表这些不在表里。</b>
+</p>
+
+<p class="can">
+  <b>附录到这里就完了。</b>
+  报错了翻 A，忘了怎么写翻 B，缺个现成的写法翻 C。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="../lessons/cpp_Basics/index.html">← 回课程目录</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../assets/toc.js"></script>
+<script src="../assets/code.js"></script>
+
+</body>
+</html>

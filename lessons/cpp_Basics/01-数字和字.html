@@ -1,0 +1,3038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 1 部分 · 数字和字 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a class="active" href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html" aria-current="page">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 1 部分 · 数字和字</div>
+  <a class="toc-l" href="#l1-1"><span class="n">1.1</span>变量</a>
+  <a class="toc-sub" href="#s1-1-1">一行一行读</a>
+  <a class="toc-sub" href="#s1-1-2">= 不是「等于」</a>
+  <a class="toc-sub" href="#s1-1-3">盒子各是各的</a>
+  <a class="toc-sub" href="#s1-1-4">名字怎么起</a>
+  <a class="toc-sub" href="#e1-1">例题：算一次加法</a>
+  <a class="toc-sub" href="#s1-1-5">练习</a>
+  <a class="toc-l" href="#l1-2"><span class="n">1.2</span>类型</a>
+  <a class="toc-sub" href="#s1-2-0">四种类型</a>
+  <a class="toc-sub" href="#s1-2-1">char 的三个细节</a>
+  <a class="toc-sub" href="#s1-2-2">double 存不准</a>
+  <a class="toc-sub" href="#s1-2-3">int 装不下</a>
+  <a class="toc-sub" href="#e1-2">例题：四个盒子</a>
+  <a class="toc-sub" href="#s1-2-4">练习</a>
+  <a class="toc-l" href="#l1-3"><span class="n">1.3</span>运算</a>
+  <a class="toc-sub" href="#s1-3-1">五个运算符</a>
+  <a class="toc-sub" href="#s1-3-2">整数除法那个坑</a>
+  <a class="toc-sub" href="#s1-3-3">取余能干什么</a>
+  <a class="toc-sub" href="#s1-3-4">优先级和括号</a>
+  <a class="toc-sub" href="#s1-3-5">混着算</a>
+  <a class="toc-sub" href="#s1-3-6">除以 0 会崩</a>
+  <a class="toc-sub" href="#e1-3">例题：250 分钟</a>
+  <a class="toc-sub" href="#s1-3-7">练习</a>
+  <a class="toc-l" href="#l1-4"><span class="n">1.4</span>输出</a>
+  <a class="toc-sub" href="#s1-4-1">一个 &lt;&lt; 只做一件事</a>
+  <a class="toc-sub" href="#s1-4-2">空格是自己打的</a>
+  <a class="toc-sub" href="#s1-4-3">引号里和引号外</a>
+  <a class="toc-sub" href="#s1-4-4">它怎么知道该打什么</a>
+  <a class="toc-sub" href="#s1-4-5">给一段文字起名字</a>
+  <a class="toc-sub" href="#s1-4-6">endl 和 "\n"</a>
+  <a class="toc-sub" href="#e1-4">例题：拼一句话</a>
+  <a class="toc-sub" href="#s1-4-7">练习</a>
+  <a class="toc-l" href="#l1-5"><span class="n">1.5</span>输入</a>
+  <a class="toc-sub" href="#s1-5-1">程序停下来等你</a>
+  <a class="toc-sub" href="#s1-5-2">&gt;&gt; 的方向是反的</a>
+  <a class="toc-sub" href="#s1-5-3">没有提示语会怎样</a>
+  <a class="toc-sub" href="#s1-5-4">空白都算分隔</a>
+  <a class="toc-sub" href="#s1-5-5">读进来的是什么</a>
+  <a class="toc-sub" href="#e1-5">例题：读两个数求和</a>
+  <a class="toc-sub" href="#s1-5-6">练习</a>
+  <a class="toc-l" href="#l1-6"><span class="n">1.6</span>格式输出</a>
+  <a class="toc-sub" href="#s1-6-1">先看毛病</a>
+  <a class="toc-sub" href="#s1-6-2">printf 长什么样</a>
+  <a class="toc-sub" href="#s1-6-3">%d 和宽度</a>
+  <a class="toc-sub" href="#s1-6-4">%f 和 %.2f</a>
+  <a class="toc-sub" href="#s1-6-5">宽度加小数位</a>
+  <a class="toc-sub" href="#s1-6-6">百分号和那个点</a>
+  <a class="toc-sub" href="#e1-6">例题：对齐一张小票</a>
+  <a class="toc-sub" href="#s1-6-7">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 1 部分</div>
+  <h1>数字和字</h1>
+  <p class="part-lead">
+    程序归根到底就干三件事：记住一些数、算一算、把结果弄出来。
+    这一部分讲前两件——怎么把数放进程序里，怎么让它算。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-1">
+<h2><span class="no">1.1</span>变量：给一个盒子起名字</h2>
+
+<p>
+程序要算数，就得有地方放数。那个地方叫<b>变量</b>（variable）。
+</p>
+
+<p>
+先看一个完整的程序。它开了三个盒子，算了点东西，然后把结果打印出来。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+    int b = 5;
+    int c = a + b;
+
+    a = 10;              // 改 a，看看 c 会不会跟着变
+
+    std::cout &lt;&lt; a &lt;&lt; std::endl;
+    std::cout &lt;&lt; b &lt;&lt; std::endl;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+先别急着运行。下面这个动画把这个程序一步步走一遍，你可以点「下一步」慢慢看，
+也可以点「自动播放」。<b>注意中间那一排盒子，和右边屏幕上出现的东西。</b>
+</p>
+
+<div class="viz" data-viz="boxes"></div>
+
+<h3 id="s1-1-1">一行一行读</h3>
+
+<p>
+<code>int a = 3;</code> —— 这句话做了三件事：
+</p>
+
+<ul>
+  <li><code>int</code> 说明这个盒子放的是<b>整数</b>（integer）。先不管它，1.2 专门讲。</li>
+  <li><code>a</code> 是给这个盒子起的名字。</li>
+  <li><code>= 3</code> 是把 3 放进去。末尾那个 <code>;</code> 别忘了，每句话都要有。</li>
+</ul>
+
+<p>
+<code>int c = a + b;</code> —— 这句话看着像一步，其实是两步：
+<b>先算右边</b>，把 <code>a</code> 和 <code>b</code> 的值读出来（3 和 5），加起来得到 8；
+<b>再把 8 放进 c</b>。
+</p>
+
+<h3 id="s1-1-2">= 不是「等于」</h3>
+
+<p>
+这是新手最容易栽的一个地方。
+</p>
+
+<p>
+数学里 <code>=</code> 表示「左右两边相等」，是个陈述。C++ 里不是——
+C++ 的 <code>=</code> 是一个<b>动作</b>：把右边的东西放进左边的盒子。
+</p>
+
+<p>
+所以 <code>a = 10;</code> 读作「<b>把 10 放进 a</b>」，不是「a 等于 10」。
+</p>
+
+<p>
+按这个读法，下面这句话就不奇怪了：
+</p>
+
+<pre><code>a = a + 1;</code></pre>
+
+<p>
+数学上这句话不可能成立。C++ 里它完全正常，读作：
+「把 a 现在的值读出来，加 1，再放回 a」。
+a 原来是 10 的话，做完这句就是 11。
+</p>
+
+<div class="aside">
+  <b>为什么现在讲这个</b>
+  <p>
+    因为 <code>=</code> 读错了，后面每一课都会读错。1.3 会专门练这个。
+  </p>
+</div>
+
+<h3 id="s1-1-3">盒子之间没有牵连</h3>
+
+<p>
+回到前面那个动画。最后一步是 <code>a = 10;</code>，把 a 从 3 改成了 10。
+</p>
+
+<p>
+<b>c 没有跟着变。它还是 8。</b>
+</p>
+
+<p>
+为什么？因为在 <code>int c = a + b;</code> 那一瞬间，程序把 <code>a + b</code> 算完了，
+把结果 8 <b>抄进</b>了 c 这个盒子。从那一刻起，c 和 a、b 就没有任何关系了。
+后面再改 a、改 b，c 都不知道。
+</p>
+
+<p>
+这是很多人第一次写代码会想错的地方——以为 c 是「a 加 b」这个公式，
+会一直跟着变。不是的。c 里面就是一个死数字，8。
+</p>
+
+<div class="aside tip">
+  <b>换个说法</b>
+  <p>
+    <code>int c = a + b;</code> 不是把 a、b 连到 c 上，是<b>算一次、抄一份</b>。
+    想让它重新算，你得再写一遍 <code>c = a + b;</code>。
+  </p>
+</div>
+
+<h3 id="s1-1-4">名字怎么起</h3>
+
+<table>
+  <tr><th>规则</th><th>例子</th></tr>
+  <tr><td>只能用字母、数字、下划线</td><td><code>count</code> <code>sum_1</code> <code>maxX</code></td></tr>
+  <tr><td><b>不能数字开头</b></td><td><code>1st</code> ✗ &nbsp; <code>first1</code> ✓</td></tr>
+  <tr><td>区分大小写。<code>a</code> 和 <code>A</code> 是两个不同的名字</td><td><code>num</code> 和 <code>Num</code> 互不相干</td></tr>
+  <tr><td>不能用 C++ 自己占着的词</td><td><code>int</code> <code>return</code> <code>if</code> 都不能当名字</td></tr>
+  <tr><td>起能看懂的名字</td><td><code>sum</code> 比 <code>s</code> 好，<code>count</code> 比 <code>c</code> 好</td></tr>
+</table>
+
+<p>
+最后一条你现在看不出有什么必要。<b>等你的程序超过 50 行就懂了</b>——
+那时候回头看自己一周前写的 <code>a</code>、<code>b</code>、<code>t</code>，
+你会不知道它们是什么。
+</p>
+
+<div class="aside warn">
+  <b>坑</b>
+  <p>
+    名字起成 <code>l</code>（小写 L）、<code>O</code>（大写 o）、<code>I</code>（大写 i）
+    这种，在等宽字体里和 <code>1</code>、<code>0</code> 长得一样。
+    编译器分得清，你分不清。别用。
+  </p>
+</div>
+
+<div class="eg" id="e1-1">
+  <div class="eg-h">例题 · 开三个盒子，算一次加法</div>
+  <p>
+    题目：一份外卖 25 元，一杯奶茶 18 元。把这两个数放进变量，算出总价，打印出来。
+  </p>
+  <p>
+    完整程序——注意它的样子，和你从 0.2 起就熟悉的骨架一模一样，只是多开了三个盒子：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int meal = 25;              // 开一个盒子叫 meal，放 25
+    int tea = 18;               // 开一个盒子叫 tea，放 18
+    int total = meal + tea;     // 先算右边（25+18=43），再放进 total
+
+    std::cout &lt;&lt; total &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">43</pre>
+  <p>
+    <b>盒子的名字是我自己起的。</b><code>meal</code>、<code>tea</code>、<code>total</code>
+    都不是 C++ 规定的词，换成 <code>a</code>、<code>b</code>、<code>c</code> 照样能跑。
+    可一周以后回头看，<code>total</code> 比 <code>c</code> 好懂得多——
+    这就是上面那张表里最后一条的意思。
+  </p>
+  <p>
+    还有，<code>int total = meal + tea;</code> 是<b>先算右边、再放进左边</b>，
+    和动画里 <code>int c = a + b;</code> 走的是同一步。
+  </p>
+</div>
+
+<h3 id="s1-1-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-1</div>
+  <p>
+    把下面这个程序敲进去，编译运行：
+  </p>
+  <pre><code>int a = 10;
+int b = 20;
+int c = a + b;
+std::cout &lt;&lt; c &lt;&lt; std::endl;</code></pre>
+  <p>（这几行写在 <code>main()</code> 的大括号里面，前面该有的 <code>#include</code> 那些照 0.2 的样子补上。）</p>
+  <pre class="out" data-label="预期输出">30</pre>
+  <details class="ans" data-run="示例代码/答案/1-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>题目给的三行照抄进去，前后该有的骨架按 0.2 的样子补：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 10;
+    int b = 20;
+    int c = a + b;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        <code>#include</code>、<code>int main()</code>、<code>return 0;</code>——
+        这三样是每一份程序都要有的壳，中间那几行才是你真正写的东西。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-2</div>
+  <p>
+    把上一题里改成 <code>int a = 100;</code>，别的不动。
+    输出会变成什么？<b>先写下来，再跑。</b>
+  </p>
+  <pre class="out" data-label="预期输出">120</pre>
+  <details class="ans" data-run="示例代码/答案/1-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>只动 <code>a</code> 那一行，别的不碰：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 100;
+    int b = 20;
+    int c = a + b;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        <code>c</code> 是在 <code>a</code> 变成 100 之后才算的，所以跟着涨到 120。
+        要是把 <code>int c = a + b;</code> 挪到改 <code>a</code> 之前，结果就还是 30——
+        <b>算的时机，比写的顺序重要。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-3</div>
+  <p>
+    下面这段依次打印 a、b、c。输出是什么？
+  </p>
+  <pre><code>int a = 1;
+int b = 2;
+int c = 3;
+
+a = b;
+b = c;
+c = a;
+
+std::cout &lt;&lt; a &lt;&lt; std::endl;
+std::cout &lt;&lt; b &lt;&lt; std::endl;
+std::cout &lt;&lt; c &lt;&lt; std::endl;</code></pre>
+  <p>
+    这题不要猜，<b>拿张纸，一步一步把三个盒子里的数写下来</b>。
+    第一行 <code>a = b;</code> 做完之后，a 里是几？b 里是几？
+  </p>
+  <pre class="out" data-label="预期输出">2
+3
+2</pre>
+  <details class="ans" data-run="示例代码/答案/1-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>一步步走（括号里是这一步做完之后，三个盒子里各是几）：</p>
+      <pre><code>一开始        a=1  b=2  c=3
+
+a = b;        a=2  b=2  c=3     b 把 2 给了 a
+b = c;        a=2  b=3  c=3     c 把 3 给了 b
+c = a;        a=2  b=3  c=2     a 早就不是 1 了</code></pre>
+      <p>
+        <b>最后一步最容易错。</b>很多人这儿写 <code>c = 1</code>，
+        因为他脑子里记的还是最开头那个 <code>a</code>。
+        盒子里装的是<b>现在</b>的值，不是它一开始的值。
+      </p>
+      <p>完整程序：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    a = b;
+    b = c;
+    c = a;
+
+    std::cout &lt;&lt; a &lt;&lt; std::endl;
+    std::cout &lt;&lt; b &lt;&lt; std::endl;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-4</div>
+  <p>
+    下面这段输出的是 8 还是 108？<b>为什么？</b>
+  </p>
+  <pre><code>int a = 3;
+int b = 5;
+int c = a + b;
+
+b = 100;
+
+std::cout &lt;&lt; c &lt;&lt; std::endl;</code></pre>
+  <p>
+    答对了不算完，要能说出理由。说不出来就回头看「盒子之间没有牵连」那一节。
+  </p>
+  <pre class="out" data-label="预期输出">8</pre>
+  <details class="ans" data-run="示例代码/答案/1-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>8。<code>c</code> 早在 <code>b</code> 被改成 100 <b>之前</b>，就把 3 + 5 的 8 装进去了：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+    int b = 5;
+    int c = a + b;
+
+    b = 100;
+
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        往后再怎么改 <code>b</code>，<code>c</code> 都不管——<b>盒子和盒子之间没有牵连。</b>
+        赋值那一刻算完，就存死了。
+      </p>
+      <p>
+        顺带：<code>b = 100;</code> 那一行删掉，输出一点不变。
+        可以自己试一下，看是不是这样。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能把几个数放进程序里、让它们加加减减、
+  把结果打到屏幕上。听起来不多——但这是后面所有东西的地基。
+  下一课讲类型：为什么有的盒子只能放整数，有的能放小数。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-2">
+<h2><span class="no">1.2</span>类型：int、double、char、bool</h2>
+
+<p>
+1.1 里我们一直写 <code>int a = 3;</code>。<code>int</code> 是什么？
+</p>
+
+<p>
+它是<b>类型</b>（type）。<b>类型决定了这个盒子能装什么、装多大。</b>
+装整数的盒子装不了小数，装字符的盒子装不了整数——就像鞋盒装不下被子。
+</p>
+
+<h3 id="s1-2-0">四种类型</h3>
+
+<p>
+最常用的就四种，一次认全。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int    n = 42;       // 整数
+    double d = 3.14;     // 小数
+    char   c = 'A';      // 一个字符
+    bool   b = true;     // 真 / 假
+
+    std::cout &lt;&lt; n &lt;&lt; std::endl;
+    std::cout &lt;&lt; d &lt;&lt; std::endl;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    std::cout &lt;&lt; b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">42
+3.14
+A
+1</pre>
+
+<table>
+  <tr><th>类型</th><th>装什么</th><th>写的时候长这样</th></tr>
+  <tr><td><code>int</code></td><td>整数，没有小数点</td><td><code>int age = 19;</code></td></tr>
+  <tr><td><code>double</code></td><td>小数</td><td><code>double h = 1.75;</code></td></tr>
+  <tr><td><code>char</code></td><td><b>一个</b>字符，用<b>单引号</b></td><td><code>char c = 'A';</code></td></tr>
+  <tr><td><code>bool</code></td><td>真或假，只有两个值</td><td><code>bool ok = true;</code></td></tr>
+</table>
+
+<div class="aside warn">
+  <b>最后一行为什么是 1</b>
+  <p>
+    <code>bool</code> 存的是「真」和「假」，但 <code>std::cout</code> 默认把它们打成 <code>1</code> 和 <code>0</code>。
+    <b>1 就是 <code>true</code>，0 就是 <code>false</code>。</b>
+    记住这个对应关系，以后看到 1 不要当成数字。
+  </p>
+</div>
+
+<h3 id="s1-2-1">char 的三个细节</h3>
+
+<p>
+<b>一、单引号，不是双引号。</b><code>'A'</code> 是一个字符，<code>"A"</code> 是一串字符。
+写错了编译器会报错，练习里有一道专门找这个。
+</p>
+
+<p>
+<b>二、只能装一个字符。</b><code>char c = 'AB';</code> 是错的。
+</p>
+
+<p>
+<b>三、它其实是一个很小的整数。</b>这是最反直觉的一点。看例子：
+</p>
+
+<pre><code>char c = 'A';
+
+std::cout &lt;&lt; c &lt;&lt; std::endl;          // 直接打，是个字母
+std::cout &lt;&lt; c + 1 &lt;&lt; std::endl;      // 加 1 再打 —— 加号把它当成了数字
+char next = c + 1;          // 结果放回 char 盒子
+std::cout &lt;&lt; next &lt;&lt; std::endl;       // 又变回字母了
+
+int code = c;               // 把 c 的值放进一个 int 盒子
+std::cout &lt;&lt; code &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">A
+66
+B
+65</pre>
+
+<p>
+看出来了吗：<b>每个字符在计算机里都有一个编号。</b><code>'A'</code> 是 65，所以 <code>'A' + 1</code> 是 66，
+而编号 66 对应的字符是 <code>'B'</code>。小写 <code>'a'</code> 是 97。
+</p>
+
+<p>
+同一份数据，你用什么类型去看它，它就是什么。<b>这就是「类型」这个词的意思。</b>
+</p>
+
+<h3 id="s1-2-2">补充一：double 存不准</h3>
+
+<p>
+这一条会颠覆你的直觉。看：
+</p>
+
+<pre><code>double a = 0.1;
+double b = 0.2;
+
+std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+std::cout &lt;&lt; (a + b == 0.3) &lt;&lt; std::endl;
+std::cout &lt;&lt; (a + b &gt; 0.3) &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">0.3
+0
+1</pre>
+
+<p>
+第二、三行里的 <code>==</code> 读作「相等吗」，<code>&gt;</code> 读作「大于吗」——
+这两个第 2 部分才正式讲，现在你只要看<b>结果</b>：
+</p>
+
+<ul>
+  <li>第一行打出来是 <code>0.3</code>——<b>看着像 0.3</b></li>
+  <li>第二行说它和 0.3 <b>不相等</b>（<code>0</code> 就是假）</li>
+  <li>第三行说它<b>比 0.3 大</b>（<code>1</code> 就是真）</li>
+</ul>
+
+<p>
+一个东西既「看着等于 0.3」又「比 0.3 大」，只能说明一件事：<b>它根本不是 0.3。</b>
+</p>
+
+<p>
+原因是计算机用二进制存小数，<code>0.1</code> 和 <code>0.2</code> 都存不准，
+加起来是一个很接近 0.3 但不等于 0.3 的数。
+只是 <code>std::cout</code> 默认只打 6 位有效数字，把它<b>显示</b>成了 0.3。
+</p>
+
+<div class="aside warn">
+  <b>所以</b>
+  <p>
+    <b>不要用 <code>==</code> 去比较两个算出来的小数。</b>
+    真要比较，就比差值——两个数相差小于 0.000001 就当作相等。
+    现在先记住结论，以后你会明白得更透。
+  </p>
+</div>
+
+<h3 id="s1-2-3">补充二：int 装不下</h3>
+
+<p>
+<code>int</code> 能装的整数有上限，最大是 <b>2147483647</b>。再加 1 会怎样？
+</p>
+
+<pre><code>int a = 2147483647;      // int 能装的最大值
+std::cout &lt;&lt; a &lt;&lt; std::endl;
+
+a = a + 1;               // 再加 1
+std::cout &lt;&lt; a &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">2147483647
+-2147483648</pre>
+
+<p>
+<b>它绕回来了，变成最小的负数。</b>这个现象叫<b>溢出</b>（overflow）。
+你可以理解成：盒子装满还想再塞，就从另一头冒出来了。
+</p>
+
+<p>
+说得准确一点：<b>超出范围之后该是什么，C++ 并没有规定。</b>
+你上面看到的是这台机器上编译器实际干的事，不是标准保证的。所以：
+</p>
+
+<ul>
+  <li>别指望溢出之后一定是某个固定的数</li>
+  <li><b>更要紧的是：编译器不会提醒你。</b>上面那个程序编译时一句警告都没有，它觉得自己完全没问题</li>
+</ul>
+
+<p>
+这就是 0.1 里说的「编译过了，结果不对」——
+<b>编译器不知道你想要什么，它只知道语法对不对。</b>
+</p>
+
+<div class="eg" id="e1-2">
+  <div class="eg-h">例题 · 四种类型各开一个盒子</div>
+  <p>
+    题目：记一杯咖啡的四件事——单价 12.5 元、买 3 杯、中杯（<code>M</code>）、加糖。
+    四件事各挑一个合适的类型装起来，然后一行打一个。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    double price = 12.5;        // 单价，有小数，用 double
+    int    cups  = 3;           // 杯数，整数，用 int
+    char   size  = 'M';         // 一个字母，用 char
+    bool   sugar = true;        // 加不加糖，用 bool
+
+    std::cout &lt;&lt; price &lt;&lt; std::endl;
+    std::cout &lt;&lt; cups &lt;&lt; std::endl;
+    std::cout &lt;&lt; size &lt;&lt; std::endl;
+    std::cout &lt;&lt; sugar &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">12.5
+3
+M
+1</pre>
+  <p>
+    四句话长得一模一样：<b><code>类型 名字 = 值;</code></b>。
+    这是声明一个变量的固定写法，不管什么类型都是这个形状——
+    <code>int n = 42;</code>、<code>char c = 'A';</code>、<code>bool ok = true;</code>，
+    把类型和值换掉，其余照抄。
+  </p>
+  <p>
+    最后一行为什么是 <code>1</code> 而不是 <code>true</code>，回上面那个提醒看一眼。
+  </p>
+</div>
+
+<h3 id="s1-2-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-5</div>
+  <p>
+    开四个盒子：一个 <code>int</code> 存你的年龄，一个 <code>double</code> 存你的身高，
+    一个 <code>char</code> 存你名字的首字母，一个 <code>bool</code> 存「我是不是这个专业的」。
+    然后按上面的顺序，一行打一个。
+  </p>
+  <p>
+    下面是拿 <code>19 / 1.75 / W / true</code> 当例子跑出来的样子，你的数字换成你自己的：
+  </p>
+  <pre class="out" data-label="预期输出">19
+1.75
+W
+1</pre>
+  <p>
+    最后一行为什么是 1 而不是 <code>true</code>，回上面看那个提醒。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>四个盒子，四种类型，一行打一个：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int age = 19;
+    double height = 1.75;
+    char initial = 'W';
+    bool isThisMajor = true;
+
+    std::cout &lt;&lt; age &lt;&lt; std::endl;
+    std::cout &lt;&lt; height &lt;&lt; std::endl;
+    std::cout &lt;&lt; initial &lt;&lt; std::endl;
+    std::cout &lt;&lt; isThisMajor &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        数字换成你自己的就行。最后一行为什么是 1 不是 <code>true</code>：
+        <code>bool</code> 在屏幕上就是用 <code>1</code> 和 <code>0</code> 表示的，这是它打印出来的样子。
+      </p>
+      <p>
+        变量名随便起，但起个看得懂的名字。以后代码长了，
+        <code>age</code> 和 <code>a</code> 的区别就是「一眼看懂」和「回头再猜」的区别。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-6</div>
+  <p>
+    <b>先猜，再跑。</b>
+  </p>
+  <pre><code>char c = 'a';
+std::cout &lt;&lt; c &lt;&lt; std::endl;
+std::cout &lt;&lt; c - 1 &lt;&lt; std::endl;</code></pre>
+  <p>
+    第二行为什么是 96、不是字母，说得出理由才算会了。
+  </p>
+  <pre class="out" data-label="预期输出">a
+96</pre>
+  <details class="ans" data-run="示例代码/答案/1-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>char</code> 盒子里装的其实是一个<b>编号</b>：<code>'a'</code> 的编号是 97。
+        打它的时候，<code>std::cout</code> 看它是个 <code>char</code>，就把编号翻译成字母；
+        一减 1，它变成整数 96，就照数字打了：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    char c = 'a';
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    std::cout &lt;&lt; c - 1 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        想自己看一眼这个编号，把 <code>c</code> 那一行换成更强的写法也行
+        （第 4 部分讲 <code>int()</code>）——现在只要记住：
+        <b>同一份数据，用什么身份去看，就打出来什么样子。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-7（找错）</div>
+  <p>
+    下面这段有<b>一处</b>错。先别编译，自己找出来，说出它错在哪、该改成什么。
+  </p>
+  <pre><code>char c = "A";
+std::cout &lt;&lt; c &lt;&lt; std::endl;</code></pre>
+  <p>
+    编译器会告诉你 <code>invalid conversion from ‘const char*’ to ‘char’</code>。
+    里面那个 <code>char*</code> 带个星号，你现在不用懂它是什么（第 6 部分讲）。
+    <b>你只要记住结论：<code>char</code> 用单引号，双引号是另一回事。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-7.cpp" data-err="示例代码/答案/1-7-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>把双引号改成单引号，就一个字符的事：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    char c = 'A';
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>改完跑一下，输出就一个字母——对了就说明你改对了：</p>
+      <pre class="out" data-label="预期输出">A</pre>
+      <p>编译器原来那句话的完整样子：</p>
+      <pre class="diag"><code>1-7-err.cpp: In function ‘int main()’:
+1-7-err.cpp:4:14: error: invalid conversion from ‘const char*’ to ‘char’ [-fpermissive]
+    4 |     char c = "A";
+      |              ^~~
+      |              |
+      |              const char*
+</code></pre>
+      <p>
+        （上面第一行折成了两行。编译器打印的是一整行，是页面在连字符那儿折的——
+        一个字符都没少。）
+      </p>
+      <p>
+        注意最后那两行——它不光说「类型不对」，还画了根线指到 <code>"A"</code> 上，
+        底下写着 <code>const char*</code>，等于告诉你「这玩意儿的类型是这个」。
+        <b>报错里的类型名，常常就是这个错的名字。</b>
+      </p>
+      <div class="aside warn">
+        <b>单引号和双引号，键盘上是两个键</b>
+        <p>
+          写起来只差一个字，意思完全不同：<code>'A'</code> 是一个字符，
+          <code>"A"</code> 是一串字符（哪怕里面只有一个）。这一处，
+          以后你写代码时栽跟头的次数不会少——记住单引号是给一个字符用的。
+        </p>
+      </div>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-8</div>
+  <p>
+    <b>先猜结果，再跑。</b>提示：先算算 100000 × 100000 是多少，再想想 <code>int</code> 装不装得下。
+  </p>
+  <pre><code>int a = 100000;
+std::cout &lt;&lt; a * a &lt;&lt; std::endl;</code></pre>
+  <p>
+    猜不出来很正常——<b>这道题的重点不是猜对，是让你亲眼看见「一个完全错误的答案，
+    就这么安安静静地打了出来」。</b>程序不会告诉你它算错了。
+  </p>
+  <pre class="out" data-label="预期输出">1410065408</pre>
+  <details class="ans" data-run="示例代码/答案/1-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>打出来的就是题目里那个 1410065408：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 100000;
+    std::cout &lt;&lt; a * a &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        算一下：100000 × 100000 = 10000000000。而 <code>int</code> 最大只装到
+        2147483647（这个数在上面那节里出现过）。装不下的部分，<b>无声无息地丢了</b>——
+        程序不报错，不警告，就这么打了一个完全错误的答案给你。
+      </p>
+      <p>
+        这就是为什么这题的重点不是猜对：<b>你得见过一次「错了但没人告诉你」的场面，
+        以后才会对结果起疑。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>知道程序里的盒子分类型，四种常用类型各装什么、怎么用；
+  见过 <code>double</code> 和 <code>int</code> 各自的边界，也知道了越界时<b>程序不会报警</b>。
+  下一课讲怎么让这些盒子算起来。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-3">
+<h2><span class="no">1.3</span>运算：加减乘除、取余</h2>
+
+<p>
+盒子会开了，现在让它们算。
+</p>
+
+<h3 id="s1-3-1">五个运算符</h3>
+
+<pre><code>int a = 7;
+int b = 2;
+
+std::cout &lt;&lt; a + b &lt;&lt; std::endl;   // 加
+std::cout &lt;&lt; a - b &lt;&lt; std::endl;   // 减
+std::cout &lt;&lt; a * b &lt;&lt; std::endl;   // 乘
+std::cout &lt;&lt; a / b &lt;&lt; std::endl;   // 除
+std::cout &lt;&lt; a % b &lt;&lt; std::endl;   // 取余</code></pre>
+
+<pre class="out" data-label="预期输出">9
+5
+14
+3
+1</pre>
+
+<p>
+前三个不用解释。<b>后两个要，而且这一课最重要的东西就在后两个里。</b>
+</p>
+
+<p>
+先看最后那个 <code>%</code>，叫<b>取余</b>（读作「百分之」的那个符号，在 C++ 里念「模」）。
+7 除以 2 等于 3 余 1，所以 <code>7 % 2</code> 是 <b>1</b>——<b>它要的是余数，不是商。</b>
+</p>
+
+<p>
+那 <code>7 / 2</code> 为什么是 3，而不是 3.5？
+</p>
+
+<h3 id="s1-3-2">整数除法：这一课最大的坑</h3>
+
+<p>
+看这四行。只差一个小数点，结果就不一样。<b>先自己猜四行分别输出什么，再往下看。</b>
+</p>
+
+<pre><code>std::cout &lt;&lt; 7 / 2 &lt;&lt; std::endl;       // 整数 除以 整数
+std::cout &lt;&lt; 7.0 / 2 &lt;&lt; std::endl;     // 分子写成小数
+std::cout &lt;&lt; 7 / 2.0 &lt;&lt; std::endl;     // 分母写成小数
+std::cout &lt;&lt; 7.0 / 2.0 &lt;&lt; std::endl;   // 两个都写成小数</code></pre>
+
+<pre class="out" data-label="预期输出">3
+3.5
+3.5
+3.5</pre>
+
+<p>
+<b>规则只有一条：两个整数相除，结果一定是整数。</b>
+</p>
+
+<p>
+不是四舍五入，是<b>直接砍掉小数部分</b>：
+<code>7 / 2</code> 得 3（真实值 3.5，砍掉 .5），
+<code>9 / 2</code> 得 4（真实值 4.5，砍掉 .5），
+<code>1 / 2</code> 得 <b>0</b>。
+</p>
+
+<div class="aside warn">
+  <b>把这一条背下来</b>
+  <p>
+    <b>「整数除以整数」是新手最常踩的坑，而且编译器一句话都不会说。</b>
+    你写 <code>average = sum / count;</code>，心里想的是平均值，
+    程序给你的是一个砍掉了小数的整数——语法完全正确，结果完全不对。
+  </p>
+  <p>
+    要小数，就让参与运算的<b>至少一个数写成小数</b>：
+    <code>sum / 2.0</code>，不是 <code>sum / 2</code>。
+  </p>
+</div>
+
+<h3 id="s1-3-3">取余 % 能干三件事</h3>
+
+<p>
+取余看着没用，其实特别常用。拿 1234 试试：
+</p>
+
+<pre><code>int n = 1234;
+
+std::cout &lt;&lt; n % 10 &lt;&lt; std::endl;          // 个位
+std::cout &lt;&lt; n / 10 % 10 &lt;&lt; std::endl;     // 十位
+std::cout &lt;&lt; n / 100 % 10 &lt;&lt; std::endl;    // 百位
+std::cout &lt;&lt; n % 2 &lt;&lt; std::endl;           // 0 就是偶数，1 就是奇数</code></pre>
+
+<pre class="out" data-label="预期输出">4
+3
+2
+0</pre>
+
+<p>
+前三个是同一套路：<b>先用 <code>/</code> 把不要的位砍掉，再用 <code>%</code> 把要的那位留下来。</b>
+</p>
+
+<p>
+第四个是 <code>%</code> 最常用的地方：
+<b><code>n % 2</code> 是 0 就是偶数，是 1 就是奇数。</b>判断奇偶不用别的，就这一句。
+</p>
+
+<p>
+（顺带说一句：<code>n / 10 % 10</code> 是从左往右算的，先 <code>n / 10</code> 再 <code>% 10</code>。
+乘、除、取余是同一级，同级就按从左到右算。）
+</p>
+
+<h3 id="s1-3-4">优先级和括号</h3>
+
+<pre><code>std::cout &lt;&lt; 2 + 3 * 4 &lt;&lt; std::endl;
+std::cout &lt;&lt; (2 + 3) * 4 &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">14
+20</pre>
+
+<p>
+和数学一样：先乘除，后加减。不确定就加括号，加了括号一定先算。
+<b>宁可多写两个括号，也别赌自己记得优先级。</b>
+</p>
+
+<h3 id="s1-3-5">int 和 double 混着算</h3>
+
+<pre><code>std::cout &lt;&lt; 1 + 2.5 &lt;&lt; std::endl;
+
+int a = 7.9;
+std::cout &lt;&lt; a &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">3.5
+7</pre>
+
+<p>
+第一行：一个整数加一个小数，结果是小数。<b>只要有一个是小数，结果就是小数。</b>
+</p>
+
+<p>
+第二行：<b>把小数放进 int 盒子，小数部分直接扔掉。</b>
+</p>
+
+<div class="aside warn">
+  <b>是扔掉，不是四舍五入</b>
+  <p>
+    <code>int a = 7.9;</code> 得到 <b>7</b>。<code>int b = 7.99999;</code> 得到的还是 <b>7</b>。
+    离 8 只差一丁点也没用——<b>不是四舍五入，是砍掉。</b>
+  </p>
+</div>
+
+<h3 id="s1-3-6">除以 0 会崩</h3>
+
+<p>
+下面这个程序会崩。看清楚它崩在哪一行：
+</p>
+
+<pre><code>int a = 7;
+int b = 0;
+
+std::cout &lt;&lt; "算之前" &lt;&lt; std::endl;
+std::cout &lt;&lt; a / b &lt;&lt; std::endl;      // 这一行会出事
+std::cout &lt;&lt; "算之后" &lt;&lt; std::endl;   // 永远不会跑到这里</code></pre>
+
+<pre class="out" data-label="实际输出">算之前</pre>
+
+<p>
+然后就没了。程序整个死掉，终端上多出一行：
+</p>
+
+<pre><code>浮点异常（核心已转储）</code></pre>
+
+<p>
+（你的系统如果是英文的，这行是 <code>Floating point exception (core dumped)</code>。
+<b>它说的是「浮点」，可你做的是整数除法</b>——这个名字是历史遗留的，别被它带偏，
+它就是「除以 0 了」。）
+</p>
+
+<p>
+两件事要记住：
+</p>
+
+<ol>
+  <li>
+    <b>程序死在那一行，后面的代码一行都不跑。</b><code>算之后</code> 永远打不出来。
+    这和「结果不对」完全不是一回事——这是程序整个没了。
+  </li>
+  <li>
+    <b>编译器只给了一个 <code>warning</code>，没给 <code>error</code>。</b>
+    所以它照样编译成功，你照样能运行——然后它在运行时崩给你看。
+    0.3 说「别养成无视 warning 的习惯」，这就是原因。
+  </li>
+</ol>
+
+<div class="eg" id="e1-3">
+  <div class="eg-h">例题 · 250 分钟是几小时几分钟</div>
+  <p>
+    题目：<code>250</code> 分钟，换算成「几小时、几分钟」，一行打一个。
+  </p>
+  <p>
+    关键是想清楚 <code>/</code> 和 <code>%</code> 各自管什么：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total = 250;            // 一共 250 分钟
+
+    int hours   = total / 60;   // 一小时 60 分钟。要「有几个整 60」，用 /
+    int minutes = total % 60;   // 要「除完还剩多少」，用 %
+
+    std::cout &lt;&lt; hours &lt;&lt; std::endl;
+    std::cout &lt;&lt; minutes &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">4
+10</pre>
+  <p>
+    <b><code>250 / 60</code> 得 4</b>，不是 4.1666——两个整数相除会砍掉小数。
+    这一课最大的坑，在这儿恰好是你要的效果。
+  </p>
+  <p>
+    <b><code>250 % 60</code> 得 10</b>，是除完剩下的零头。
+    两个式子的原料都是 <code>total</code>，谁也不改谁——和 1.1 里
+    <code>int c = a + b;</code> 算完就抄走是一个道理。
+  </p>
+</div>
+
+<h3 id="s1-3-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-9</div>
+  <p>
+    一个电影时长是 <b>3725 秒</b>。用 <code>/</code> 和 <code>%</code> 把它换算成
+    「几小时 / 几分 / 几秒」，一行打一个。
+  </p>
+  <p>
+    提示：一小时 3600 秒。先想要几小时该用 <code>/</code> 还是 <code>%</code>，
+    剩下的零头再怎么变成分钟。
+  </p>
+  <pre class="out" data-label="预期输出">1
+2
+5</pre>
+  <details class="ans" data-run="示例代码/答案/1-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>四步。<code>/</code> 拿去整的，<code>%</code> 拿剩下的零头：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total = 3725;
+
+    int hours = total / 3600;         // 1
+    int rest = total % 3600;          // 125
+    int minutes = rest / 60;          // 2
+    int seconds = rest % 60;          // 5
+
+    std::cout &lt;&lt; hours &lt;&lt; std::endl;
+    std::cout &lt;&lt; minutes &lt;&lt; std::endl;
+    std::cout &lt;&lt; seconds &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        每一步都在做同一件事：<b>用 <code>/</code> 取出一部分，用 <code>%</code> 留下剩下的。</b>
+        3725 / 3600 整出 1 小时，% 3600 剩下 125 秒；125 / 60 整出 2 分，% 60 剩下 5 秒。
+      </p>
+      <p>
+        要是把 <code>seconds</code> 写成 <code>total % 60</code> 呢？算一下：3725 % 60 = 5。
+        <b>这题里碰巧也是 5</b>——但换个时间就错了。所以老老实实拿零头去算，
+        别抄近路。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-10</div>
+  <p>
+    把 <code>507</code> 的百位、十位、个位分别打出来，一行一个。
+  </p>
+  <p>
+    <b>注意中间那位。</b>如果你算出来不是 0，说明你的式子有问题——
+    这一题专门挑了个带 0 的数。
+  </p>
+  <pre class="out" data-label="预期输出">5
+0
+7</pre>
+  <details class="ans" data-run="示例代码/答案/1-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>三行式子，都是 <code>/</code> 和 <code>%</code> 搭着用：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 507;
+
+    int hundreds = n / 100 % 10;      // 5
+    int tens = n / 10 % 10;           // 0
+    int ones = n % 10;                // 7
+
+    std::cout &lt;&lt; hundreds &lt;&lt; std::endl;
+    std::cout &lt;&lt; tens &lt;&lt; std::endl;
+    std::cout &lt;&lt; ones &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        拆开看每一步：<code>n / 100</code> 是 5（507 里能装下 5 个 100），
+        再 <code>% 10</code> 保证只剩一位。十位是 <code>n / 10 % 10</code>——先 50，再 0。
+        <b>先除后取余，顺序反了数就没了。</b>
+      </p>
+      <p>
+        要想清楚为什么十位那个 0 会丢：如果写成 <code>n % 10 / 10</code>，
+        第一步 <code>507 % 10</code> 得到 7，第二步 <code>7 / 10</code> 是 0——
+        打出来永远是 0，跟十位上是几没关系。<b>这就是这题挑 507 的原因。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-11</div>
+  <p>
+    <b>先猜，再跑。</b>下面两行的数字一模一样，只是顺序换了。
+  </p>
+  <pre><code>std::cout &lt;&lt; 7 / 2 * 2.0 &lt;&lt; std::endl;
+std::cout &lt;&lt; 7 * 2.0 / 2 &lt;&lt; std::endl;</code></pre>
+  <p>
+    两行结果不一样。想清楚为什么，这一课的整数除法才算真懂了。
+  </p>
+  <pre class="out" data-label="预期输出">6
+7</pre>
+  <details class="ans" data-run="示例代码/答案/1-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两行只差运算顺序，结果就差 1：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; 7 / 2 * 2.0 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 7 * 2.0 / 2 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        第一行：<code>7 / 2</code> 是两个 <code>int</code> 相除，<b>先</b>算出 3（不是 3.5），
+        再跟 2.0 乘，得 6.0。整数除法那一步先把小数砍了。
+      </p>
+      <p>
+        第二行：<code>7 * 2.0</code> 碰上 <code>double</code>，7 先变成 14.0，
+        再除以 2 得 7.0。小数一直留着。
+      </p>
+      <p>
+        所以规矩是：<b>同一串算式里，谁先算，谁决定中间那一步是整数还是小数。</b>
+        <code>*</code> 和 <code>/</code> 是从左往右算的，这就是两行结果不同的全部原因。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-12（找错）</div>
+  <p>
+    下面这段有<b>一处</b>错。先别看答案，说出它错在哪、运行起来会怎样。
+  </p>
+  <pre><code>int a = 7;
+std::cout &lt;&lt; a % 0 &lt;&lt; std::endl;</code></pre>
+  <p>
+    这道题的答案有点特别：<b>它能编译通过</b>（只有一个 <code>warning</code>），
+    你要是不理那个警告，程序会在运行的时候崩掉。
+  </p>
+  <p>
+    自己编译一遍，把那个 <code>warning</code> 找出来读一遍，再运行看看。
+    <b>「编译通过」和「能正常跑完」是两件事</b>——这一题是这句话最直接的证据。
+  </p>
+  <details class="ans" data-crash="示例代码/答案/1-12-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>先说清楚这题错在哪：<b><code>%</code> 是取余，除数是 0 的时候余数没有定义</b>，
+      所以这一步根本算不出来。完整程序：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 7;
+    std::cout &lt;&lt; a % 0 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>编译一下，它会给你一个警告，然后<b>放你过去</b>：</p>
+      <pre class="diag"><code>1-12-err.cpp: In function ‘int main()’:
+1-12-err.cpp:5:20: warning: division by zero [-Wdiv-by-zero]
+    5 |     std::cout &lt;&lt; a % 0 &lt;&lt; std::endl;
+      |                  ~~^~~
+</code></pre>
+      <p>
+        读一遍：<code>division by zero</code>，除以零。
+        注意它的身份是 <code>warning</code> 不是 <code>error</code>——
+        <b>编译器知道这里有毛病，但它还是给你生成了可执行文件。</b>
+      </p>
+      <p>不理它，直接跑。你的程序一个字都没来得及打，就被系统掐死了——终端上会多出这么一行：</p>
+      <pre><code>浮点异常 (核心已转储)</code></pre>
+      <p>
+        或者英文的 <code>Floating point exception (core dumped)</code>，看你的系统语言。
+        注意这是 <b>shell</b> 说的话，不是你的程序说的。关键是「浮点异常」四个字——
+        除以 0 在 1.3 讲过，就是它。
+      </p>
+      <p>想知道它到底是怎么结束的，敲这个：</p>
+      <pre><code>echo $?</code></pre>
+      <p>
+        打出来是 <code>136</code>。<b>不是 0，就说明它不是正常跑完的。</b>
+        这个数 = 128 + 8，8 是「浮点异常」那个信号的编号。
+      </p>
+      <p>
+        以后跑程序结果不对，可以先 <code>echo $?</code> 看一眼——
+        非 0 就说明是崩了，不是算错了。<b>两种毛病，修法完全不同。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能让程序算加减乘除和取余了，
+  也知道整数除法会砍掉小数、除以 0 会让程序直接死掉。
+  下一课讲 <code>std::cout</code> 到底是怎么把东西打到屏幕上的。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-4">
+<h2><span class="no">1.4</span>输出：std::cout 怎么把东西打到屏幕上</h2>
+
+<p>
+前三课每一课都在用 <code>std::cout</code>，但一直没停下来讲过它。
+这一课把它讲清楚——因为从今往后你写的每一个程序，都要靠它跟你说话。
+</p>
+
+<h3 id="s1-4-1">一个 <code>&lt;&lt;</code> 只做一件事</h3>
+
+<p>
+<code>std::cout</code> 读作「C out」，意思是<b>标准输出</b>——就是你的终端窗口。
+<code>&lt;&lt;</code> 这个符号本身的意思是「往这边流」。
+</p>
+
+<p>
+所以 <code>std::cout &lt;&lt; 8;</code> 这一句读作：<b>把 8 送到终端上去。</b>
+左边的 <code>std::cout</code> 是终点，右边才是要送的东西。
+</p>
+
+<p>
+那一串是怎么接起来的？看这句：
+</p>
+
+<pre><code>std::cout &lt;&lt; "3+5=" &lt;&lt; 3 + 5 &lt;&lt; std::endl;</code></pre>
+
+<p>
+它其实是<b>三次「送」</b>：
+</p>
+
+<ol>
+  <li>把 <code>"3+5="</code> 送到终端</li>
+  <li>把 <code>3 + 5</code> 算出来的 8 送到终端</li>
+  <li>把 <code>std::endl</code> 送到终端</li>
+</ol>
+
+<p>
+三次是<b>从左往右</b>挨着做的，所以屏幕上就是 <code>3+5=8</code>。
+每送完一次，<code>std::cout</code> 自己就准备好接下一次——这就是它能一路串下去的原因，
+串多长都行。
+</p>
+
+<div class="aside">
+  <b>右边怎么什么都能放</b>
+  <p>
+    上面第二样东西是个算式，第三样是个 <code>std::endl</code>，
+    根本不是一个品种，但 <code>&lt;&lt;</code> 都收。
+    现在不用管它内部怎么做到的，只要记住：<b><code>&lt;&lt;</code> 右边可以放值、放算式、放 <code>std::endl</code>。</b>
+  </p>
+</div>
+
+<h3 id="s1-4-2">空格是你自己打的</h3>
+
+<p>
+这是新手第一个撞上的事：<b><code>std::cout</code> 只打你让它打的东西，一个字符都不多打。</b>
+两个值中间想要的空格，得你自己当成一样东西送进去。
+</p>
+
+<pre><code>int a = 3;
+int b = 5;
+
+std::cout &lt;&lt; a &lt;&lt; b &lt;&lt; std::endl;              // 中间什么都没有
+std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; std::endl;       // 自己插一个空格进去
+std::cout &lt;&lt; "和是" &lt;&lt; a + b &lt;&lt; std::endl;</code></pre>
+
+<pre class="out" data-label="预期输出">35
+3 5
+和是8</pre>
+
+<p>
+第一行打出的是 <code>35</code>——不是 3 和 5，也不是 3 加 5，
+就是<b>两个字紧挨在一起</b>。
+第二行里那个 <code>" "</code>，是<b>一对双引号中间夹一个空格</b>，
+它本身就是一个「东西」：一个只装了一个空格的字符串。
+</p>
+
+<p>
+第三行你可能觉得别扭：<code>和是8</code>，8 前面没空格。
+中文里写「和是 8」是习惯，但程序不知道这个习惯——想要就得自己加，
+写成 <code>"和是 "</code>（引号里带个空格）就对了。
+</p>
+
+<h3 id="s1-4-3">引号里原样打，引号外算完再打</h3>
+
+<p>
+上面出现过的 <code>"3+5="</code> 和 <code>3 + 5</code>，是<b>两种完全不同的东西</b>。
+这一条弄混了，后面每一课都会写错。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "3+5" &lt;&lt; std::endl;            // 引号里：原样打
+    std::cout &lt;&lt; 3 + 5 &lt;&lt; std::endl;            // 引号外：先算，打结果
+    std::cout &lt;&lt; "3+5=" &lt;&lt; 3 + 5 &lt;&lt; std::endl;  // 一半一半
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">3+5
+8
+3+5=8</pre>
+
+<p>
+<b>双引号里面的东西，程序一个字都不动。</b>
+<code>"3+5"</code> 就是三个字符：<code>3</code>、<code>+</code>、<code>5</code>。
+它不会去算，也不会管它长得像不像算式。
+</p>
+
+<p>
+<b>双引号外面的东西，会先算完，再把结果送出去。</b>
+<code>3 + 5</code> 算成 8，送到屏幕上的就是 <code>8</code>。
+</p>
+
+<p>
+第三行最有用：<b>引号里和引号外可以挨着放。</b>
+「3+5=」这几个字是死的，后面那个 8 是现算的——拼在一起，
+就是一句「算式和答案都摆给你看」的话。
+2.6 要打的 <code>3×5=15</code> 那样的乘法表，用的就是这个写法。
+</p>
+
+<h3 id="s1-4-4">它怎么知道该打什么</h3>
+
+<p>
+凭什么 <code>std::cout &lt;&lt; a</code> 的时候，它知道该打数字还是该打字母？
+答案是：<b>它看你送过来的是什么类型，然后按那个类型的规矩打。</b>
+1.2 学的四种类型，在这儿各有一副面孔。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    int n = 65;
+    double d = 3.0;
+    char c = 'A';
+    bool b = true;
+    std::string s = "A";
+
+    std::cout &lt;&lt; n &lt;&lt; std::endl;
+    std::cout &lt;&lt; d &lt;&lt; std::endl;
+    std::cout &lt;&lt; c &lt;&lt; std::endl;
+    std::cout &lt;&lt; b &lt;&lt; std::endl;
+    std::cout &lt;&lt; s &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">65
+3
+A
+1
+A</pre>
+
+<p>
+一行一行对：
+</p>
+
+<ul>
+  <li><code>int</code> 65 → <code>65</code>，正常。</li>
+  <li><code>double</code> 3.0 → <b><code>3</code></b>。小数点和小数位全没了。</li>
+  <li><code>char</code> 'A' → <code>A</code>，打的是字母，不是 65。</li>
+  <li><code>bool</code> true → <b><code>1</code></b>，不是 <code>true</code> 这个词。</li>
+  <li><code>std::string</code> "A" → <code>A</code>。</li>
+</ul>
+
+<p>
+第二行和第四行是重点。<b>它图省事：3.0 后面全是 0，那就不打了；true 就是 1，那就打 1。</b>
+1.2 那两个提醒在这儿应验了——<b>盒子里的东西，和打出来的样子，不是一回事。</b>
+</p>
+
+<p>
+平时这样挺好，省事。可一旦要<b>对齐</b>（比如打一张价格表），这一省就出事了。
+1.6 整整一课都在治这个毛病。
+</p>
+
+<h3 id="s1-4-5">给一段文字起个名字</h3>
+
+<p>
+上面那五行里有个生面孔：<code>std::string s = "A";</code>。
+它一点不新鲜——<b>它就是 1.1 那个盒子，只不过装的是文字。</b>
+</p>
+
+<pre><code>std::string name = "小航";</code></pre>
+
+<p>
+意思是：开一个叫 <code>name</code> 的盒子，把「小航」这两个字放进去。
+有两点和前面四种类型一模一样：
+</p>
+
+<ul>
+  <li><b>写全 <code>std::string</code>，不是光写 <code>string</code>。</b>
+  理由和 <code>std::cout</code> 一样——它住在 <code>std</code> 里（0.3 那个 <code>std::</code> 讲的就是这件事）。</li>
+  <li><b>文件开头要多一行 <code>#include &lt;string&gt;</code></b>，和 <code>#include &lt;iostream&gt;</code> 并排放。</li>
+</ul>
+
+<p>
+引号再复习一遍（1.2 那道 <code>char c = "A";</code> 的找错题就是考这个）：
+<b><code>char</code> 装一个字符，用单引号；<code>std::string</code> 装一串字符，用双引号。</b>
+</p>
+
+<div class="aside">
+  <b>这个盒子能装多少</b>
+  <p>
+    <code>int</code> 有装不下的数（1.2 见过 <code>1410065408</code> 那个），
+    <code>std::string</code> 却几乎不会满——你放多少字，它自己就跟着变多大。
+    怎么做到的，第 4 部分讲 <code>std::vector</code> 的时候一起说。
+  </p>
+</div>
+
+<h3 id="s1-4-6">endl 和 "\n"</h3>
+
+<p>
+到这儿为止，每句话末尾都跟着 <code>std::endl</code>。它的作用是<b>换行</b>：
+把它送到屏幕，光标就挪到下一行的开头。
+</p>
+
+<p>
+换行还有另一种写法：<code>"\n"</code>。这是一个字符串，里面只装了一个字符。
+那个 <code>\n</code> 是「换行」的意思——<b>反斜杠和 n 两个字符打在一起，代表一个换行符</b>。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "第一行" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "第二行" &lt;&lt; "\n";
+    std::cout &lt;&lt; "第三行" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">第一行
+第二行
+第三行</pre>
+
+<p>
+跑出来一样是三行。<b>两个都能换行，现在你随便用哪个。</b>
+</p>
+
+<p>
+差别在这儿：<code>std::endl</code> 除了换行，还多做一件事——
+<b>催一下，让字立刻出现在屏幕上</b>。平时你感觉不到，
+因为本来就立刻就出来了。
+</p>
+
+<div class="aside">
+  <b>以后会看到 <code>"\n"</code></b>
+  <p>
+    同一件事重复做很多遍的时候（第 2 部分讲了循环就有了），
+    <code>std::endl</code> 那一下「催」会拖慢程序。所以实际代码里，赶时间的那些地方，
+    末尾大多是 <code>"\n"</code>。
+    现在不用纠结，先用 <code>std::endl</code>——它的名字好记。
+  </p>
+</div>
+
+<div class="eg" id="e1-4">
+  <div class="eg-h">例题 · 把几个值拼成一句话</div>
+  <p>
+    题目：一个名字、一个年龄、一个身高，打成一整句话，最后换行。
+    名字是文字，年龄是整数，身高是小数——<b>三种类型一起上</b>。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string name = "小航";
+    int age = 19;
+    double height = 1.75;
+
+    std::cout &lt;&lt; name &lt;&lt; "今年" &lt;&lt; age &lt;&lt; "岁，身高" &lt;&lt; height &lt;&lt; "米" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">小航今年19岁，身高1.75米</pre>
+  <p>
+    长的那一行是<b>七次「送」</b>，一次送一样，从左往右：
+    名字、<code>"今年"</code>、年龄、<code>"岁，身高"</code>、身高、<code>"米"</code>，
+    最后 <code>std::endl</code> 收尾换行。
+  </p>
+  <p>
+    三个地方值得停一下：
+  </p>
+  <ul>
+    <li><b>汉字和标点全在引号里。</b>「今年」「岁，身高」「米」这些字程序一个都编不出来，是你写进去的。</li>
+    <li><b><code>height</code> 打出来是 <code>1.75</code>，不是 <code>1.750000</code>。</b>
+    刚才说它「图省事」，这一次省对了。</li>
+    <li><b><code>age</code> 前面紧挨着「今年」。</b>想让年龄和「今年」之间有空格，就得写成 <code>"今年 "</code>。</li>
+  </ul>
+  <p>
+    把这行长句拆成七行写（一行送一样，每行一个分号），跑出来会一模一样。
+    <b>串起来写只是省地方，不是另一种语法。</b>
+  </p>
+</div>
+
+<h3 id="s1-4-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-13</div>
+  <p>
+    写一个程序，打出下面这一行——名字、年龄、身高，<b>三个值中间各有一个空格</b>：
+  </p>
+  <pre class="out" data-label="预期输出">小航 19 1.75</pre>
+  <p>
+    要求：三个盒子分别用 <code>std::string</code>、<code>int</code>、<code>double</code>，
+    盒子名字自己起。
+  </p>
+  <p>
+    提示：这一行里有<b>两个空格</b>，都得你自己打进去。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个盒子，两个空格：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string name = "小航";
+    int age = 19;
+    double height = 1.75;
+
+    std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; age &lt;&lt; " " &lt;&lt; height &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        少写一个 <code>" "</code> 会打出什么，你现在应该能一眼看出来。
+        <b>删一个自己跑跑看</b>——比看我说一百遍强。
+      </p>
+      <p>
+        另外注意最后那个 <code>1.75</code>：它是 <code>double</code>，
+        <code>std::cout</code> 自己就把它打成了这样。
+        你把 <code>height</code> 改成 <code>2.0</code> 再跑一次试试——
+        <b>会打出 <code>2</code>，不是 <code>2.0</code>。</b>原因就是 1.4 里那个
+        <code>double d = 3.0;</code> 打出 <code>3</code> 的例子。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-14</div>
+  <p>
+    用<b>两行</b> <code>std::cout</code>，打出下面这两行：
+  </p>
+  <pre class="out" data-label="预期输出">3+5=8
+3×5=15</pre>
+  <p>
+    要求：<code>3+5=</code> 这几个字符是你写在引号里的，
+    后面的 <code>8</code> 必须是<b>程序算出来的</b>——不许直接把 8 写进引号里。
+    第二行同理。
+  </p>
+  <p>
+    哪一段该在引号里，哪一段该在引号外，想清楚再动手。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        引号里写「算式长什么样」，引号外写算式本身：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "3+5=" &lt;&lt; 3 + 5 &lt;&lt; std::endl;
+    std::cout &lt;&lt; "3×5=" &lt;&lt; 3 * 5 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        要是写成 <code>std::cout &lt;&lt; "3+5=8" &lt;&lt; std::endl;</code>，
+        屏幕上看着一模一样——但那是<b>你算的</b>，不是程序算的。
+        差别在哪儿？<b>数一换，写死的那行就错了，写算式的那行永远对。</b>
+      </p>
+      <p>
+        这不是小题大做。第 2 部分那个乘法表，每一行的数都得靠程序算出来——
+        九乘九八十一个结果，一个都写不得。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-15（找错）</div>
+  <p>
+    下面这一行想打出 <code>和是8</code>，但它编译不过。
+    <b>先别看答案</b>——说说问题出在哪儿。
+  </p>
+  <pre><code>std::cout &lt;&lt; “和是” &lt;&lt; a + b &lt;&lt; std::endl;</code></pre>
+  <p>
+    提示：<b>把屏幕上这一行放到最大，一个字符一个字符地看。</b>
+    特别是那对引号。
+  </p>
+  <p>
+    这题和 1.2 那道 <code>char c = "A";</code> 是同一种毛病：
+    <b>看着差不多，不是一个东西。</b>
+  </p>
+  <details class="ans" data-err="示例代码/答案/1-15-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        问题出在输入法。<b>那对引号是全角的「弯引号」，
+        不是你键盘上英文输入法下的直引号。</b>完整程序长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+    int b = 5;
+
+    std::cout &lt;&lt; “和是” &lt;&lt; a + b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>编译一下：</p>
+      <pre class="diag"><code>1-15-err.cpp:11:18: error: extended character “ is not valid in an identifier
+   11 |     std::cout &lt;&lt; “和是” &lt;&lt; a + b &lt;&lt; std::endl;
+      |                  ^
+1-15-err.cpp:11:18: error: extended character ” is not valid in an identifier
+1-15-err.cpp: In function ‘int main()’:
+1-15-err.cpp:11:18: error: ‘“和是”’ was not declared in this scope
+   11 |     std::cout &lt;&lt; “和是” &lt;&lt; a + b &lt;&lt; std::endl;
+      |                  ^~~~~~
+</code></pre>
+      <p>
+        三条 <code>error</code>，一条都不像人话。但第一行给了线索：
+      </p>
+      <pre><code>extended character “ is not valid in an identifier</code></pre>
+      <p>
+        翻译过来：<b>「这个字符不能出现在名字里」</b>。
+        编译器压根没把 <code>“</code> 当成引号——<b>它以为你在给一个变量起名字</b>，
+        而起名字允许用的字符里，没有这种怪符号。
+      </p>
+      <p>
+        最后一条更有意思：<code>‘“和是”’ was not declared in this scope</code>——
+        它把 <code>“和是”</code> 整个当成了<b>一个名字</b>，
+        然后说「没听说过这个名字」。
+      </p>
+      <p>
+        怎么改：把那对引号删掉，<b>切到英文输入法</b>，重新打一对 <code>"</code>。
+        1.2 那道 <code>char c = "A";</code> 犯的是同一种毛病——
+        <b>看着像，不是一个东西。</b>
+      </p>
+      <div class="aside tip">
+        <b>写代码前先看一眼输入法</b>
+        <p>
+          中文输入法下，引号、逗号、分号、括号打出来全是全角的，
+          代码里一个都不认。养成习惯：<b>一进编辑器就切英文</b>，
+          只有要写引号里那句中文的时候才切回来，写完立刻切回去。
+        </p>
+      </div>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-16</div>
+  <p>
+    下面这个程序会打出<b>几行</b>？每行是什么？<b>先写在纸上，再编译。</b>
+  </p>
+  <pre><code>std::cout &lt;&lt; "A";
+std::cout &lt;&lt; "B" &lt;&lt; std::endl;
+std::cout &lt;&lt; "C";
+std::cout &lt;&lt; "D" &lt;&lt; std::endl;
+std::cout &lt;&lt; "E";
+std::cout &lt;&lt; "F" &lt;&lt; std::endl;</code></pre>
+  <pre class="out" data-label="预期输出">AB
+CD
+EF</pre>
+  <p>
+    提示：<code>std::endl</code> 只做换行，<b>不做别的事</b>。
+    没有 <code>std::endl</code> 的时候，下一个字打到哪儿去了？
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        六行 <code>std::cout</code>，三行输出。<b>关键是看清每个 <code>std::endl</code> 落在哪一句上：</b>
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "A";
+    std::cout &lt;&lt; "B" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "C";
+    std::cout &lt;&lt; "D" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "E";
+    std::cout &lt;&lt; "F" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>一行一行走：</p>
+      <ol>
+        <li><code>"A"</code> 送到屏幕上。光标停在 A 后面，<b>没有换行。</b></li>
+        <li><code>"B"</code> 紧挨着 A 打出来，然后 <code>std::endl</code> 换行。屏幕上这一行是 <code>AB</code>。</li>
+        <li><code>"C"</code> 打在新一行的开头，光标停在 C 后面。</li>
+        <li><code>"D"</code> 紧挨着 C，然后换行。这一行是 <code>CD</code>。</li>
+        <li><code>"E"</code>、<code>"F"</code> 同理，凑成 <code>EF</code>。</li>
+      </ol>
+      <p>
+        <b>所以字不是一行一行「打出来」的，是一个一个「接上去」的。</b>
+        <code>std::endl</code> 管的只有一件事：把光标挪到下一行开头。
+        没有它，下一个字就接着上一个字往下写。
+      </p>
+      <p>
+        最容易错的地方是数行数：六行代码，<b>三行输出</b>。
+        代码的行数和屏幕上打出来的行数没有关系——等第 2 部分学了循环，
+        这个差别会大得离谱（三行代码打出八十一行，一点都不奇怪）。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能让程序把值、算式和文字拼成一句话打出来，
+  也知道打出来的是圆是扁、是 3 还是 3.0，全看盒子的类型。
+  下一课反过来——让程序停下来，等你敲数给它。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-5">
+<h2><span class="no">1.5</span>输入：std::cin 读进来的是什么</h2>
+
+<p>
+到上一课为止，程序里的数全是你自己写在代码里的。
+别人拿到你的程序，想换个数算，只能来改你的代码、重新编译。
+</p>
+
+<p>
+这一课让程序<b>开口要数</b>：跑起来停一下，等你敲，敲完它接着算。
+</p>
+
+<h3 id="s1-5-1">程序第一次停下来等你</h3>
+
+<p>
+先不写代码，先看它跑起来是什么样。下面这一段，是<b>你屏幕上会出现的全部内容</b>——
+<b><span class="typed">带下划线的那些是你敲的</span>，其余是程序打的。</b>
+</p>
+
+<pre>第一个数：
+<span class="typed">19</span>
+第二个数：
+<span class="typed">23</span>
+和是 42</pre>
+
+<p>
+三件事：
+</p>
+
+<ul>
+  <li>程序打到「第一个数：」就<b>停住了</b>，光标在那儿闪，等你。</li>
+  <li>你敲 <code>19</code> 按回车，它才接着走，打出「第二个数：」，又停住。</li>
+  <li>两个数都给了，它算出 42 打出来，然后<b>自己结束了</b>，回到命令提示符。</li>
+</ul>
+
+<p>
+这个程序就是下面的例题，代码一会儿看。先把上面这张图记住——
+<b>以后凡是程序要读东西，屏幕上就是这个样子。</b>
+</p>
+
+<div class="aside tip">
+  <b>从这一课起，预期输出要分两半看</b>
+  <p>
+    课里凡是带下划线的行，都是<b>你敲进去的</b>。
+    终端会把你敲的字回显在屏幕上，但那是终端干的，<b>不是程序打的</b>。
+    程序自己打出来的，只有不带下划线的那几行。
+  </p>
+  <p>
+    所以后面每道练习给的「预期输出」，我把整段会话都贴出来（这样好对照），
+    <b>你只要盯住不带下划线的部分对不对就行。</b>
+  </p>
+</div>
+
+<h3 id="s1-5-2">&gt;&gt; 的方向是反的</h3>
+
+<p>
+输出用的是 <code>&lt;&lt;</code>，输入用的是 <code>&gt;&gt;</code>。
+<b>方向正好相反——因为东西流动的方向相反。</b>
+</p>
+
+<p>
+输出是「从程序流到屏幕」，箭头朝外：
+</p>
+
+<pre><code>std::cout &lt;&lt; a;      // 把 a 送出去，送到屏幕上</code></pre>
+
+<p>
+输入是「从键盘流进程序」，箭头朝里：
+</p>
+
+<pre><code>std::cin &gt;&gt; a;       // 从键盘收一个进来，装进 a</code></pre>
+
+<p>
+<code>std::cin</code> 读作「C in」，标准输入，就是你的键盘。
+<b>箭头左边是来源，右边是目的地，照着「东西往哪边流」记，就不会记反。</b>
+</p>
+
+<div class="aside warn">
+  <b>记反了会怎样</b>
+  <p>
+    记反了就是 <code>std::cin &lt;&lt; a;</code> 或者 <code>std::cout &gt;&gt; a;</code>。
+    两个都编译不过，编译器会直接告诉你：
+  </p>
+  <pre class="diag"><code>1.5-reverse-err.cpp:5:14: error: no match for ‘operator&lt;&lt;’ (operand types are ‘std::istream’ {aka ‘std::basic_istream&lt;char&gt;’} and ‘int’)
+1.5-reverse-err.cpp:6:15: error: no match for ‘operator&gt;&gt;’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream&lt;char&gt;’} and ‘int’)
+</code></pre>
+  <p>
+    抓两个词就够：<b>no match</b>，「没有能对上的」；
+    <b>operand types are</b>，后面列出来的是「你递过去这两样东西分别是什么类型」。
+    <code>std::istream</code> 是 <code>std::cin</code> 的正式类型名，
+    <code>std::ostream</code> 是 <code>std::cout</code> 的——
+    它一眼就认出你把谁当成谁了。
+    （括号里 <code>{aka …}</code> 那半截是它的另一个名字，先不用管。）
+  </p>
+  <p>
+    它不会悄悄照你的意思反过来做。<b>这一点可以放心。</b>
+  </p>
+</div>
+
+<h3 id="s1-5-3">没有提示语会怎样</h3>
+
+<p>
+把例题里那两句「第一个数：」删掉，程序干的活一模一样，可看起来完全变了：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a;
+    int b;
+
+    std::cin &gt;&gt; a;
+    std::cin &gt;&gt; b;
+
+    std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+还是输入 19 和 23，屏幕上只有这三行：
+</p>
+
+<pre><span class="typed">19</span>
+<span class="typed">23</span>
+42</pre>
+
+<p>
+<b>前两行还是你自己敲的</b>（终端回显的），程序自己只说了一个字：<code>42</code>。
+没有提示语，屏幕上连一句「要你干什么」都没有。
+</p>
+
+<p>
+第一次跑这种程序，很容易以为它卡死了——<b>它没卡，它在等你。可你看不出来。</b>
+</p>
+
+<div class="aside tip">
+  <b>写给人用的程序，先打一句提示语</b>
+  <p>
+    要人敲什么，就先打一句话说清楚。这句话不是给程序看的，
+    是给<b>坐在电脑前的那个人</b>看的。例题里那两句「第一个数：」「第二个数：」就是干这个的。
+  </p>
+  <p>
+    <b>注意「打提示语」和「读数」是两句不同的话</b>：
+    用 <code>std::cout</code> 打提示语，用 <code>std::cin</code> 读数。
+    两句都得写——少写提示语，人看不懂；少写 <code>std::cin</code>，
+    盒子就是空的，程序拿一个不知道是什么的数去算。
+  </p>
+</div>
+
+<h3 id="s1-5-4">一次读几个，空格和回车都算数</h3>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a;
+    int b;
+    int c;
+
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;        // 一串 &gt;&gt; 读完三个
+
+    std::cout &lt;&lt; a + b + c &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+下面两种输入，跑出来一模一样。第一种，三个数敲在一行：
+</p>
+
+<pre><span class="typed">1 2 3</span>
+6</pre>
+
+<p>
+第二种，一行一个：
+</p>
+
+<pre><span class="typed">1</span>
+<span class="typed">2</span>
+<span class="typed">3</span>
+6</pre>
+
+<p>
+两种都是 <code>6</code>。为什么？因为 <code>&gt;&gt;</code> <b>不认「行」，只认「空白」</b>——
+空格、Tab、回车，在它眼里全是同一件事：<b>一个数的结束，也是下一个数的开始</b>。
+它按这个把你敲的东西切成一块一块，再按顺序往盒子里放。
+</p>
+
+<p>
+那一串 <code>&gt;&gt;</code> 又是怎么回事？和输出一个道理：
+<b>一次 <code>&gt;&gt;</code> 只收一个数，收完 <code>std::cin</code> 就准备好收下一个。</b>
+所以 <code>std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;</code> 和写成三行是一回事。
+</p>
+
+<h3 id="s1-5-5">读进来的是什么</h3>
+
+<p>
+这一课标题里那个问题，答案在这儿。
+下面这个程序，你跑的时候敲 <code>3.7</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n;
+
+    std::cin &gt;&gt; n;
+    std::cout &lt;&lt; n &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre><span class="typed">3.7</span>
+3</pre>
+
+<p>
+<b>你敲的是 3.7，它打出来是 3。</b>
+</p>
+
+<p>
+不是你敲错了，也不是程序坏了。原因还是 1.2 那一条：
+<b><code>int</code> 这个盒子装不下小数。</b>
+往 <code>int</code> 盒子里装东西的时候，<code>&gt;&gt;</code> 只认整数那一段——
+读到 <code>.</code> 就停了，<code>3</code> 塞进去，剩下的 <code>.7</code> 留在那儿没人要。
+</p>
+
+<p>
+所以这一条要记牢：
+<b><code>&gt;&gt;</code> 不是「把你敲的照原样搬进去」，而是「按盒子的类型，
+从你敲的东西里认出它能要的那部分，搬进去」。</b>
+想要小数，盒子就得是 <code>double</code>：
+</p>
+
+<pre><code>double x;
+std::cin &gt;&gt; x;      // 这个盒子才装得下 3.7</code></pre>
+
+<p>
+同一件事还有另一个方向。<b>往 <code>std::string</code> 里读的时候，<code>&gt;&gt;</code> 读到空白就停。</b>
+下面这个程序，你跑的时候敲 <code>小航 19</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string word;
+
+    std::cin &gt;&gt; word;
+    std::cout &lt;&lt; "读到的是：" &lt;&lt; word &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre><span class="typed">小航 19</span>
+读到的是：小航</pre>
+
+<p>
+<b>它只要了「小航」。</b>因为 <code>&gt;&gt;</code> 是按空白切块的（刚才说的那条），
+一段文字里只要有空白，它就认为这段到头了。
+那个 <code>19</code> 还留在输入里，谁也没去拿。
+</p>
+
+<div class="aside">
+  <b>那想读一整行（带我名字里那个空格）怎么办</b>
+  <p>
+    有专门的办法，叫 <code>std::getline</code>。
+    现在先不学——你要用的时候自然会想找它，那时候记着来这儿翻一下就行。
+  </p>
+</div>
+
+<div class="eg" id="e1-5">
+  <div class="eg-h">例题 · 读两个数，把和打出来</div>
+  <p>
+    这一课开头那张屏幕，就是这个程序跑出来的。完整代码：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a;
+    int b;
+
+    std::cout &lt;&lt; "第一个数：" &lt;&lt; std::endl;
+    std::cin &gt;&gt; a;
+
+    std::cout &lt;&lt; "第二个数：" &lt;&lt; std::endl;
+    std::cin &gt;&gt; b;
+
+    std::cout &lt;&lt; "和是 " &lt;&lt; a + b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出（输入 19 和 23）">第一个数：
+<span class="typed">19</span>
+第二个数：
+<span class="typed">23</span>
+和是 42</pre>
+  <p>
+    四种句子凑齐了，这一课就这么点东西：
+  </p>
+  <ul>
+    <li><b>开盒子</b>：<code>int a;</code>——先声明，暂时不放东西。</li>
+    <li><b>打提示语</b>：<code>std::cout &lt;&lt; "第一个数：" &lt;&lt; std::endl;</code></li>
+    <li><b>读数</b>：<code>std::cin &gt;&gt; a;</code>——程序停在这一行等你。</li>
+    <li><b>算</b>：<code>a + b</code>，两个盒子里的东西加起来，和 1.3 那些算式没区别。</li>
+  </ul>
+  <p>
+    <b>顺序很重要。</b>提示语必须打在 <code>std::cin</code> <b>前面</b>——
+    要是两句调个个儿，程序先停在那儿等你，等你敲完了才打出「第一个数：」，
+    那可就不是提示了，是马后炮。
+  </p>
+  <p>
+    还有一点：<b><code>int a;</code> 这一句不能省。</b>
+    盒子得先开出来，<code>&gt;&gt;</code> 才有地方放东西。
+    这和 1.1 说的「先声明再赋值」是同一条规矩，只是这里的「赋值」变成了「从键盘读」。
+  </p>
+</div>
+
+<h3 id="s1-5-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-17</div>
+  <p>
+    写一个程序：读两个整数，把它们<b>乘起来</b>打出来。
+  </p>
+  <p>
+    输入 <code>6 7</code> 时，程序跑起来是这样（下划线是你敲的）：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">6 7</span>
+42</pre>
+  <p>
+    提示：这一课标题说的是「读进来的是什么」——
+    <b>先想清楚你读进来的这两个盒子是什么类型。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个 <code>int</code> 盒子，一次读两个，乘起来：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a;
+    int b;
+
+    std::cin &gt;&gt; a &gt;&gt; b;
+    std::cout &lt;&lt; a * b &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        这题要读的输入是 <code>6 7</code>——
+        这两个数敲在一行还是分两行，跑出来都是 42（1.5 讲的「空白都算数」）。
+      </p>
+      <p>
+        顺带说一句乘法在编程里的写法：<b>是 <code>a * b</code>，不是 <code>a × b</code>，
+        也不是 <code>a·b</code>。</b>键盘上没有那个乘号，C++ 里一律用星号。
+      </p>
+      <p>
+        记着这一条，2.6 会翻回来用它一次：那时候要打出去的<b>字符</b>可以是
+        <code>×</code>，可算乘法还是只能写 <code>*</code>——两回事，别混。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-18</div>
+  <p>
+    写一个程序：读两个<b>词</b>，然后按 <code>第一个|第二个</code> 的格式打出来——
+    中间那个竖线是你自己打的。
+  </p>
+  <p>
+    输入 <code>hello world</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">hello world</span>
+hello|world</pre>
+  <p>
+    提示：装词用 <code>std::string</code>。
+    这题的考点在 <code>&gt;&gt;</code> <b>怎么切块</b>——想一下它遇到空格会干什么。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个 <code>std::string</code>，中间那个竖线是打出来的，不是读进来的：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string first;
+    std::string second;
+
+    std::cin &gt;&gt; first &gt;&gt; second;
+    std::cout &lt;&lt; first &lt;&lt; "|" &lt;&lt; second &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        这题的考点就一个：<b><code>&gt;&gt;</code> 遇到空格就停。</b>
+        输入 <code>hello world</code>，它先把 <code>hello</code> 交给 <code>first</code>，
+        停在空格上；下一次 <code>&gt;&gt;</code> 跳掉那个空格，把 <code>world</code> 交给 <code>second</code>。
+      </p>
+      <p>
+        所以 <b>空格在 <code>&gt;&gt;</code> 眼里不是「文字的一部分」，
+        是「分隔符」</b>。要是你读进来的词本身带空格（比如「张 三」），
+        这么读就只能读到「张」。那种情况要用的东西 1.5 提过一句，
+        叫 <code>std::getline</code>，用到的时候再回来看。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-19</div>
+  <p>
+    读一个秒数，把它换算成「几分几秒」打出来。
+  </p>
+  <p>
+    输入 <code>250</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">250</span>
+250 秒 = 4 分 10 秒</pre>
+  <p>
+    提示：换算是 1.3 那道 250 分钟的题，一模一样的算法，只是那个 250 现在要从键盘读。
+    注意打在最后一行里的那个 <code>250</code> 是<b>读进来那个数</b>，不是你写死的。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-19.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        算法和 1.3 那道 250 分钟一模一样，只是 250 现在是从键盘读进来的：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int total;
+    std::cin &gt;&gt; total;
+
+    int m = total / 60;
+    int s = total % 60;
+
+    std::cout &lt;&lt; total &lt;&lt; " 秒 = " &lt;&lt; m &lt;&lt; " 分 " &lt;&lt; s &lt;&lt; " 秒" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>250 / 60</code> 整出 4 分，<code>250 % 60</code> 留下 10 秒。
+        两个式子的原料都是刚读进来的 <code>total</code>。
+      </p>
+      <p>
+        注意最后那行 <code>total</code> 是<b>变量</b>，不是写死的 250。
+        你要是写成 <code>"250 秒 = "</code>，程序读 300 进来就会打出
+        「300 秒 = 5 分 0 秒」里的前半句是假的。
+        <b>敲进去的数，就得从变量里打出来。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-20</div>
+  <p>
+    读三个整数，打出它们的<b>平均数</b>。
+  </p>
+  <p>
+    输入 <code>1 2 4</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">1 2 4</span>
+2.33333</pre>
+  <p>
+    提示：三个数的和是 7。<b>7 除以 3 该得多少？</b>
+    再想一下 1.3 那个整数除法的坑——这一题会踩进去的人不少。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-20.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个数加起来是 7，7 除以 3 得多少？<b>看住那个 3.0：</b>
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a;
+    int b;
+    int c;
+
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;
+
+    std::cout &lt;&lt; (a + b + c) / 3.0 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        坑在这儿：要是写成 <code>(a + b + c) / 3</code>，那就是
+        <b>整数除以整数</b>——1.3 讲了一整课的那个坑，结果是 <code>2</code>，
+        小数部分直接砍掉。
+      </p>
+      <p>
+        写成 <code>3.0</code>，除号两边就有一个是小数了，结果才是小数。
+        而且注意：<b>括号不能省。</b>写成 <code>a + b + c / 3.0</code> 的话，
+        先算的是 <code>c / 3.0</code>，加出来的完全是另一个数。
+        1.3 讲优先级那段说的就是这个。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能让程序停下来问你要数了。
+  程序会算、会问、会答——一个真正能用的程序该有的三件事，你已经凑齐了。
+  下一课解决最后一块：怎么让打出来的数字排整齐。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-6">
+<h2><span class="no">1.6</span>格式输出：printf 与 <code>%d</code>、<code>%f</code>、<code>%2d</code></h2>
+
+<p>
+这一课讲一个<b>最容易写错</b>的东西。
+它本身不难，就是几个符号，但没人专门讲，很多人一直用到毕业都是猜着写的。
+</p>
+
+<h3 id="s1-6-1">先看毛病</h3>
+
+<p>
+三个价格，一个一行，用 1.4 学的 <code>std::cout</code> 打出来：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; 12.5 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 3.0 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 118.75 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">12.5
+3
+118.75</pre>
+
+<p>
+能看，但难受。两个毛病：
+</p>
+
+<ul>
+  <li><b>小数点不在一条竖线上。</b>12.5 的小数点在第三个字符，118.75 的在第四个。一眼扫下去比不了大小。</li>
+  <li><b><code>3.0</code> 变成了 <code>3</code>。</b>1.4 说过的那件事——它觉得后面全是 0，就不打了。可价格写成 <code>3</code>，看着像个整数。</li>
+</ul>
+
+<p>
+问题出在：<b>打出来什么样，全是 <code>std::cout</code> 说了算。</b>
+你只能决定「打什么」，决定不了「打成什么样」。
+</p>
+
+<p>
+这一课就是把这件事的决定权拿回来。拿回来的工具叫 <b><code>printf</code></b>。
+</p>
+
+<h3 id="s1-6-2">printf 长什么样</h3>
+
+<p>
+<code>printf</code> 是 C 语言传下来的打印函数，读作「print f」。
+用之前要换个头文件：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;</code></pre>
+
+<p>
+（<code>iostream</code> 管 <code>std::cout</code>，<code>cstdio</code> 管 <code>printf</code>。
+两个可以同时写，一个程序里两种都能用。）
+</p>
+
+<p>
+它的写法和 <code>std::cout</code> 完全不一样，头一次见会觉得怪：
+</p>
+
+<pre><code>int a = 7;
+
+printf("a 是 %d\n", a);</code></pre>
+
+<pre class="out" data-label="预期输出">a 是 7</pre>
+
+<p>
+拆成三块看：
+</p>
+
+<ol>
+  <li><b>一个双引号包着的「格式串」</b>：<code>"a 是 %d\n"</code>。
+  要打的字就写在里面，和 1.4 一样。</li>
+  <li><b>格式串里的 <code>%d</code></b>。它是个<b>坑位</b>——
+  意思不是「打出 %d 这四个字符」，而是「这儿留个洞，等下有个数要填进来」。</li>
+  <li><b>逗号，然后是 <code>a</code></b>。这是要填进坑里的值。
+  有几个坑，后面就跟几个值，<b>按顺序一个一个对上</b>。</li>
+</ol>
+
+<p>
+所以整句读作：<b>打「a 是 」，遇到坑就把 <code>a</code> 填进去，最后换行。</b>
+</p>
+
+<div class="aside warn">
+  <b>末尾的换行要写 <code>\n</code></b>
+  <p>
+    <code>printf</code> 里不能用 <code>std::endl</code>——那个是给 <code>std::cout</code> 用的。
+    要换行就在格式串末尾写 <code>\n</code>，和 1.4 讲的 <code>"\n"</code> 是同一个东西。
+  </p>
+  <p>
+    <b>忘写 <code>\n</code> 不会报错</b>，只是下一个 <code>printf</code> 的内容会接着这一行往下写。
+    这一课给的例子每个都带 <code>\n</code>，你自己写的时候别漏。
+  </p>
+</div>
+
+<h3 id="s1-6-3">%d 和宽度</h3>
+
+<p>
+<code>%d</code> 里的 <code>d</code> 是 decimal，十进制整数。
+<b>整数用它。</b>
+</p>
+
+<p>
+关键是这个 <code>%</code> 和 <code>d</code> 中间<b>还能塞一个数字</b>——
+塞几，就表示「这个数至少要占几格」。<b>不够就在左边补空格。</b>
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    printf("|%d|\n", 7);
+    printf("|%2d|\n", 7);
+    printf("|%4d|\n", 7);
+    printf("|%-4d|\n", 7);
+
+    printf("|%4d|\n", 128);
+    printf("|%2d|\n", 128);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">|7|
+| 7|
+|   7|
+|7   |
+| 128|
+|128|</pre>
+
+<p>
+每行左右各有一个 <code>|</code>，是特意加的——<b>没有它们，补出来的空格你根本看不见。</b>
+</p>
+
+<ul>
+  <li><code>|7|</code>：光写 <code>%d</code>，占几格算几格。</li>
+  <li><code>| 7|</code>：<code>%2d</code>，<b>至少两格</b>，7 只占一格，左边补一个空格。</li>
+  <li><code>|   7|</code>：<code>%4d</code>，至少四格，左边补三个，<b>右边的 <code>|</code> 就对齐了。</b></li>
+  <li><code>|7   |</code>：<code>%-4d</code>，前面多一个减号，<b>改补右边</b>（左对齐）。</li>
+  <li><code>| 128|</code>：<code>%4d</code> 打 128，三格够用，补一个空格。</li>
+  <li><code>|128|</code>：<code>%2d</code> 打 128——<b>它没有把 128 砍成一个字符</b>，原样打出来了。</li>
+</ul>
+
+<p>
+最后一行是这一课最容易想歪的地方，单独说：
+</p>
+
+<div class="aside">
+  <b>宽度是「至少」，不是「正好」</b>
+  <p>
+    <code>%2d</code> 的意思是<b>最少占两格</b>，不是最多两格。
+    数本身比两格长，它就原样打出来——<b>宁可撑破，绝不砍数。</b>
+  </p>
+  <p>
+    这一点很要命：你写 <code>%2d</code> 以为能对齐，结果来了个三位数，
+    整列就歪了。<b>宽度宁可写大一点。</b>
+  </p>
+</div>
+
+<h3 id="s1-6-4">%f 和 %.2f</h3>
+
+<p>
+小数用 <code>%f</code>。它和 <code>%d</code> 有一个大差别：
+<b><code>%f</code> 不用你说，默认就给你留六位小数。</b>
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    double pi = 3.14159265;
+    double price = 7.5;
+
+    printf("%f\n", pi);
+    printf("%.2f\n", pi);
+    printf("%.3f\n", pi);
+
+    printf("%f\n", price);
+    printf("%.2f\n", price);
+
+    printf("|%8.2f|\n", price);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">3.141593
+3.14
+3.142
+7.500000
+7.50
+|    7.50|</pre>
+
+<p>
+一行一行看：
+</p>
+
+<ul>
+  <li><code>%f</code> 打 <code>3.14159265</code> → <code>3.141593</code>，六位小数，最后一位四舍五入了。</li>
+  <li><code>%.2f</code> → <code>3.14</code>。<b>那个点加上数字，就是「小数点后留几位」。</b></li>
+  <li><code>%.3f</code> → <code>3.142</code>。</li>
+  <li><code>%f</code> 打 <code>7.5</code> → <code>7.500000</code>。<b>它老老实实补齐六位。</b>
+  1.4 里 <code>std::cout</code> 打 <code>7.5</code> 就是 <code>7.5</code>——两者在这儿正好相反。</li>
+  <li><code>%.2f</code> → <code>7.50</code>。<b>这才是价格该有的样子：两位小数，一分钱都不含糊。</b></li>
+  <li><code>%8.2f</code> → 宽度和小数位一起用，下面说。</li>
+</ul>
+
+<h3 id="s1-6-5">宽度加小数位：%8.2f</h3>
+
+<p>
+<code>%8.2f</code> 是这一课最该记住的一个。拆开看：
+</p>
+
+<pre><code>% 8 . 2 f
+  | |   |
+  | |   +-- 小数点后留 2 位
+  | +------ 整个数（连小数点带符号）至少占 8 格
+  +-------- 「这儿有个坑」</code></pre>
+
+<p>
+<code>|%8.2f|</code> 打 7.5 得到 <code>|    7.50|</code>：
+<b>7.50 占 4 格，不够 8 格，左边补 4 个空格。</b>
+</p>
+
+<p>
+为什么要这样？因为<b>补空格是从左边补的，所以小数点自然就对齐了</b>——
+所有 <code>%8.2f</code> 打出来的数，小数点都在<b>从右往左数第 3 格</b>。
+小数点对齐了，一列数才好比较。
+</p>
+
+<p>
+1.6 开头那三个价格，用上它是什么样，就是下面那道例题。
+</p>
+
+<h3 id="s1-6-6">百分号，和那个最容易少的点</h3>
+
+<p>
+先说百分号。格式串里的 <code>%</code> 有特殊意思（它是「坑」的开头），
+所以你想打一个真的百分号，得<b>写两个</b>。
+顺便看看「一次填几个坑」是怎么回事：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    printf("正确率 85%%\n");
+
+    printf("%d 个人里有 %d 个及格，占 %d%%\n", 50, 45, 90);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">正确率 85%
+50 个人里有 45 个及格，占 90%</pre>
+
+<p>
+两件事：
+</p>
+
+<ul>
+  <li><b><code>%%</code> 打出来就是一个 <code>%</code>。</b>写一个不行——见下面那个提醒。</li>
+  <li><b>第二行有三个坑，后面就跟三个值。</b>
+  <code>50</code> 填进第一个 <code>%d</code>，<code>45</code> 填第二个，<code>90</code> 填第三个，
+  <b>从左往右，一个一个对上</b>。最后那两个 <code>%%</code> 打出百分号，不占坑。</li>
+</ul>
+
+<p>
+<b>顺序错了，数就填错了。</b>要是写成 <code>printf("%d %d\n", b, a);</code>，
+填进去的确实是 b 和 a——但坑的顺序没变，所以打出来就是反的。
+<code>printf</code> 不会替你核对，它只管按顺序填。
+</p>
+
+<div class="aside warn">
+  <b>只写一个 <code>%</code> 会怎样</b>
+  <p>
+    g++ 给你一个警告，然后<b>照样编译通过</b>：
+  </p>
+  <pre class="diag"><code>1.6-one-percent-warn.cpp:4:23: warning: unknown conversion type character ‘\x0a’ in format [-Wformat=]
+    4 |     printf("正确率 85%\n");
+      |                       ^~
+</code></pre>
+  <p>
+    <code>\x0a</code> 就是换行那个字符（
+    <code>\n</code> 的另一个写法，打出来看不见，编译器只好这么写它）。
+    它说的是：<b>「格式里跟在这个 <code>%</code> 后面的字符，我不认识」</b>——
+    它以为你又要填一个坑，可后面跟的是换行，不是 <code>d</code> 也不是 <code>f</code>。
+  </p>
+  <p>
+    这份程序跑起来碰巧还是对的，因为那个 <code>%</code> 后面紧跟着的正好是换行，
+    没有东西可填。<b>但那是碰巧，不是规矩。</b>
+    想打百分号就写两个——别去研究什么情况下能蒙对，那是白费工夫。
+  </p>
+</div>
+
+<p>
+再说那个最容易少的点。看这两行，<b>差别只有一个点</b>：
+</p>
+
+<pre><code>printf("%.2f\n", 19.9);
+printf("%2f\n", 19.9);</code></pre>
+
+<pre class="out" data-label="预期输出">19.90
+19.900000</pre>
+
+<p>
+第一行想留两位小数，第二行<b>少写了一个点</b>，结果六位小数全回来了。
+</p>
+
+<p>
+为什么？因为 <code>%2f</code> 里的那个 <code>2</code> 被当成了<b>宽度</b>，
+不是小数位数。<code>19.900000</code> 本来就比 2 格长，宽度这个「至少」直接不起作用——
+<b>于是你写的 2 等于白写，而小数位回到了默认的六位。</b>
+</p>
+
+<div class="aside warn">
+  <b>这个错编译器不会提醒你</b>
+  <p>
+    <code>%2f</code> 语法完全合法，<b>编译一个警告都没有</b>，
+    程序跑起来也顺顺当当，就是打出来的东西不是你要的。
+    这种错最难查——没有任何东西告诉你错了，只有你自己盯着输出看。
+  </p>
+  <p>
+    所以养成习惯：<b>写 <code>%.2f</code> 的时候，回头看一眼那个点在不在。</b>
+  </p>
+</div>
+
+<div class="eg" id="e1-6">
+  <div class="eg-h">例题 · 对齐一张小票</div>
+  <p>
+    把开头那三个价格重新打一遍。上半段还是 <code>std::cout</code>，下半段换成 <code>printf</code>，
+    <b>数字一个都没变，只换了打法。</b>
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "用 cout 打：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; 12.5 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 3.0 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 118.75 &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "用 printf 打：" &lt;&lt; std::endl;
+    printf("%8.2f\n", 12.5);
+    printf("%8.2f\n", 3.0);
+    printf("%8.2f\n", 118.75);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">用 cout 打：
+12.5
+3
+118.75
+用 printf 打：
+   12.50
+    3.00
+  118.75</pre>
+  <p>
+    下半段三行，<b>小数点一竖排对齐了</b>，而且每个数都是两位小数，
+    <code>3.0</code> 也老老实实打成 <code>3.00</code>——看着就像个价格了。
+  </p>
+  <p>
+    对一下宽度：<code>118.75</code> 连小数点一共 6 个字符，
+    <code>%8.2f</code> 让每个数至少占 8 格，所以 118.75 前面补 2 个空格，
+    3.00 前面补 4 个，12.50 前面补 3 个。
+  </p>
+  <p>
+    <b>为什么这样就对齐了？</b>因为每个数都是「补空格 + 两位小数」，
+    尾巴一样长，头都顶在右边。所以 <b>数越宽，补的空格越少，小数点自然落到同一列上。</b>
+  </p>
+  <p>
+    一个程序里 <code>std::cout</code> 和 <code>printf</code> 是可以混着用的——
+    上面这份就混着用了。要看齐的地方用 <code>printf</code>，
+    只想打一句话的地方用 <code>std::cout</code>，各取所长。
+  </p>
+</div>
+
+<h3 id="s1-6-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-21</div>
+  <p>
+    用 <code>printf</code> 和上一课那个 <code>%8.2f</code>，把这三个价格打成一小列——
+    <b>小数点必须对齐，每个数都要两位小数</b>：
+  </p>
+  <pre class="out" data-label="预期输出">    5.60
+  128.00
+   42.45</pre>
+  <p>
+    三个数是 <code>5.6</code>、<code>128.0</code>、<code>42.45</code>。
+  </p>
+  <p>
+    提示：三行 <code>printf</code>，格式串一模一样，只有后面那个数不一样。
+    打完了数一下每行开头有几个空格，和上面那份对一下。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-21.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三行 <code>printf</code>，格式串一模一样，只有后面那个数换：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    printf("%8.2f\n", 5.6);
+    printf("%8.2f\n", 128.0);
+    printf("%8.2f\n", 42.45);
+
+    return 0;
+}</code></pre>
+      <p>
+        数一下每行开头补了几个空格：<code>128.00</code> 占 6 格，补 2 个；
+        <code>42.45</code> 占 5 格，补 3 个；<code>5.60</code> 占 4 格，补 4 个。
+        <b>每行连空格一起都是 8 格，所以小数点都落在同一竖排上。</b>
+      </p>
+      <p>
+        这就是 <code>%8.2f</code> 的全部本事：<b>数越宽，补的空格越少，
+        尾巴自然就对齐了。</b>你不用去算每个数该补几个——<code>8.2</code> 帮你算。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-22</div>
+  <p>
+    有一个 <code>double pi = 3.14159265;</code>，用 <code>printf</code> 打出这样一行：
+  </p>
+  <pre class="out" data-label="预期输出">圆周率约等于 3.14</pre>
+  <p>
+    要求：<code>3.14</code> 必须是 <b><code>pi</code> 算出来的</b>，
+    不许把 <code>"3.14"</code> 直接写进格式串里。
+  </p>
+  <p>
+    提示：想清楚 <code>pi</code> 那个坑该写 <code>%d</code>、<code>%f</code> 还是别的。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-22.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>pi</code> 是 <code>double</code>，所以坑要写 <code>%f</code>；
+        要两位小数，就在中间点上那个点：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    double pi = 3.14159265;
+
+    printf("圆周率约等于 %.2f\n", pi);
+
+    return 0;
+}</code></pre>
+      <p>
+        写成 <code>%.2f</code>，<code>3.14159265</code> 就变成 <code>3.14</code>——
+        <b>多余的部分四舍五入，不是砍掉。</b>
+      </p>
+      <p>
+        想验证一下「四舍五入」到底怎么算：把 <code>pi</code> 改成 <code>3.145</code>，
+        <code>%.2f</code> 打出 <code>3.15</code>——进位了。
+        再改成 <code>3.135</code>，打出来的却是 <code>3.13</code>，没进位。
+      </p>
+      <p>
+        这不是 <code>printf</code> 糊涂了。<code>3.135</code> 存进 <code>double</code>
+        的时候，就比 3.135 小那么一点点（1.2 讲过 <code>0.1 + 0.2</code> 那件事）——
+        一个比 3.135 小的数，留两位小数当然进不上去。
+        <b>你写的是十进制，盒子装的是二进制，那点误差就是从这儿冒出来的。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-23（找错）</div>
+  <p>
+    有个人想把 <code>19.9</code> 打成两位小数，写了这两行。
+    结果第一行对了，第二行打出来一堆小数位。
+  </p>
+  <pre><code>printf("%.2f\n", 19.9);
+printf("%2f\n", 19.9);</code></pre>
+  <p>
+    <b>先别看答案</b>，说说这两行为什么不一样。
+    这个错编译的时候<b>一声都不响</b>，所以只能靠你眼睛。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-23.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这两行<b>差别只有一个点</b>，但那个点在的位置不一样，管的事就不一样：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    printf("%.2f\n", 19.9);
+    printf("%2f\n", 19.9);
+
+    return 0;
+}</code></pre>
+      <p>跑起来是这样：</p>
+      <pre class="out" data-label="预期输出">19.90
+19.900000</pre>
+      <p>
+        <code>%.2f</code> 里的 <code>.2</code> 是<b>小数点后留几位</b>。
+        <code>%2f</code> 里没有点，那个 <code>2</code> 就被当成了<b>宽度</b>——
+        也就是 1.6 讲的「至少占几格」。
+      </p>
+      <p>
+        而 <code>19.900000</code> 本来就比 2 格长得多，
+        「至少两格」这个要求它早就满足了。<b>于是你写的 2 等于白写，
+        小数位回到 <code>%f</code> 默认的六位。</b>
+      </p>
+      <div class="aside warn">
+        <b>编译器不会提醒你</b>
+        <p>
+          <code>%2f</code> 语法完全合法。<b>编译一个警告都没有，程序跑起来也顺顺当当</b>，
+          就是打出来的东西不是你要的。这种错最难查——
+          没有任何东西告诉你错了，只能靠你自己盯着输出看。
+        </p>
+        <p>
+          所以养成习惯：<b>写完 <code>%.2f</code>，回头看一眼那个点还在不在。</b>
+        </p>
+      </div>
+      <p>
+        顺手记一下括号里的那件事：<code>%2f</code> 不是没用，
+        写成 <code>%12f</code> 就有用了——它会让这个数至少占 12 格。
+        只是「宽度」和「小数位」是两件事，别把它们挤在一个地方写。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-24</div>
+  <p>
+    用 <code>printf</code> 打出这样两行：
+  </p>
+  <pre class="out" data-label="预期输出">折扣 85%
+应付 12.75 元</pre>
+  <p>
+    要求：第二行那个 <code>12.75</code> 要从一个 <code>double price = 12.75;</code> 打出来，
+    保留两位小数。第一行那个 <code>%</code> 是<b>真的百分号</b>。
+  </p>
+  <p>
+    提示：这题要用上这一课两个不同的 <code>%</code> 写法——
+    一个是「打百分号」，一个是「留两位小数」。别搞混。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-24.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个不同的 <code>%</code> 写法，各管各的：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    printf("折扣 85%%\n");
+    printf("应付 %.2f 元\n", 12.75);
+
+    return 0;
+}</code></pre>
+      <p>
+        第一行里 <code>85%%</code> 打出 <code>85%</code>——
+        <b>两个百分号，出一个。</b>
+      </p>
+      <p>
+        第二行 <code>%.2f</code> 打的是那个 <code>double</code>。
+        写死 <code>12.75</code> 不行（题里要求从变量来），
+        写 <code>%f</code> 也不行——那会打出 <code>12.750000</code>。
+      </p>
+      <p>
+        这题的两个符号挨得很近：<code>%%</code> 和 <code>%.2f</code>，
+        开头都是 <code>%</code>。分清楚的办法是看<b>后面跟的是什么</b>：
+        跟着另一个 <code>%</code>，就是打一个百分号；
+        跟着数字和 <code>f</code>，就是留几位小数。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能让数字长成你要的样子了——补几位、空几格、小数点在哪一列，
+  都是你说了算。第 1 部分到这儿结束。
+  下一部分开始让程序<b>自己做判断、自己重复</b>：那才是程序真正开始像程序的地方。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/viz.js"></script>
+<script>
+"use strict";
+
+// ── 1.1 的数据流动画 ──────────────────────────────────
+// 每一步的变量值都真跑出来对过，一个不差。
+// VIZ 这个名字由 viz.js 建好，这里只管往里放配置。
+VIZ.boxes = {
+  code: [
+    "int a = 3;",
+    "int b = 5;",
+    "int c = a + b;",
+    "a = 10;",
+    "std::cout << a << std::endl;",
+    "std::cout << b << std::endl;",
+    "std::cout << c << std::endl;"
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "程序刚开始。内存里空空的，屏幕上什么都没有。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "开一个盒子，名字叫 <b>a</b>，把 <b>3</b> 放进去。",
+      mem: [{ name: "a", value: 3, state: "new" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "再开一个盒子叫 <b>b</b>，放进 <b>5</b>。a 和 b 是两个各自独立的盒子。",
+      mem: [
+        { name: "a", value: 3 },
+        { name: "b", value: 5, state: "new" }
+      ],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "先算右边：把 a 和 b 的<b>值</b>读出来（3 和 5），加起来是 8。" +
+            "然后开一个盒子叫 <b>c</b>，把 8 放进去。",
+      mem: [
+        { name: "a", value: 3, state: "read" },
+        { name: "b", value: 5, state: "read" },
+        { name: "c", value: 8, state: "new" }
+      ],
+      screen: [],
+      flows: [{ from: "a", to: "c" }, { from: "b", to: "c" }]
+    },
+    {
+      line: 3,
+      note: "把 a 盒子里的 3 擦掉，写上 10。 —— <b>盯住 c：它还是 8，一动不动。</b>" +
+            "c 里存的是刚才算出来的 8 这个数字，不是「a 加 b」这个公式。",
+      mem: [
+        { name: "a", value: 10, state: "write" },
+        { name: "b", value: 5 },
+        { name: "c", value: 8 }
+      ],
+      screen: []
+    },
+    {
+      line: 4,
+      note: "打印 a。把 a 里的值送到屏幕上，屏幕上出现 <b>10</b>。",
+      mem: [
+        { name: "a", value: 10, state: "read" },
+        { name: "b", value: 5 },
+        { name: "c", value: 8 }
+      ],
+      screen: ["10"],
+      flows: [{ from: "a", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "打印 b。屏幕上是 <b>5</b>。",
+      mem: [
+        { name: "a", value: 10 },
+        { name: "b", value: 5, state: "read" },
+        { name: "c", value: 8 }
+      ],
+      screen: ["10", "5"],
+      flows: [{ from: "b", to: ":screen" }]
+    },
+    {
+      line: 6,
+      note: "打印 c。屏幕上是 <b>8</b>。 所以整个程序输出三行：<b>10、5、8</b>。",
+      mem: [
+        { name: "a", value: 10 },
+        { name: "b", value: 5 },
+        { name: "c", value: 8, state: "read" }
+      ],
+      screen: ["10", "5", "8"],
+      flows: [{ from: "c", to: ":screen" }]
+    }
+  ]
+};
+</script>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,4525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · 让程序做判断和重复 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a class="active" href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html" aria-current="page">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · 让程序做判断和重复</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>判断</a>
+  <a class="toc-sub" href="#s2-1-1">程序第一次分岔</a>
+  <a class="toc-sub" href="#s2-1-2">三个部件</a>
+  <a class="toc-sub" href="#s2-1-3">两条路：else</a>
+  <a class="toc-sub" href="#s2-1-4">三条以上：else if</a>
+  <a class="toc-sub" href="#s2-1-5">花括号能不能省</a>
+  <a class="toc-sub" href="#s2-1-6">括号里放的是什么</a>
+  <a class="toc-sub" href="#e2-1">例题：奇数还是偶数</a>
+  <a class="toc-sub" href="#s2-1-7">练习</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>条件怎么写</a>
+  <a class="toc-sub" href="#s2-2-1">六个比较运算符</a>
+  <a class="toc-sub" href="#s2-2-2">= 和 ==</a>
+  <a class="toc-sub" href="#s2-2-3">连起来：&amp;&amp; || !</a>
+  <a class="toc-sub" href="#s2-2-4">&amp;&amp; 比 || 紧</a>
+  <a class="toc-sub" href="#s2-2-5">连写的不等式</a>
+  <a class="toc-sub" href="#e2-2">例题：在不在范围里</a>
+  <a class="toc-sub" href="#s2-2-6">练习</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>循环</a>
+  <a class="toc-sub" href="#s2-3-1">没有循环的时候</a>
+  <a class="toc-sub" href="#s2-3-2">while 长什么样</a>
+  <a class="toc-sub" href="#s2-3-3">必须有的三件事</a>
+  <a class="toc-sub" href="#s2-3-4">忘了让条件变</a>
+  <a class="toc-sub" href="#s2-3-5">攒一个总数</a>
+  <a class="toc-sub" href="#e2-3">例题：倒着数</a>
+  <a class="toc-sub" href="#s2-3-6">练习</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>for</a>
+  <a class="toc-sub" href="#s2-4-1">三件事散在三处</a>
+  <a class="toc-sub" href="#s2-4-2">头上那三个格子</a>
+  <a class="toc-sub" href="#s2-4-3">三个格子的走动顺序</a>
+  <a class="toc-sub" href="#s2-4-4">两个分号，一个都不能少</a>
+  <a class="toc-sub" href="#s2-4-5">用 for 还是 while</a>
+  <a class="toc-sub" href="#s2-4-6">起点和步子都能改</a>
+  <a class="toc-sub" href="#e2-4">例题：1 加到 n</a>
+  <a class="toc-sub" href="#s2-4-7">练习</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>嵌套循环</a>
+  <a class="toc-sub" href="#s2-5-1">一个循环套一个循环</a>
+  <a class="toc-sub" href="#s2-5-2">外圈走一步，内圈走一整轮</a>
+  <a class="toc-sub" href="#s2-5-3">数一数走了几遍</a>
+  <a class="toc-sub" href="#s2-5-4">用纸笔跟一遍</a>
+  <a class="toc-sub" href="#s2-5-5">内圈的上限常常是 i</a>
+  <a class="toc-sub" href="#e2-5">例题：星号直角三角形</a>
+  <a class="toc-sub" href="#s2-5-6">练习</a>
+  <a class="toc-l" href="#l2-6"><span class="n">2.6</span>乘法表</a>
+  <a class="toc-sub" href="#s2-6-1">综合练习：9×9 乘法表</a>
+  <a class="toc-sub" href="#s2-6-2">它就是 2.5 那个三角形</a>
+  <a class="toc-sub" href="#s2-6-3">跑出来了，可是歪的</a>
+  <a class="toc-sub" href="#s2-6-4">把宽度定死</a>
+  <a class="toc-sub" href="#e2-6">正解（for 版）</a>
+  <a class="toc-sub" href="#s2-6-5">再用 while 写一版</a>
+  <a class="toc-sub" href="#s2-6-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>让程序做判断和重复</h1>
+  <p class="part-lead">
+    上一部分的程序是一条道走到黑的：每一行都走，从头走到尾。
+    这一部分给它装上岔路口——有的路走，有的路不走；有的路走一遍，有的走一百遍。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>判断：让程序选一条路走</h2>
+
+<p>
+到 1.6 为止，程序都是<b>一行不落</b>地从头走到尾的。你写十行，它就执行十行。
+</p>
+
+<p>
+可真实的问题不长这样。真实的说法是「<b>及格才</b>打及格」——
+有一个条件在那儿管着，条件成立才走那几句。
+</p>
+
+<h3 id="s2-1-1">程序第一次分岔</h3>
+
+<p>
+一个判分数的程序。58 分：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 58;
+
+    if (score &gt;= 60) {
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "看完了" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">看完了</pre>
+
+<p>
+注意到没有：<b>程序里写着「及格」那三个字，但屏幕上没有。</b>
+</p>
+
+<p>
+它没坏，这就是它该干的事。因为有一道闸门挡在那儿：<code>score &gt;= 60</code>。
+58 不满足这个条件，闸门关着，那两句就走不到。
+</p>
+
+<p>
+<b>把 <code>58</code> 改成 <code>75</code> 再编译再跑一次</b>，你会看到：
+</p>
+
+<pre class="out" data-label="预期输出">及格
+看完了</pre>
+
+<p>
+闸门开了。同一个程序，一行代码没改，只换了一个数，走的路就不一样了。
+<b>这就是「分岔」。</b>
+</p>
+
+<div class="aside">
+  <b>最后那行「看完了」为什么两次都在</b>
+  <p>
+    因为它<b>不在闸门里面</b>。它写在 <code>if</code> 那对大括号的外面，
+    所以不管闸门开不开，它都照走。
+  </p>
+  <p>
+    「哪几句归闸门管、哪几句不归」是这一课最要紧的一件事。
+    下面还会专门讲一次。
+  </p>
+</div>
+
+<h3 id="s2-1-2">三个部件</h3>
+
+<p>
+把刚才那道闸门拆开看，它有三个部件：
+</p>
+
+<pre><code>if (score &gt;= 60) {
+    std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+}</code></pre>
+
+<ol>
+  <li>
+    <b><code>if</code> 这个词</b>。它是 if（如果）的缩写，意思是
+    「下面这句话是有条件的」。
+  </li>
+  <li>
+    <b>一对圆括号，里面是条件</b>：<code>(score &gt;= 60)</code>。
+    括号里那句话要能判出真假——不是真就是假，没有第三种。
+  </li>
+  <li>
+    <b>一对花括号，里面是要走的那几句</b>。
+    条件成立，大括号里<b>从头到尾</b>走一遍；条件不成立，<b>整块跳过</b>。
+  </li>
+</ol>
+
+<p>
+<code>if</code> 后面<b>没有分号</b>。这是个容易手滑的地方，滑了之后是这样：
+</p>
+
+<pre><code>if (score &gt;= 60);
+{
+    std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+多了一个分号。程序照样编译（只警告一句），跑起来 58 分也打「及格」。
+</p>
+
+<p>
+因为<b>那个分号把 <code>if</code> 的话说完了</b>——1.4 说过，分号是「一句话说完了」的记号。
+<code>if</code> 后面跟了一个空句子，闸门管的是那个空句子。
+下面那对大括号已经站在闸门外面了，成了普通的一块，<b>不管条件成不成立都走</b>。
+</p>
+
+<p>
+编译器警告的原话是 <code>this ‘if’ clause does not guard...</code>，
+意思是「这个 <code>if</code> 谁也没管住」。<code>if</code> 这句还没说完，自然不能有分号。
+</p>
+
+<h3 id="s2-1-3">两条路：else</h3>
+
+<p>
+上面那个程序只处理了「及格」的情况。不及格的时候什么都不说——
+可生活里这时候该说「不及格」。
+</p>
+
+<p>
+<code>else</code> 就是干这个的。读作「否则」：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 58;
+
+    if (score &gt;= 60) {
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">不及格</pre>
+
+<p>
+加上 <code>else</code> 之后，性质变了一点：<b>两条路必走一条，而且只走一条。</b>
+</p>
+
+<p>
+注意 <code>else</code> 后面<b>没有圆括号</b>。它不需要条件——
+「上面那个不成立」本身就是它的条件。
+</p>
+
+<div class="aside warn">
+  <b><code>else</code> 不能单独出现</b>
+  <p>
+    它必须紧跟着一个 <code>if</code>。单独写一个 <code>else</code>，
+    编译器会问你「否则什么？」，然后报
+    <code>error: ‘else’ without a previous ‘if’</code>。
+  </p>
+</div>
+
+<h3 id="s2-1-4">三条以上：else if</h3>
+
+<p>
+两条路不够的时候——比如成绩分优秀、及格、不及格三档——在中间插
+<code>else if</code>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 58;
+
+    if (score &gt;= 90) {
+        std::cout &lt;&lt; "优秀" &lt;&lt; std::endl;
+    } else if (score &gt;= 60) {
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">不及格</pre>
+
+<p>
+把 <code>score</code> 改成 <code>75</code> 会打「及格」，改成 <code>95</code> 会打「优秀」。
+</p>
+
+<p>
+怎么走的？<b>从上往下，一个一个问，问到哪个成立就走哪个，
+走完就出这一整块，后面的问都不问了。</b>
+</p>
+
+<ul>
+  <li>95 分：第一个问「≥ 90 吗」——是，打「优秀」，<b>走人</b>。<code>≥ 60</code> 那句问都不问。</li>
+  <li>75 分：第一个问「≥ 90 吗」——不是；第二个问「≥ 60 吗」——是，打「及格」，走人。</li>
+  <li>58 分：两个都不是，落到 <code>else</code>，打「不及格」。</li>
+</ul>
+
+<div class="aside warn">
+  <b>所以顺序不能随便调</b>
+  <p>
+    把上面两个条件调个个儿，先问 <code>≥ 60</code>、再问 <code>≥ 90</code>：
+    95 分第一个问题就通过了，直接打「及格」走人——<b>「优秀」永远轮不到</b>。
+  </p>
+  <p>
+    这不是理论。这种「宽的条件写在前面，把窄的挡住了」是
+    <code>else if</code> 最常见的错。<b>写的时候从最严的条件往下排。</b>
+  </p>
+</div>
+
+<h3 id="s2-1-5">花括号能不能省</h3>
+
+<p>
+大括号里只有一句话的时候，C++ 允许你把大括号省掉：
+</p>
+
+<pre><code>if (score &gt;= 60)
+    std::cout &lt;&lt; "及格" &lt;&lt; std::endl;</code></pre>
+
+<p>
+这行得通。但<b>这一课我建议你永远别省</b>。原因看下面这个程序——
+它<b>想</b>干的事是：58 分一个字都不打，及格了才打「恭喜」。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 58;
+
+    if (score &gt;= 60)
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+        std::cout &lt;&lt; "恭喜" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">恭喜</pre>
+
+<p>
+58 分，没及格，<b>可「恭喜」还是打出来了。</b>
+</p>
+
+<p>
+看第二句的缩进——<b>它比 <code>if</code> 深了一层</b>，写的人以为它归
+<code>if</code> 管，手也就这么缩进去了。可<b>编译器只认语法，不认缩进</b>：
+省掉大括号之后，<code>if</code> 只管它后面那<b>一句</b>。
+第二句 <code>std::cout &lt;&lt; "恭喜"</code> 已经站在闸门外面了，
+不管条件成不成立它都走。
+</p>
+
+<p>
+最要命的是：<b>它照样编译通过了。</b>编译器确实说了句话，
+但那句话是<b>警告</b>，不是错误——它没拦住你：
+</p>
+
+<pre class="diag"><code>2.1-warn-brace.cpp:19:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   19 |     if (score &gt;= 60)
+      |     ^~
+2.1-warn-brace.cpp:21:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   21 |         std::cout &lt;&lt; "恭喜" &lt;&lt; std::endl;
+      |         ^~~</code></pre>
+
+<p>
+读一遍：<b>「这个 <code>if</code> 不管着这一句」</b>。
+后面那句 <code>note</code> 说得更直白——<b>「这一句缩进得像是归
+<code>if</code> 管，其实不归」</b>。它把你想干的事看得清清楚楚。
+</p>
+
+<p>
+<b>可警告拦不住程序。</b>编译照样过，跑起来照样打「恭喜」——
+你要是不读它，它等于没说。
+<b>这就是 warning 和 error 的区别，也是 0.1 让你一直带着
+<code>-Wall</code> 的原因：不带着它，这句话它根本不会说出口。</b>
+</p>
+
+<p>
+所以养成习惯：<b>哪怕只有一句话，也把大括号写上。</b>
+写上之后，<b>「哪几句归这个 <code>if</code> 管」是写在代码里的</b>——
+不靠缩进，也不靠你记；以后往里头加第二句，更不用回头补。
+</p>
+
+<h3 id="s2-1-6">括号里放的是什么</h3>
+
+<p>
+前面一直在说「条件成立」「不成立」。那<b>「成立」到底是个什么东西？</b>
+</p>
+
+<p>
+看这个程序。它拿五个东西往 <code>if</code> 的括号里塞：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    if (0) {
+        std::cout &lt;&lt; "0 是真" &lt;&lt; std::endl;
+    }
+
+    if (1) {
+        std::cout &lt;&lt; "1 是真" &lt;&lt; std::endl;
+    }
+
+    if (-1) {
+        std::cout &lt;&lt; "-1 是真" &lt;&lt; std::endl;
+    }
+
+    if (3 - 3) {
+        std::cout &lt;&lt; "3-3 是真" &lt;&lt; std::endl;
+    }
+
+    if (10 &gt; 3) {
+        std::cout &lt;&lt; "10&gt;3 是真" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1 是真
+-1 是真
+10&gt;3 是真</pre>
+
+<p>
+数一下：五句里走了三句。没走的是 <code>0</code> 和 <code>3 - 3</code>。
+</p>
+
+<p>
+规律很清楚：<b>括号里那个东西等于 0，就是假；不等于 0，就是真。</b>
+</p>
+
+<p>
+<code>3 - 3</code> 算出来是 0，所以是假。<code>-1</code> 不等于 0，所以是真——
+<b>负数也是真</b>，这一点跟很多人想的不一样。
+</p>
+
+<p>
+而 <code>10 &gt; 3</code> 这种<b>比较算式</b>，本身就是算出一个数：
+成立算出 1，不成立算出 0。<code>if</code> 拿到这个 1 或 0，判断真假。
+</p>
+
+<p>
+这句话记住，2.2 整课都靠它：
+<b><code>if</code> 的括号里放的不是「一句判断」，是一个数。0 是假，别的都是真。</b>
+</p>
+
+<div class="eg" id="e2-1">
+  <div class="eg-h">例题 · 奇数还是偶数</div>
+  <p>
+    你手上已经有 <code>if</code> 了，1.3 那个取余 <code>%</code> 也还在。
+    两个合起来，能判断一个数的奇偶：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 7;
+
+    if (n % 2 == 0) {
+        std::cout &lt;&lt; n &lt;&lt; " 是偶数" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; n &lt;&lt; " 是奇数" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">7 是奇数</pre>
+
+  <p>
+    <code>n % 2</code> 是 7 除以 2 的余数，也就是 1。1 不等于 0，所以走
+    <code>else</code>——打出「奇数」。
+  </p>
+
+  <p>
+    注意 <code>==</code> 是两个等号。为什么不能写一个等号，下一课开头就讲。
+  </p>
+</div>
+
+<h3 id="s2-1-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-1</div>
+  <p>
+    读一个整数，判断它是<b>正数</b>、<b>负数</b>还是<b>零</b>。
+  </p>
+  <p>
+    输入 <code>-7</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">-7</span>
+负数</pre>
+  <p>
+    提示：三档，所以要用 <code>else if</code>。
+    三种情况分别是什么，先在纸上写清楚再动手。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三档，两个条件，从上往下排：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    if (n &gt; 0) {
+        std::cout &lt;&lt; "正数" &lt;&lt; std::endl;
+    } else if (n &lt; 0) {
+        std::cout &lt;&lt; "负数" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "零" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        最后那个 <code>else</code> 是<b>不带条件的</b>——
+        前面两个都不成立，剩下的只能是零，不用再问一遍。
+      </p>
+      <p>
+        写成 <code>else if (n == 0)</code> 也对，但那是白问。
+        <b>能把「剩下的那种情况」交给 <code>else</code>，就别再写条件。</b>
+        少写一个条件，就少一个写错的机会。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-2</div>
+  <p>
+    读<b>两个</b>整数，打出其中<b>较大的那个</b>。
+  </p>
+  <p>
+    输入 <code>4 9</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4 9</span>
+9</pre>
+  <p>
+    提示：读两个数和 1.5 那个一次读三个数的写法一样，
+    一个 <code>std::cin</code> 连着写两个 <code>&gt;&gt;</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个数比大小，一条岔路口就够了：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 0;
+    int b = 0;
+    std::cin &gt;&gt; a &gt;&gt; b;
+
+    if (a &gt;= b) {
+        std::cout &lt;&lt; a &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; b &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>std::cin &gt;&gt; a &gt;&gt; b;</code> 一句读两个数，
+        和 1.5 那个一次读三个数的是一个写法。
+      </p>
+      <p>
+        有人会想写成两个 <code>if</code>：「a 大就打 a，b 大就打 b」。
+        也行，但这一版更省事——<b>不是 a 大，那就一定是 b 大</b>，
+        一件事问一次就够。
+      </p>
+      <p>
+        这题看着没什么用，其实它是 4.3「在数组里找最大值」的种子：
+        那时候要做的事就是这一句，只不过要重复很多遍。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-3</div>
+  <p>
+    读一个整数，判断它<b>能不能被 3 整除</b>。
+  </p>
+  <p>
+    输入 <code>17</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">17</span>
+17 不能被 3 整除，余 2</pre>
+  <p>
+    提示：能不能整除，就是问<b>余数是不是 0</b>——1.3 那个 <code>%</code>。
+    注意最后那个 <code>2</code> 是算出来的，不是写死的。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        能不能整除，就是问余数是不是 0：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    if (n % 3 == 0) {
+        std::cout &lt;&lt; n &lt;&lt; " 能被 3 整除" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; n &lt;&lt; " 不能被 3 整除，余 " &lt;&lt; n % 3 &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>n % 3</code> 在程序里出现了两次：一次问它是不是 0，
+        一次打进结果里。两次算的是同一个东西，所以不用另开一个盒子存它。
+      </p>
+      <p>
+        顺带说一件容易混的事：<b>「能不能被 3 整除」和「除以 3 得多少」是两回事。</b>
+        前者用 <code>%</code>，后者用 <code>/</code>。
+        想判断整除却写成 <code>n / 3 == 0</code> 就错了——
+        17 / 3 是 5，根本不等于 0。1.3 那个整数除法的坑，在这儿又露了一次头。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-4（找错）</div>
+  <p>
+    一个 75 分的程序，想打「及格」。它也确实编译通过了，
+    可打出来的是两行：
+  </p>
+  <pre class="out" data-label="预期输出">及格
+不及格</pre>
+  <p>
+    出问题的就是这一段（<code>score</code> 是 75）：
+  </p>
+  <pre><code>    if (score &gt;= 60)
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;</code></pre>
+  <p>
+    <b>先别看答案</b>——错在哪儿？
+  </p>
+  <p>
+    提示：这不是语法问题，编译器一声都没吭。
+    回到 2.1 讲「花括号能不能省」那一段，看看 <code>if</code> 到底管住了哪一句。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        那段程序完整长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 75;
+
+    if (score &gt;= 60)
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>错在少了一对花括号。</b><code>if (score &gt;= 60)</code> 后面没有大括号，
+        所以它只看得见紧跟着的<b>一句</b>。第二句
+        <code>std::cout &lt;&lt; "不及格"</code> 已经站在门外，
+        不管条件成不成立都走。75 分的时候闸门开了走第一句，
+        走到门外再走第二句——两句都打了。
+      </p>
+      <p>
+        把大括号补上，两句都圈进 <code>if</code> 里，就成了正常的
+        <code>if</code> / <code>else</code>：
+      </p>
+      <pre><code>    if (score &gt;= 60) {
+        std::cout &lt;&lt; "及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "不及格" &lt;&lt; std::endl;
+    }</code></pre>
+      <p>
+        当然，这道题只问「原版为什么两句都打」，答案就在那个大括号上。
+        （上面那一小块只是示意，答案里那份是那个<b>错</b>的样子——
+        它就是留给你对着找错的。）
+      </p>
+      <p>
+        <b>这题真正要你记住的是「编译器没吭声」。</b>
+        没有报错，没有警告，编译通过，跑起来也算「成功」。
+        它只是没干你想让它干的事。
+        这一类错没人替你兜着，只能靠那对大括号防住——
+        这就是 2.1 里说「哪怕只有一句话也写上大括号」的原因。
+      </p>
+    </div>
+  </details>
+</div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>条件怎么写</h2>
+
+<p>
+2.1 学会了分岔，但条件一直是 <code>&gt;=</code> 这一种。
+这一课把条件本身讲完——<b>它是基础课里最容易写错的地方，
+而且错起来大多不报错。</b>
+</p>
+
+<h3 id="s2-2-1">六个比较运算符</h3>
+
+<p>
+比大小一共六个符号，先看它们各自算出什么：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 5;
+    int b = 3;
+
+    std::cout &lt;&lt; (a == b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (a != b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (a &gt; b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (a &lt; b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (a &gt;= b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (a &lt;= b) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">0
+1
+1
+0
+1
+0</pre>
+
+<p>
+一行一行对：
+</p>
+
+<ul>
+  <li><code>a == b</code>：5 等于 3 吗？不等，算出 <b>0</b>（假）。</li>
+  <li><code>a != b</code>：<code>!=</code> 读作「不等于」。5 不等于 3，算出 <b>1</b>（真）。</li>
+  <li><code>a &gt; b</code>：5 大于 3，<b>1</b>。</li>
+  <li><code>a &lt; b</code>：5 小于 3？不，<b>0</b>。</li>
+  <li><code>a &gt;= b</code>：<code>&gt;=</code> 是「大于<b>或</b>等于」。5 大于 3，成立，<b>1</b>。</li>
+  <li><code>a &lt;= b</code>：5 小于等于 3？不，<b>0</b>。</li>
+</ul>
+
+<p>
+<b>打出来的是 0 和 1，不是 true 和 false</b>——因为 <code>std::cout</code>
+把真假当数打（1.4 讲 <code>bool</code> 那一段就是这个）。
+数本身是没问题的：你拿它当条件用，1 就是真、0 就是假。
+</p>
+
+<div class="aside warn">
+  <b>那对圆括号不能省</b>
+  <p>
+    上面每一行都有括号：<code>std::cout &lt;&lt; (a == b)</code>。
+    不写会怎样？<code>std::cout &lt;&lt; a == b</code> 会被当成
+    <code>(std::cout &lt;&lt; a) == b</code>——
+    先把 <code>a</code> 打出去，然后拿「刚才那个打印动作」去和 <code>b</code> 比大小。
+    编译器不干，直接报错。
+  </p>
+  <p>
+    这就是 1.4 说的「一个 <code>&lt;&lt;</code> 只做一件事」。
+    把比较算式用括号圈起来，告诉它「这块先算」。
+  </p>
+</div>
+
+<h3 id="s2-2-2">= 和 ==</h3>
+
+<p>
+这一课<b>最贵的一个字</b>。
+</p>
+
+<p>
+1.1 就说过：<code>=</code> 不是「等于」，是「把右边的放进去」。
+判断相不相等用的是两个等号 <code>==</code>。
+道理谁都懂，但手上会滑。看滑了之后发生什么：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 5;
+
+    if (a = 0) {
+        std::cout &lt;&lt; "进来了" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "没进来" &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "a 现在是 " &lt;&lt; a &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">没进来
+a 现在是 0</pre>
+
+<p>
+<b>它编译通过了。</b>编译器只警告了一句，然后放你过去了：
+</p>
+
+<pre class="diag"><code>2.2-warn-assign.cpp:10:11: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+   10 |     if (a = 0) {
+      |         ~~^~~</code></pre>
+
+<p>
+读一遍这句话：<b>「拿赋值当条件用，建议你加个括号」</b>。
+编译器看出你想干的事有点怪，但它<b>不拦你</b>——因为语法上没毛病。
+</p>
+
+<p>
+程序为什么走 <code>else</code>？拆一遍：
+</p>
+
+<ol>
+  <li><code>a = 0</code> 是「把 0 放进 <code>a</code>」。这一句的<b>结果</b>就是放进去的那个 0。</li>
+  <li><code>if</code> 拿到这个 0 当条件——2.1 说了，0 是假。</li>
+  <li>假，走 <code>else</code>。</li>
+</ol>
+
+<p>
+于是 <code>a</code> 被改成了 0，条件永远是假，<code>else</code> 里那句永远执行。
+<b>你想问「a 是不是 0」，结果变成了「把 a 改成 0」。</b>
+</p>
+
+<div class="aside warn">
+  <b>怎么写才不会滑</b>
+  <p>
+    有个老办法是把两边调过来写：<code>if (0 == a)</code>。
+    这样手滑写成一个等号就是 <code>0 = a</code>，
+    而 0 是不能被赋值的，<b>编译器直接报错</b>，你当场就发现了。
+  </p>
+  <p>
+    但更实在的办法是：<b>看见那句 warning 就停下。</b>
+    <code>-Wall</code> 会替你盯着这个坑，前提是你别把警告当没看见。
+    0.3 讲过怎么读警告，这里就是它救命的场合。
+  </p>
+</div>
+
+<h3 id="s2-2-3">连起来：&amp;&amp; || !</h3>
+
+<p>
+一个条件不够用的时候，把几个条件连起来。三个符号：
+</p>
+
+<ul>
+  <li><b><code>&amp;&amp;</code></b> 读作「并且」。<b>两边都真</b>，结果才真。</li>
+  <li><b><code>||</code></b> 读作「或者」。<b>有一边真</b>，结果就真。</li>
+  <li><b><code>!</code></b> 读作「不」。把真变假，把假变真。<b>一个就够，写在前面。</b></li>
+</ul>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int score = 85;
+    int age = 19;
+
+    if (score &gt;= 60 &amp;&amp; age &gt;= 18) {
+        std::cout &lt;&lt; "两个都满足" &lt;&lt; std::endl;
+    }
+
+    if (score &gt;= 90 || age &gt;= 18) {
+        std::cout &lt;&lt; "至少满足一个" &lt;&lt; std::endl;
+    }
+
+    if (!(score &gt;= 60)) {
+        std::cout &lt;&lt; "没及格" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "及格了" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">两个都满足
+至少满足一个
+及格了</pre>
+
+<p>
+逐句看：
+</p>
+
+<ul>
+  <li>
+    第一句：85 ≥ 60 <b>并且</b> 19 ≥ 18。两个都真，整体真，打出来了。
+  </li>
+  <li>
+    第二句：85 ≥ 90 是<b>假</b>，但 19 ≥ 18 是<b>真</b>。
+    <code>||</code> 只要一个真就够，所以整体真，也打出来了。
+    <b>「或者」不要求两个都满足。</b>
+  </li>
+  <li>
+    第三句：<code>score &gt;= 60</code> 是真，<code>!</code> 把它翻成假，
+    所以走 <code>else</code>，打「及格了」。
+  </li>
+</ul>
+
+<p>
+注意 <code>!</code> 后面那一对括号：<code>!(score &gt;= 60)</code>。
+括号是必须的，原因和 2.2 开头那对一样——
+得先把整个比较算式圈起来，再让 <code>!</code> 去翻它。
+</p>
+
+<h3 id="s2-2-4">&amp;&amp; 比 || 紧</h3>
+
+<p>
+一句话里同时有 <code>&amp;&amp;</code> 和 <code>||</code> 的时候，
+<b><code>&amp;&amp;</code> 先算</b>，就像乘除比加减先算一样。
+</p>
+
+<p>
+这会让「长得几乎一样」的两句话干出不同的事。看：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 1;
+    int b = 9;
+
+    if (a == 1 || a == 2 &amp;&amp; b == 3) {
+        std::cout &lt;&lt; "没括号的：进来了" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "没括号的：没进来" &lt;&lt; std::endl;
+    }
+
+    if ((a == 1 || a == 2) &amp;&amp; b == 3) {
+        std::cout &lt;&lt; "有括号的：进来了" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "有括号的：没进来" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">没括号的：进来了
+有括号的：没进来</pre>
+
+<p>
+两句的字符几乎完全一样，就差一对括号，走的路正好相反。编译器也警告了：
+</p>
+
+<pre class="diag"><code>2.2-warn-precedence.cpp:11:26: warning: suggest parentheses around ‘&amp;&amp;’ within ‘||’ [-Wparentheses]
+   11 |     if (a == 1 || a == 2 &amp;&amp; b == 3) {
+      |                   ~~~~~~~^~~~~~~~~</code></pre>
+
+<p>
+<b>「<code>||</code> 里夹着 <code>&amp;&amp;</code>，建议你加括号」</b>——
+它看出这句话有歧义。
+</p>
+
+<p>
+拆一遍就明白了。<code>a</code> 是 1，<code>b</code> 是 9：
+</p>
+
+<ul>
+  <li>
+    <b>没括号的那句</b>，因为 <code>&amp;&amp;</code> 先算，实际是
+    <code>a == 1 || (a == 2 &amp;&amp; b == 3)</code>。
+    <code>a == 2</code> 是假，后面 <code>&amp;&amp;</code> 整个是假；
+    但左边 <code>a == 1</code> 是真，<code>||</code> 有一个真就够——
+    <b>整体真</b>。
+  </li>
+  <li>
+    <b>有括号的那句</b>是 <code>(a == 1 || a == 2) &amp;&amp; b == 3</code>。
+    括号里是真，可 <code>b == 3</code> 是假（b 是 9），
+    <code>&amp;&amp;</code> 要求两个都真——<b>整体假</b>。
+  </li>
+</ul>
+
+<div class="aside">
+  <b>别去背优先级，加括号</b>
+  <p>
+    上面这套推导看懂了很好，但<b>实际写代码的时候不要依赖它</b>。
+    你写 <code>a &amp;&amp; b || c</code>，下一个读你代码的人（包括三个月后的你自己）
+    得停下来想一下——这就是成本。
+  </p>
+  <p>
+    写成 <code>(a &amp;&amp; b) || c</code>，一眼就懂，还不用背表格。
+    <b>多打两个字符，省下的是别人和你自己的脑力。</b>
+  </p>
+</div>
+
+<h3 id="s2-2-5">连写的不等式</h3>
+
+<p>
+数学课上写「x 在 1 到 100 之间」是这样的：<code>1 &lt;= x &lt;= 100</code>。
+这个写法<b>搬进 C++ 会出事</b>，而且是那种不出声的事：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int x = 42;
+
+    if (1 &lt;= x &lt;= 100) {
+        std::cout &lt;&lt; "42：" &lt;&lt; "在范围里" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "42：" &lt;&lt; "不在范围里" &lt;&lt; std::endl;
+    }
+
+    x = 999;
+
+    if (1 &lt;= x &lt;= 100) {
+        std::cout &lt;&lt; "999：" &lt;&lt; "在范围里" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "999：" &lt;&lt; "不在范围里" &lt;&lt; std::endl;
+    }
+
+    x = 0;
+
+    if (1 &lt;= x &lt;= 100) {
+        std::cout &lt;&lt; "0：" &lt;&lt; "在范围里" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "0：" &lt;&lt; "不在范围里" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">42：在范围里
+999：在范围里
+0：在范围里</pre>
+
+<p>
+<b>999 和 0 都在「范围里」。</b>这个条件等于没写。
+</p>
+
+<p>
+编译器其实说得很直白：
+</p>
+
+<pre class="diag"><code>2.2-warn-chain.cpp:11:16: warning: comparison of constant ‘100’ with boolean expression is always true [-Wbool-compare]
+   11 |     if (1 &lt;= x &lt;= 100) {
+      |         ~~~~~~~^~~~~~
+2.2-warn-chain.cpp:11:11: warning: comparisons like ‘X&lt;=Y&lt;=Z’ do not have their mathematical meaning [-Wparentheses]
+   11 |     if (1 &lt;= x &lt;= 100) {
+      |         ~~^~~~</code></pre>
+
+<p>
+一句读作「拿 100 和一个真假值比大小，结果永远是真」；
+另一句读作「像 <code>X&lt;=Y&lt;=Z</code> 这样连着写的比较，
+和你数学里那个意思不是一回事」。<b>说的是同一件事。</b>
+</p>
+
+<p>
+为什么？C++ 是按<b>从左往右</b>算的：
+</p>
+
+<ol>
+  <li><code>1 &lt;= x</code> 先算。x 是 999，不成立，算出 <b>0</b>。</li>
+  <li>算式变成 <code>0 &lt;= 100</code>。这当然成立，算出 <b>1</b>。</li>
+</ol>
+
+<p>
+所以整个式子永远是真。x 是 42、999、还是 0，都一样——
+<b>第一个比较的结果是 0 或 1，而 0 和 1 永远小于等于 100。</b>
+</p>
+
+<div class="aside warn">
+  <b>正确的写法</b>
+  <p>
+    把它拆成两个比较，用 <code>&amp;&amp;</code> 连：
+  </p>
+  <pre><code>if (1 &lt;= x &amp;&amp; x &lt;= 100)</code></pre>
+  <p>
+    这才是「x 不小于 1 <b>并且</b> x 不大于 100」。
+    <b>数学里的连写不等式，在 C++ 里一律拆成两半用 <code>&amp;&amp;</code> 连。</b>
+  </p>
+</div>
+
+<div class="eg" id="e2-2">
+  <div class="eg-h">例题 · 在不在范围里</div>
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int x = 42;
+
+    if (x &gt;= 1 &amp;&amp; x &lt;= 100) {
+        std::cout &lt;&lt; x &lt;&lt; " 在范围里" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; x &lt;&lt; " 不在范围里" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+  <pre class="out" data-label="预期输出">42 在范围里</pre>
+
+  <p>
+    把 <code>x</code> 改成 <code>999</code> 或 <code>0</code>，它就会老实地打「不在范围里」。
+  </p>
+</div>
+
+<h3 id="s2-2-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-5</div>
+  <p>
+    读一个整数，判断它<b>在不在 1 到 100 之间</b>。
+  </p>
+  <p>
+    输入 <code>999</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">999</span>
+不在范围里</pre>
+  <p>
+    提示：这一课最后那一段就是讲这个的。
+    <b>别写成连写的不等式</b>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个条件用 <code>&amp;&amp;</code> 连起来：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int x = 0;
+    std::cin &gt;&gt; x;
+
+    if (x &gt;= 1 &amp;&amp; x &lt;= 100) {
+        std::cout &lt;&lt; "在范围里" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "不在范围里" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        写成 <code>x &gt;= 1 &amp;&amp; x &lt;= 100</code>，
+        读作「x 不小于 1 <b>并且</b> x 不大于 100」。
+      </p>
+      <p>
+        <b>不能写成 <code>1 &lt;= x &lt;= 100</code>。</b>
+        2.2 讲连写不等式那一段已经跑给你看过了：999 和 0 都会打「在范围里」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-6</div>
+  <p>
+    读一个年份，判断它是不是<b>闰年</b>。
+  </p>
+  <p>
+    闰年的规矩是：
+  </p>
+  <ul>
+    <li>能被 4 整除，<b>并且</b>不能被 100 整除的，是闰年；</li>
+    <li>能被 400 整除的，<b>也是</b>闰年。</li>
+  </ul>
+  <p>
+    输入 <code>1900</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">1900</span>
+1900 不是闰年</pre>
+  <p>
+    提示：1900 能被 4 整除，但也能被 100 整除，所以不是闰年——
+    这一条正好是拿来试你写对没有的。
+  </p>
+  <p>
+    两年规则之间是「或者」的关系，用 <code>||</code> 连。
+    <b>哪一段该加括号，想清楚。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两条规则，一条用 <code>&amp;&amp;</code>（「并且」），
+        两条之间用 <code>||</code>（「或者」）：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int year = 0;
+    std::cin &gt;&gt; year;
+
+    if ((year % 4 == 0 &amp;&amp; year % 100 != 0) || year % 400 == 0) {
+        std::cout &lt;&lt; year &lt;&lt; " 是闰年" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; year &lt;&lt; " 不是闰年" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        括号是关键。把它拿掉写成
+        <code>year % 4 == 0 &amp;&amp; year % 100 != 0 || year % 400 == 0</code>
+        会怎样？因为 <code>&amp;&amp;</code> 比 <code>||</code> 先算
+        （2.2 讲的），前半截正好是 <code>(A &amp;&amp; B) || C</code>——
+        <b>这次碰巧跟你想要的一样</b>，结果没错。
+      </p>
+      <p>
+        但「碰巧对」不是「对」。下一回换个式子未必还碰巧，
+        读代码的人也得停下来想一遍。2.2 那句话在这儿就用上了：
+        <b>别去背优先级，把括号写上。</b>
+      </p>
+      <p>
+        拿 <code>1900</code> 试一下：<code>1900 % 4 == 0</code> 是真，
+        但 <code>1900 % 100 != 0</code> 是假，<code>&amp;&amp;</code> 那一整块就是假；
+        再看 <code>1900 % 400</code> 得 300，也不等于 0。两个都假，所以不是闰年。
+        换成 <code>2000</code> 就对了——它能被 400 整除。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-7</div>
+  <p>
+    读<b>一个字符</b>，判断它是小写字母、大写字母，还是别的。
+  </p>
+  <p>
+    输入 <code>Q</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">Q</span>
+大写字母</pre>
+  <p>
+    提示：<code>char</code> 之间也能比大小（1.2 讲的：存的是编号）。
+    小写字母的范围是 <code>'a'</code> 到 <code>'z'</code>，大写是 <code>'A'</code> 到 <code>'Z'</code>。
+    每一段都是一个「在不在范围里」，就是练习 2-5 那个写法。
+  </p>
+  <p>
+    注意比较的时候用<b>单引号</b>的 <code>'a'</code>，不是双引号。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两段「在不在范围里」拼起来，外加一个兜底的：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    char c = ' ';
+    std::cin &gt;&gt; c;
+
+    if (c &gt;= 'a' &amp;&amp; c &lt;= 'z') {
+        std::cout &lt;&lt; "小写字母" &lt;&lt; std::endl;
+    } else if (c &gt;= 'A' &amp;&amp; c &lt;= 'Z') {
+        std::cout &lt;&lt; "大写字母" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "别的" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        两个范围是<b>平级</b>的，谁先谁后都行——一个字符不可能既在小写区间
+        又在大写区间，所以不像 2.1 那个成绩分档，这儿不用操心顺序。
+      </p>
+      <p>
+        两个细节：
+      </p>
+      <p>
+        一、比的是<b>单引号</b>的 <code>'a'</code>。
+        双引号那个是另一回事——1.2 里 <code>char c = "A";</code>
+        编译不过，就是踩的这个。单引号包一个字符，双引号包一串字符，
+        在 C++ 里是两个完全不同的东西。
+      </p>
+      <p>
+        二、<code>'a' &lt;= c</code> 里的 <code>char</code> 之所以能比大小，
+        是因为它存的是编号（1.2 讲的）。<code>'a'</code> 到 <code>'z'</code>
+        的编号是连着的，所以「在不在这个区间」就是「是不是小写字母」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-8（找错）</div>
+  <p>
+    一个程序，<code>a</code> 本来是 3，想判断「<code>a</code> 是不是等于 5」。
+    出口在 <code>if</code> 那个括号里：
+  </p>
+  <pre><code>    int a = 3;
+
+    if (a = 5) {
+        std::cout &lt;&lt; "a 是 5" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "a 不是 5" &lt;&lt; std::endl;
+    }</code></pre>
+  <p>
+    它编译通过了，跑起来打了两行字，可两行都不对：
+  </p>
+  <pre class="out" data-label="预期输出">a 是 5
+a 现在是 5</pre>
+  <p>
+    <b>先别看答案</b>——<code>a</code> 明明是 3，
+    为什么程序认为它是 5？连 <code>a</code> 自己的值都被改了。
+  </p>
+  <p>
+    提示：数一数 <code>if</code> 括号里那个符号的等号有几个。
+    <b>顺便想一想：编译器为什么没拦它？</b>
+  </p>
+  <details class="ans" data-warn="示例代码/答案/2-8-warn.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        那段程序完整长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 3;
+
+    if (a = 5) {
+        std::cout &lt;&lt; "a 是 5" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "a 不是 5" &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "a 现在是 " &lt;&lt; a &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        出问题的就是那一行：<code>if (a = 5)</code>，
+        里面那个符号<b>只有一个等号</b>。它该是两个：
+      </p>
+      <pre><code>    if (a == 5) {</code></pre>
+      <p>
+        就这一个字符之差，干的事完全反了。
+      </p>
+      <p>
+        编译器其实看出来了，它说的是：
+      </p>
+      <pre class="diag"><code>2-8-warn.cpp: In function ‘int main()’:
+2-8-warn.cpp:10:11: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+   10 |     if (a = 5) {
+      |         ~~^~~
+</code></pre>
+      <p>
+        「拿赋值当条件用，建议你加个括号」。<b>注意这是 warning，不是 error</b>——
+        它不拦你，程序照样编出来，照样跑。
+      </p>
+      <p>
+        拆一遍 <code>if (a = 5)</code> 发生了什么：
+      </p>
+      <p>
+        一、<code>a = 5</code> 是「把 5 放进 <code>a</code>」，
+        这一句的<b>结果</b>就是放进去的那个 5。
+        所以 <code>a</code> 被改了——本来 3，现在 5。
+      </p>
+      <p>
+        二、<code>if</code> 拿这个 5 当条件。2.1 说了，0 是假、别的都是真，
+        所以 5 是真。
+      </p>
+      <p>
+        三、真，走 <code>if</code>，打「a 是 5」。
+      </p>
+      <p>
+        <b>你想问「a 是不是 5」，程序干的是「把 a 改成 5，然后说真」。</b>
+        两个结果看着一样，可只要 <code>a</code> 原来是别的数，
+        它就永远打「a 是 5」——连 7 进来也打这句。
+      </p>
+      <div class="aside">
+        <b>怎么防</b>
+        <p>
+          老办法是把两边调过来写：<code>if (5 == a)</code>。
+          这样手滑写成一个等号就是 <code>5 = a</code>，
+          而 5 是不能被赋值的，<b>编译器直接报 error</b>，当场就发现了。
+        </p>
+        <p>
+          更实在的办法：<b>看见那句 warning 就停下。</b>
+          <code>-Wall</code> 会替你盯着这个坑，前提是你别把警告当没看见。
+          0.3 讲过怎么读警告，这儿就是它救命的场合。
+        </p>
+      </div>
+    </div>
+  </details>
+</div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>循环：让程序把同一件事做很多遍</h2>
+
+<p>
+2.1 给了程序岔路口。这一课给它<b>回头路</b>——同一段代码，
+走一遍不算完，走回去再走一遍。
+</p>
+
+<h3 id="s2-3-1">没有循环的时候</h3>
+
+<p>
+要在屏幕上打 1 到 5，不用循环就得写五行：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; 1 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 2 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 3 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 4 &lt;&lt; std::endl;
+    std::cout &lt;&lt; 5 &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1
+2
+3
+4
+5</pre>
+
+<p>
+五行，只有中间那个数字不一样，别的字一模一样。
+</p>
+
+<p>
+五个还好。可要是打 1 到 <b>100</b> 呢？一百行？
+要是打 1 到 <b>一万</b>呢？要是那个数字<b>从键盘读进来</b>，读多少打多少呢？
+——你根本没法提前写死。
+</p>
+
+<p>
+这种「同一件事做很多遍，每遍只有一点点不同」的需求，
+靠手写是解决不了的。得让程序自己回头。
+</p>
+
+<h3 id="s2-3-2">while 长什么样</h3>
+
+<p>
+刚才那五行，塌成三行：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+
+    while (i &lt;= 5) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1
+2
+3
+4
+5</pre>
+
+<p>
+输出和手写那五行一模一样。但这一版<b>把 5 改成 100 就真会打一百行</b>——
+大括号里那两句一个字都不用动。
+</p>
+
+<p>
+<code>while</code> 的形状，和 <code>if</code> 长得很像：
+</p>
+
+<pre><code>while (条件) {
+    要重复的那些行
+}</code></pre>
+
+<p>
+<b>圆括号里是条件，花括号里是要重复的话。</b>和 <code>if</code> 一样，
+后面没有分号。
+</p>
+
+<p>
+差别在一个字上：
+</p>
+
+<ul>
+  <li><code>if</code>：条件成立，大括号里走<b>一遍</b>，然后往下走，不回头。</li>
+  <li><code>while</code>：条件成立，大括号里走一遍，<b>走完回到 <code>while</code> 那一行，
+  再问一次条件</b>。还成立就再走一遍。问到不成立为止，才往下走。</li>
+</ul>
+
+<p>
+所以 <code>while</code> 那句 <code>(i &lt;= 5)</code> 会被问<b>很多次</b>，
+每次都问同一个问题，问的是同一个盒子 <code>i</code>，
+只不过盒子里的数一直在变。
+</p>
+
+<h3 id="s2-3-3">必须有的三件事</h3>
+
+<p>
+一个能停下来的循环，身上一定有三件事。拿刚才那个程序对：
+</p>
+
+<ol>
+  <li>
+    <b>起点</b>：<code>int i = 1;</code>——循环开始之前，
+    那个盒子得先有个值。</li>
+  <li>
+    <b>条件</b>：<code>i &lt;= 5</code>——什么时候继续，什么时候停。</li>
+  <li>
+    <b>让条件会变的那一步</b>：<code>i = i + 1;</code>——
+    每转一圈把 <code>i</code> 往前推一格。没有这一步，条件永远不变，循环永远停不下来。</li>
+</ol>
+
+<p>
+第三件事是新手最常漏的。<b>为什么漏了就停不下来？</b>
+因为条件问的是 <code>i</code>，而 <code>i</code> 一直是 1，条件永远成立。
+</p>
+
+<p>
+<b>怎么知道自己写对了？</b>用纸笔跟一遍。下面这个程序就是「跟一遍」的机器版——
+它把每一圈里头发生了什么全打出来：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+
+    while (i &lt;= 3) {
+        std::cout &lt;&lt; "进循环时 i = " &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;
+        std::cout &lt;&lt; "加完 1 之后 i = " &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "循环结束后 i = " &lt;&lt; i &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">进循环时 i = 1
+加完 1 之后 i = 2
+进循环时 i = 2
+加完 1 之后 i = 3
+进循环时 i = 3
+加完 1 之后 i = 4
+循环结束后 i = 4</pre>
+
+<p>
+数一数：<b>大括号里那两句，一共走了三遍</b>（1、2、3 各一遍）。
+</p>
+
+<p>
+注意最后一行：<b>循环结束后 <code>i</code> 是 4，不是 3。</b>
+因为第三遍的时候 i 是 3，条件成立，进去走完一遍，<code>i</code> 变成 4，
+回到 <code>while</code> 再问——4 ≤ 3 不成立——才停。
+</p>
+
+<p>
+<b>循环停下来的时候，那个盒子里的数通常比你想的「多一格」。</b>
+这个细节以后很常用（4.2 遍历数组会再撞上它）。
+</p>
+
+<div class="aside">
+  <b>写循环的时候可以真的这么干</b>
+  <p>
+    跟自己过不去的时候，就把上面那两句 <code>std::cout</code>
+    临时加进你自己的循环里，跑一遍看数对不对，看完删掉。
+    这比盯着代码空想快得多——第 7 部分会专门讲这个办法。
+  </p>
+</div>
+
+<h3 id="s2-3-4">忘了让条件变</h3>
+
+<p>
+把第三件事拿掉，就成了这样：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+
+    while (i &lt;= 5) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+<code>i</code> 一直是 1，条件永远成立。跑起来是这样：
+</p>
+
+<pre class="out" data-label="预期输出">1
+1
+1
+1
+1
+1
+……（一直往下，停不下来）</pre>
+
+<p>
+这不是打个五六行就完事。<b>在写这一课的这台机器上，放开跑 2 秒，
+它打了 3611662 行</b>——两秒钟三百六十多万行，而且还在继续。
+不管它的话，它会一直打到你把终端关掉。
+</p>
+
+<div class="aside warn">
+  <b>卡住了怎么停下来</b>
+  <p>
+    在跑着它的那个终端里，<b>按住 <code>Ctrl</code> 不放，再按一下 <code>C</code></b>。
+    程序会当场死掉，命令行回到你手上。
+  </p>
+  <p>
+    这个组合键是「打断」的意思，什么程序卡住了都能用。
+    <b>记住它，你现在有会写死循环的能力了。</b>
+  </p>
+</div>
+
+<p>
+<b>看到满屏一模一样的数在滚，第一件事就是找第三步。</b>
+问自己一句：这圈走完，<b>哪个盒子变了？</b>
+如果所有盒子的值都和上一圈一样，那下一圈一定也一样，永远一样。
+</p>
+
+<h3 id="s2-3-5">攒一个总数</h3>
+
+<p>
+循环最常见的用法不是「打多少行」，是<b>一边转一边攒</b>。
+比如 1 加到 100：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+    int sum = 0;
+
+    while (i &lt;= 100) {
+        sum = sum + i;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">5050</pre>
+
+<p>
+关键是 <code>sum = sum + i;</code> 这一句。它看着别扭——
+一个东西怎么能等于它自己加别人？1.1 说过，<code>=</code> 不是「等于」，是「放进去」。
+所以这句读作：
+</p>
+
+<p>
+<b>「把 <code>sum</code> 现在的值，加上 <code>i</code>，算出来，再放回 <code>sum</code>。」</b>
+</p>
+
+<p>
+<code>sum</code> 这个盒子被反复改写。头几圈是这样：
+</p>
+
+<table>
+  <tr><th>i</th><th>sum = sum + i 之前</th><th>之后</th></tr>
+  <tr><td>1</td><td>0</td><td>1</td></tr>
+  <tr><td>2</td><td>1</td><td>3</td></tr>
+  <tr><td>3</td><td>3</td><td>6</td></tr>
+  <tr><td>4</td><td>6</td><td>10</td></tr>
+</table>
+
+<p>
+一直攒到 <code>i</code> 是 100，<code>sum</code> 就是 5050。
+</p>
+
+<p>
+这个套路叫<b>累加</b>（accumulate）。<b>攒东西的盒子，起点要选对</b>：
+加法从 0 开始（加 0 不影响结果），乘法就得从 1 开始（乘 0 会把一切都变成 0）。
+练习 2-10 就是乘法那一版。
+</p>
+
+<div class="eg" id="e2-3">
+  <div class="eg-h">例题 · 倒着数</div>
+  <p>
+    循环变量不必往上走。从键盘读一个数，从它倒着打到 1：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    while (n &gt;= 1) {
+        std::cout &lt;&lt; n &lt;&lt; std::endl;
+        n = n - 1;
+    }
+
+    std::cout &lt;&lt; "发射" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+  <p>
+    输入 <code>5</code> 时：
+  </p>
+
+  <pre class="out" data-label="预期输出"><span class="typed">5</span>
+5
+4
+3
+2
+1
+发射</pre>
+
+  <p>
+    三件事一样不少：起点是读进来的 <code>n</code>，条件是 <code>n &gt;= 1</code>，
+    第三步是 <code>n = n - 1</code>——这次是往下走。
+  </p>
+
+  <p>
+    <b>和 2.3 开头那个数到 5 的程序比一下：</b>那次条件是 <code>i &lt;= 5</code>、
+    第三步是 <code>i = i + 1</code>；这次条件翻了个个儿，第三步也跟着反了。
+    一起改，循环才顺；只改一半，就是死循环或者一遍都不走。
+  </p>
+</div>
+
+<h3 id="s2-3-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-9</div>
+  <p>
+    读一个 <code>n</code>，打出 <b>1 到 n</b>，一行一个。
+  </p>
+  <p>
+    输入 <code>8</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">8</span>
+1
+2
+3
+4
+5
+6
+7
+8</pre>
+  <p>
+    提示：就是 2.3 那个数到 5 的程序，把写死的 5 换成读进来的 <code>n</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        就是 2.3 那个数到 5 的程序，把写死的 5 换成读进来的 <code>n</code>：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int i = 1;
+    while (i &lt;= n) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        三件事一样不少：起点 <code>int i = 1;</code>、条件 <code>i &lt;= n</code>、
+        第三步 <code>i = i + 1;</code>。
+      </p>
+      <p>
+        <b>注意循环条件是拿 <code>n</code> 比的，不是拿 5 比的。</b>
+        这就是 1.5 那句话「敲进去的数，就得从变量里打出来」的另一个版本——
+        这回不只是打印要用变量，<b>循环走几圈也得看变量</b>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-10</div>
+  <p>
+    读一个 <code>n</code>，打出 <b>n 的阶乘</b>（1 乘到 n）。
+  </p>
+  <p>
+    输入 <code>5</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">5</span>
+5! = 120</pre>
+  <p>
+    提示：攒法和 2.3 求 1 加到 100 那个一样，只有一处不一样——
+    <b>那个攒东西的盒子，起点该是几？</b>
+    想一下「乘 0」会发生什么。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        攒法和 2.3 求 1 加到 100 一样，只有一个地方不一样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int i = 1;
+    int fact = 1;
+
+    while (i &lt;= n) {
+        fact = fact * i;
+        i = i + 1;
+    }
+
+    std::cout &lt;&lt; n &lt;&lt; "! = " &lt;&lt; fact &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        那个 <code>int fact = 1;</code>。
+      </p>
+      <p>
+        2.3 求和的时候起点是 0，因为<b>加 0 不影响结果</b>。
+        这回攒的是乘法，起点就得是 1——<b>乘 0 会把一切都变成 0</b>。
+        写成 <code>int fact = 0;</code>，不管 n 是几，结果永远是 0。
+      </p>
+      <p>
+        这是累加那个套路最容易翻车的一处：<b>先问一句「这个盒子的起点，
+        放进运算里会不会把结果带坏」。</b>
+        加法从 0 起，乘法从 1 起，找最大值从第一个数起（4.3 会讲）。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-11</div>
+  <p>
+    读一个正整数，数出它<b>一共有几位</b>。
+  </p>
+  <p>
+    输入 <code>12345</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">12345</span>
+5 位</pre>
+  <p>
+    提示：想想 1.3 的整数除法。<code>12345 / 10</code> 得多少？
+    再 <code>/ 10</code> 一次呢？它什么时候会变成 0？
+  </p>
+  <p>
+    循环的条件就是拿这个当的：<b>只要它还大于 0，就继续除。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每除一次 10 就少一位，数到它变成 0 为止：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int count = 0;
+
+    while (n &gt; 0) {
+        n = n / 10;
+        count = count + 1;
+    }
+
+    std::cout &lt;&lt; count &lt;&lt; " 位" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>12345 / 10</code> 是 1234（1.3 讲的：整数除法把小数点后面丢掉），
+        再除是 123、12、1，最后 <code>1 / 10</code> 得 0。
+        一共除了 5 次，所以是 5 位。
+      </p>
+      <p>
+        这题有个地方值得多想一秒：<code>n</code> 一边当着循环条件，
+        一边又在大括号里被改小。这很常见，也是对的——
+        <b>它和 <code>i</code> 扮演的是同一个角色：那个「让条件会变」的东西。</b>
+        2.3 说的三件事，第三件在这儿是 <code>n = n / 10;</code>，换了副面孔而已。
+      </p>
+      <p>
+        顺带说一句边界：输入 <code>0</code> 会打出「0 位」。
+        严格说 0 是一位数。这一题只要求正整数，所以不用管——
+        但<b>知道自己写的程序在边界上是什么行为</b>，是个好习惯。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-12（找错）</div>
+  <p>
+    一个程序，想打 <b>1 到 5</b>。它编译通过了，跑起来也打了数，
+    可打完就没了下文。循环部分长这样：
+  </p>
+  <pre><code>    int i = 1;
+
+    while (i &lt; 5) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;
+    }</code></pre>
+  <p>跑出来是：</p>
+  <pre class="out" data-label="预期输出">1
+2
+3
+4</pre>
+  <p>
+    <b>先别看答案</b>——<code>5</code> 去哪儿了？
+  </p>
+  <p>
+    提示：像 2.3 那个「跟一遍」的程序一样，在心里把每一圈走一遍，
+    写下每圈开始时 <code>i</code> 的值。
+    然后问：<b><code>i</code> 是 5 的那一圈，到底进没进去？</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        那段程序完整长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;
+
+    while (i &lt; 5) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        条件写错了一个字符：是 <code>&lt;=</code>，不是 <code>&lt;</code>。
+      </p>
+      <pre><code>    while (i &lt;= 5) {</code></pre>
+      <p>
+        改成这样才能打到 5。
+      </p>
+      <p>
+        <b>原版为什么少了 5？</b>照 2.3 那个「跟一遍」的办法，一圈一圈数：
+      </p>
+      <table>
+        <tr><th>进循环时 i</th><th>i &lt; 5 成立吗</th><th>走不走</th></tr>
+        <tr><td>1</td><td>成立</td><td>走，打 1</td></tr>
+        <tr><td>2</td><td>成立</td><td>走，打 2</td></tr>
+        <tr><td>3</td><td>成立</td><td>走，打 3</td></tr>
+        <tr><td>4</td><td>成立</td><td>走，打 4</td></tr>
+        <tr><td>5</td><td><b>不成立</b></td><td><b>不走</b></td></tr>
+      </table>
+      <p>
+        <code>i</code> 是 5 的那一圈，条件 <code>5 &lt; 5</code> 不成立，
+        门就没开——5 压根没进去。
+      </p>
+      <p>
+        这个错有个名字，叫<b>「差一个」</b>（off-by-one）。
+        它不是哪个人粗心，是所有人第一次写循环都会撞上的东西。
+        防的办法不是「下次小心点」，是<b>每次都把最后一圈单独想一遍</b>：
+        <b>「i 到边界那个值的时候，进得去吗？我想让它进去吗？」</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>程序不再是「一条道走到黑」了。
+  你能让它看情况办事，也能让它把同一件事做一万遍——
+  而且第一次有了「<b>写三行、干一百行的活</b>」的感觉。
+  下一课把「回头」这件事写得更紧凑一点：把起点、条件、第三步三件事
+  全塞进一行里。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>for：把三件事写在头上</h2>
+
+<p>
+2.3 说一个能停下来的循环身上有三件事：<b>起点、条件、让条件变的那一步</b>。
+那三件事在 <code>while</code> 里是散着的——起点在循环前面，
+条件在括号里，第三步在大括号里，跟干活的那句混在一起。
+</p>
+
+<p>
+这一课把散着的三件事<b>抓起来，摆到同一行上</b>。
+</p>
+
+<h3 id="s2-4-1">三件事散在三处</h3>
+
+<p>
+拿 2.3 那个数到 5 的程序，我把它那三件事标出来：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int i = 1;                    // ① 起点
+
+    while (i &lt;= 5) {              // ② 条件
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+        i = i + 1;                // ③ 让条件变的那一步
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+三件事离得挺远。③ 尤其别扭：它跟 <code>std::cout</code> 挤在一个大括号里，
+一个是「干活」，一个是「管循环」，看起来是一伙的，其实不是。
+</p>
+
+<p>
+<b>看它一眼，你说不出「这循环走几圈」。</b>
+你得先把眼睛扫到 ①、再扫到 ②、再钻进大括号找到 ③，
+在脑子里拼一遍，才知道它从 1 数到 5。
+</p>
+
+<p>
+<code>for</code> 就是干这个的。同一个循环：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 5; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1
+2
+3
+4
+5</pre>
+
+<p>
+输出一个字没变。<b>变的只是三件事的位置</b>——它们现在全在 <code>for</code>
+后面那对括号里，一行看完。
+</p>
+
+<p>
+<b>那三件事在 <code>for</code> 里是怎么排的？</b>跟 <code>while</code> 版一一对上：
+</p>
+
+<pre><code>for ( ①起点 ; ②条件 ; ③让条件变的那一步 ) {
+    干活的那几句
+}</code></pre>
+
+<p>
+顺序和 <code>while</code> 版里出现的顺序一样：先起点，再条件，最后第三步。
+不用记新东西——<b><code>for</code> 不是新循环，是老循环换了个摆法。</b>
+</p>
+
+<h3 id="s2-4-2">头上那三个格子</h3>
+
+<p>
+我习惯把这仨叫<b>三个格子</b>。它们之间用<b>分号</b>隔开
+（注意：是分号 <code>;</code>，不是逗号）。
+</p>
+
+<p>
+一个格子具体写什么，跟 <code>while</code> 版里那一句一模一样：
+</p>
+
+<table>
+  <tr><th>格子</th><th>写什么</th><th>这个例子里是</th><th>什么时候执行</th></tr>
+  <tr>
+    <td>第 1 格</td><td>起点——把循环变量建出来、给个初值</td>
+    <td><code>int i = 1</code></td>
+    <td><b>整个循环只执行一次</b></td>
+  </tr>
+  <tr>
+    <td>第 2 格</td><td>条件——什么时候继续</td>
+    <td><code>i &lt;= 5</code></td>
+    <td>每一圈开始前问一次</td>
+  </tr>
+  <tr>
+    <td>第 3 格</td><td>让条件变的那一步</td>
+    <td><code>i = i + 1</code></td>
+    <td>每一圈走完大括号之后</td>
+  </tr>
+</table>
+
+<p>
+<b>看第四列。</b>三格都在同一行上，但它们<b>不是一起执行的</b>——
+第 1 格只在开头走一次，第 2、3 格要来回走很多次。
+这是新手看 <code>for</code> 最容易犯迷糊的地方：一行代码，不是执行一次。
+</p>
+
+<h3 id="s2-4-3">三个格子的走动顺序</h3>
+
+<p>
+下面这个动画把 <code>for</code> 拆成三行写——三个格子各占一行。
+这是合法的 C++，跑出来一模一样，只是为了看清每一格在哪。
+</p>
+
+<p>
+<b>按「下一步」，盯住高亮的那一行怎么跳。</b>
+</p>
+
+<div class="viz" data-viz="boxes"></div>
+
+<p>
+跳的路线是这样的：
+</p>
+
+<pre><code>第 1 格 --&gt; 第 2 格 --&gt; 大括号 --&gt; 第 3 格
+              ^                        |
+              |                        |
+              +------------------------+
+              一直转回去，直到第 2 格说「不成立」</code></pre>
+
+<p>
+数一数这 19 步里，每一格被走到几次：
+</p>
+
+<table>
+  <tr><th></th><th>走了几次</th><th>为什么</th></tr>
+  <tr><td>第 1 格</td><td><b>1</b></td><td>只在开头建一次盒子，之后再也不碰</td></tr>
+  <tr><td>第 2 格</td><td><b>6</b></td><td>每次进大括号前问一次，最后还要多问一次才停</td></tr>
+  <tr><td>第 3 格</td><td><b>5</b></td><td>每转完一圈加一次，转 5 圈加 5 次</td></tr>
+  <tr><td>大括号里</td><td><b>5</b></td><td>条件成立几圈，就走几遍</td></tr>
+</table>
+
+<p>
+<b>看出来了吗：三个格子次数不一样。</b>
+第 1 格 1 次、第 2 格 6 次、第 3 格 5 次——写在同一行上，走起来完全不是一回事。
+</p>
+
+<p>
+第 2 格为什么是 6 次？因为第 5 圈走完之后还得回去再问一次——
+<code>6 &lt;= 5</code> 不成立，这才停。<b>第 2 格永远比大括号多走一次。</b>
+</p>
+
+<p>
+最后一行动画里 <code>i</code> 是 <b>6</b>，不是 5。跟 2.3 那个
+「循环停下来的时候，盒子里通常比你想的多一格」是同一件事，
+只是这次你能亲眼看着它多出来的。
+</p>
+
+<div class="aside">
+  <b>为什么值得专门看一遍</b>
+  <p>
+    以后循环写错了，你要在脑子里<b>跑一遍</b>才知道错在哪——
+    而脑子里跑的就是这个顺序。<b>先知道顺序，才能跑。</b>
+  </p>
+  <p>
+    2.3 教的「用纸笔跟一遍」跟这是同一件事：纸上的每一行，
+    对应的就是一个格子被走到的那一下。
+  </p>
+</div>
+
+<h3 id="s2-4-4">两个分号，一个都不能少</h3>
+
+<p>
+三格之间是两个分号。写错了编译器不会猜，它会当场停下。
+</p>
+
+<p>
+<b>把第一个分号写成逗号</b>，是最常见的一种：
+</p>
+
+<pre><code>    for (int i = 1, i &lt;= 5; i = i + 1) {</code></pre>
+
+<pre class="diag"><code>2.4-err-comma.cpp: In function ‘int main()’:
+2.4-err-comma.cpp:9:22: error: expected ‘;’ before ‘&lt;=’ token
+    9 |     for (int i = 1, i &lt;= 5; i = i + 1) {
+      |                      ^~~
+      |                      ;
+2.4-err-comma.cpp:9:23: error: expected primary-expression before ‘&lt;=’ token
+    9 |     for (int i = 1, i &lt;= 5; i = i + 1) {
+      |                       ^~
+</code></pre>
+
+<p>
+读这一行：<code>error: expected ';' before '&lt;=' token</code>——「
+在 <code>&lt;=</code> 前面，我等着一个分号」。
+</p>
+
+<p>
+更值钱的是下面那两行——<b>编译器把那个分号画出来了</b>：
+</p>
+
+<pre><code>      |                      ^~~
+      |                      ;
+                             ↑ 它说的分号，就画在这个位置</code></pre>
+
+<p>
+<b>报错里的 <code>^</code> 指着哪儿，就盯哪儿看。</b>
+这一招 0.3 讲过，这里是最好的例子：它不光告诉你错了，
+还告诉你该在那儿补个什么。
+</p>
+
+<p>
+<b>少写一格也一样。</b>只写两个格子：
+</p>
+
+<pre><code>    for (int i = 1; i &lt;= 5) {</code></pre>
+
+<pre class="diag"><code>2.4-err-one-semi.cpp: In function ‘int main()’:
+2.4-err-one-semi.cpp:8:27: error: expected ‘;’ before ‘)’ token
+    8 |     for (int i = 1; i &lt;= 5) {
+      |                           ^
+      |                           ;
+</code></pre>
+
+<p>
+<code>before ')' token</code>——括号要关了，它还等着一个分号。
+</p>
+
+<p>
+这个错还有个隐蔽的地方：<b>它看着像「只想写两格」</b>。
+写完 <code>i &lt;= 5</code> 手一停，括号就关了。记住——
+<b><code>for</code> 头上永远三格、两个分号，一格都不能省。</b>
+</p>
+
+<div class="aside warn">
+  <b>第三格空着，就是死循环</b>
+  <p>
+    那要是<b>故意</b>留空呢？<code>for (int i = 1; i &lt;= 5;) { ... }</code>
+    是合法的，编译器一个字都不说。
+  </p>
+  <p>
+    但它跑起来和 2.3 那个「忘了让条件变」的 while 一模一样：
+    <code>i</code> 一直是 1，条件永远成立，一行一行地打 1 停不下来。
+    <b>按住 <code>Ctrl</code> 再按一下 <code>C</code> 掐掉。</b>
+  </p>
+  <p>
+    <b>规则很简单：<code>for</code> 头上没有第二格或者第三格，先当自己写错了。</b>
+    合法不等于写对了。
+  </p>
+</div>
+
+<p>
+还有一处会撞墙——<b>出了循环还想用 <code>i</code></b>：
+</p>
+
+<pre><code>    for (int i = 1; i &lt;= 5; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "循环完了，i 是 " &lt;&lt; i &lt;&lt; std::endl;    // 这行过不去</code></pre>
+
+<pre class="diag"><code>2.4-err-scope.cpp: In function ‘int main()’:
+2.4-err-scope.cpp:13:39: error: ‘i’ was not declared in this scope
+   13 |     std::cout &lt;&lt; "循环完了，i 是 " &lt;&lt; i &lt;&lt; std::endl;
+      |                                       ^
+</code></pre>
+
+<p>
+<code>'i' was not declared in this scope</code>——「这个名字我不认识」。
+</p>
+
+<p>
+奇怪的是 <code>i</code> 明明刚在头上建出来。<b>因为第 1 格建的那个盒子，
+只活在循环里。</b>循环一结束，盒子就没了，外面的人看不见它。
+</p>
+
+<p>
+<b>循环完了还想知道 <code>i</code> 是几，就把盒子建到循环外面去：</b>
+</p>
+
+<pre><code>    int i = 0;                          // 建在外面，循环完了还在
+    for (i = 1; i &lt;= 5; i = i + 1) {    // 头上的第 1 格只写 i，不写 int
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+    std::cout &lt;&lt; "循环完了，i 是 " &lt;&lt; i &lt;&lt; std::endl;   // 现在是 6</code></pre>
+
+<p>
+「活在哪个范围里」这件事有个正式名字叫<b>作用域</b>（scope），
+第 3 部分会专门讲。现在只要记住一条：
+</p>
+
+<p>
+<b><code>for (int i = ...)</code> 里的 <code>int</code> 是「在这儿新建一个盒子」。
+外面的循环完了看不见它——这不是毛病，是好事</b>，
+盒子用得越少，越不容易互相打架。
+</p>
+
+<h3 id="s2-4-5">用 for 还是 while</h3>
+
+<p>
+两个都能干一样的事，那到底用哪个？
+</p>
+
+<p>
+<b>一个简单的判断：你事先知道走几圈吗？</b>
+</p>
+
+<ul>
+  <li>
+    <b>知道</b>——「1 到 n」「第 1 个到第 5 个」——用 <code>for</code>。
+    三件事写在一行，读的人一眼就看见圈数。</li>
+  <li>
+    <b>不知道</b>——「一直读，读到 0 为止」「一直除，除到它变成 0」——用 <code>while</code>。
+    这种循环没有「第几圈」的概念，硬凑一个 <code>for</code> 反而绕。</li>
+</ul>
+
+<p>
+回头看 2.3 那几道题，你就明白为什么它们大多是 <code>while</code>：
+</p>
+
+<ul>
+  <li>「数出 <code>12345</code> 有几位」——你不知道要除几次，<b>while</b>。</li>
+  <li>「打 n 的阶乘」——你知道要乘到 n，<b>for</b> 更合适。</li>
+  <li>「1 加到 100」——知道是 100 圈，<b>for</b> 更合适。</li>
+</ul>
+
+<p>
+<b>这不是规矩，是习惯。</b>用反了程序照样跑，只是读的人得多花两秒钟。
+不过有一件事是确定的：<b>以后看别人的代码，
+<code>for</code> 一出现，你第一件事就是去头上找那三格。</b>
+把圈数交代清楚，是 <code>for</code> 存在的全部理由。
+</p>
+
+<h3 id="s2-4-6">起点和步子都能改</h3>
+
+<p>
+那三个格子里的东西不是固定的。先看<b>起点不写 1</b>——从 0 数起：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = 0; i &lt; n; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+输入 <code>3</code> 时：
+</p>
+
+<pre class="out" data-label="预期输出"><span class="typed">3</span>
+0
+1
+2</pre>
+
+<p>
+<b>圈数还是 3 圈，但打出来的数变成了 0、1、2。</b>
+从 0 起，条件就得从 <code>&lt;=</code> 改成 <code>&lt;</code>，
+不然会多打一个 <code>3</code>——三格是一套的，改一个就得改另一个。
+</p>
+
+<p>
+<b>这个「从 0 数到 n-1」的写法，是 C++ 里最常用的一种数法。</b>
+现在看着别扭，是因为你还没见过数组。到了 4.2 你会知道：
+<b>数组里第一个东西的编号就是 0</b>，所以「第 i 个」天生就是从 0 起的。
+先在这儿混个脸熟。
+</p>
+
+<p>
+再看<b>第三格不写加 1</b>——每次加 2：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 9; i = i + 2) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1
+3
+5
+7
+9</pre>
+
+<p>
+一步跨两格，奇数全打出来了，一个 <code>if</code> 都没用上。
+<b>「一步跨多少」也是循环的一部分</b>，想清楚再写。
+</p>
+
+<p>
+<b>往下走也一样</b>——起点 5、条件 <code>&gt;= 1</code>、第三格减 1：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 5; i &gt;= 1; i = i - 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">5
+4
+3
+2
+1</pre>
+
+<p>
+2.3 例题那个倒着数的 <code>while</code> 版，换成 <code>for</code> 就是这样。
+<b>三件事一起往下走</b>：起点最大，条件跟着反过来，
+第三步变成减——只改一半，就是死循环或者一圈都不走。
+</p>
+
+<div class="eg" id="e2-4">
+  <div class="eg-h">例题 · 1 加到 n</div>
+  <p>
+    2.3 用 <code>while</code> 算过 1 加到 100。换成 <code>for</code>，
+    读完一个 <code>n</code> 再加：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int sum = 0;
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        sum = sum + i;
+    }
+
+    std::cout &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+  <p>
+    输入 <code>100</code> 时：
+  </p>
+
+  <pre class="out" data-label="预期输出"><span class="typed">100</span>
+5050</pre>
+
+  <p>
+    <b>跟 2.3 那一版比一比，攒东西那部分一个字都没变</b>——
+    还是 <code>int sum = 0;</code> 起头，还是 <code>sum = sum + i;</code> 攒。
+    变的只有「三件事挪到了头上」。
+  </p>
+
+  <p>
+    这就是这一课想说的：<b><code>for</code> 和 <code>while</code> 不是两种循环，
+    是同一种循环的两种写法。</b>学会一个，另一个只是换个摆法。
+  </p>
+</div>
+
+<h3 id="s2-4-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-13</div>
+  <p>
+    用 <code>for</code> 读一个 <code>n</code>，打出 <b>1 到 n</b>，一行一个。
+  </p>
+  <p>
+    输入 <code>6</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">6</span>
+1
+2
+3
+4
+5
+6</pre>
+  <p>
+    提示：就是这一课开头那个数到 5 的程序，把写死的 5 换成读进来的 <code>n</code>。
+    2.3 的练习 2-9 用 <code>while</code> 做过一模一样的题——
+    做完把两个版本摆在一起，看看哪一版你能一眼数出圈数。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三件事全在头上：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        起点 <code>int i = 1</code>、条件 <code>i &lt;= n</code>、
+        第三步 <code>i = i + 1</code>——和 2.3 那道题的三个部件一一对上，
+        只是搬了个地方。
+      </p>
+      <p>
+        <b>注意条件里比的是 <code>n</code>。</b>
+        2.3 说过一遍，这儿再说一遍是因为它太容易错：
+        循环走几圈，取决于读进来的那个数，不是取决于你写死的那个数。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-14</div>
+  <p>
+    用 <code>for</code> 读一个 <code>n</code>，<b>倒着</b>打出 <b>n 到 1</b>，一行一个。
+  </p>
+  <p>
+    输入 <code>4</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+4
+3
+2
+1</pre>
+  <p>
+    提示：起点、条件、第三步，三件事一起翻个个儿。
+    只要改一半，程序就不对了——想清楚再动手，然后跑一遍看对不对。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三件事一起反过来：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = n; i &gt;= 1; i = i - 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        起点是 <code>n</code>（最大的数），条件 <code>i &gt;= 1</code>（往下走到 1 为止），
+        第三步 <code>i = i - 1</code>（每次减 1）。
+      </p>
+      <p>
+        <b>试试只改一半会怎样：</b>
+      </p>
+      <ul>
+        <li>条件改成 <code>&gt;= 1</code> 但第三步还是 <code>i = i + 1</code>——
+          从 n 一路涨上去，永远掉不到 1，<b>死循环</b>。</li>
+        <li>第三步改成 <code>i = i - 1</code> 但条件还是 <code>&lt;= n</code>——
+          <code>n &lt;= n</code> 成立，进去走一圈，<code>i</code> 变成 n-1，
+          <code>n-1 &lt;= n</code> 还成立……一直往下减，<b>还是死循环</b>，
+          而且这次能减到负数。</li>
+      </ul>
+      <p>
+        <b>改一个格子，就一定要回头看另外两个。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-15</div>
+  <p>
+    算出 <b>1 到 100 之间所有偶数的和</b>（2 + 4 + 6 + … + 100）。
+  </p>
+  <pre class="out" data-label="预期输出">2550</pre>
+  <p>
+    提示：这一题的重点是<b>第三格</b>。想想能不能让 <code>i</code>
+    一步一步跳着走，压根不碰奇数——那样连 <code>if</code> 都不用写。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第三格每次加 2：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int sum = 0;
+
+    for (int i = 2; i &lt;= 100; i = i + 2) {
+        sum = sum + i;
+    }
+
+    std::cout &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        起点从 <b>2</b> 开始（第一个偶数是 2，不是 0），
+        第三步 <code>i = i + 2</code>，条件 <code>i &lt;= 100</code>。
+      </p>
+      <p>
+        <b>另一种写法也能算对：</b>老老实实从 1 数到 100，
+        在大括号里加一句 <code>if (i % 2 == 0)</code> 挑出偶数。
+        两版结果一样，但上面那版少走一半的圈——
+        <b>能让循环自己跳过去的，就别在循环里用 <code>if</code> 挑。</b>
+      </p>
+      <p>
+        顺带说一句：这条规矩在实际代码里挺重要。循环是程序里最耗时间的地方，
+        <b>少转一圈就是快一点。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-16</div>
+  <p>
+    这一题第一次<b>在循环里读键盘</b>。
+  </p>
+  <p>
+    先读一个 <code>n</code>，再读 <b>n 个数</b>，打出它们的和。
+  </p>
+  <p>
+    输入 <code>4</code>，接着四个数是 <code>3 1 4 1</code>：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+<span class="typed">3 1 4 1</span>
+9</pre>
+  <p>
+    提示：循环转 <code>n</code> 圈，<b>每一圈从键盘拿一个数进来，
+    就加进 <code>sum</code></b>。你不需要记住这 n 个数分别是几——
+    算完就扔，这是累加最省事的地方。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>cin</code> 写在大括号里：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int sum = 0;
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        sum = sum + x;
+    }
+
+    std::cout &lt;&lt; sum &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>每一圈 <code>x</code> 都被重新建一次。</b>
+        第 1 圈拿到 3，第 2 圈拿到 1——
+        拿到 1 的那一刻，上一圈的 3 已经没了，但它早就加进 <code>sum</code> 里了。
+      </p>
+      <p>
+        <b>这就是「算完就扔」的意思：<code>x</code> 只负责把数递进来，
+        真正攒住东西的是 <code>sum</code>。</b>
+        想让 <code>x</code> 一直活着也行（建到循环外面去），但没必要——
+        盒子用得越少，越不容易打架。
+      </p>
+      <p>
+        顺带说一句：这段程序对输入里的空格和换行完全不挑。
+        上面那四个数，写成 <code>3 1 4 1</code> 一行、还是
+        <code>3</code> <code>1</code> <code>4</code> <code>1</code> 各占一行，
+        结果都是 9。这是 1.5 讲的：<code>&gt;&gt;</code> 是「拿一个数」，
+        不是「拿一行」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-17</div>
+  <p>
+    读一个 <code>n</code>，判断它<b>是不是质数</b>
+    （质数 = 除了 1 和它自己，没有别的数能整除它）。
+  </p>
+  <p>
+    输入 <code>9</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">9</span>
+9 不是质数</pre>
+  <p>
+    提示：质数的意思就是<b>在 2 到 n-1 里，一个能整除 n 的数都没有</b>。
+    那就用 <code>for</code> 把这些数挨个试一遍——
+    每试一个就问一句「<code>n % i</code> 是不是 0」。
+  </p>
+  <p>
+    问题来了：<b>试到一个能整除的，说明它「不是质数」——
+    这件事要记在哪儿？</b>
+    1.2 讲过一种专门用来存「是 / 不是」的盒子。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        用一个 <code>bool</code> 记住「有没有找到过约数」：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    bool isPrime = true;
+
+    for (int i = 2; i &lt; n; i = i + 1) {
+        if (n % i == 0) {
+            isPrime = false;
+        }
+    }
+
+    if (isPrime) {
+        std::cout &lt;&lt; n &lt;&lt; " 是质数" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; n &lt;&lt; " 不是质数" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>bool isPrime = true;</code> 这句读作：<b>先假设它是质数。</b>
+        然后挨个试约数，只要逮着一个能整除的，就把这个假设推翻。
+        循环走完，<code>isPrime</code> 还立着，那它真的是质数。
+      </p>
+      <p>
+        <b>这个套路叫「打旗子」</b>（flag）：
+        先立一面旗，找到反例就把旗放倒。以后遇到「这一堆里有没有满足条件的」
+        基本都是它。4.3 找最大值会用到另一种旗子。
+      </p>
+      <p>
+        <b>这一题把三样东西凑一块儿了</b>：<code>for</code> 负责挨个试，
+        <code>if</code> 负责判断，<code>bool</code> 负责记住结果——
+        第 2 部分学到这儿，你已经能把它们拼起来了。
+      </p>
+      <p>
+        说个边界：输入 <code>1</code>，它会打出「1 是质数」。
+        严格说 1 不算质数。这段程序没管这事，
+        因为题目只要求判断正数——但<b>跟 2.3 那道「0 位」一样，
+        自己写的程序在边界上是什么行为，心里要有数。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-18（找错）</div>
+  <p>
+    一个程序，想打 <b>1、2、3、4、5</b>。它编译通过了，圈数也对，
+    可打出来的数是：
+  </p>
+  <pre class="out" data-label="预期输出">0
+1
+2
+3
+4</pre>
+  <p>
+    循环部分长这样：
+  </p>
+  <pre><code>    for (int i = 0; i &lt; 5; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }</code></pre>
+  <p>
+    <b>先别看答案。</b>这一题跟 2.3 那道「少了 5」的找错不一样——
+    <b>这次圈数没错，是 5 圈，一行不少。</b>
+    那错在哪儿？
+  </p>
+  <p>
+    提示：把三个格子各自数一遍，再问一句：
+    <b>这五圈里，<code>i</code> 分别是几？</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        那段程序完整长这样：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 0; i &lt; 5; i = i + 1) {
+        std::cout &lt;&lt; i &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>起点错了：<code>0</code> 得改成 <code>1</code>。</b>
+      </p>
+      <pre><code>    for (int i = 1; i &lt;= 5; i = i + 1) {</code></pre>
+      <p>
+        为什么圈数没错却是错的？把每一圈的 <code>i</code> 列出来：
+      </p>
+      <table>
+        <tr><th>圈</th><th>i</th><th>打出来的</th></tr>
+        <tr><td>第 1 圈</td><td>0</td><td>0</td></tr>
+        <tr><td>第 2 圈</td><td>1</td><td>1</td></tr>
+        <tr><td>第 3 圈</td><td>2</td><td>2</td></tr>
+        <tr><td>第 4 圈</td><td>3</td><td>3</td></tr>
+        <tr><td>第 5 圈</td><td>4</td><td>4</td></tr>
+      </table>
+      <p>
+        <b>五圈，一圈不少；但 <code>i</code> 是从 0 开始的，
+        所以打出来的是 0 到 4。</b>
+      </p>
+      <p>
+        <b>「圈数对不对」和「值对不对」是两件事。</b>
+        2.3 那道题错的是圈数（少打了一个 5），这道题错的是一圈里的值——
+        两种错都会出现，查的时候得分头查：
+      </p>
+      <ol>
+        <li><b>数行数</b>：打出来的行数对不对？（对，5 行）</li>
+        <li><b>看值</b>：每一行的那些数，对不对？（不对，从 0 起）</li>
+      </ol>
+      <p>
+        也可以不碰起点，只把打印那句改成 <code>std::cout &lt;&lt; i + 1</code>。
+        能跑对，但<b>不好</b>——读的人得在脑子里多做一次加法才知道你在数几。
+        直接改起点更直。
+      </p>
+      <p>
+        最后说一句：<b>「从 0 数起」本身没错</b>，这一课刚讲过，
+        以后遍历数组天天这么写。错的是<b>你要的是 1 到 5，
+        却写了从 0 起的数法</b>。先想清楚要打什么，再定起点。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>循环有两种写法，你都会了。
+  三件事写在一行上的时候，读代码的人<b>一眼就能看见圈数</b>——
+  你从现在开始写循环，可以先问自己一句「我事先知道走几圈吗」，
+  然后挑一个写着顺手的。
+  下一课是这一部分最需要动手的一课：<b>把循环套进循环</b>。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>嵌套循环：循环里面还有循环</h2>
+
+<p>
+到这里，一个循环能干的事你都见过了。这一课说一件听着吓人、其实很朴素的事：
+<b>循环里可以再放一个循环。</b>
+</p>
+
+<p>
+它有一个正式名字叫<b>嵌套</b>（nest）——就是一个套一个。
+实际用起来，<b>能画成表格的东西，基本都得靠它。</b>
+</p>
+
+<h3 id="s2-5-1">一个循环套一个循环</h3>
+
+<p>
+先是这个形状：一个花括号里面，又写了一个完整的 <code>for</code>。
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 2; i = i + 1) {
+        for (int j = 1; j &lt;= 3; j = j + 1) {
+            std::cout &lt;&lt; "外 " &lt;&lt; i &lt;&lt; " 内 " &lt;&lt; j &lt;&lt; std::endl;
+        }
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">外 1 内 1
+外 1 内 2
+外 1 内 3
+外 2 内 1
+外 2 内 2
+外 2 内 3</pre>
+
+<p>
+先看两个名字的习惯：<b>外面那个循环变量叫 <code>i</code>，里面那个叫 <code>j</code>。</b>
+再往里面还有一层就叫 <code>k</code>。这不是规矩，但是全世界都这么写，
+你照着来，别人一眼就分得清哪个是哪个。
+</p>
+
+<p>
+<b>然后看输出，有个地方很关键：</b>
+<code>外 1</code> 那三行走完，才轮到 <code>外 2</code>。
+<b>不是「外 1、外 2、外 1、外 2……」，也不是两个循环轮流走。</b>
+</p>
+
+<p>
+这句话是这一课的全部：
+</p>
+
+<p>
+<b>外圈走一步，内圈就从第一步走到最后一步，走完一整轮。
+然后外圈再走一步，内圈又从头走一整轮。</b>
+</p>
+
+<p>
+<b>为什么是内圈整轮走完？</b>因为内圈那个 <code>for</code>
+就老老实实待在外圈的大括号里。对外圈来说，
+里面那些东西——包括内圈的整个头和结尾——<b>全都只是「大括号里的内容」</b>，
+外圈一次执行一整套，执行完才回去看自己的条件。
+</p>
+
+<h3 id="s2-5-2">外圈走一步，内圈走一整轮</h3>
+
+<p>
+光看输出还是有点抽象。下面这个动画把两个 <code>for</code> 都拆成三行写——
+<b>每一格各占一行</b>，这样高亮才能指到具体是哪一格在走。
+（2.4 那个动画也是这么拆的；拆行是合法的 C++，跟上面那段程序跑出来一模一样。）
+</p>
+
+<p>
+按「下一步」，重点盯两件事：
+</p>
+
+<ol>
+  <li>外圈的 <code>i</code> 是什么时候变的；</li>
+  <li><b>外圈第二圈开始时，内圈的 <code>j</code> 是几。</b></li>
+</ol>
+
+<div class="viz" data-viz="nested"></div>
+
+<p>
+<b>走到第 17 步的时候，你应该看到 <code>j</code> 又变成 1 了</b>——
+不是接着上一轮走完的 3 继续往下数，是<b>重新建了一次，从 1 开始</b>。
+（嫌一下一下点得累，就按「自动播放」。）
+</p>
+
+<p>
+因为 <code>int j = 1;</code> 写在内圈的第 1 格里，
+而内圈整个待在外圈的大括号里。<b>外圈每转一圈，都把它从头执行一遍。</b>
+</p>
+
+<div class="aside">
+  <b>这里是最容易想错的地方</b>
+  <p>
+    很多人第一次会以为 <code>j</code> 是「接着数」的——
+    外圈第二轮，内圈就从 4 开始，一路数到 6。
+    毕竟变量建过一次之后，不就一直在那儿吗？
+  </p>
+  <p>
+    <b>不是。</b>2.4 讲过一句话，在这儿正好用上：
+    <b><code>for (int j = ...)</code> 里的 <code>int</code> 是「在这儿新建一个盒子」。</b>
+    内圈每重新开始一轮，都新建一个 <code>j</code>，值是 1。
+    盒子只活在它那两个大括号之间——<b>动画第 15 步你会看见 <code>j</code> 的盒子没了，
+    下一步它才又冒出来。</b>
+  </p>
+</div>
+
+<h3 id="s2-5-3">数一数走了几遍</h3>
+
+<p>
+从那个动画里也能数出来：外圈转 2 圈，内圈每圈转 3 次，
+<b>最里面那句一共走了 2 乘 3 = 6 遍</b>——屏幕上正好 6 行。
+</p>
+
+<p>
+验证一下。加一个盒子专门数它：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int count = 0;
+
+    for (int i = 1; i &lt;= 2; i = i + 1) {
+        for (int j = 1; j &lt;= 3; j = j + 1) {
+            count = count + 1;
+        }
+    }
+
+    std::cout &lt;&lt; "里面那句一共走了 " &lt;&lt; count &lt;&lt; " 遍" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">里面那句一共走了 6 遍</pre>
+
+<p>
+这个数<b>一定是乘出来的</b>：外圈转 1 次，内圈转满 3 次；
+外圈转 2 次，内圈就转满 2 轮 3 次。
+</p>
+
+<p>
+<b>记住这个乘法，以后有用。</b>下一课要打的乘法表是 9 乘 9，
+最里面那句就要走 81 遍——81 个结果，一个都不能手写。
+</p>
+
+<h3 id="s2-5-4">用纸笔跟一遍</h3>
+
+<p>
+前面讲 <code>while</code> 的时候说过「用纸笔跟一遍」。
+<b>嵌套循环是这件事最该用、也最值的地方</b>——
+因为光凭眼睛看，嵌套循环会骗你。
+</p>
+
+<p>
+办法很土，四步：
+</p>
+
+<ol>
+  <li>
+    <b>画两列，一行算一圈。</b>第一列写外圈的 <code>i</code>，
+    第二列写这一轮里内圈会走过的 <code>j</code>。
+  </li>
+  <li>
+    <b>从外圈的第 1 格开始，一行一行往下写。</b>
+    不要跳，觉得「这我懂了」的地方恰恰会错。
+  </li>
+  <li>
+    <b>碰到内圈，就把内圈整轮写完再往外走。</b>
+    内圈没走完就回去动外圈，是手跟的时候最常见的错。
+  </li>
+  <li>
+    <b>写完和预期输出对一遍。</b>对不上，错的那一行就在你眼前——
+    比盯着代码空想快得多。
+  </li>
+</ol>
+
+<p>
+拿上面那个 2 乘 3 的程序，跟出来就是这样：
+</p>
+
+<table>
+  <tr><th>外圈第几轮</th><th>i</th><th>这一轮内圈走过的 j</th><th>打出来的</th></tr>
+  <tr><td>第 1 轮</td><td>1</td><td>1、2、3</td><td>外 1 内 1 / 外 1 内 2 / 外 1 内 3</td></tr>
+  <tr><td>第 2 轮</td><td>2</td><td><b>1</b>、2、3</td><td>外 2 内 1 / 外 2 内 2 / 外 2 内 3</td></tr>
+</table>
+
+<p>
+<b>看第三列第二个格子：又是 1。</b>
+跟上面那个动画说的是同一件事。
+</p>
+
+<p>
+这张表还有一个用处：<b>它同时就是预期输出。</b>
+你把表写完了，程序该打什么你也知道了。
+<b>跑出来不一样，那就是程序错了，不用怀疑自己。</b>
+</p>
+
+<h3 id="s2-5-5">内圈的上限，常常是外圈那个数</h3>
+
+<p>
+前面两个循环的圈数都是写死的（2 和 3）。
+真正好用的嵌套循环里，<b>内圈的圈数是跟着外圈变的</b>——
+内圈的条件里会出现 <code>i</code>。
+</p>
+
+<p>
+比如「第 1 行打 1 个星号、第 2 行打 2 个、第 3 行打 3 个」：
+</p>
+
+<pre><code>    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {    // 上限是 i，不是 n
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }</code></pre>
+
+<p>
+<b><code>j &lt;= i</code>——这一处就是整段程序的灵魂。</b>
+外圈现在是第几行，内圈就打几个。
+</p>
+
+<p>
+还有一件事得说清楚：<b>那个 <code>std::cout &lt;&lt; std::endl;</code>
+写在内圈外面、外圈里面。</b>
+</p>
+
+<p>
+它的位置决定了「什么时候换行」。写在那个位置，意思是
+<b>「内圈整轮打完了，换一行」</b>——一行一行就是这么来的。
+要是手滑把它写进内圈的大括号里，就变成每打一个星号换一行，
+三角形会竖过来变成一条线。
+</p>
+
+<div class="eg" id="e2-5">
+  <div class="eg-h">例题 · 星号直角三角形</div>
+  <p>
+    读一个 <code>n</code>，打一个 <code>n</code> 行的直角三角形：
+  </p>
+
+  <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+  <p>
+    输入 <code>4</code> 时：
+  </p>
+
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+*
+**
+***
+****</pre>
+
+  <p>
+    <b>先用纸笔跟一遍，再往下看。</b>跟的时候只要写两列就够了：
+  </p>
+
+  <table>
+    <tr><th>i</th><th>这一轮内圈打过几个星号</th><th>这一行打出来是</th></tr>
+    <tr><td>1</td><td>1</td><td><code>*</code></td></tr>
+    <tr><td>2</td><td>2</td><td><code>**</code></td></tr>
+    <tr><td>3</td><td>3</td><td><code>***</code></td></tr>
+    <tr><td>4</td><td>4</td><td><code>****</code></td></tr>
+  </table>
+
+  <p>
+    你会发现这张表和输出长得一模一样。<b>这就对了。</b>
+    嵌套循环能跟出这张表，你就真的会了。
+  </p>
+
+  <p>
+    这一段往后会反复出现——<b>它和下一课那道综合练习是同一个骨架</b>，
+    只是把「打几个星号」换成「打几个乘积」。现在把它吃透，那道题就只剩一层窗户纸。
+  </p>
+</div>
+
+<h3 id="s2-5-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-19</div>
+  <p>
+    读两个数 <code>n</code> 和 <code>m</code>，打一个 <b><code>n</code> 行
+    <code>m</code> 列</b>的星号矩形。
+  </p>
+  <p>
+    输入 <code>3 5</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">3 5</span>
+*****
+*****
+*****</pre>
+  <p>
+    提示：<b>两个数分工很清楚</b>——<code>n</code> 是「几行」，
+    那是外圈的事；<code>m</code> 是「一行几个」，那是内圈的事。
+    所以内圈的条件里写 <code>m</code>，不写 <code>i</code>。
+  </p>
+  <p>
+    跟例题比一下：例题是「一行几个」跟着行号变，这一题是固定不变。
+    <b>内圈的上限写 <code>i</code> 还是写别的，决定了你画出来是什么形状。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-19.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个数各管一个方向：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    int m = 0;
+    std::cin &gt;&gt; n &gt;&gt; m;
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= m; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>外圈的 <code>n</code> 管几行，内圈的 <code>m</code> 管一行几个。</b>
+        两个 <code>for</code> 各读一个数，互不干涉——这就是这一题最省事的地方。
+      </p>
+      <p>
+        有没有发现它跟例题就差一个字母？
+      </p>
+      <table>
+        <tr><th></th><th>内圈的条件</th><th>画出来</th></tr>
+        <tr><td>例题</td><td><code>j &lt;= i</code></td><td>三角形（一行比一行长）</td></tr>
+        <tr><td>这一题</td><td><code>j &lt;= m</code></td><td>矩形（每行一样长）</td></tr>
+      </table>
+      <p>
+        <b>一行比一行长、还是一样长，全看内圈的上限跟不跟着 <code>i</code> 走。</b>
+        记住这句话，2.5 后面那两道题和下一课的乘法表都是它。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-20</div>
+  <p>
+    读一个 <code>n</code>，打一个 <b><code>n</code> 行</b>的<b>倒</b>直角三角形：
+  </p>
+  <p>
+    输入 <code>4</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+****
+***
+**
+*</pre>
+  <p>
+    提示：和例题只差一件事——<b>越往下越短</b>。
+    那内圈的上限该怎么写？想想让 <code>i</code> 从大的往小的走。
+  </p>
+  <p>
+    先写表再写代码：四行分别是几个星号，把这一列数出来，答案就出来一半了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-20.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        和例题的差别只有一行：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = n; i &gt;= 1; i = i - 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>看外圈的起点和步子：<code>i = n</code> 起、<code>i = i - 1</code> 走。</b>
+        第一行 <code>i</code> 是 4，内圈打 4 个；第二行 <code>i</code> 是 3，打 3 个——
+        越往下越短，倒过来了。
+      </p>
+      <p>
+        <b>内圈一个字都没改</b>，还是 <code>j &lt;= i</code>。
+        改的只是外圈从哪头走。这一点值得停一下：
+        <b>形状是外圈决定的，不是内圈。</b>
+      </p>
+      <p>
+        先列表再写代码的话，这一题是这样：
+      </p>
+      <table>
+        <tr><th>i</th><th>内圈打几个</th><th>这一行</th></tr>
+        <tr><td>4</td><td>4</td><td><code>****</code></td></tr>
+        <tr><td>3</td><td>3</td><td><code>***</code></td></tr>
+        <tr><td>2</td><td>2</td><td><code>**</code></td></tr>
+        <tr><td>1</td><td>1</td><td><code>*</code></td></tr>
+      </table>
+      <p>
+        跟例题那张表比一比，一模一样，只是行的顺序倒过来了。
+        <b>表一样，程序就能照着改；表不一样，先改表。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-21</div>
+  <p>
+    读一个 <code>n</code>，打一个<b>数字</b>三角形：
+  </p>
+  <p>
+    输入 <code>4</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+1
+12
+123
+1234</pre>
+  <p>
+    提示：外形和例题<b>一模一样</b>。只改一个地方——
+    内圈往屏幕上送的是 <code>j</code> 本身，不是星号。
+  </p>
+  <p>
+    顺便想一句：第 3 行为什么正好是 <code>123</code>？
+    因为那一轮外圈的 <code>i</code> 是 3，内圈的 <code>j</code> 是 1、2、3。
+    <b>把表跟一遍，这个「为什么」自己就出来了。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-21.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        和例题只差内圈里送出去的东西：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; j;
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b><code>std::cout &lt;&lt; j</code>——送的是 <code>j</code>，不是星号。</b>
+        外圈、条件、换行的位置，一个字都没动。
+      </p>
+      <p>
+        第 3 行为什么是 <code>123</code>：那一轮外圈 <code>i</code> 是 3，
+        内圈的 <code>j</code> 从 1 走到 3，每走一步打一个数——
+        打出来的就是 <code>1</code>、<code>2</code>、<code>3</code> 挨在一起。
+      </p>
+      <p>
+        <b>顺便看一件事：<code>j</code> 是自己会数的。</b>
+        你不需要另外写一句「把 <code>j</code> 加一」——
+        <code>for</code> 的第 3 格每转一圈就替你加了一次。
+        下一课打乘法表，靠的正是这一点。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-22（找错）</div>
+  <p>
+    一个程序，想打一个<b>三角形</b>。它编译通过了，也打出了三行，
+    可打出来的是个方块：
+  </p>
+  <pre class="out" data-label="预期输出">***
+***
+***</pre>
+  <p>
+    内圈部分长这样：
+  </p>
+  <pre><code>    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= n; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }</code></pre>
+  <p>
+    <b>先别看答案。</b>这里 <code>n</code> 是 3。
+  </p>
+  <p>
+    提示：把每一轮内圈走过几个星号列成表，再问一句：
+    <b>第 1 行应该是几个？实际打了几个？</b>
+    差在哪个字母上，一眼就能看出来。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-22.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        内圈的上限写错了：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 3;
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= n; j = j + 1) {
+            std::cout &lt;&lt; "*";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b><code>j &lt;= n</code> 得改成 <code>j &lt;= i</code>。</b>
+      </p>
+      <p>
+        为什么 <code>n</code> 就画成方块了？把每一轮列出来看：
+      </p>
+      <table>
+        <tr><th>i</th><th>内圈走几遍</th><th>这一行</th><th>该是几个</th></tr>
+        <tr><td>1</td><td>3</td><td><code>***</code></td><td>1</td></tr>
+        <tr><td>2</td><td>3</td><td><code>***</code></td><td>2</td></tr>
+        <tr><td>3</td><td>3</td><td><code>***</code></td><td>3</td></tr>
+      </table>
+      <p>
+        <b>每一行都是 3 个，因为内圈转几遍跟 <code>i</code> 没关系了。</b>
+        内圈的条件里没有 <code>i</code>，那它当然每行都一样——
+        一样长的行摞起来，就是方块。
+      </p>
+      <p>
+        <b>所以「跟例题比，只差一个字母」这种错最难逮。</b>
+        <code>n</code> 和 <code>i</code> 挨得近、都是字母、都不是数字，
+        编译器不会拦，眼睛一扫也容易滑过去。
+        两道题挨着做的时候，尤其要一行一行地对——
+        <b>拿纸把那几行 <code>i</code> 列出来，这种错一列就露。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能画表格了。
+  行和列两个方向上的重复，以前要写一长串，现在两个 <code>for</code> 套起来就够。
+  <b>而且你手里多了一件工具：拿纸把循环跟一遍。</b>
+  从这一课起，凡是循环写不对，先别改代码——先跟一遍。
+  下一课是第 2 部分的收尾：<b>综合练习一，9 乘 9 乘法表。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-6">
+<h2><span class="no">2.6</span>【综合练习一】9×9 乘法表</h2>
+
+<p>
+第 2 部分到这儿收尾。这一课把前面五课的东西凑一块儿，做一道综合练习。
+</p>
+
+<p>
+先说一句：<b>这道题你现在已经会了。</b>它的骨架就是上一课那个直角三角形。
+新就新在一点：<b>它不告诉你怎么写</b>——只说清要什么，
+再甩一张输出样式给你，剩下的自己看着办。这正是以后所有题的样子。
+</p>
+
+<h3>题目</h3>
+
+<div class="eg" id="s2-6-1">
+  <div class="eg-h">综合练习一 · 9×9 乘法表</div>
+  <p>
+    题目的原话是：「使用 C++ 输出 9*9 乘法表（<b>分别使用 for 与 while 实现</b>）」，
+    后面跟着一张输出样式（这里只截了头四行和最后一行）。
+  </p>
+  <pre class="out" data-label="输出样式">1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16
+……
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+</div>
+
+<p>
+题目全部加起来就这两句话，一个字没改，
+可要读出来的东西至少三件：
+</p>
+
+<ol>
+  <li>
+    <b>for 一版、while 一版，两版都得有。</b>
+    「分别使用 for 与 while 实现」，意思不是「随便挑一个」。
+  </li>
+  <li>
+    <b>要打出去的乘号是 <code>×</code>，不是代码里敲的那个 <code>*</code>。</b>
+    题目文字里写的是「9*9 乘法表」，输出样式里却是 <code>1×1= 1</code>——
+    以样式为准。
+  </li>
+  <li>
+    <b>每个算式的长短得一样齐。</b>看这两个：
+    <code>1×1= 1</code> 等号后面有个空格，<code>9×9=81</code> 后面没有。
+    为什么会这样、要怎么写才能这样——题目一个字没提，
+    全藏在这张样式里。
+  </li>
+</ol>
+
+<p>
+后面两条都是<b>从输出样式里倒推出来的</b>，不在题目文字里。
+这类题基本都是这个样子：说清要什么，不说怎么做。
+</p>
+
+<h3 id="s2-6-2">它就是 2.5 那个三角形</h3>
+
+<p>
+先别急着写代码，看形状。
+</p>
+
+<p>
+<code>1×1</code> 一行，<code>1×2 2×2</code> 一行，<code>1×3 2×3 3×3</code> 一行……
+<b>一行比一行多一个。</b>
+</p>
+
+<p>
+2.5 的例题是什么？「第 1 行打 1 个星号、第 2 行打 2 个、第 3 行打 3 个」。
+<b>一模一样。</b>
+</p>
+
+<table>
+  <tr><th></th><th>2.5 例题</th><th>这一题</th></tr>
+  <tr><td>外圈管什么</td><td>第几行</td><td>第几行</td></tr>
+  <tr><td>内圈管什么</td><td>这一行打几个</td><td>这一行打几个算式</td></tr>
+  <tr><td>内圈的条件</td><td><code>j &lt;= i</code></td><td><code>j &lt;= i</code></td></tr>
+  <tr><td>内圈打什么</td><td><code>"*"</code></td><td><b>一个算式</b></td></tr>
+</table>
+
+<p>
+<b>四行里三行是一样的。</b>所以你只要回答一个问题：内圈那一句，往里送什么？
+</p>
+
+<p>
+答案 1.4 就讲过了：<b>引号里和引号外可以挨着放。</b>
+<code>"3×5="</code> 是死的，后面接一个算出来的 <code>15</code>，
+拼起来就是「算式和答案都摆给你看」。
+</p>
+
+<h3 id="s2-6-3">跑出来了，可是歪的</h3>
+
+<p>
+照着这个思路写第一版，很容易写成这样：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            std::cout &lt;&lt; j &lt;&lt; "×" &lt;&lt; i &lt;&lt; "=" &lt;&lt; i * j &lt;&lt; " ";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="实际输出">1×1=1
+1×2=2 2×2=4
+1×3=3 2×3=6 3×3=9
+1×4=4 2×4=8 3×4=12 4×4=16
+1×5=5 2×5=10 3×5=15 4×5=20 5×5=25</pre>
+
+<p>
+<b>形状对了，一列也没少，可它是歪的。</b>把上面那份和题目要求的那份并排一看就露了：
+</p>
+
+<pre class="out" data-label="两份摆一起（上面是要求，下面是实际）">1×1= 1
+1×2= 2 2×2= 4
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+----
+1×1=1
+1×2=2 2×2=4
+1×4=4 2×4=8 3×4=12 4×4=16
+1×5=5 2×5=10 3×5=15 4×5=20 5×5=25</pre>
+
+<p>
+看出来了吗：<b>上面那组，第 3 列在第 4 行和第 5 行从同一个位置开始；
+下面那组，第 5 行的第 3 列往右挪了一格。</b>
+</p>
+
+<p>
+这不是感觉，是数得出来的。<b>看每一行里，每个算式从第几个字符开始：</b>
+</p>
+
+<table>
+  <tr><th>行</th><th>第 2 列</th><th>第 3 列</th><th>第 4 列</th></tr>
+  <tr><td>第 2 行</td><td>7</td><td>—</td><td>—</td></tr>
+  <tr><td>第 3 行</td><td>7</td><td>13</td><td>—</td></tr>
+  <tr><td>第 4 行</td><td>7</td><td>13</td><td>20</td></tr>
+  <tr><td>第 5 行</td><td>7</td><td><b>14</b></td><td><b>21</b></td></tr>
+  <tr><td>第 9 行</td><td>7</td><td><b>14</b></td><td><b>21</b></td></tr>
+</table>
+
+<p>
+<b>第 3 列在第 3、4 行从第 13 格开始，从第 5 行起变成第 14 格。</b>
+第 4 列也一样：第 4 行是第 20 格，第 5 行就跑到第 21 格去了。
+<b>列在往下漂。</b>
+</p>
+
+<p>
+为什么漂？因为<b>每个格子的长度不一样</b>：
+</p>
+
+<pre class="out" data-label="数一数字符">1×4=4     ← 5 个字符
+4×4=16    ← 6 个字符</pre>
+
+<p>
+第 4 行第 3 列是 <code>3×4=12</code>（6 个字符），
+第 5 行第 3 列是 <code>3×5=15</code>（也是 6 个）——
+可它前面那个 <code>2×5=10</code> 比 <code>2×4=8</code> 多了一个字符。
+<b>前面长了一格，后面整排就跟着往右挪一格。</b>
+</p>
+
+<p>
+你自己写的时候也会撞上这个：<b>只要每格宽度不固定，右边就一定对不齐。</b>
+</p>
+
+<h3 id="s2-6-4">把宽度定死</h3>
+
+<p>
+毛病找到了：<b>格子有长有短。</b>那治它的办法就只有一个——
+<b>让每个格子一样长。</b>
+</p>
+
+<p>
+1.6 学过工具：<code>printf</code> 的宽度，<code>%2d</code> 是「至少占两格」。
+</p>
+
+<pre><code>printf("%d×%d=%2d ", j, i, i * j);</code></pre>
+
+<p>
+这一行里有三处讲究，挨个看。
+</p>
+
+<p>
+<b>一、那个 <code>%2d</code>。</b>乘法结果这一格，不管是一位数还是两位数，都占满两格：
+</p>
+
+<pre class="out" data-label="加上 %2d 之后">1×1= 1      ← 1 前面补了一个空格，凑够两格
+9×9=81      ← 本来就两格，一个都不补</pre>
+
+<p>
+这样一来，每个算式的长度就<b>固定成 6 个字符</b>了：
+<code>j</code> 一格、<code>×</code> 一格、<code>i</code> 一格、<code>=</code> 一格、结果两格。
+后面再跟<b>一个空格</b>当间隔，一格就是 7 个字符——
+<b>列的位置从此一动不动。</b>
+</p>
+
+<div class="aside tip">
+<b>引号里的 <code>×</code> 不是乘号</b>
+<p>
+1.3 说过：在代码里算乘法要写 <code>a * b</code>，不能写 <code>a × b</code>。
+这句没错，现在也还是这样——<b>这个 <code>×</code> 跟算乘法一点关系都没有。</b>
+</p>
+<p>
+看这一行里两个东西的位置：
+</p>
+<pre><code>printf("%d×%d=%2d ", j, i, i * j);
+         ↑                    ↑
+      引号里面            引号外面
+      要打出去的字符        才是算乘法</code></pre>
+<p>
+<b>引号里的 <code>×</code>，是「把 × 这个字符打到屏幕上」的意思</b>，
+跟引号里的 <code>=</code>、<code>%d</code> 是一路货。
+真正算 <code>i</code> 乘 <code>j</code> 的，是引号外面那个 <code>i * j</code>。
+</p>
+<p>
+上面那张输出样式里，乘号就是这个 <code>×</code>。
+你打一个 <code>*</code> 上去，两边就不一样了——所以这里得照着样式敲。
+</p>
+</div>
+
+<table>
+  <tr><th>行</th><th>第 2 列</th><th>第 3 列</th><th>第 4 列</th></tr>
+  <tr><td>第 2 行</td><td>8</td><td>—</td><td>—</td></tr>
+  <tr><td>第 3 行</td><td>8</td><td>15</td><td>—</td></tr>
+  <tr><td>第 4 行</td><td>8</td><td>15</td><td>22</td></tr>
+  <tr><td>第 5 行</td><td>8</td><td>15</td><td>22</td></tr>
+  <tr><td>第 9 行</td><td>8</td><td>15</td><td>22</td></tr>
+</table>
+
+<p>
+<b>从头到尾一个数都不变。</b>这就是对齐。
+</p>
+
+<div class="aside">
+  <b>为什么写 2 就够了</b>
+  <p>
+    1.6 说过 <code>%2d</code> 是「至少」两格，不是「正好」两格。
+    那万一来了三位数怎么办？整列还是会被顶歪。
+  </p>
+  <p>
+    这一题里不会：<b>乘法表最大的积是 9 乘 9 = 81，两位数封顶。</b>
+    所以 2 够了。
+  </p>
+  <p>
+    <b>写几，得看你算出来的数最大能有几位。</b>
+    要是打的是 20×20 的乘法表，最大 400，那这里就得写 <code>%3d</code>，
+    每一格也跟着宽一格。
+    <b>先想清楚最大是几，再定宽度</b>——这个顺序不能反。
+  </p>
+</div>
+
+<h3 id="e2-6">正解（for 版）</h3>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+
+<p>
+两个地方和 2.5 的例题不一样，其余一模一样：
+</p>
+
+<ol>
+  <li>
+    <b>换成 <code>printf</code>，结果是 <code>%2d</code>。</b>
+    <code>std::cout</code> 也有办法对齐，但要额外写东西；
+    1.6 就说过，<b>要定宽度就用 <code>printf</code>，它是为这个来的。</b>
+    注意 <code>printf</code> 里不能用 <code>std::endl</code>，
+    换行写 <code>"\n"</code>——也是 1.6 讲的。
+  </li>
+  <li>
+    <b>算式里 <code>j</code> 在前面、<code>i</code> 在后面。</b>
+    第 <code>i</code> 行里的第 <code>j</code> 个算式写成 <code>j*i</code>，
+    这样一行里第一个因数正好是 1、2、3……顺着排。
+    写成 <code>i*j</code> 乘积一样，但一整行都是 <code>3×1= 3 3×2= 6</code>，
+    <b>看着累</b>。
+  </li>
+</ol>
+
+<h3 id="s2-6-5">再用 while 写一版</h3>
+
+<p>
+题目要的正是「<code>for</code> 和 <code>while</code> 各来一版」，
+所以这一版不能省。同一张表，<code>while</code> 版：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    int i = 1;
+    while (i &lt;= 9) {
+        int j = 1;                      // ← 这一句不能挪到循环外面去
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+
+<p>
+打出来的东西和 <code>for</code> 版<b>一个字符都不差</b>。
+</p>
+
+<p>
+两版摆在一起，正好能看出 2.4 讲的那件事——<b>三件事散在三处</b>：
+</p>
+
+<table>
+  <tr><th></th><th>for 版</th><th>while 版</th></tr>
+  <tr><td>起点</td><td>头上第 1 格</td><td>进循环之前那句 <code>int i = 1;</code></td></tr>
+  <tr><td>条件</td><td>头上第 2 格</td><td><code>while (i &lt;= 9)</code></td></tr>
+  <tr><td>步子</td><td>头上第 3 格</td><td>循环体最后一句 <code>i = i + 1;</code></td></tr>
+</table>
+
+<p>
+<b>现在说那个注释。</b><code>int j = 1;</code> 必须写在外圈的大括号<b>里面</b>、
+内圈的前面。
+</p>
+
+<p>
+写成 <code>for</code> 版的时候这件事是自动的：<code>int j = 1</code> 就在内圈头上，
+外圈每转一圈都重新执行一遍。
+<b>换成 <code>while</code> 就得自己想着——写漏了，它就变成这样：</b>
+</p>
+
+<pre class="out" data-label="j 忘了重置时打出来的">1×1= 1
+2×2= 4
+3×3= 9
+4×4=16
+5×5=25</pre>
+
+<p>
+<b>每一行只剩一个了。</b>因为 <code>j</code> 一直没重新数：
+外圈第二圈开始时 <code>j</code> 还是上次停下的 3，
+内圈那句话 <code>j &lt;= i</code> 一进门就不成立，一次都不走。
+</p>
+
+<p>
+<b>这是把 <code>for</code> 改写成 <code>while</code> 时最容易丢的一处。</b>
+改的时候别一句一句搬，先问自己：<b>原来那些「每轮重新建一次」的盒子，都还在它们该在的大括号里吗？</b>
+</p>
+
+<h3 id="s2-6-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-23</div>
+  <p>
+    把上面这道题改一下：<b>行数读进来</b>，而不是写死 9。
+  </p>
+  <p>
+    输入 <code>4</code> 时：
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">4</span>
+1×1= 1
+1×2= 2 2×2= 4
+1×3= 3 2×3= 6 3×3= 9
+1×4= 4 2×4= 8 3×4=12 4×4=16</pre>
+  <p>
+    提示：只动外圈的上限。内圈、<code>printf</code>、那个 <code>%2d</code>，
+    一个字都不用改。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-23.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        外圈的上限换个字就够了：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    int n = 0;
+    scanf("%d", &amp;n);
+
+    for (int i = 1; i &lt;= n; i = i + 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>内圈、<code>printf</code>、<code>%2d</code>，一个字都没动。</b>
+        这就是「骨架对了以后，改需求只动一处」的样子——
+        要是当初把 9 抄在内圈和 <code>printf</code> 里好几遍，现在就得改好几处。
+      </p>
+      <p>
+        顺便说一句：<b>宽度还是 <code>%2d</code> 就够。</b>
+        输入 <code>4</code> 的时候最大积是 16，两位；
+        就算输入 9，最大也是 81，还是两位。
+        <b>这一题里 <code>n</code> 再大也超不过 9 乘 9</b>，所以不用动。
+        但换成 20×20 的表就不够了——那就是上面那个「先想清楚最大是几」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-24</div>
+  <p>
+    打一张<b>完整的</b> 9×9 表：每一行都打满 9 个算式，
+    不是三角形。
+  </p>
+  <pre class="out" data-label="预期输出（前两行和后一行）">1×1= 1 2×1= 2 3×1= 3 4×1= 4 5×1= 5 6×1= 6 7×1= 7 8×1= 8 9×1= 9
+1×2= 2 2×2= 4 3×2= 6 4×2= 8 5×2=10 6×2=12 7×2=14 8×2=16 9×2=18
+……
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+  <p>
+    提示：2.5 的练习 2-19 干过一模一样的事——
+    <b>把内圈的上限从 <code>i</code> 换成写死的 9。</b>
+    做完把这一题和 2-19 摆一起看，骨架是同一个。
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-24.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        内圈的上限从 <code>i</code> 换成写死的 9：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    for (int i = 1; i &lt;= 9; i = i + 1) {
+        for (int j = 1; j &lt;= 9; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        和 2.5 的练习 2-19（<code>n</code> 行 <code>m</code> 列矩形）是同一个改法，
+        只不过那一题打的是星号，这一题打的是算式。
+      </p>
+      <p>
+        打出来是这样的：
+      </p>
+      <pre class="out" data-label="预期输出">1×1= 1 2×1= 2 3×1= 3 4×1= 4 5×1= 5 6×1= 6 7×1= 7 8×1= 8 9×1= 9
+1×2= 2 2×2= 4 3×2= 6 4×2= 8 5×2=10 6×2=12 7×2=14 8×2=16 9×2=18
+1×3= 3 2×3= 6 3×3= 9 4×3=12 5×3=15 6×3=18 7×3=21 8×3=24 9×3=27
+1×4= 4 2×4= 8 3×4=12 4×4=16 5×4=20 6×4=24 7×4=28 8×4=32 9×4=36
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25 6×5=30 7×5=35 8×5=40 9×5=45
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36 7×6=42 8×6=48 9×6=54
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49 8×7=56 9×7=63
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64 9×8=72
+1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81</pre>
+      <p>
+        <b>每一行 9 个，一共 9 行，81 个算式。</b>
+        内圈那句一共走 9 乘 9 = 81 遍——正好应上 2.5 讲的那个乘法。
+      </p>
+      <p>
+        有一件事值得留意：<b>这张表是对称的。</b>
+        <code>3×5=15</code> 和 <code>5×3=15</code> 乘积一样，
+        所以在表里能找着两个 15，关于对角线对称。
+        这不是巧合，是乘法本身的性质。<b>但程序并没有利用这一点</b>——
+        它老老实实算了 81 次，其中一半是白算的。
+        现在不用管，知道有这么回事就行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-25</div>
+  <p>
+    把乘法表<b>倒过来</b>打：第一行 9 个算式，最后一行 1 个。
+  </p>
+  <pre class="out" data-label="预期输出（前三行）">1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+……</pre>
+  <p>
+    提示：和 2.5 的练习 2-20 是同一个改法，只不过这次表里的东西更复杂。
+    <b>内圈的条件一个字都不用动。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-25.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        外圈掉个头：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    for (int i = 9; i &gt;= 1; i = i - 1) {
+        for (int j = 1; j &lt;= i; j = j + 1) {
+            printf("%d×%d=%2d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>内圈的条件还是 <code>j &lt;= i</code>，一个字没动。</b>
+        变的只是外圈从哪头走——起点 9、步子 -1。
+        第一行 <code>i</code> 是 9，内圈打 9 个；最后一行 <code>i</code> 是 1，打 1 个。
+      </p>
+      <p>
+        这已经是第三次见这个改法了（2.5 的 2-20、这一课前面那几道）。
+        <b>「外圈决定形状」这句话，到这儿应该已经不用想了。</b>
+      </p>
+      <p>
+        完整打出来是这样：
+      </p>
+      <pre class="out" data-label="预期输出">1×9= 9 2×9=18 3×9=27 4×9=36 5×9=45 6×9=54 7×9=63 8×9=72 9×9=81
+1×8= 8 2×8=16 3×8=24 4×8=32 5×8=40 6×8=48 7×8=56 8×8=64
+1×7= 7 2×7=14 3×7=21 4×7=28 5×7=35 6×7=42 7×7=49
+1×6= 6 2×6=12 3×6=18 4×6=24 5×6=30 6×6=36
+1×5= 5 2×5=10 3×5=15 4×5=20 5×5=25
+1×4= 4 2×4= 8 3×4=12 4×4=16
+1×3= 3 2×3= 6 3×3= 9
+1×2= 2 2×2= 4
+1×1= 1</pre>
+      <p>
+        倒过来之后，<code>%2d</code> 就显得更值了：<b>每一行的格子还是 6 个字符宽</b>，
+        所以第一行 9 个格子和最后一行 1 个格子，都是从同一列开始的。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-26（找错）</div>
+  <p>
+    一个 <code>while</code> 版的乘法表，编译通过了，跑起来也不报错，
+    可打出来的是一条斜线：
+  </p>
+  <pre class="out" data-label="实际输出">1×1= 1
+2×2= 4
+3×3= 9
+4×4=16
+5×5=25</pre>
+  <p>
+    循环部分长这样：
+  </p>
+  <pre><code>    int i = 1;
+    int j = 1;
+
+    while (i &lt;= 9) {
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }</code></pre>
+  <p>
+    <b>先别看答案。</b>
+  </p>
+  <p>
+    提示：注意两个 <code>int</code> 写在哪。<b>和上面那个双 <code>while</code> 的正解比一比</b>，
+    差的就是一行的位置。然后问：<b>外圈第二圈开始时，<code>j</code> 是几？</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/2-26.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        毛病在第二行那个 <code>int</code>：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    int i = 1;
+    int j = 1;
+
+    while (i &lt;= 9) {
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <b><code>int j = 1;</code> 得挪到外圈的大括号里面去</b>，
+        也就是 <code>while (i &lt;= 9) {</code> 的下一行：
+      </p>
+      <pre><code>    int i = 1;
+
+    while (i &lt;= 9) {
+        int j = 1;                  // ← 挪到这儿，每轮外圈重新建一次
+        while (j &lt;= i) {
+            printf("%d×%d=%2d ", j, i, i * j);
+            j = j + 1;
+        }
+        printf("\n");
+        i = i + 1;
+    }</code></pre>
+      <p>
+        这一份是<b>错的那一版</b>，所以它该打出来的就是那条斜线——
+        比对的时候拿这份当真：
+      </p>
+      <pre class="out" data-label="预期输出">1×1= 1
+2×2= 4
+3×3= 9
+4×4=16
+5×5=25
+6×6=36
+7×7=49
+8×8=64
+9×9=81</pre>
+      <p>
+        为什么写成斜线了？把每一轮列出来：
+      </p>
+      <table>
+        <tr><th>外圈第几轮</th><th>i</th><th>进内圈时 j 是几</th><th>j &lt;= i 吗</th><th>这一行</th></tr>
+        <tr><td>第 1 轮</td><td>1</td><td>1</td><td>成立</td><td><code>1×1= 1</code></td></tr>
+        <tr><td>第 2 轮</td><td>2</td><td><b>2</b>（上一轮停在这）</td><td>成立一次就完</td><td><code>2×2= 4</code></td></tr>
+        <tr><td>第 3 轮</td><td>3</td><td><b>3</b></td><td>成立一次就完</td><td><code>3×3= 9</code></td></tr>
+        <tr><td>第 9 轮</td><td>9</td><td><b>9</b></td><td>成立一次就完</td><td><code>9×9=81</code></td></tr>
+      </table>
+      <p>
+        <b><code>j</code> 一次都没重新数过。</b>第一轮走完，<code>j</code> 停在 2；
+        第二轮一进门，条件 <code>j &lt;= i</code> 就是 <code>2 &lt;= 2</code>——
+        成立，但只成立这一次，打完 <code>2*2</code> 就 <code>j</code> 变 3 出局了。
+        所以每一行正好剩一个 <code>i*i</code>，摞起来就是那条斜线。
+      </p>
+      <p>
+        <b>和 2.6 正文里 <code>for</code> 版对比着看，这个错就更清楚了：</b>
+        <code>for</code> 版把 <code>int j = 1</code> 写在内圈头上，
+        <b>那句话在外圈的大括号里，外圈每转一圈都重新走一遍</b>，
+        所以你不用操心。<code>while</code> 版把起点挪到了循环外面，
+        「每轮重新来一次」就没人替你做，得自己写。
+      </p>
+      <p>
+        这一题的意义不在这一行代码，在<b>「<code>for</code> 改 <code>while</code> 要改什么」</b>。
+        改的时候逐句看，别整段搬：
+      </p>
+      <ol>
+        <li>头上三格，分别搬到哪三处去了？</li>
+        <li><b>哪几个盒子原来是「每轮新建一次」的？现在还在该在的大括号里吗？</b></li>
+      </ol>
+      <p>
+        第二问就是这一题。漏了它，程序照样编译、照样跑、照样不报错，
+        只是答案悄悄变成错的——<b>这种错最难逮，纸笔跟一遍才看得见。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>第 2 部分学完了。
+  你能让程序做判断、能让它重复、能让重复套着重复，
+  还知道<b>怎么把一列数字对齐</b>——这是最容易写歪的一处。
+  更值钱的是你手里那套办法：<b>写完先拿纸跟一遍，再和预期输出对。</b>
+  下一部分换一个题目：<b>把写长了的代码拆开。</b>
+  第 2 部分你已经见过「一个 <code>main</code> 里塞两个循环」是什么样，
+  下一部分就来说清楚——多长的 <code>main</code> 算长，以及怎么拆。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="03-把代码拆开.html">第 3 部分 · 把代码拆开 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/viz.js"></script>
+<script>
+"use strict";
+
+// ── 2.4 的数据流动画 ──────────────────────────────────
+// 每一步的 i 是几、屏幕上有什么，都真跑出来对过（19 步，一步不差）。
+//
+// 这一段动画的重点不是值，是**高亮跳到哪一行**：
+// 第 1 格只被走到一次，第 2、3 格来回走。
+VIZ.boxes = {
+  code: [
+    "for (int i = 1;",                      // 第 0 行：第 1 格
+    "     i <= 5;",                         // 第 1 行：第 2 格
+    "     i = i + 1) {",                    // 第 2 行：第 3 格
+    "    std::cout << i << std::endl;",     // 第 3 行：大括号里
+    "}"                                     // 第 4 行
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "程序刚开始。还没有 <b>i</b> 这个盒子，屏幕上什么都没有。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "<b>第 1 格</b>：开一个盒子叫 <b>i</b>，把 1 放进去。" +
+            " —— 记住这一步：<b>整个循环只会走到第 1 格这一次。</b>",
+      mem: [{ name: "i", value: 1, state: "new" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "<b>第 2 格</b>：问一句「1 &lt;= 5 吗」。成立，<b>放行</b>，进大括号。",
+      mem: [{ name: "i", value: 1, state: "read" }],
+      screen: []
+    },
+    {
+      line: 3,
+      note: "大括号里：把 i 送到屏幕上。屏幕上出现了 <b>1</b>。",
+      mem: [{ name: "i", value: 1, state: "read" }],
+      screen: ["1"],
+      flows: [{ from: "i", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "<b>第 3 格</b>：i = i + 1。i 变成 <b>2</b>。 —— " +
+            "注意顺序：<b>先走大括号，再走第 3 格</b>，不是反过来。",
+      mem: [{ name: "i", value: 2, state: "write" }],
+      screen: ["1"]
+    },
+    {
+      line: 1,
+      note: "回到<b>第 2 格</b>：2 &lt;= 5 吗？成立，放行。",
+      mem: [{ name: "i", value: 2, state: "read" }],
+      screen: ["1"]
+    },
+    {
+      line: 3,
+      note: "打 2。",
+      mem: [{ name: "i", value: 2, state: "read" }],
+      screen: ["1", "2"],
+      flows: [{ from: "i", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "i 变成 <b>3</b>。",
+      mem: [{ name: "i", value: 3, state: "write" }],
+      screen: ["1", "2"]
+    },
+    {
+      line: 1,
+      note: "3 &lt;= 5？成立。",
+      mem: [{ name: "i", value: 3, state: "read" }],
+      screen: ["1", "2"]
+    },
+    {
+      line: 3,
+      note: "打 3。",
+      mem: [{ name: "i", value: 3, state: "read" }],
+      screen: ["1", "2", "3"],
+      flows: [{ from: "i", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "i 变成 <b>4</b>。",
+      mem: [{ name: "i", value: 4, state: "write" }],
+      screen: ["1", "2", "3"]
+    },
+    {
+      line: 1,
+      note: "4 &lt;= 5？成立。",
+      mem: [{ name: "i", value: 4, state: "read" }],
+      screen: ["1", "2", "3"]
+    },
+    {
+      line: 3,
+      note: "打 4。",
+      mem: [{ name: "i", value: 4, state: "read" }],
+      screen: ["1", "2", "3", "4"],
+      flows: [{ from: "i", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "i 变成 <b>5</b>。",
+      mem: [{ name: "i", value: 5, state: "write" }],
+      screen: ["1", "2", "3", "4"]
+    },
+    {
+      line: 1,
+      note: "5 &lt;= 5？成立（<b>等于也算</b>）。",
+      mem: [{ name: "i", value: 5, state: "read" }],
+      screen: ["1", "2", "3", "4"]
+    },
+    {
+      line: 3,
+      note: "打 5。屏幕上现在有五行。",
+      mem: [{ name: "i", value: 5, state: "read" }],
+      screen: ["1", "2", "3", "4", "5"],
+      flows: [{ from: "i", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "i 变成 <b>6</b>。<b>第 3 格又走了一次</b>——哪怕下一圈已经进不去了。",
+      mem: [{ name: "i", value: 6, state: "write" }],
+      screen: ["1", "2", "3", "4", "5"]
+    },
+    {
+      line: 1,
+      note: "回到<b>第 2 格</b>：6 &lt;= 5 吗？<b>不成立</b>。循环结束，出去。",
+      mem: [{ name: "i", value: 6 }],
+      screen: ["1", "2", "3", "4", "5"]
+    },
+    {
+      line: 4,
+      note: "出了循环。<b>i 最后是 6，不是 5</b>——第 2 格比大括号多走了一次，" +
+            "每次都会多问那么一句。",
+      mem: [{ name: "i", value: 6 }],
+      screen: ["1", "2", "3", "4", "5"]
+    }
+  ]
+};
+</script>
+
+<script>
+"use strict";
+
+// ── 2.5 的数据流动画 ──────────────────────────────────
+// 30 步、屏幕上 6 行，全部真跑对过。
+//
+// 这一段和 2.4 那段有个不一样的地方，是刻意做的：
+// **j 的盒子会消失，再重新出现。** 内圈那个大括号一结束，j 就活到头了；
+// 外圈下一圈再走到内圈第 1 格，才又新建一个。学生第一次看嵌套循环，
+// 十有八九以为 j 是接着上一轮往下数的——第 17 步那个「又变成 1」
+// 就是冲着这个误区去的。
+//
+// 这里把两个 for 都拆成三行写，是为了让每一格单独占一行、能被高亮。
+// 这是合法的 C++，和 2.5 那个程序跑出来一模一样。
+VIZ.nested = {
+  code: [
+    "for (int i = 1;",                                             // 第 0 行
+    "     i <= 2;",                                                // 第 1 行
+    "     i = i + 1) {",                                           // 第 2 行
+    "    for (int j = 1;",                                         // 第 3 行
+    "         j <= 3;",                                            // 第 4 行
+    "         j = j + 1) {",                                       // 第 5 行
+    "        std::cout << \"外 \" << i << \" 内 \" << j << std::endl;",  // 第 6 行
+    "    }",                                                       // 第 7 行
+    "}"
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "程序刚开始。内存里一个盒子都没有，屏幕上什么都没有。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "<b>外圈第 1 格</b>：开一个盒子叫 <b>i</b>，把 1 放进去。 —— 记住：<b>外圈第 1 格整个程序只走这一次。</b>",
+      mem: [{ name: "i", value: 1, state: "new" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "<b>外圈第 2 格</b>：问一句「1 &lt;= 2 吗」。成立，<b>放行</b>，进外圈大括号。",
+      mem: [{ name: "i", value: 1, state: "read" }],
+      screen: []
+    },
+    {
+      line: 3,
+      note: "<b>内圈第 1 格</b>：给内圈开一个盒子叫 <b>j</b>，把 1 放进去。 —— 注意它是<b>现在才被建出来的</b>，之前内存里没有 j。",
+      mem: [{ name: "i", value: 1, state: "" }, { name: "j", value: 1, state: "new" }],
+      screen: []
+    },
+    {
+      line: 4,
+      note: "<b>内圈第 2 格</b>：1 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 1, state: "read" }],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "大括号里：把 i 和 j 一起送到屏幕上。屏幕上出现了「外 1 内 1」。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 1, state: "read" }],
+      screen: ["外 1 内 1"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "<b>内圈第 3 格</b>：j = j + 1。j 变成 <b>2</b>。",
+      mem: [{ name: "i", value: 1, state: "" }, { name: "j", value: 2, state: "write" }],
+      screen: ["外 1 内 1"],
+    },
+    {
+      line: 4,
+      note: "回到<b>内圈第 2 格</b>：2 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 2, state: "read" }],
+      screen: ["外 1 内 1"],
+    },
+    {
+      line: 6,
+      note: "打「外 1 内 2」——屏幕上第 2 行。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 2, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "j 变成 <b>3</b>。",
+      mem: [{ name: "i", value: 1, state: "" }, { name: "j", value: 3, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2"],
+    },
+    {
+      line: 4,
+      note: "3 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 3, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2"],
+    },
+    {
+      line: 6,
+      note: "打「外 1 内 3」——屏幕上第 3 行。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 3, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "j 变成 <b>4</b>。",
+      mem: [{ name: "i", value: 1, state: "" }, { name: "j", value: 4, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 4,
+      note: "4 &lt;= 3 吗？<b>不成立</b>。内圈这一轮走完了，—— 数一数：屏幕上是 3 行，<b>正好是 j 从 1 走到 3</b>。",
+      mem: [{ name: "i", value: 1, state: "read" }, { name: "j", value: 4, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 2,
+      note: "<b>内圈整轮走完了，才轮到外圈第 3 格</b>：i = i + 1，i 变成 <b>2</b>。 —— 顺便看一眼：<b>j 的盒子没了。</b>内圈那个大括号一结束，j 就活到头了。",
+      mem: [{ name: "i", value: 2, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 1,
+      note: "回到<b>外圈第 2 格</b>：2 &lt;= 2 吗？成立，再进外圈大括号。",
+      mem: [{ name: "i", value: 2, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 3,
+      note: "<b>内圈第 1 格又走了一次：又新建了一个 j，还是从 1 开始。</b> —— 不是接着上一轮的 3 往下数（也没有 4、5、6 这回事）。<b>这一步就是这一课最要紧的地方。</b>",
+      mem: [{ name: "i", value: 2, state: "" }, { name: "j", value: 1, state: "new" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 4,
+      note: "<b>内圈第 2 格</b>：1 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 1, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3"],
+    },
+    {
+      line: 6,
+      note: "打「外 2 内 1」——屏幕上第 4 行。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 1, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "j 变成 <b>2</b>。",
+      mem: [{ name: "i", value: 2, state: "" }, { name: "j", value: 2, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1"],
+    },
+    {
+      line: 4,
+      note: "2 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 2, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1"],
+    },
+    {
+      line: 6,
+      note: "打「外 2 内 2」——屏幕上第 5 行。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 2, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "j 变成 <b>3</b>。",
+      mem: [{ name: "i", value: 2, state: "" }, { name: "j", value: 3, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2"],
+    },
+    {
+      line: 4,
+      note: "3 &lt;= 3 吗？成立。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 3, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2"],
+    },
+    {
+      line: 6,
+      note: "打「外 2 内 3」——屏幕上第 6 行。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 3, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"],
+      flows: [{ from: "i", to: ":screen" }, { from: "j", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "j 变成 <b>4</b>。",
+      mem: [{ name: "i", value: 2, state: "" }, { name: "j", value: 4, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"],
+    },
+    {
+      line: 4,
+      note: "4 &lt;= 3 吗？不成立。内圈第二轮也走完了。",
+      mem: [{ name: "i", value: 2, state: "read" }, { name: "j", value: 4, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"],
+    },
+    {
+      line: 2,
+      note: "<b>外圈第 3 格</b>：i = i + 1，i 变成 <b>3</b>。j 又没了。",
+      mem: [{ name: "i", value: 3, state: "write" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"],
+    },
+    {
+      line: 1,
+      note: "回到<b>外圈第 2 格</b>：3 &lt;= 2 吗？<b>不成立</b>。外圈也结束了。",
+      mem: [{ name: "i", value: 3, state: "read" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"],
+    },
+    {
+      line: null,
+      note: "出去。循环全部结束，<b>i 停在 3</b>（不是 2）——最后一次问的时候它已经是 3 了。屏幕上 6 行，是 2 乘 3 乘出来的。",
+      mem: [{ name: "i", value: 3, state: "" }],
+      screen: ["外 1 内 1", "外 1 内 2", "外 1 内 3", "外 2 内 1", "外 2 内 2", "外 2 内 3"]
+    }
+  ]
+};
+</script>
+
+
+</body>
+</html>

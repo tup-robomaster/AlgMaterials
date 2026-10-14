@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TUP 首页 — TUP 算法组</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+/* 这一页只有一栏字，没有左边那条目录，所以不套 .wrap——.wrap 是给
+   「目录 + 正文」两栏用的两列网格，单独放一个 main 进去，宽屏上会被
+   挤进那 15rem 的第一列。这里自己居中一份就行。
+   样式写在本页里、不动 style.css：课里那十页的版面一个像素都不碰。 */
+.home {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 7rem;
+}
+.home-logo { display: block; width: 9rem; height: auto; margin: 0 auto 2.5rem; }
+/* 队标是黑字透明底，暗色纸面下就是黑底上写黑字。顶栏里那个小的在
+   style.css 里有一条一模一样的规则，这一页的大队标不在那儿，得自己写。 */
+:root[data-theme="dark"] .home-logo { filter: invert(1); }
+.home h1 {
+  margin: 0 0 1.2rem;
+  font-size: clamp(1.7rem, 7.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* 用途 / 目标 / 里面有什么：这一页自己的开场白。dt 用「关于问 AI」那块
+   标签的字号和颜色——两块是同一路的东西，看着像一家人。 */
+.home-about { margin: 2.6rem 0 0; }
+.home-about dt {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.home-about dd + dt { margin-top: 1.5rem; }
+/* 浏览器默认给 dd 留 40px 左缩进，这一栏本来就窄，缩进去排不齐 */
+.home-about dt + dd { margin: 0.4rem 0 0; }
+
+/* 七门课的方框。名单在页面底下那段 JS 里，一个方框一门课，整块可点。
+   跟上面那些一样留在本页，不进 assets/——只有这一页用得上。
+   两个一排；再窄就自己落成一排（auto-fill 数得出来几个就摆几个）。 */
+.courses {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  gap: 0.8rem;
+  margin: 3.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.courses li { margin: 0; }   /* style.css 给 li 留了 0.4em 下边距，网格里不要 */
+.courses .card {
+  display: block;
+  height: 100%;              /* 一排里两格一样高 */
+  padding: 1rem 1.1rem 1.05rem;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  color: var(--ink);
+}
+.courses .card:hover { border-color: var(--accent); }
+.courses .card-name { display: block; font-weight: 600; line-height: 1.35; }
+.courses .card-note {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+}
+</style>
+<script src="assets/theme.js"></script>
+</head>
+<body>
+
+<!-- 顶栏那排是七门课，手写的，不归底下那段 JS 管——JS 要是没跑起来，
+     正文那些方框就是空的，那时候这一排是页面上唯一的路。所以它得是死的。
+     课页顶栏右半边挂的是同一排（那儿自己那门带 .active），这一页七门
+     平起平坐、谁也不亮——除了这个，两处的标记一模一样。
+     （课页宽屏下会把自己那排「第 N 部分」收起来，靠的是 body:has(.wrap)
+       那条；这一页没有 .wrap，所以多宽都显。） -->
+<header class="topbar">
+  <a class="team" href="TUP.html">
+    <img class="logo" src="assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <nav class="nav-courses" aria-label="课程">
+    <a href="lessons/cpp_Basics/index.html">C++ 基础课</a>
+    <a href="lessons/cpp_advanced/index.html">C++ 进阶课</a>
+    <a href="lessons/other_basics/index.html">其他基础</a>
+    <a href="lessons/opencv/index.html">OpenCV</a>
+    <a href="lessons/python/index.html">Python</a>
+    <a href="lessons/ros2/index.html">ROS 2</a>
+    <a href="lessons/machine_learning/index.html">机器学习</a>
+  </nav>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<main class="home">
+
+  <img class="home-logo" src="assets/logo.png" alt="TUP 战队" width="526" height="231">
+
+  <h1>宝剑锋从磨砺出<br>梅花香自苦寒来</h1>
+
+  <dl class="home-about">
+    <dt>用途</dt>
+    <dd>
+      队里要教的东西都放在这儿，谁想学自己来翻：不用等人开讲，不用报名，
+      断网也能看——一整套就是一个文件夹，拷到哪儿都能开。
+    </dd>
+
+    <dt>目标</dt>
+    <dd>
+      七门课，一门一门写完，从「没写过代码」写到能自己动手做东西。
+    </dd>
+
+    <dt>里面有什么</dt>
+    <dd>
+      七门课各一块方框，都在下面。
+      每页左边一条目录，正文里夹着例题和练习；练习先自己写，卡住了再展开看答案。
+      课里用到的每个程序都在同级目录下的「示例代码」里，能自己编译、自己跑。
+    </dd>
+  </dl>
+
+  <div class="aside tip">
+    <b>关于问 AI</b>
+    <p>
+      这些课是离线写成的，从头到尾不依赖任何外部工具。但它不禁止你用 AI。
+      只有一种用法要避开：<b>「帮我写这道题」</b>。
+    </p>
+    <p>
+      课里练的不是「拿到一份能跑的代码」，是<b>「你不看别人，自己写出一份能跑的代码」</b>。
+      前者一天就能学会，后者才是你以后干活的本事。
+    </p>
+    <p>
+      语法记不清了、想确认某个写法对不对，问一下没问题。但<b>报错别问</b>——
+      学会读报错之后，报错本身说得比 AI 准。
+    </p>
+  </div>
+
+  <!-- 方框由页面底下那段 JS 画进来。 -->
+  <ul class="courses"></ul>
+
+</main>
+
+<footer class="site-footer" style="max-width: 34rem; margin: 0 auto; padding: 0 1.5rem 4rem;">
+  TUP 战队算法组
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var COURSES = [
+    { name: 'C++ 基础课', href: 'lessons/cpp_Basics/index.html' },
+    { name: 'C++ 进阶课', href: 'lessons/cpp_advanced/index.html',
+      note: '作者很懒，还没写....' },
+    { name: '其他基础',   href: 'lessons/other_basics/index.html',
+      note: '作者很懒，还没写....' },
+    { name: 'OpenCV',     href: 'lessons/opencv/index.html',
+      note: '作者很懒，还没写....' },
+    { name: 'Python',     href: 'lessons/python/index.html',
+      note: '作者很懒，还没写....' },
+    { name: 'ROS 2',      href: 'lessons/ros2/index.html',
+      note: '作者很懒，还没写....' },
+    { name: '机器学习',   href: 'lessons/machine_learning/index.html',
+      note: '作者很懒，还没写....' }
+  ];
+
+  var box = document.querySelector('.courses');
+  if (!box) return;
+
+  var frag = document.createDocumentFragment();
+
+  COURSES.forEach(function (c) {
+    var li = document.createElement('li');
+    var card = document.createElement('a');
+    card.className = 'card';
+    card.href = c.href;
+
+    var name = document.createElement('span');
+    name.className = 'card-name';
+    name.textContent = c.name;
+    card.appendChild(name);
+
+    if (c.note) {
+      var note = document.createElement('span');
+      note.className = 'card-note';
+      note.textContent = c.note;
+      card.appendChild(note);
+    }
+
+    li.appendChild(card);
+    frag.appendChild(li);
+  });
+
+  box.appendChild(frag);
+})();
+</script>
+
+</body>
+</html>

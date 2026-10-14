@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ 基础课 — TUP 算法组</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么用这份材料</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · 数字和字</a>
+  <a class="toc-l" href="#p2">第 2 部分 · 判断和重复</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 把代码拆开</a>
+  <a class="toc-l" href="#p4">第 4 部分 · 一堆数据</a>
+  <a class="toc-l" href="#p5">第 5 部分 · 自己造类型</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 指针与引用</a>
+  <a class="toc-l" href="#p7">第 7 部分 · 自己会发现错</a>
+  <a class="toc-l" href="#p8">第 8 部分 · 章末检测</a>
+  <a class="toc-l" href="#p9">附录</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
+  <h1>C++ 基础课</h1>
+  <p class="part-lead">
+    这是一门课，不是一份资料。每一课都假设你把代码真的敲进去跑过。
+    全部 9 个部分、42 课，按顺序从第 0 部分开始。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section id="how">
+  <h2 class="sec-plain">怎么用这份材料</h2>
+
+  <p>
+    <b>一、按顺序，不要跳。</b>后面的课默认你已经会了前面所有的东西。
+    第 3 部分讲函数时，会用第 2 部分的循环举例；第 6 部分讲指针时，
+    会默认你记得第 4 部分数组在内存里是怎么排的。
+  </p>
+
+  <p>
+    <b>二、每段代码都自己敲一遍、跑一遍。</b>看别人写代码和看别人打球一样，
+    看再多也不会长在自己手上。课里的代码都在 <code>示例代码/</code> 文件夹里，
+    但你<b>先自己敲</b>，敲不出来或者跑不对的时候再去对。
+  </p>
+
+  <p>
+    <b>三、每个练习都给了「预期输出」。</b>你的程序跑出来的东西要和它<b>逐字符一致</b>——
+    差一个空格也是差。这是你自己就能判断对错的方式。
+  </p>
+
+  <p>
+    <b>四、卡住了，按这个顺序自己找。</b>这份材料是照着「不用问任何人」写的：
+  </p>
+
+  <ol>
+    <li>
+      <b>报错看不懂</b>——从最上面那条 <code>error</code> 读起，看到 <code>note</code> 就停下来读。
+      第 0.3 课整课都在教这个。
+    </li>
+    <li>
+      <b>结果不对</b>——把你的实际输出和课里的「预期输出」<b>并排摆着，一个字符一个字符比</b>。
+      差在哪，通常一眼就看出来了。
+    </li>
+    <li>
+      <b>还是不对</b>——<b>把代码砍到最小</b>：删掉一半，看还对不对；
+      一直删到只剩十几行还能重现问题，问题本身一般就露出来了。
+    </li>
+  </ol>
+
+  <p>
+    这三步是第 7 部分要展开讲的。现在先照着做——等到你开始自己发现问题，
+    这门课就算上道了。
+  </p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">不教语法，只解决一件事：让你的屏幕亮起来。</p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">让第一个程序跑起来</a>
+      <span class="d">建文件、编译、运行，以及分清「编译不过」和「结果不对」</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">程序的骨架</a>
+      <span class="d">那五行固定搭配分别是什么；程序是一行一行往下跑的</span>
+    </span></li>
+    <li><span class="n">0.3</span><span class="body">
+      <a class="t" href="00-开始.html#l0-3">报错怎么读</a>
+      <span class="d">报错的格式、先看哪个、为什么行号会指偏。第 0 部分最重要的一课</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-数字和字.html">第 1 部分 · 数字和字</a></h2>
+  <p class="part-note">怎么把数放进程序里，怎么让它算。</p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-1">变量：给一个盒子起名字<span class="star">★ 有动画</span></a>
+      <span class="d">变量是内存里的一个盒子；<code>=</code> 不是「等于」，是「放进去」</span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-2">类型：int、double、char、bool</a>
+      <span class="d">为什么有的盒子只能放整数，有的能放小数</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-3">运算：加减乘除、取余</a>
+      <span class="d">整数除法那个坑：<code>7 / 2</code> 为什么等于 3</span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-4">输出：std::cout 怎么把东西打到屏幕上</a>
+      <span class="d">空格得自己打、引号里和引号外不是一回事、<code>std::cout</code> 是怎么判断该打什么的</span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-5">输入：std::cin 读进来的是什么</a>
+      <span class="d">程序第一次停下来等你。敲进去 3.7，为什么盒子里留下的是 3</span>
+    </span></li>
+    <li><span class="n">1.6</span><span class="body">
+      <a class="t" href="01-数字和字.html#l1-6">格式输出：printf 与 %d、%f、%2d</a>
+      <span class="d">小数点怎么对齐。<b>这里最容易写歪</b></span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a></h2>
+  <p class="part-note">程序不再从头走到尾，开始有岔路和回头路。</p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-1">判断：让程序选一条路走</a>
+      <span class="d">if 是岔路口。条件成立走这一支，不成立走那一支</span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-2">条件怎么写</a>
+      <span class="d"><code>==</code> <code>!=</code> <code>&lt;</code> <code>&amp;&amp;</code> <code>||</code>，和把 <code>==</code> 写成 <code>=</code> 的坑</span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-3">循环：让程序把同一件事做很多遍</a>
+      <span class="d">while 怎么转起来，以及怎么一不小心写出死循环</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-4">for：把三件事写在头上<span class="star">★ 有动画</span></a>
+      <span class="d">起点、条件、步进，三个格子；以及它们是按什么顺序被走到的</span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-5">嵌套循环，和怎么用纸笔跟一遍<span class="star">★ 有动画</span></a>
+      <span class="d">跑之前先在纸上把每一轮写出来</span>
+    </span></li>
+    <li><span class="n">2.6</span><span class="body">
+      <a class="t" href="02-让程序做判断和重复.html#l2-6">【综合练习一】9×9 乘法表</a>
+      <span class="d">for 和 while 各写一版。基础铺到这儿，你会发现它不难</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a></h2>
+  <p class="part-note">这一部分治的是「所有代码都塞在 main 里」。</p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-1">为什么 main 不该太长</a>
+      <span class="d">一个真实的坏例子，和它坏在哪</span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-2">函数：参数和返回值</a>
+      <span class="d">把一件事打包、起个名字，需要的时候叫它</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-3">变量能活多久：作用域<span class="star">★ 有动画</span></a>
+      <span class="d">花括号一结束，里面定义的变量就没了</span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-4">传参（上）：值传递<span class="star">★ 有动画</span></a>
+      <span class="d">为什么在函数里改了，外面那个变量没变</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-5">传参（下）：引用传递</a>
+      <span class="d">加一个 <code>&amp;</code>，函数就能改外面的东西了</span>
+    </span></li>
+    <li><span class="n">3.6</span><span class="body">
+      <a class="t" href="03-把代码拆开.html#l3-6">动手拆：把乘法表拆成函数</a>
+      <span class="d">同一个程序重写一遍，main 里只剩三行</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p4">
+  <h2>第 4 部分 · 一堆数据</h2>
+  <p class="part-note">一个盒子装不下的时候。</p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-1">数组：一排盒子</a>
+      <span class="d">挨着放，靠编号找</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-2">遍历数组，和下标越界<span class="star">★ 有动画</span></a>
+      <span class="d">下标就是「从开头数第几个」；为什么从 0 开始数</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-3">在数组里找最大 / 最小值</a>
+      <span class="d">摆一个擂台，让每个元素挨个上来打</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-4">交换两个元素<span class="star">★ 有动画</span></a>
+      <span class="d">为什么非要第三个盒子；直接互相赋值会怎样</span>
+    </span></li>
+    <li><span class="n">4.5</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-5">【综合练习二】找最小值并和最后一个交换</a>
+      <span class="d">顺带讲清题目里那个「第一个数是长度」的陷阱</span>
+    </span></li>
+    <li><span class="n">4.6</span><span class="body">
+      <a class="t" href="04-一堆数据.html#l4-6">vector：会自己变长的数组</a>
+      <span class="d">C++ 里更常用的那个，实际代码里全是它</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p5">
+  <h2>第 5 部分 · 自己造类型</h2>
+  <p class="part-note">C++ 真正的看家本事：把数据和操作它的函数捆在一起。</p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-自己造类型.html#l5-1">struct：把几个东西捆在一起</a>
+      <span class="d">一个学生的姓名、学号、成绩，当成一个整体</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-自己造类型.html#l5-2">class：让盒子自己会干活</a>
+      <span class="d">从 struct 到 class，差的到底是什么</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-自己造类型.html#l5-3">构造函数、析构函数、private、this</a>
+      <span class="d">出生和死亡时自动跑的那两段；怎么把数据藏起来；this 是干嘛的</span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-自己造类型.html#l5-4">继承：让一个类基于另一个类</a>
+      <span class="d">两个类有一大半是一样的时候不必抄两遍；出生死亡的先后；virtual、override、protected</span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-自己造类型.html#l5-5">【综合练习二·类版】把找最小值装进 MyClass</a>
+      <span class="d">题目要求用类写。学到这儿你就知道为什么了</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p6">
+  <h2>第 6 部分 · 指针与引用</h2>
+  <p class="part-note">
+    很多人觉得这是 C++ 最难的地方。其实它只是「变量住在内存里」这个事实的直接后果。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-指针与引用.html#l6-1">变量住在内存里：地址是什么</a>
+      <span class="d">每个盒子都有一个门牌号；<code>&amp;</code> 是问「你住在哪儿」</span>
+    </span></li>
+    <li><span class="n">6.2</span><span class="body">
+      <a class="t" href="06-指针与引用.html#l6-2">引用：还有三条规矩<span class="star">★ 有动画</span></a>
+      <span class="d">3.5 只讲了参数表上那种；写到外面来还要守三条规矩</span>
+    </span></li>
+    <li><span class="n">6.3</span><span class="body">
+      <a class="t" href="06-指针与引用.html#l6-3">指针：自己拿着门牌号<span class="star">★ 有动画</span></a>
+      <span class="d">盒子里装的不是数，是另一个盒子的地址；还有空指针</span>
+    </span></li>
+    <li><span class="n">6.4</span><span class="body">
+      <a class="t" href="06-指针与引用.html#l6-4">值传递 / 地址传递 / 引用传递<span class="star">★ 有动画</span></a>
+      <span class="d">三种传参摆在一起看。最容易搞混的一处</span>
+    </span></li>
+    <li><span class="n">6.5</span><span class="body">
+      <a class="t" href="06-指针与引用.html#l6-5">数组名、指针、字符串</a>
+      <span class="d">把第 4 部分欠的账算清：为什么数组传进函数就能被改</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p7">
+  <h2>第 7 部分 · 自己会发现错</h2>
+  <p class="part-note">编译器不报错、程序也能跑、但结果就是不对——这种时候怎么办。</p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-自己会发现错.html#l7-1">程序不对时，按什么顺序找</a>
+      <span class="d">一套固定动作，比瞎改代码快十倍</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-自己会发现错.html#l7-2">打印调试：把中间结果打出来看</a>
+      <span class="d">最土，也最好用。顺手把 1.4 欠的那笔账还了</span>
+    </span></li>
+    <li><span class="n">7.3</span><span class="body">
+      <a class="t" href="07-自己会发现错.html#l7-3">读别人的代码：从哪一行开始看</a>
+      <span class="d">以后你要读的代码，大部分不是你写的</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p8">
+  <h2><a href="08-章末检测.html">第 8 部分 · 章末检测</a></h2>
+  <p class="part-note">不教新东西。一道例题把题拆开给你看，五道检测题跨着考前面七个部分。</p>
+  <ul class="ol-list">
+    <li><span class="n">8.1</span><span class="body">
+      <a class="t" href="08-章末检测.html#l8-1">例题 · 一张成绩单</a>
+      <span class="d">六件事、跨七个部分，最后栽在一行除法上</span>
+    </span></li>
+    <li><span class="n">8.2</span><span class="body">
+      <a class="t" href="08-章末检测.html#l8-2">五道检测题</a>
+      <span class="d">每题都写着用到哪几课，答案收在题底下</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p9">
+  <h2>附录</h2>
+  <p class="part-note">不是用来读的，是卡住的时候查的。</p>
+  <ul class="ol-list">
+    <li><span class="n">A</span><span class="body">
+      <a class="t" href="../../reference/附录.html#apA">编译报错速查</a>
+      <span class="d">照着报错里那几个英文词查</span>
+    </span></li>
+    <li><span class="n">B</span><span class="body">
+      <a class="t" href="../../reference/附录.html#apB">语法速查表</a>
+      <span class="d">学过的语法，一页纸</span>
+    </span></li>
+    <li><span class="n">C</span><span class="body">
+      <a class="t" href="../../reference/附录.html#apC">std 常用</a>
+      <span class="d">课里没讲、写着写着就要用的现成写法</span>
+    </span></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · C++ 基础课
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 8 部分 · 章末检测 — C++ 基础课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-数字和字.html">第 1 部分</a>
+      <a href="02-让程序做判断和重复.html">第 2 部分</a>
+      <a href="03-把代码拆开.html">第 3 部分</a>
+      <a href="04-一堆数据.html">第 4 部分</a>
+      <a href="05-自己造类型.html">第 5 部分</a>
+      <a href="06-指针与引用.html">第 6 部分</a>
+      <a href="07-自己会发现错.html">第 7 部分</a>
+      <a class="active" href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a class="active" href="index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-数字和字.html">第 1 部分 · 数字和字</a>
+  <a class="tree-l" href="02-让程序做判断和重复.html">第 2 部分 · 让程序做判断和重复</a>
+  <a class="tree-l" href="03-把代码拆开.html">第 3 部分 · 把代码拆开</a>
+  <a class="tree-l" href="04-一堆数据.html">第 4 部分 · 一堆数据</a>
+  <a class="tree-l" href="05-自己造类型.html">第 5 部分 · 自己造类型</a>
+  <a class="tree-l" href="06-指针与引用.html">第 6 部分 · 指针与引用</a>
+  <a class="tree-l" href="07-自己会发现错.html">第 7 部分 · 自己会发现错</a>
+  <a class="tree-l" href="08-章末检测.html" aria-current="page">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 8 部分 · 章末检测</div>
+  <a class="toc-l" href="#l8-1"><span class="n">8.1</span>例题 · 一张成绩单</a>
+  <a class="toc-sub" href="#s8-1-1">先拆题：三行输出派了六件事</a>
+  <a class="toc-sub" href="#s8-1-2">第一版：六件事都做了</a>
+  <a class="toc-sub" href="#e8-1">例题 · 它打的，和你要的</a>
+  <a class="toc-sub" href="#s8-1-3">病根在那一行</a>
+  <a class="toc-sub" href="#s8-1-4">回头看一眼：这一遍用了什么</a>
+  <a class="toc-l" href="#l8-2"><span class="n">8.2</span>五道检测题</a>
+  <a class="toc-sub" href="#s8-2-1">练习 8-1 · 读一行算式</a>
+  <a class="toc-sub" href="#s8-2-2">练习 8-2 · 最大的那个在第几个</a>
+  <a class="toc-sub" href="#s8-2-3">练习 8-3 · 矩形和正方形</a>
+  <a class="toc-sub" href="#s8-2-4">练习 8-4 · 倒过来</a>
+  <a class="toc-sub" href="#s8-2-5">练习 8-5 · 人数少了一个</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 8 部分</div>
+  <h1>章末检测</h1>
+  <p class="part-lead">
+    前七部分讲完了。这一部分<b>不教新东西</b>——一道例题，五道题，
+    每一道都要你把前面学过的好几样东西同时用上。
+    考的不是记性，是<b>你拆不拆得动一道题</b>。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l8-1">
+<h2><span class="no">8.1</span>例题 · 一张成绩单</h2>
+
+<p>
+这一课不给新语法。它把一道题从头做到尾，<b>每一步都告诉你这一步是从第几部分来的</b>。
+下面五道题照着这个走法做——它们只是换了个样子，底下的东西是一样的。
+</p>
+
+<div class="aside tip">
+  <b>题目</b>
+  <p>
+    输入：第一行一个整数 <code>n</code>，是人数（<code>n</code> 不超过 20）。
+    第二行 <code>n</code> 个整数，是每个人的分数。
+  </p>
+  <p>
+    输出三行——最高分、最低分、平均分（保留一位小数）。
+  </p>
+  <p>样例输入：</p>
+  <pre class="out" data-label="样例输入">5
+80 91 76 66 65</pre>
+</div>
+
+<h3 id="s8-1-1">先拆题：三行输出派了六件事</h3>
+
+<p>
+题目一共两句话，可它派下来的活是六件。先把它们一件一件摆出来——
+摆出来之后你会发现，<b>每一件都是学过的，一件新的都没有。</b>
+</p>
+
+<table>
+  <tr><th>要干的事</th><th>在哪一课学的</th></tr>
+  <tr>
+    <td>把 <code>n</code> 和后面那串数读进来</td>
+    <td>1.5 的 <code>std::cin</code>，加 2.4 的 <code>for</code> 转着读</td>
+  </tr>
+  <tr>
+    <td>把这串数存下来——一个盒子装不下</td>
+    <td>4.1 的数组</td>
+  </tr>
+  <tr>
+    <td>找出最大的、找出最小的</td>
+    <td>4.3 的打擂台</td>
+  </tr>
+  <tr>
+    <td>把 <code>n</code> 个数加起来</td>
+    <td>2.3、2.4 那个累加</td>
+  </tr>
+  <tr>
+    <td>总数除以人数，得到平均分</td>
+    <td>1.3——<b>这一件事最容易翻车</b></td>
+  </tr>
+  <tr>
+    <td>平均分要一位小数</td>
+    <td>1.6 的 <code>printf</code></td>
+  </tr>
+</table>
+
+<p>
+六件事，六种手艺，分散在第 1、2、4 部分里。
+这五道检测题要练的就是这个动作：<b>拿到题先不动手，先在纸上数一数是几件事。</b>
+数清楚了，写起来就是一件一件往下落。
+</p>
+
+<h3 id="s8-1-2">第一版：六件事都做了</h3>
+
+<div class="eg" id="e8-1">
+  <div class="eg-h">例题 · 第一版，和它打出来的</div>
+  <p>
+    六件事各就各位，写出来是这样：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    int mn = a[0];
+    int sum = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+        if (a[i] &lt; mn) {
+            mn = a[i];
+        }
+        sum = sum + a[i];
+    }
+
+    double avg = sum / n;
+
+    std::cout &lt;&lt; "最高：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "最低：" &lt;&lt; mn &lt;&lt; std::endl;
+    printf("平均：%.1f\n", avg);
+
+    return 0;
+}</code></pre>
+  <p>
+    <b>它编译一声没吭，跑起来也好好的。</b>打出来是这样：
+  </p>
+  <pre class="out" data-label="它打的">最高：91
+最低：65
+平均：75.0</pre>
+  <p>
+    而你要的是：
+  </p>
+  <pre class="out" data-label="你要的">最高：91
+最低：65
+平均：75.6</pre>
+</div>
+
+<p>
+两行对上了，第三行差一位小数。80、91、76、66、65 加起来是 378，
+378 除以 5 是 <b>75.6</b>——不是 75.0。这个 0.6 是真的丢了，不是四舍五入掉的。
+</p>
+
+<h3 id="s8-1-3">病根在那一行</h3>
+
+<p>
+按 7.1 的三步走：第一处不一样的地方是<b>第三行</b>。往回走一步，
+问一句「平均分是谁算出来的」——走到这一行：
+</p>
+
+<pre><code>double avg = sum / n;</code></pre>
+
+<p>
+<b>这一行看着挺对：盒子是 <code>double</code> 的，小数怎么会丢？</b>
+丢的地方在等号右边，而且发生在放进盒子<b>之前</b>。
+</p>
+
+<p>
+1.1 讲过那句话：<b>先算右边，再放进左边。</b>右边是
+<code>sum / n</code>——<code>sum</code> 和 <code>n</code> 两个都是
+<code>int</code>，两个整数相除，<b>商在算出来的那一刻就已经是整数了</b>，
+378 / 5 得到 75。等号再把 75 变成 75.0 放进 <code>avg</code>——
+<b>0.6 是在右边那一格里丢的，跟左边那个 <code>double</code> 一点关系都没有。</b>
+</p>
+
+<p>
+1.3 里 <code>7 / 2</code> 得 3 得的就是这一条。那一课里它是你要的效果
+（250 分钟要的就是 4 小时）；这一课里它是个坑。
+<b>同一个规矩，用在两处，一处是帮手一处是敌人</b>——这就是它值得单独学一课的原因。
+</p>
+
+<p>
+改法只动一个位置：
+</p>
+
+<pre><code>double avg = sum * 1.0 / n;</code></pre>
+
+<p>
+<code>sum * 1.0</code> 先乘出一个小数，除法再遇上它，就按小数除了。
+1.3 说的「只要有一个是小数，结果就是小数」。
+</p>
+
+<div class="aside warn">
+  <b>顺序不能换</b>
+  <p>
+    写成 <code>sum / n * 1.0</code> 是白改：除法先算，75 已经出来了，
+    后面那个 1.0 乘上去得 75.0，0.6 早没了。
+  </p>
+  <p>
+    <b>乘除从左往右算</b>——1.3 那张运算顺序表上写着这一条，
+    今天它在分母这边咬你一口。
+  </p>
+</div>
+
+<p>
+改完那一行，程序是这样（其余每一行原封不动）：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    int mn = a[0];
+    int sum = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+        if (a[i] &lt; mn) {
+            mn = a[i];
+        }
+        sum = sum + a[i];
+    }
+
+    double avg = sum * 1.0 / n;
+
+    std::cout &lt;&lt; "最高：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "最低：" &lt;&lt; mn &lt;&lt; std::endl;
+    printf("平均：%.1f\n", avg);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">最高：91
+最低：65
+平均：75.6</pre>
+
+<h3 id="s8-1-4">回头看一眼：这一遍用了什么</h3>
+
+<p>
+把刚才那一遍拆开，每一步都标上它是从哪一课来的：
+</p>
+
+<table>
+  <tr><th>写下的那几行</th><th>手艺</th><th>出处</th></tr>
+  <tr>
+    <td><code>#include</code>、<code>int main</code>、编译、运行</td>
+    <td>骨架</td><td>第 0 部分</td>
+  </tr>
+  <tr>
+    <td><code>int n;</code> + <code>std::cin &gt;&gt; n;</code></td>
+    <td>读数</td><td>1.5</td>
+  </tr>
+  <tr>
+    <td><code>int a[20];</code> 配一个 <code>for</code> 转着读</td>
+    <td>数组 + 循环</td><td>4.1、2.4</td>
+  </tr>
+  <tr>
+    <td><code>mx</code>、<code>mn</code> 两个擂台</td>
+    <td>找最值</td><td>4.3</td>
+  </tr>
+  <tr>
+    <td><code>sum = sum + a[i];</code></td>
+    <td>累加</td><td>2.3、2.4</td>
+  </tr>
+  <tr>
+    <td><code>sum * 1.0 / n</code></td>
+    <td>整数除法、类型</td><td>1.3、1.2</td>
+  </tr>
+  <tr>
+    <td><code>printf("平均：%.1f\n", avg);</code></td>
+    <td>格式输出</td><td>1.6</td>
+  </tr>
+  <tr>
+    <td>输出不对 → 比输出 → 往回走 → 找到那一行</td>
+    <td>找错三步</td><td>第 7 部分</td>
+  </tr>
+</table>
+
+<p>
+<b>八行，跨了七个部分。</b>
+真正要写的东西，没有一道是只用一课的。
+</p>
+
+<p class="can">
+  <b>还剩一件事：</b>这么长的程序，一步写不出来的。
+  上面那一版也不是一口气写完的——是先把六件事数出来，一件一件落，
+  落完跑一遍，发现在哪儿断的，再回头。
+  <b>下面五道，照着这个来。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l8-2">
+<h2><span class="no">8.2</span>五道检测题</h2>
+
+<p>
+五道题，一道一道做。每题底下写着<b>「用到」</b>——那是给你卡住的时候用的：
+卡住了，照着那几个编号回去翻，翻完再回来。
+</p>
+
+<p>
+<b>这一部分不给提示。</b>但 7.1 那三步还在手边，你自己就能给自己提示：
+比输出、砍半、一次只改一处。答案在每题最底下收着，做完了再对。
+</p>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-1">练习 8-1（算式）</div>
+  <p>
+    读一行进来，形如 <code>7 / 2</code>：一个整数、一个运算符、一个整数。
+    运算符是 <code>+</code> <code>-</code> <code>*</code> <code>/</code> 四个里的一个。
+  </p>
+  <p>
+    打印一行，把算式和结果打全：
+  </p>
+  <pre class="out" data-label="输出格式">7 / 2 = 3</pre>
+  <p>
+    要是除法碰上了 0——运算符是 <code>/</code>、右边那个数也是 0——
+    <b>别算</b>，打一句 <code>除数不能是 0</code>。
+  </p>
+  <p>
+    要求：真正算数的那几行装进一个函数，<code>main</code> 只管读和打。
+    函数长这样：<code>int calc(int a, char op, int b)</code>。
+  </p>
+  <p>
+    <b>用到：</b>第 1 部分的 <code>char</code> 和整数除法、第 2 部分的 <code>if</code>、
+    第 3 部分的函数。
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">7 / 2</span>
+7 / 2 = 3</pre>
+  <details class="ans" data-run="示例代码/答案/8-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这份是写好的：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int calc(int a, char op, int b) {
+    if (op == '+') {
+        return a + b;
+    } else if (op == '-') {
+        return a - b;
+    } else if (op == '*') {
+        return a * b;
+    } else {
+        return a / b;
+    }
+}
+
+int main() {
+    int a;
+    int b;
+    char op;
+
+    std::cin &gt;&gt; a &gt;&gt; op &gt;&gt; b;
+
+    if (op == '/' &amp;&amp; b == 0) {
+        std::cout &lt;&lt; "除数不能是 0" &lt;&lt; std::endl;
+        return 0;
+    }
+
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; op &lt;&lt; " " &lt;&lt; b
+              &lt;&lt; " = " &lt;&lt; calc(a, op, b) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>先说那个 <code>char</code>。</b><code>std::cin &gt;&gt; op</code>
+        读一个字符，读到的是<b>那个符号本身</b>——输进来的 <code>/</code>
+        到盒子里就是一个 <code>/</code>，不是它的编号。
+        所以 <code>op == '+'</code> 问的就是「这个字符是不是加号」，
+        1.2 讲 <code>char</code> 的时候那句话在这儿用上了。
+      </p>
+      <p>
+        <b>再说除以 0 那一支：它必须写在算之前。</b>
+        写成先算、算完再看结果，是来不及的——1.3 讲过，
+        整数除以 0 程序当场就被系统打死（浮点异常），
+        后面那句「除数不能是 0」根本轮不到打。
+        <b>要拦，就得拦在做那件事之前</b>，这是 <code>if</code> 的用法里
+        最容易写反的一处。
+      </p>
+      <p>
+        <b>最后一句打印，四个东西拼起来：</b>
+        <code>a</code>、<code>op</code>、<code>b</code> 原样打出来，
+        再加上算出来的结果，中间拿 <code>" = "</code> 隔着。
+        打出来就是 <code>7 / 2 = 3</code>——<b>算式那半边是照抄输入，不是算出来的</b>，
+        算出来的只有等号后面那个 3。
+      </p>
+      <p>
+        至于 <code>7 / 2</code> 为什么得 3——两个 <code>int</code> 相除，
+        小数当场砍掉，1.3 那条规矩，第 8.1 节的例题刚刚才踩过一次。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-2">练习 8-2（最大的那个在第几个）</div>
+  <p>
+    第一行一个整数 <code>n</code>，是这排数有几个（不超过 20）。
+    第二行 <code>n</code> 个整数。
+  </p>
+  <p>
+    打印三行：最大的数是几、它在第几个格子、这排数里有几个比平均值大。
+  </p>
+  <p>
+    「第几个」打的是<b>下标，从 0 数起</b>——4.2 讲的就是这个数法。
+  </p>
+  <p>
+    <b>用到：</b>第 4 部分的数组、遍历、打擂台，第 2 部分的 <code>for</code>，
+    第 1 部分的整数除法。平均值那一行跟上面例题里踩过的坑是同一个。
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">6</span>
+<span class="typed">12 45 7 30 33 8</span>
+最大：45
+位置：1
+比平均高：3</pre>
+  <details class="ans" data-run="示例代码/答案/8-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这份是写好的：</p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    int mxIdx = 0;
+    int sum = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+            mxIdx = i;
+        }
+        sum = sum + a[i];
+    }
+
+    double avg = sum * 1.0 / n;
+
+    int above = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; avg) {
+            above++;
+        }
+    }
+
+    std::cout &lt;&lt; "最大：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "位置：" &lt;&lt; mxIdx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "比平均高：" &lt;&lt; above &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>擂台上有两样东西：一个值，一个编号。</b>
+        <code>mx</code> 记「现在最大的是几」，<code>mxIdx</code> 记
+        「它是第几个」。这两个必须一起换——4.3 那句
+        <b>「比分数，记编号」</b>说的就是这件事：只换值不换编号，
+        打完擂台下场的还是第 0 个。
+      </p>
+      <p>
+        <b>平均值那两行是这一题最容易翻车的地方。</b>
+        第 8.1 节的例题刚讲过：<code>sum / n</code> 两个 <code>int</code> 相除，
+        小数当场就没了——得先乘出一个小数，写成
+        <code>sum * 1.0 / n</code>，顺序还不能换。
+      </p>
+      <p>
+        <b>数比平均高的，必须另起一个循环。</b>
+        因为「比平均高」这句话里那个平均分，得<b>等</b>分数全加完、
+        除完了才知道。前一个循环跑到一半，<code>avg</code> 里还没有值，
+        那会儿拿它去比，比的是个空盒子。
+        <b>凡是要拿一个「算完才知道的数」去比，就得等它算完再走第二遍。</b>
+      </p>
+      <p>
+        位置打的是下标，从 0 数起——这排数里 45 是第二个，
+        编号就是 1。4.2 讲的就是这个数法。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-3">练习 8-3（矩形和正方形）</div>
+  <p>
+    写两个类：
+  </p>
+  <ul>
+    <li>
+      <code>Shape</code>（形状）：两个 <code>int</code> 宽和高，<b>藏起来不给外面看</b>；
+      构造函数收两个数填进去；成员函数 <code>name()</code> 返回文字
+      <code>矩形</code>；成员函数 <code>area()</code> 返回宽乘高。
+    </li>
+    <li>
+      <code>Square</code>（正方形），<b>基于</b> <code>Shape</code>：
+      构造函数只收一个数（边长），把它当宽也当高用；
+      <code>name()</code> 返回文字 <code>正方形</code>。
+    </li>
+  </ul>
+  <p>
+    再写一个函数 <code>void printShape(Shape&amp; s)</code>，打印一行：
+    名字、一个空格、面积。
+  </p>
+  <p>
+    <code>main</code> 里造一个 3×4 的矩形、一个边长 5 的正方形，
+    <b>用同一个 <code>printShape</code></b> 各打一行。
+  </p>
+  <p>
+    <b>用到：</b>第 5 部分的 <code>class</code>、<code>private</code>、构造函数、继承，
+    以及继承里那两个词；第 3 部分的函数和引用。
+  </p>
+  <pre class="out" data-label="预期输出">矩形 12
+正方形 25</pre>
+  <details class="ans" data-run="示例代码/答案/8-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这份是写好的：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Shape {
+private:
+    int w;
+    int h;
+
+public:
+    Shape(int a, int b) {
+        w = a;
+        h = b;
+    }
+
+    virtual std::string name() {
+        return "矩形";
+    }
+
+    int area() {
+        return w * h;
+    }
+};
+
+class Square : public Shape {
+public:
+    Square(int side) : Shape(side, side) {}
+
+    std::string name() override {
+        return "正方形";
+    }
+};
+
+void printShape(Shape&amp; s) {
+    std::cout &lt;&lt; s.name() &lt;&lt; " " &lt;&lt; s.area() &lt;&lt; std::endl;
+}
+
+int main() {
+    Shape rect(3, 4);
+    Square sq(5);
+
+    printShape(rect);
+    printShape(sq);
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>先看 <code>Square</code> 那行冒号：</b>
+        <code>Square(int side) : Shape(side, side) {}</code>。
+        它收一个边长，交给父类的时候<b>一份当两份用</b>——
+        宽是它，高也是它，正方形就是这么来的（5.4 学的）。
+        <code>Shape</code> 里头那两个 <code>private</code> 的盒子，
+        <code>Square</code> 自己碰不到，只能从构造函数这条路递进去。
+      </p>
+      <p>
+        <b>再看那两个词。</b>父类 <code>name()</code> 前面那个
+        <code>virtual</code>、子类那份后面的 <code>override</code>——
+        一个都不能少。少了它们，下面 <code>printShape</code> 收的是
+        <code>Shape&amp;</code>，就会<b>照签名的字面</b>去叫父类那一份，
+        两行都打「矩形」，第二行那个 25 也跟着变成 12。
+        5.4 拿两份程序摆在一起讲的就是这一件事（<code>no-virtual</code>
+        和 <code>virtual</code> 那一对）。
+      </p>
+      <p>
+        <b>最后那个函数收的是 <code>Shape&amp;</code>，这是 5.4 的关键：</b>
+        一个函数写一次，矩形和正方形都能交给它——
+        而且交给它的是<b>本人</b>不是抄件（第 6 部分的引用），
+        所以它叫 <code>name()</code> 的时候，叫到的是各自那一份。
+        这就是「同一句话，不同的东西自己说自己的」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-4">练习 8-4（倒过来）</div>
+  <p>
+    第一行一个整数 <code>n</code>，第二行 <code>n</code> 个整数。
+  </p>
+  <p>
+    先把这排数原样打一行，数之间用一个空格隔开；
+    然后把这排数<b>倒过来</b>，再打一行。
+  </p>
+  <p>
+    三个动作各写成一个函数，都要用上：
+  </p>
+  <ul>
+    <li><code>void swap2(int&amp; x, int&amp; y)</code>——交换两个数</li>
+    <li><code>void reverse(int a[], int n)</code>——把整排数倒过来，里面调 <code>swap2</code></li>
+    <li><code>void printAll(int a[], int n)</code>——打一行，两行用的是同一个函数</li>
+  </ul>
+  <p>
+    <b>用到：</b>第 6 部分的引用传递和数组参数，第 4 部分的数组和交换，
+    第 3 部分的函数，第 2 部分的 <code>for</code>。
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">5</span>
+<span class="typed">3 1 4 1 5</span>
+3 1 4 1 5
+5 1 4 1 3</pre>
+  <details class="ans" data-run="示例代码/答案/8-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>这份是写好的：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+void swap2(int&amp; x, int&amp; y) {
+    int t = x;
+    x = y;
+    y = t;
+}
+
+void reverse(int a[], int n) {
+    for (int i = 0; i &lt; n / 2; i++) {
+        swap2(a[i], a[n - 1 - i]);
+    }
+}
+
+void printAll(int a[], int n) {
+    std::cout &lt;&lt; a[0];
+    for (int i = 1; i &lt; n; i++) {
+        std::cout &lt;&lt; " " &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; std::endl;
+}
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    printAll(a, n);
+    reverse(a, n);
+    printAll(a, n);
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>参数表上那两个 <code>&amp;</code>，一个都不能掉。</b>
+        <code>void swap2(int&amp; x, int&amp; y)</code>——写成 <code>int x, int y</code>
+        就变成「换了两份抄件」，函数里忙活半天，<code>main</code> 这边
+        一点动静都没有。3.4 和 6.2 讲过这件事：<b>要改的是本人，
+        参数表上就得写 <code>&amp;</code>。</b>
+      </p>
+      <p>
+        <b><code>reverse</code> 里那个 <code>i &lt; n / 2</code> 是这一题的关键：</b>
+        走到一半就该停。走满 n 圈会把刚换好的又换回去——
+        看起来「什么都没发生」，其实是换了两次等于没换。
+        两个下标一个从前往后（<code>i</code>），一个从后往前
+        （<code>n - 1 - i</code>），碰头的地方正好是一半。
+      </p>
+      <p>
+        那种「前面一半对、后面一半错」的结果，是<b>折返点写错</b>的典型样子。
+        <code>n</code> 是奇数的时候中间那个自己跟自己换，
+        换不换都一样，不用为它单开一条路。
+      </p>
+      <p>
+        两行输出用的是同一个 <code>printAll</code>——
+        第一行打原样，倒完再打一遍。函数写一次用两次，
+        3.x 一直在练的就是这个。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-5">练习 8-5（人数少了一个）</div>
+  <p>
+    下面这份程序，编译一声没吭，跑起来也正常。可它打出来的人数少了一个。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int countPass(int a[], int n) {
+    int c = 0;
+    for (int i = 1; i &lt; n; i++) {
+        if (a[i] &gt;= 60) {
+            c++;
+        }
+    }
+    return c;
+}
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最高：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "及格：" &lt;&lt; countPass(a, n) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <p>
+    它现在打的是：
+  </p>
+  <pre class="out" data-label="它打的">最高：90
+及格：2</pre>
+  <p>
+    <b>先别编译。</b>按 7.1 那三步走一遍：
+    比输出、找第一处不一样的地方、往回走。
+    说清楚病根在哪一行、为什么，该怎么改。
+  </p>
+  <p>
+    <b>用到：</b>第 7 部分的找错三步，第 4 部分的数组和下标，
+    第 3 部分的函数，第 2 部分的循环。
+  </p>
+  <pre class="out" data-label="预期输出"><span class="typed">6</span>
+<span class="typed">65 30 59 88 40 90</span>
+最高：90
+及格：3</pre>
+  <details class="ans" data-run="示例代码/答案/8-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>改好的版本是这样（只动了一处）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int countPass(int a[], int n) {
+    int c = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt;= 60) {
+            c++;
+        }
+    }
+    return c;
+}
+
+int main() {
+    int n;
+    int a[20];
+
+    std::cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; a[i];
+    }
+
+    int mx = a[0];
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+        }
+    }
+
+    std::cout &lt;&lt; "最高：" &lt;&lt; mx &lt;&lt; std::endl;
+    std::cout &lt;&lt; "及格：" &lt;&lt; countPass(a, n) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p><b>病根是那一行：</b></p>
+      <pre><code>for (int i = 1; i &lt; n; i++) {</code></pre>
+      <p>
+        这个 <code>1</code> 该是 <code>0</code>。
+        <b>它把 <code>a[0]</code> 整个跳过去了</b>——第一个格子里的 65
+        从头到尾没人看过一眼。
+      </p>
+      <p>
+        65 是及格的（<code>65 &gt;= 60</code>），它本该算进去，
+        所以真答案是 3：65、88、90。程序报 2，少的正是这一个。
+        4.2 说下标从 0 开始数，这一题就是那句话的反面：
+        <b>从 1 开始数，等于当第一个数不存在。</b>
+      </p>
+      <p><b>按 7.1 那三步走一遍，是这么走过来的：</b></p>
+      <p>
+        <b>第一步，比输出。</b>它打 <code>及格：2</code>，你要的是
+        <code>及格：3</code>——第一处不一样的地方就是这一行。
+      </p>
+      <p>
+        <b>第二步，往回走一步，问「这个数是谁算出来的」。</b>
+        那行打印上是 <code>countPass(a, n)</code>，答案就走到这个函数里。
+        <b>这是这一题最要紧的一步</b>：不对劲的那一行打印，
+        本身往往一个字都没错——它只是把别人给它的数原样打了出来。
+        7.1 那句「第一处不一样的地方，不等于病根」说的就是这种时候。
+      </p>
+      <p>
+        <b>第三步，在函数里找那一处。</b>整个函数就五行，
+        一眼看完：有一行是这个
+        <code>for (int i = 1; i &lt; n; i++)</code>。
+        <b>起手是 1，不是 0</b>——改掉它，输出就对了。
+      </p>
+      <p>
+        为什么编译器一声没吭？因为「从 1 开始数」是个完全合法的写法，
+        <b>语法上一点毛病都没有</b>——它没有越界、没有漏分号。
+        它只是和你心里想的那件事不一样，而这种事只有你能看出来。
+        第 7 部分整部分讲的就是这个。
+      </p>
+      <p>
+        <b>最后提一句</b>：最高分那一行是对的，而且它是对的<b>不奇怪</b>——
+        它是 <code>main</code> 里另一个循环算的，跟 <code>countPass</code>
+        一点关系都没有。<b>一个地方坏，不一定带着后面全坏；</b>
+        这一题就是只坏了一行。所以「哪里不对」永远得拿输出去对，
+        不能靠猜。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>这五道题要是自己能写出来，这门课就上完了。
+  从键盘收数、把数放进盒子、用循环走一遍、把一件事包成函数、
+  用数组装一排、用类把自己造的东西也变成一个盒子，
+  最后程序不对的时候，你也知道去哪儿找问题。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="../../reference/附录.html">附录 · 卡住的时候查 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+
+</body>
+</html>
