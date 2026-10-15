@@ -80,7 +80,7 @@
   <a class="toc-sub" href="#s5-3-2">构造函数：出生时自动跑的那一段</a>
   <a class="toc-sub" href="#s5-3-3">对象死的时候：析构函数</a>
   <a class="toc-sub" href="#s5-3-4">把数据藏起来</a>
-  <a class="toc-sub" href="#s5-3-5">名字撞上了：this</a>
+  <a class="toc-sub" href="#s5-3-5">名字重了：this</a>
   <a class="toc-sub" href="#e5-3">例题：名单短下来了</a>
   <a class="toc-sub" href="#s5-3-6">练习</a>
   <a class="toc-l" href="#l5-4"><span class="n">5.4</span>继承：让一个类基于另一个类</a>
@@ -1635,7 +1635,7 @@ int main() {
 外面想知道成绩，走 <code>getScore()</code>；想加分，走 <code>addScore()</code>。
 </p>
 
-<h3 id="s5-3-5">名字撞上了：this</h3>
+<h3 id="s5-3-5">名字重了：this</h3>
 
 <p>
 写构造函数的时候，很容易起这样的参数名：
@@ -1695,11 +1695,11 @@ int main() {
 </div>
 
 <p>
-为什么？<b>名字撞上了。</b>参数叫 <code>name</code>，成员也叫 <code>name</code>，
+为什么？<b>两个名字重了。</b>参数叫 <code>name</code>，成员也叫 <code>name</code>，
 函数体里那个 <code>name</code> 说的是<b>近的那个</b>，也就是参数。
 所以 <code>name = name;</code> 是「参数赋给参数」，
 成员那个 <code>name</code> 从头到尾一个字都没被碰过。
-（3.3 讲过的同名遮蔽，在这儿又撞上了。）
+（3.3 讲过的同名遮蔽，在这儿又出现了一次。）
 </p>
 
 <p>
@@ -4066,7 +4066,7 @@ int main() {
       <p>
         为什么拿题目那组样例跑又是对的？<code>5 34 1 2 56 4</code> 里，
         最小值 1 正好落在<b>编号 1</b> 上——错的那份就是从编号 1 开始找的，
-        撞对了。换一组让最小值落在第 0 个的（<code>5 1 9 3 7 4</code>），
+        正好对上了。换一组让最小值落在第 0 个的（<code>5 1 9 3 7 4</code>），
         它当场露馅。
       </p>
       <p>
