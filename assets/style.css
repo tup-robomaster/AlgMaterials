@@ -1205,3 +1205,38 @@ li::marker { color: var(--ink-faint); }
   .code .tok-kw, .code .tok-str, .code .tok-num,
   .code .tok-fn, .code .tok-cm { color: inherit; }
 }
+
+
+/* ── 正文图片放大 ──
+   双击带 .zoomable 的图片，铺一层深色背景，按窗口放下；
+   滚轮继续缩放，再次双击、点背景或按 Esc 还原。
+   页头 logo 不带 .zoomable，不受影响。 */
+.zoomable { cursor: zoom-in; user-select: none; }
+.zoom-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow: auto;
+  background: #0c0d0f;
+}
+.zoom-layer .zoom-inner {
+  min-width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 3vh 3vw;
+  display: flex;
+}
+.zoom-layer img {
+  margin: auto;
+  max-width: none;
+  display: block;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+}
+.zoom-layer.dragging img { cursor: grabbing; }
+@media print {
+  .zoom-layer { display: none; }
+}

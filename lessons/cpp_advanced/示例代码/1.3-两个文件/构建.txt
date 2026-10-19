@@ -1,0 +1,2 @@
+g++ -Wall main.cpp stats.cpp -o report
+./report < main.in

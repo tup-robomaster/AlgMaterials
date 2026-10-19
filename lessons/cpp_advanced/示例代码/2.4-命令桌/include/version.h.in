@@ -1,0 +1,13 @@
+// 2.4 用：这份是模板，不是头文件本身。配置的时候 configure_file 拿它生成
+// 真正的 version.h，@……@ 那几处会被换成 CMakeLists.txt 里的值。
+//
+// 下面那个 cmakedefine（前面带井号的那种写法）是 cmake 定死的：变量为真，
+// 这一行就变成 #define；为假，就变成一句注释——所以 main.cpp 里 #ifdef 判得出来。
+//
+// 有个坑：上面这一句别写成带井号的样子——configure_file 是一行一行扫的，
+// 注释里出现它照样会换，生成的头文件里会多出一行 /* #undef */，看着莫名其妙。
+
+#define VERSION_TEXT "@PROJECT_VERSION@"
+#define DESC_TEXT "@DESC_TEXT@"
+
+#cmakedefine EXTRA_LINE

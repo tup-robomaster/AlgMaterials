@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>简易裁判系统</title>
+<style>
+:root {
+  --bg: #f2f4f7;
+  --panel: #ffffff;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --line: #dde2e8;
+  --soft: #f7f9fb;
+  --ok: #15803d;
+  --bad: #b91c1c;
+  --wait: #92400e;
+  --sof: #b45309;
+  --len: #1d4ed8;
+  --seq: #7c3aed;
+  --crc8: #0f766e;
+  --cmd: #15803d;
+  --data: #475569;
+  --crc16: #b91c1c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei",
+               system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+header.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 28px;
+  background: #101828;
+  color: #f8fafc;
+}
+header.top h1 { margin: 0; font-size: 22px; letter-spacing: .02em; }
+header.top .sub { margin: 2px 0 0; color: #cbd5e1; font-size: 13px; }
+.badge {
+  flex: none;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #334155;
+  color: #e2e8f0;
+}
+.badge.ok { background: #166534; color: #dcfce7; }
+.badge.bad { background: #991b1b; color: #fee2e2; }
+.badge.wait { background: #78350f; color: #fef3c7; }
+.badge.idle { background: #334155; color: #cbd5e1; }
+main { max-width: 1180px; margin: 0 auto; padding: 22px 28px 48px; }
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+section h2 { margin: 0 0 12px; font-size: 17px; }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.stat {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.stat .k { display: block; color: var(--muted); font-size: 13px; }
+.stat .v {
+  display: block;
+  margin-top: 2px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 21px;
+  font-weight: 600;
+}
+.device { margin-top: 12px; color: var(--muted); font-size: 13px; }
+.device code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  color: var(--ink);
+}
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; background: var(--soft); }
+tbody tr:last-child td { border-bottom: none; }
+td.num, td.time {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+td.off { color: #9ca3af; }
+.pkt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.packet {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+.pkt-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.pkt-head h3 { margin: 0; font-size: 15px; }
+.pkt-time {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 2px 0 12px; color: var(--muted); font-size: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.bytes { display: flex; flex-wrap: wrap; gap: 4px; min-height: 34px; align-items: center; }
+.byte {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 28px;
+  padding: 0 5px;
+  border-radius: 5px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+.byte.sof { background: var(--sof); }
+.byte.len { background: var(--len); }
+.byte.seq { background: var(--seq); }
+.byte.crc8 { background: var(--crc8); }
+.byte.cmd { background: var(--cmd); }
+.byte.data { background: var(--data); }
+.byte.crc16 { background: var(--crc16); }
+.legend i.sof { background: var(--sof); }
+.legend i.len { background: var(--len); }
+.legend i.seq { background: var(--seq); }
+.legend i.crc8 { background: var(--crc8); }
+.legend i.cmd { background: var(--cmd); }
+.legend i.data { background: var(--data); }
+.legend i.crc16 { background: var(--crc16); }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; margin-top: 10px; }
+.field { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dashed #eef1f4; padding: 2px 0; font-size: 13px; }
+.field span { color: var(--muted); }
+.field b { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-weight: 600; }
+.raw {
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  word-break: break-all;
+}
+.note { margin-top: 4px; color: var(--bad); font-size: 12px; }
+.empty { color: #9ca3af; font-size: 13px; }
+#logs { max-height: 320px; overflow: auto; border-top: 1px solid var(--line); }
+.log-row {
+  display: grid;
+  grid-template-columns: 96px 72px 64px 52px 92px minmax(0, 1fr);
+  gap: 8px;
+  padding: 5px 2px;
+  border-bottom: 1px solid #f0f2f5;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+.log-row .st { color: var(--ok); }
+.log-row.bad .st { color: var(--bad); }
+.log-row .h { color: var(--muted); word-break: break-all; }
+@media (max-width: 980px) {
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pkt-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  header.top { padding: 14px 16px; }
+  main { padding: 16px; }
+  .log-row { grid-template-columns: 88px 68px 1fr; }
+  .log-row .l, .log-row .st { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>简易裁判系统</h1>
+    <p class="sub">接收 A5 帧，校验并解码后显示</p>
+  </div>
+  <span id="badge" class="badge wait">等待数据</span>
+</header>
+
+<main>
+  <section>
+    <h2>接收信息总览</h2>
+    <div class="stat-grid">
+      <div class="stat"><span class="k">已收帧数</span><span class="v" id="framesOk">0</span></div>
+      <div class="stat"><span class="k">坏帧数</span><span class="v" id="framesBad">0</span></div>
+      <div class="stat"><span class="k">已收字节</span><span class="v" id="bytes">0</span></div>
+      <div class="stat"><span class="k">最后收帧</span><span class="v" id="lastTime">—</span></div>
+    </div>
+    <div class="device">接收设备：<code id="device">—</code></div>
+  </section>
+
+  <section>
+    <h2>机器人状态</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>机器人</th><th>X</th><th>Y</th><th>HP</th><th>弹量</th><th>状态</th><th>最近更新</th></tr>
+        </thead>
+        <tbody id="robotRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>接收数据包</h2>
+    <div class="legend">
+      <span><i class="sof"></i>SOF</span>
+      <span><i class="len"></i>长度</span>
+      <span><i class="seq"></i>seq</span>
+      <span><i class="crc8"></i>CRC8</span>
+      <span><i class="cmd"></i>命令</span>
+      <span><i class="data"></i>数据</span>
+      <span><i class="crc16"></i>CRC16</span>
+    </div>
+    <div class="pkt-grid">
+      <article class="packet" id="pkt-0x0001">
+        <div class="pkt-head"><h3>0x0001 机器人位置</h3><span class="pkt-time" id="time-0x0001">等待解析</span></div>
+        <div class="bytes" id="bytes-0x0001"><span class="empty">尚未收到这一类帧</span></div>
+        <div class="fields" id="fields-0x0001"></div>
+        <div class="raw" id="raw-0x0001"></div>
+        <div class="note" id="note-0x0001"></div>
+      </article>
+      <article class="packet" id="pkt-0x0002">
+        <div class="pkt-head"><h3>0x0002 机器人血量</h3><span class="pkt-time" id="time-0x0002">等待解析</span></div>
+        <div class="bytes" id="bytes-0x0002"><span class="empty">尚未收到这一类帧</span></div>
+        <div class="fields" id="fields-0x0002"></div>
+        <div class="raw" id="raw-0x0002"></div>
+        <div class="note" id="note-0x0002"></div>
+      </article>
+      <article class="packet" id="pkt-0x0003">
+        <div class="pkt-head"><h3>0x0003 剩余发弹量</h3><span class="pkt-time" id="time-0x0003">等待解析</span></div>
+        <div class="bytes" id="bytes-0x0003"><span class="empty">尚未收到这一类帧</span></div>
+        <div class="fields" id="fields-0x0003"></div>
+        <div class="raw" id="raw-0x0003"></div>
+        <div class="note" id="note-0x0003"></div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>日志</h2>
+    <div id="logs"><div class="empty">还没有收到数据</div></div>
+  </section>
+</main>
+
+<script>
+var CMD_KEYS = ['0x0001', '0x0002', '0x0003'];
+var ROBOTS = [
+  {id: 1, name: '英雄'},
+  {id: 2, name: '工程'},
+  {id: 3, name: '步兵 3'},
+  {id: 4, name: '步兵 4'},
+  {id: 7, name: '哨兵'}
+];
+
+function setText(id, value) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function byteKind(index, total) {
+  if (index === 0) return 'sof';
+  if (index < 3) return 'len';
+  if (index === 3) return 'seq';
+  if (index === 4) return 'crc8';
+  if (index < 7) return 'cmd';
+  if (index < total - 2) return 'data';
+  return 'crc16';
+}
+
+function field(label, value) {
+  return '<div class="field"><span>' + label + '</span><b>' + value + '</b></div>';
+}
+
+function buildRobotRows(robots) {
+  var body = document.getElementById('robotRows');
+  body.innerHTML = '';
+  robots.forEach(function (robot) {
+    var tr = document.createElement('tr');
+    tr.id = 'robot-' + robot.id;
+    tr.innerHTML =
+      '<td>' + robot.id + ' ' + robot.name + '</td>' +
+      '<td class="num off" data-k="x">—</td>' +
+      '<td class="num off" data-k="y">—</td>' +
+      '<td class="num off" data-k="hp">—</td>' +
+      '<td class="num off" data-k="ammo">—</td>' +
+      '<td data-k="state">等待数据</td>' +
+      '<td class="time" data-k="time">—</td>';
+    body.appendChild(tr);
+  });
+}
+
+function renderRobots(robots) {
+  var body = document.getElementById('robotRows');
+  if (body.children.length !== robots.length) buildRobotRows(robots);
+  robots.forEach(function (robot) {
+    var tr = document.getElementById('robot-' + robot.id);
+    if (!tr) return;
+    ['x', 'y', 'hp', 'ammo'].forEach(function (k) {
+      var td = tr.querySelector('[data-k="' + k + '"]');
+      if (robot[k] === null) {
+        td.textContent = '—';
+        td.classList.add('off');
+      } else {
+        td.textContent = robot[k];
+        td.classList.remove('off');
+      }
+    });
+    var seen = robot.x !== null || robot.y !== null ||
+               robot.hp !== null || robot.ammo !== null;
+    tr.querySelector('[data-k="state"]').textContent = seen ? '已收到' : '等待数据';
+    var timeCell = tr.querySelector('[data-k="time"]');
+    timeCell.textContent = robot.time || '—';
+  });
+}
+
+function renderPacket(key, packet) {
+  var bytesEl = document.getElementById('bytes-' + key);
+  var fieldsEl = document.getElementById('fields-' + key);
+  var timeEl = document.getElementById('time-' + key);
+  var rawEl = document.getElementById('raw-' + key);
+  var noteEl = document.getElementById('note-' + key);
+
+  if (!packet) {
+    timeEl.textContent = '等待解析';
+    bytesEl.innerHTML = '<span class="empty">尚未收到这一类帧</span>';
+    fieldsEl.innerHTML = '';
+    rawEl.textContent = '';
+    noteEl.textContent = '';
+    return;
+  }
+
+  timeEl.textContent = 'seq ' + packet.seq + ' · ' + packet.time;
+  var values = packet.raw.split(' ');
+  var parts = [];
+  for (var i = 0; i < values.length; i++) {
+    var kind = byteKind(i, values.length);
+    parts.push('<span class="byte ' + kind + '" title="偏移 ' + i + '">' +
+               values[i] + '</span>');
+  }
+  bytesEl.innerHTML = parts.join('');
+
+  var html = '';
+  html += field('长度', packet.length + ' B');
+  html += field('seq', packet.seq);
+  html += field('命令', key);
+  html += field('数据', packet.data === '' ? '（空）' : packet.data);
+  html += field('CRC8', packet.crc8);
+  html += field('CRC16', packet.crc16);
+  var decoded = packet.decoded || {};
+  Object.keys(decoded).forEach(function (name) {
+    html += field(name, decoded[name]);
+  });
+  fieldsEl.innerHTML = html;
+
+  rawEl.textContent = '原始字节：' + packet.raw;
+  noteEl.textContent = packet.note || '';
+}
+
+function renderLogs(logs) {
+  var el = document.getElementById('logs');
+  if (!logs.length) {
+    el.innerHTML = '<div class="empty">还没有收到数据</div>';
+    return;
+  }
+  var rows = logs.map(function (entry) {
+    var cls = entry.status === 'CRC 通过' ? '' : ' bad';
+    return '<div class="log-row' + cls + '">' +
+           '<span>' + entry.time + '</span>' +
+           '<span>' + (entry.cmd || '—') + '</span>' +
+           '<span>seq ' + (entry.seq === '' ? '—' : entry.seq) + '</span>' +
+           '<span class="l">' + (entry.length === '' ? '—' : entry.length + ' B') + '</span>' +
+           '<span class="st">' + entry.status + '</span>' +
+           '<span class="h">' + entry.hex + '</span>' +
+           '</div>';
+  });
+  el.innerHTML = rows.join('');
+}
+
+function renderBadge(state) {
+  var badge = document.getElementById('badge');
+  var text = '等待数据';
+  var cls = 'badge wait';
+  if (state.frames_ok > 0) {
+    if (state.last_age !== null && state.last_age < 2.0) {
+      text = '接收中';
+      cls = 'badge ok';
+    } else {
+      text = '已停止';
+      cls = 'badge idle';
+    }
+  }
+  badge.textContent = text;
+  badge.className = cls;
+}
+
+function render(state) {
+  setText('framesOk', state.frames_ok);
+  setText('framesBad', state.frames_bad);
+  setText('bytes', state.bytes);
+  setText('lastTime', state.last_time || '—');
+  setText('device', state.device);
+  renderBadge(state);
+  renderRobots(state.robots);
+  CMD_KEYS.forEach(function (key) {
+    renderPacket(key, state.packets[key]);
+  });
+  renderLogs(state.logs);
+}
+
+function refresh() {
+  fetch('/api/state', {cache: 'no-store'})
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(render)
+    .catch(function () {
+      var badge = document.getElementById('badge');
+      badge.textContent = '页面断开';
+      badge.className = 'badge bad';
+    });
+}
+
+buildRobotRows(ROBOTS);
+refresh();
+setInterval(refresh, 250);
+</script>
+</body>
+</html>

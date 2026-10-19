@@ -87,7 +87,7 @@ for f in *.cpp; do
         printf '  ── 实际输出（只留前 3 行）──\n'
         head -3 /tmp/cppcourse-out | sed 's/^/    /'
         printf '    ……后面还在一行一行地打，没完\n'
-        printf '  ── 跑满 2 秒被 timeout 掐掉，退出码 %d（124 就是超时）──\n' "$rc"
+        printf '  ── 跑满 2 秒被 timeout 中止，退出码 %d（124 就是超时）──\n' "$rc"
         continue
         ;;
     esac

@@ -1,0 +1,2 @@
+g++ -std=c++17 -Wall -o demo main.cpp
+python3 fake_board.py --run ./demo

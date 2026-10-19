@@ -1,0 +1,6 @@
+mkdir -p build
+cd build
+cmake ..
+make
+./desk
+cmake --install . --prefix 装到这儿

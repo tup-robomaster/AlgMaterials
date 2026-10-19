@@ -1,0 +1,3 @@
+g++ -std=c++17 -Wall -o demo main.cpp
+./demo config.txt
+./demo bad.txt

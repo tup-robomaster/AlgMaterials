@@ -1,0 +1,2 @@
+make
+./report < main.in

@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>附录 · 卡住的时候查 — C++ 进阶课</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../TUP.html">
+    <img class="logo" src="../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="../lessons/cpp_advanced/00-开始.html">第 0 部分</a>
+      <a href="../lessons/cpp_advanced/01-一个程序几个文件.html">第 1 部分</a>
+      <a href="../lessons/cpp_advanced/02-cmake-基础.html">第 2 部分</a>
+      <a href="../lessons/cpp_advanced/03-容器.html">第 3 部分</a>
+      <a href="../lessons/cpp_advanced/04-算法.html">第 4 部分</a>
+      <a href="../lessons/cpp_advanced/05-内存与所有权.html">第 5 部分</a>
+      <a href="../lessons/cpp_advanced/06-文件和异常.html">第 6 部分</a>
+      <a href="../lessons/cpp_advanced/07-串口.html">第 7 部分</a>
+      <a href="../lessons/cpp_advanced/08-章末检测.html">第 8 部分</a>
+      <a class="active" href="附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../lessons/cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="../lessons/cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../lessons/other_basics/index.html">其他基础</a>
+      <a href="../lessons/opencv/index.html">OpenCV</a>
+      <a href="../lessons/python/index.html">Python</a>
+      <a href="../lessons/ros2/index.html">ROS 2</a>
+      <a href="../lessons/machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     和课里的页同一套写法，只是这一页在 reference/ 底下，
+     往课那边去的路多一层 ../lessons/。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已放出的部分</div>
+  <a class="tree-l" href="../lessons/cpp_advanced/00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="../lessons/cpp_advanced/08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="附录-进阶.html" aria-current="page">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">附录 · 卡住的时候查</div>
+  <a class="toc-l" href="#apA"><span class="n">A</span>编译与链接报错速查</a>
+  <a class="toc-sub" href="#sA-1">先看是谁报的错</a>
+  <a class="toc-sub" href="#sA-2">英文词对着查</a>
+  <a class="toc-sub" href="#sA-3">一条完整的链接报错</a>
+  <a class="toc-sub" href="#sA-4">头文件包含两遍的两种错误</a>
+  <a class="toc-sub" href="#sA-5">经过 cmake 之后，报错形式发生变化</a>
+  <a class="toc-sub" href="#sA-6">查不到，怎么办</a>
+  <a class="toc-l" href="#apB"><span class="n">B</span>cmake 速查表</a>
+  <a class="toc-sub" href="#sB-1">最小模板</a>
+  <a class="toc-sub" href="#sB-2">常用命令</a>
+  <a class="toc-sub" href="#sB-3">常用变量</a>
+  <a class="toc-sub" href="#sB-4">命令行</a>
+  <a class="toc-sub" href="#sB-5">当字典查</a>
+  <a class="toc-l" href="#apC"><span class="n">C</span>容器速查</a>
+  <a class="toc-sub" href="#sC-1">六个容器速览</a>
+  <a class="toc-sub" href="#sC-2">每个容器会哪些动作</a>
+  <a class="toc-sub" href="#sC-3">两个值组合：pair</a>
+  <a class="toc-sub" href="#sC-4">选择哪一个：四句话</a>
+  <a class="toc-sub" href="#sC-5">容器上常见的报错</a>
+  <a class="toc-sub" href="#sC-6">还没教的，先作初步认识</a>
+  <a class="toc-l" href="#apD"><span class="n">D</span>新特性速查</a>
+  <a class="toc-sub" href="#sD-1">智能指针</a>
+  <a class="toc-sub" href="#sD-2">移动与就地构造</a>
+  <a class="toc-sub" href="#sD-3">简洁的写法</a>
+  <a class="toc-sub" href="#sD-4">std::array</a>
+  <a class="toc-l" href="#apE"><span class="n">E</span>串口速查</a>
+  <a class="toc-sub" href="#sE-1">常用波特率常量</a>
+  <a class="toc-sub" href="#sE-2">8N1 要设的项</a>
+  <a class="toc-sub" href="#sE-3">帧格式</a>
+  <a class="toc-sub" href="#sE-4">CRC8 与 CRC16</a>
+  <a class="toc-sub" href="#sE-5">常见错误与处置</a>
+  <a class="toc-sub" href="#sE-6">伪终端与模拟板怎么用</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">附录</div>
+  <h1>卡住的时候查</h1>
+  <p class="part-lead">
+    A 是报错速查——先分清是谁报的错，再逐个词对照检查，最后整条读一遍；
+    B 是 cmake 速查表——最小模板、常用命令、常用变量、命令行，
+    还有「课里没讲过、但以后会遇到」的那几条；
+    C 是容器速查——六个容器各支持哪些操作、报错对照查询；
+    D 是新特性速查——智能指针、移动、结构化绑定这批写法，
+    忘记写法时查阅；
+    E 是串口速查——波特率、8N1、帧格式、CRC 参数、常见错误与伪终端用法。
+    平时不用读：报错了、忘了怎么写、想不起来那个名字、读代码遇见没学过的写法、
+    写串口程序要核对参数，查阅对应那一节。
+  </p>
+</header>
+
+<section class="lesson" id="apA">
+<h2><span class="no">A</span>编译与链接报错速查</h2>
+
+<p>
+基础课那份附录的 A 节，讲的是「你在一个文件里写错了」。
+这一份接着往下讲：<b>文件多起来、又套上 cmake 之后，
+屏幕上出现的信息多了好几种类型。</b>
+</p>
+
+<h3 id="sA-1">先看是谁报的错</h3>
+
+<p>
+0.2 讲过，从一份 <code>.cpp</code> 到能运行的程序，中间有四步：
+预处理、编译、汇编、链接。<b>前一步出错，后一步就无法执行</b>，
+所以屏幕上那段话是谁说的，可以直接区分：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 26%"><col style="width: 74%"></colgroup>
+  <tr><th>开头长这样</th><th>谁在说，说的事是什么</th></tr>
+  <tr>
+    <td><code>main.cpp:1:10: fatal error: …</code></td>
+    <td><b>编译器</b>（前三步）。<b>有文件名、行列号，底下还画着尖号</b>——
+      这种是你代码里写错了。需要修改的位置由尖号指出</td>
+  </tr>
+  <tr>
+    <td><code>/usr/bin/ld: …</code></td>
+    <td><b>链接器</b>（第四步）。没有行列号，也没尖号——
+      这种<b>不是你语法写错了</b>，而是「符号没有提供完整」。
+      别再回去抠代码，去看该编的文件列全了没有（1.4、1.5）</td>
+  </tr>
+  <tr>
+    <td><code>CMake Error at CMakeLists.txt:6 (message):</code></td>
+    <td><b>cmake</b>（配置那一步）。<code>Error</code> 头一个字母大写，
+      后面括号里写着「是这条命令出的事」——
+      连是哪条命令都替你点出来了（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>make: *** …</code></td>
+    <td><b>make</b>（编译那一步的工头）。三颗星是它的记号。
+      它说的往往只是「这一步没做成」，真原因在它上面几行（2.1、2.3）</td>
+  </tr>
+</table>
+
+<p>
+一句话的判据：<b>有行列号和尖号的，是你的代码；没有的，是「符号没有提供完整」或者「配置写错」。</b>
+这条判据能省下大量来回。
+</p>
+
+<div class="aside">
+<b>看报错的第一件事：抬头</b>
+<p>
+不是先读那句话，是先看<b>谁在说</b>。同一个「找不到 <code>stats.h</code>」，
+在 g++ 嘴里是 <code>fatal error</code>（你少写了 <code>-I</code>），
+在 cmake 嘴里是 <code>CMake Error</code>（你少写了
+<code>target_include_directories</code>）——
+<b>读错了人，就改错了地方。</b>
+</p>
+</div>
+
+<h3 id="sA-2">英文词对着查</h3>
+
+<p>
+左边这一列是你在屏幕上会看到的。找到它，右边两列告诉你说的是什么事、
+该回去查阅哪一课。这些报错都是这份材料里的程序实际运行得到的，
+一个字母没动过。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 38%"><col style="width: 30%"><col style="width: 32%"></colgroup>
+  <tr><th>报错里的词</th><th>它在说什么</th><th>你多半写了什么</th></tr>
+
+  <tr>
+    <td><code>fatal error: stats.h: 没有那个文件或目录</code></td>
+    <td>编译器说：<b>被 <code>#include</code> 的那个文件，我找不着</b></td>
+    <td>头文件不在这儿、名字拼错、或者没告诉它去哪儿找（1.2、2.3）</td>
+  </tr>
+  <tr>
+    <td><code>In file included from main.cpp:2:</code></td>
+    <td>「这段内容是从 main.cpp 第 2 行的 <code>#include</code> 插入的」</td>
+    <td>报错出在头文件里，可源头是插入它的那一行。它甚至记录了是<b>哪一次</b>插入（1.2）</td>
+  </tr>
+  <tr>
+    <td><code>redefinition of ‘int twice(int)’</code></td>
+    <td>「同一定义，我这里出现了两次」——<b>编译器说的</b></td>
+    <td>头文件里写了函数的定义，又被插入了两次。卫士用于解决这个问题（1.2）</td>
+  </tr>
+  <tr>
+    <td><code>multiple definition of `twice(int)'; … first defined here</code></td>
+    <td>「两份 <code>.o</code> 里各带一份」——<b>链接器说的</b></td>
+    <td>函数的本体写进了头文件。头文件里只放承诺，兑现放 <code>.cpp</code>（1.2）</td>
+  </tr>
+  <tr>
+    <td><code>undefined reference to `readScores(int)'</code></td>
+    <td>「有人要用它，可没人定义它」——<b>链接器说的</b></td>
+    <td>少列了一个 <code>.cpp</code>，或者只写了声明没写定义（1.4、1.5）</td>
+  </tr>
+  <tr>
+    <td><code>collect2: error: ld returned 1 exit status</code></td>
+    <td>链接这一步的结束语：<b>「它没干成，我就到这儿了」</b></td>
+    <td>它自己不是原因——真原因在它<b>上面</b>那条，从那儿读起（1.5）</td>
+  </tr>
+  <tr>
+    <td><code>CMake Error at CMakeLists.txt:6 (message):</code></td>
+    <td>cmake 说：<b>第 6 行那条 <code>message</code> 报错了</b></td>
+    <td>括号里已经点出是哪条命令，下面几行会说明哪一组参数不正确（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>-- Configuring incomplete, errors occurred!</code></td>
+    <td>「配置没有完成」——cmake 结束时必定输出的一句</td>
+    <td>它上面<b>一定</b>有一条 <code>CMake Error</code>。先改那条，其他先不要处理（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>Makefile:2: *** 缺失分隔符。 停止。</code></td>
+    <td>make 说：<b>这一行的开头该是一个 Tab，不是空格</b></td>
+    <td>手写 Makefile 时的常见问题。缩进在视觉上相同，字符并不相同（2.1）</td>
+  </tr>
+  <tr>
+    <td><code>make: *** [Makefile:91：all] 错误 2</code></td>
+    <td>make 往上汇报的<b>最外层</b>那句</td>
+    <td>那个 <code>91</code> 是<b>生成的 Makefile</b> 的行号，不是你写的任何代码的行号（2.3）</td>
+  </tr>
+  <tr>
+    <td><code>The target name "报表" is reserved or not valid</code></td>
+    <td>「这个名字不能当 target 名」</td>
+    <td>target 名不能是中文——<code>add_executable</code>、<code>add_library</code>、
+      <code>add_custom_target</code> 都一样（2.3）</td>
+  </tr>
+  <tr>
+    <td><code>Invalid character ('�') in a variable name: ''</code></td>
+    <td>「变量名里有个我不认识的字」</td>
+    <td>变量名不能用中文。<b>注意它指的是「用它」的地方</b>，
+      不是 <code>set</code> 那一行（2.4）</td>
+  </tr>
+</table>
+
+<p>
+注意最后那两行：它们不是编译器说的，是 cmake 说的，
+所以格式和大写都对不上前面那些——<b>这正是 A.1 那条判据的用处</b>。
+</p>
+
+<h3 id="sA-3">一条完整的链接报错</h3>
+
+<p>
+链接报错里最常见的一条，1.5 遇到过：两个 <code>.cpp</code> 只编了一个。
+真原文，一个字没动：
+</p>
+
+<pre class="diag" data-diag="1.5-少链接-err/main.cpp"><code>/usr/bin/ld: main.o: in function `main':
+main.cpp:(.text+0x29): undefined reference to `readScores(int)'
+/usr/bin/ld: main.cpp:(.text+0x35): undefined reference to `printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)'
+collect2: error: ld returned 1 exit status</code></pre>
+
+<p>
+从下往上阅读，比从上往下更快：
+</p>
+
+<ol>
+  <li>
+    <b>最后一行是结束语</b>，它只说明「没有完成」。<b>跳过它。</b>
+  </li>
+  <li>
+    <b>中间那两行才是正题。</b><code>undefined reference to</code>
+    后面引号里是<b>它要找的符号</b>——名字和参数都在里面。
+    两行就是两个都在找，一次给你列全。
+  </li>
+  <li>
+    <b>每行前面那一段说明的是「谁在查找」。</b>
+    <code>main.cpp:(.text+0x29)</code> 是「main.cpp 编译生成的代码里，
+    有一处需要使用它」；<code>0x29</code> 是那段代码里的位置，
+    每台机器都不一样，不用管。
+  </li>
+  <li>
+    <b>开头 <code>/usr/bin/ld:</code> 说明报错的是链接器</b>——
+    你的语法一个字符都没有错，<b>不要回头修改代码</b>。
+    去看「该编译的文件都列上了吗」：手动输入的命令里是否少了一个 <code>.cpp</code>，
+    或者 CMakeLists.txt 里 <code>add_executable</code> 那行少没少一个名字（2.3）。
+  </li>
+</ol>
+
+<p>
+它为什么这么冗长？因为链接器执行的操作就是<b>核对</b>：
+每个 <code>.o</code> 都会提供一份「需要什么、提供什么」的记录，
+它逐个核对。核对不上时，它就把「谁需要什么」清楚地报告出来——
+<b>这是所有报错里最容易阅读的一种：不进行推测，直接指出名称。</b>
+</p>
+
+<h3 id="sA-4">头文件包含两遍的两种错误</h3>
+
+<p>
+同一件事——「那份定义出现了两次」——会因为插入方式不同，
+由<b>不同的阶段</b>报告出来。1.2 两种都遇到过：
+</p>
+
+<p>
+<b>第一种：同一个 <code>.cpp</code> 里插入了两次。</b>
+两次都在<b>同一份</b>要编译的文件里，编译器自己就能看出来：
+</p>
+
+<pre class="diag" data-diag="1.2-重复包含-err/main.cpp"><code>In file included from main.cpp:2:
+util.h:1:5: error: redefinition of ‘int twice(int)’
+    1 | int twice(int x) {
+      |     ^~~~~
+In file included from main.cpp:1:
+util.h:1:5: note: ‘int twice(int)’ previously defined here
+    1 | int twice(int x) {
+      |     ^~~~~</code></pre>
+
+<p>
+<b>第二种：两个 <code>.cpp</code> 里各包含了一遍。</b>
+各自包含，都没有重复；要等到<b>链接</b>那一步，
+两份 <code>.o</code> 放在一起时，问题才暴露：
+</p>
+
+<pre class="diag" data-diag="1.2-重复定义-err/main.cpp"><code>/usr/bin/ld: other.o: in function `twice(int)':
+other.cpp:(.text+0x0): multiple definition of `twice(int)'; main.o:main.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status</code></pre>
+
+<p>
+两种错，一个词之差，识别时有一个简单的方法：<b>看有没有尖号。</b>
+有尖号、有行列号的，是编译器在同一个文件里发现的（<code>redefinition</code>）；
+只有 <code>/usr/bin/ld:</code> 打头的，是链接器在最后一步核对出来的
+（<code>multiple definition</code>）。
+</p>
+
+<div class="aside tip">
+<b>所以头文件里到底能放什么</b>
+<p>
+放<b>承诺</b>：函数的声明、类的定义、常量的声明——
+「存在这样一个声明，形式如下」。
+不放<b>兑现</b>：函数体、全局变量的定义——
+「它是这样实现、它是这个值」。
+声明包含几遍仍然是同一个声明，定义包含两遍就成了两份，链接时一定报错。
+</p>
+</div>
+
+<h3 id="sA-5">经过 cmake 之后，报错形式发生变化</h3>
+
+<p>
+<b>错误本身没变，变化的是它外围的几层信息。</b>
+同一条「找不到头文件」，手动输入 g++ 的时候只有一句，
+走 cmake 之后前面多一行、后面多三行：
+</p>
+
+<pre class="diag" data-diag="2.3-找不到头文件-err/main.cpp"><code>[ 33%] Building CXX object CMakeFiles/report.dir/main.cpp.o
+main.cpp:1:10: fatal error: stats.h: 没有那个文件或目录
+    1 | #include "stats.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make[2]: *** [CMakeFiles/report.dir/build.make:79：CMakeFiles/report.dir/main.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:87：CMakeFiles/report.dir/all] 错误 2
+make: *** [Makefile:91：all] 错误 2</code></pre>
+
+<p>
+需要直接认出中间那几行<b>没有变化</b>——文件名、行列号、尖号，和你自己输入时完全相同。
+剩下的都是新增加的外层信息：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>这一层</th><th>它在说什么</th></tr>
+  <tr>
+    <td><code>[ 33%] Building CXX object …</code></td>
+    <td>make 报「我正在做哪一步」。它是 g++ 那句话前面的「我开始了」——
+      别把它当报错</td>
+  </tr>
+  <tr>
+    <td><code>make[2]: *** … 错误 1</code></td>
+    <td><b>最深的一层，说的才是真事</b>：编 <code>main.cpp.o</code> 这一步没做成</td>
+  </tr>
+  <tr>
+    <td><code>make[1]: *** … 错误 2</code></td>
+    <td>往上一级：「那个目标没做成」</td>
+  </tr>
+  <tr>
+    <td><code>make: *** [Makefile:91：all] 错误 2</code></td>
+    <td>最外层：「我这一步没干成」。<b>那个 91 是生成的 Makefile 的行号</b>，
+      不是你写的任何一份文件的行号——别去自己的文件里找第 91 行</td>
+  </tr>
+</table>
+
+<p>
+<b>读法反过来：从最深那层往上看。</b>
+<code>make[2]</code> 那句点名了是哪个 <code>.o</code>；
+再往上两行就是编译器原话。上面那几层只是「没做成」逐层向上报告了三遍。
+</p>
+
+<p>
+另一类是新出现的：<b>cmake 自己说的话</b>，前面 A.1 那张表里有两句
+（target 名、变量名）。它们的格式和编译器完全不同——
+<b><code>CMake Error at</code> 打头、括号里带命令名</b>，
+而且经常错在两处之外的地方：比如中文变量名，报的是「用它」的第 6 行，
+不是「写它」的第 5 行（2.4）。
+</p>
+
+<div class="aside warn">
+<b>配置没成，就别急着 make</b>
+<p>
+cmake 那一步没有完成（屏幕上最后一句是
+<code>-- Configuring incomplete, errors occurred!</code>），
+<code>build/</code> 里就没有可用的 Makefile。
+这时运行 <code>make</code>，它会返回一句
+<code>make: *** 没有指明目标并且找不到 makefile。 停止。</code>——
+<b>这句话和你的代码一点关系都没有</b>，它只是说明「还没有配置」。
+回去把上面那条 <code>CMake Error</code> 改掉，重新 <code>cmake ..</code>。
+</p>
+</div>
+
+<h3 id="sA-6">查不到，怎么办</h3>
+
+<p>
+按这个顺序来，四步：
+</p>
+
+<ol>
+  <li>
+    <b>先看是谁报的错。</b>编译器、链接器、cmake、make，
+    四者报错的样式各不相同（A.1）。这一步看错，后面都会跟着出错。
+  </li>
+  <li>
+    <b>再找「名字」。</b>引号、尖引号包起来的那几组，
+    都来自你自己的代码——变量名、函数名、文件名、target 名。
+    返回去找到它，答案通常就在那里。
+  </li>
+  <li>
+    <b>只读最上面那一条。</b>底下的多半是它连带的。
+    改完再运行一遍，剩下几条常常自然消失——
+    基础课那份附录里也是这么说的，这一条在文件多起来之后更有效。
+  </li>
+  <li>
+    <b>还不明白，就用基础课 7.1 那套：把程序缩减到最小。</b>
+    多文件工程里缩减的方法是「把 <code>add_executable</code> 那行只留一个
+    <code>.cpp</code>，把别的先注释掉」——缩减到报错只剩一条，问题就会暴露出来。
+  </li>
+</ol>
+
+<p>
+最后一句和基础课那份一样：<b>无法理解的报错，先原样保留，不要急于随意修改。</b>
+有了 <code>build/</code> 之后尤其要忍住一件事——
+<b>别靠 <code>rm -rf build</code> 来「重新开始」。</b>
+那会把 cmake 记着的设置一起删掉，症状换了，线索也断了。
+真要从头配，先看看 <code>CMakeCache.txt</code> 里那些设置是不是你要的。
+</p>
+
+</section>
+<section class="lesson" id="apB">
+<h2><span class="no">B</span>cmake 速查表</h2>
+
+<p>
+<b>这张表是当字典查的，不是用来读的。</b>
+课里讲过的（2.2–2.5），这儿只留一句；课里没讲的，
+末了标一个「附录」，是这一节实际运行过一遍、确认了效果的。
+两边都只写到「长什么样、干什么用」，真要展开，回课里那一节。
+</p>
+
+<p>
+写法那栏里，<code>名字</code>、<code>demo</code>、<code>main.cpp</code>
+这些是<b>占位符</b>，换成你自己的。
+</p>
+
+<h3 id="sB-1">最小模板</h3>
+
+<p>
+<b>一个程序，一个文件</b>（2.2 那份，四行）：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+<p>
+<b>一个程序，几个文件，头文件在子目录</b>（2.3 那份，多了最后两行）：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(report main.cpp stats.cpp)
+
+target_include_directories(report PRIVATE include)</code></pre>
+
+<p>
+<b>再往下，把一部分代码做成库、放进子目录</b>（2.4 那份，
+子目录里另有一份 CMakeLists.txt 写 <code>add_library</code>）：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(命令桌 VERSION 1.2.0 LANGUAGES CXX)
+
+add_subdirectory(工具库)
+
+add_executable(desk main.cpp)
+target_link_libraries(desk PRIVATE tools)</code></pre>
+
+<p>
+三份模板的骨架是一样的：<b>头两行、语言标准、然后「编什么」</b>。
+多文件是往「编什么」那行加名字，加头文件目录是加一行，
+拆成库是再创建一个目录、写一份——工程就是这样逐步扩展的。
+</p>
+
+<h3 id="sB-2">常用命令</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 44%"><col style="width: 56%"></colgroup>
+  <tr><th>命令</th><th>作用</th></tr>
+  <tr>
+    <td><code>cmake_minimum_required(VERSION 3.16)</code></td>
+    <td>第一行，写「至少要多新的 cmake」。<b>数字不能乱写老</b>——
+      比 3.5 小，现在直接报错（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>project(名字 VERSION 1.2.0 LANGUAGES CXX)</code></td>
+    <td>工程名、版本号、什么语言。名字可以是中文（它只是个标签）；
+      版本号后面 <code>configure_file</code> 要用（2.2、2.4）</td>
+  </tr>
+  <tr>
+    <td><code>set(名字 值)</code></td>
+    <td>定义一个名字并保存值，使用时写 <code>${名字}</code>。
+      <b>名字只能是 ASCII，值可以是任意内容</b>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>message(STATUS "…")</code></td>
+    <td>配置的时候输出一句。<code>STATUS</code> 那一档前面会加
+      <code>--</code>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>option(名字 "说明" ON)</code></td>
+    <td>一个开关，第二个位置是默认值。配置的时候可以用
+      <code>-D名字=OFF</code> 改（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>if(名字) … else() … endif()</code></td>
+    <td>配置的时候按条件走。<b>认的是变量的名字，写成
+      <code>if(${名字})</code> 在某些情况下会读歪</b>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>add_executable(目标 源文件…)</code></td>
+    <td>编一个可执行文件。源文件全列在这行，<b>头文件不列</b>。
+      目标名只能 ASCII（2.2、2.3）</td>
+  </tr>
+  <tr>
+    <td><code>add_library(库名 STATIC 源文件…)</code></td>
+    <td>把几个 <code>.o</code> 打成一个静态库，
+      就是 <code>lib库名.a</code>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>target_include_directories(目标 PRIVATE 目录)</code></td>
+    <td>告诉这个目标「头文件去哪儿找」。
+      <code>PUBLIC</code> 是「用我这个库的人也得去那儿找」（2.3、2.4）</td>
+  </tr>
+  <tr>
+    <td><code>target_link_libraries(目标 PRIVATE 库…)</code></td>
+    <td>链接的时候链谁。库可以是子目录建的，也可以是
+      <code>Threads::Threads</code> 这种找来的（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>add_subdirectory(目录)</code></td>
+    <td>把子目录那份 CMakeLists.txt 也拉进来一起配（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>add_compile_options(-Wall)</code></td>
+    <td>给这个目录底下所有编译命令加参数。<b>它只认它下面写的 target</b>，
+      放在 <code>add_subdirectory</code> 后面就管不着子目录（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>find_package(Threads REQUIRED)</code></td>
+    <td>在本机查找现成的库，找到后会提供一个
+      <code>Threads::Threads</code> 这样的名字拿来链（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>configure_file(模板 生成到哪儿 @ONLY)</code></td>
+    <td>拿模板生成一个文件，<code>@名字@</code> 会被换成变量值。
+      生成的通常在 <code>build/</code> 里，<b>不是源码目录</b>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>install(TARGETS 目标 DESTINATION bin)</code></td>
+    <td>说明「安装到其他目录」时复制哪些文件、复制到哪个子目录（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>target_sources(目标 PRIVATE 源文件…)</code></td>
+    <td><b>附录。</b>给已经建好的目标补源文件。
+      <code>add_executable</code> 那行太长时的另一种写法</td>
+  </tr>
+  <tr>
+    <td><code>target_compile_definitions(目标 PRIVATE 名字=值)</code></td>
+    <td><b>附录。</b>给这个目标加 <code>-D</code> 宏，
+      等于在代码里替它 <code>#define</code>。
+      <b>值可以是中文</b>，运行得到的程序照常输出中文</td>
+  </tr>
+  <tr>
+    <td><code>file(GLOB 变量 通配符)</code></td>
+    <td><b>附录。</b>按通配符收集一批文件，存入变量。
+      得到的是<b>绝对路径</b>。cmake 自己的说明书上写着
+      「不推荐拿 GLOB 去收集源文件列表」——新加了文件它不会知道，
+      因为它只看 CMakeLists.txt 变没变</td>
+  </tr>
+  <tr>
+    <td><code>aux_source_directory(目录 变量)</code></td>
+    <td><b>附录。</b>把那个目录里所有源文件的<b>名字</b>收进变量（像
+      <code>./main.cpp</code> 这样）。和 GLOB 同一个毛病：
+      新加的文件它不知道</td>
+  </tr>
+  <tr>
+    <td><code>include_directories(目录)</code></td>
+    <td><b>附录。</b>给这个目录底下<b>所有</b>目标加头文件目录。
+      老写法——cmake 自己的说明书上写着「请改用
+      <code>target_include_directories()</code>」</td>
+  </tr>
+  <tr>
+    <td><code>link_directories(目录)</code></td>
+    <td><b>附录。</b>加一个「去哪儿找库」的目录。
+      说明书上的原话是「这条命令很少有必要，能避开就避开」</td>
+  </tr>
+  <tr>
+    <td><code>find_library(变量 库名)</code></td>
+    <td><b>附录。</b>去本机找一个库文件，找到就把
+      完整路径存进变量。试出来的是
+      <code>/usr/lib/x86_64-linux-gnu/libm.so</code> 这种</td>
+  </tr>
+  <tr>
+    <td><code>find_path(变量 头文件名)</code></td>
+    <td><b>附录。</b>去本机找一个头文件搁在哪个目录，
+      试出来的是 <code>/usr/include</code> 这种</td>
+  </tr>
+  <tr>
+    <td><code>add_custom_command(OUTPUT… COMMAND…)</code></td>
+    <td><b>附录。</b>自己定一条「生成某个文件」的命令。
+      和下面那条成对用：一个说「怎么生成」，一个说「它是个目标」</td>
+  </tr>
+  <tr>
+    <td><code>add_custom_target(名字 DEPENDS 文件)</code></td>
+    <td><b>附录。</b>把那件自己定的事做成一个目标。
+      <b>名字也只能是 ASCII</b>——写成中文，报的错和
+      <code>add_executable</code> 那条一模一样</td>
+  </tr>
+  <tr>
+    <td><code>add_dependencies(目标 另一个目标)</code></td>
+    <td><b>附录。</b>让前者等后者做完再编。
+      典型用法：编程序之前，先等着「生成头文件」那件事做完</td>
+  </tr>
+</table>
+
+<h3 id="sB-3">常用变量</h3>
+
+<p>
+它们不用你声明，cmake 配的时候就填好了。右边那列是这份材料里真见过的样子。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>变量</th><th>是什么</th></tr>
+  <tr>
+    <td><code>PROJECT_NAME</code> / <code>PROJECT_VERSION</code></td>
+    <td><code>project()</code> 里写的名字和版本号。
+      版本号写 1.2.0，<code>@PROJECT_VERSION@</code> 换出来就是
+      <code>1.2.0</code>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_CXX_STANDARD</code></td>
+    <td>用哪版 C++。<b>写 17，编译器那行上是 <code>-std=gnu++17</code></b>——
+      多出来的 <code>gnu</code> 是「带 GNU 扩展」的意思（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_CXX_EXTENSIONS</code></td>
+    <td>写成 <code>OFF</code>，上面那个就变成
+      <code>-std=c++17</code>，<b>一点扩展都不带</b>。
+      课程里的代码不用它，写出来是因为你在别处会看见（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_CURRENT_SOURCE_DIR</code></td>
+    <td>正在配的这份 CMakeLists.txt 所在的<b>源码</b>目录（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_CURRENT_BINARY_DIR</code></td>
+    <td>对应的 <code>build/</code> 里的那个目录。
+      <code>configure_file</code> 生成的文件十有八九搁在这儿（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>PROJECT_SOURCE_DIR</code> / <code>PROJECT_BINARY_DIR</code></td>
+    <td>本工程的源码目录／构建目录。和上面那两个的区别：
+      子目录里配的时候，这两个还是<b>最外层</b>那个（2.5 那份真实文件里出现过）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_BUILD_TYPE</code></td>
+    <td>配置的时候给：不设，编译器参数是<b>空的</b>；
+      <code>Debug</code> 给 <code>-g</code>；
+      <code>Release</code> 给 <code>-O3 -DNDEBUG</code>。
+      三个都是实际运行得到的</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_CXX_FLAGS</code></td>
+    <td>「最后都会加上的那串参数」。编译目标的时候，
+      cmake 会把标准、编译选项那些合起来写进
+      <code>flags.make</code> 里的一行（2.2、2.4）</td>
+  </tr>
+  <tr>
+    <td><code>CMAKE_INSTALL_PREFIX</code></td>
+    <td>安装到哪个目录。<code>cmake --install . --prefix 路径</code>
+      能把这一次的改掉（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>Threads_FOUND</code> / <code>CMAKE_THREAD_LIBS_INIT</code></td>
+    <td><code>find_package(Threads)</code> 找完之后填的：
+      是否找到、是否需要额外链接。<b>这台机器上后者是空的</b>——
+      因为线程相关的实现就在标准库中，不用额外链（2.4）</td>
+  </tr>
+</table>
+
+<h3 id="sB-4">命令行</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 46%"><col style="width: 54%"></colgroup>
+  <tr><th>命令</th><th>作用</th></tr>
+  <tr>
+    <td><code>cmake --version</code></td>
+    <td>查看安装的是哪一版。这份材料里运行得到的是
+      <code>cmake version 4.1.2</code>（0.1 让学生逐个查过）</td>
+  </tr>
+  <tr>
+    <td><code>mkdir -p build</code> → <code>cd build</code> → <code>cmake ..</code></td>
+    <td>配置：在源码目录旁边创建一个 <code>build/</code>，
+      进入之后把生成的文件都放在这里（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>cmake .. -D名字=值</code></td>
+    <td>配置的时候就给一个值，比如
+      <code>-DEXTRA_LINE=OFF</code>。
+      <b>值变了要重新配</b>，不用删 <code>build/</code>（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>make</code></td>
+    <td>真编译。它只检查「哪个文件发生了变化」，没有变化的不重新编译——
+      这件事 2.1 拿手写的 Makefile 讲过一遍</td>
+  </tr>
+  <tr>
+    <td><code>make VERBOSE=1</code></td>
+    <td>把每一步<b>真正的命令行</b>输出出来。
+      想知道 <code>-I</code>、<code>-std</code> 从哪儿来的，就看它（2.2）</td>
+  </tr>
+  <tr>
+    <td><code>make clean</code></td>
+    <td>把编译生成的文件删除，配置保留。运行完之后可执行文件就没了，
+      再运行一次 <code>make</code> 又会重新生成</td>
+  </tr>
+  <tr>
+    <td><code>cmake -S . -B build</code></td>
+    <td>上面那三步的合写：<code>-S</code> 是源码目录，
+      <code>-B</code> 是构建目录，<b>不用先 cd 进去</b></td>
+  </tr>
+  <tr>
+    <td><code>cmake --build build</code></td>
+    <td>不用切换目录就能编译，和进入目录运行 <code>make</code> 效果相同</td>
+  </tr>
+  <tr>
+    <td><code>cmake --install . --prefix 路径</code></td>
+    <td>按 <code>install()</code> 说的那些，复制到你指定的位置（2.4）</td>
+  </tr>
+  <tr>
+    <td><code>cmake --help-command 名字</code></td>
+    <td>输出一条命令的<b>官方说明</b>，见下一节</td>
+  </tr>
+  <tr>
+    <td><code>cmake --help-variable-list</code></td>
+    <td>把所有变量名列出来，见下一节</td>
+  </tr>
+</table>
+
+<h3 id="sB-5">当字典查</h3>
+
+<p>
+cmake 把所有命令、变量、属性的说明文档<b>安装在你自己这台机器上</b>，
+不用联网。三个数字是这份材料里真数出来的：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 52%"><col style="width: 48%"></colgroup>
+  <tr><th>运行这个</th><th>输出什么</th></tr>
+  <tr>
+    <td><code>cmake --help-command-list</code></td>
+    <td><b>130 条</b>命令的名字，一行一条</td>
+  </tr>
+  <tr>
+    <td><code>cmake --help-variable-list</code></td>
+    <td><b>771 条</b>变量名</td>
+  </tr>
+  <tr>
+    <td><code>cmake --help-property-list</code></td>
+    <td><b>588 条</b>属性名</td>
+  </tr>
+  <tr>
+    <td><code>cmake --help-command add_library</code></td>
+    <td>那一条的完整说明，英文的，带用法和例子。
+      第一行是 <code>add_library</code> 后面跟一行横线</td>
+  </tr>
+</table>
+
+<p>
+名字记不全的时候，把清单保存下来搜索：
+</p>
+
+<pre><code>cmake --help-variable-list | grep INSTALL</code></pre>
+
+<p>
+输出五条，第一条是 <code>CMAKE_BUILD_WITH_INSTALL_NAME_DIR</code>。
+<b>看到感兴趣的，再用 <code>--help-variable</code> 查询它的一条说明。</b>
+</p>
+
+<p>
+这份附录里的表，只收「这门课讲过的」和「以后会遇到的」。
+剩下那一百多条，就是它住的地方：
+<b>先在这里识别出大致内容，再用 <code>--help-command</code> 查看原文。</b>
+原文是英文的，可它写得比想象中好读——
+参数的形式、可以写几种，都集中在一起。
+</p>
+
+<p>
+还有一条路：<b>那份真实工程的 CMakeLists.txt</b>（2.5 读的那份）
+本身就是「别人怎么写」的参考。里面出现的每一条，
+都能在这张表里找到名字；找不到的那几条（那种很长的大写名称），
+2.5 标过「先跳过」——它们是其他工具安装时添加的，不是 cmake 自带的。
+</p>
+
+<p class="can">
+  <b>cmake 这一节到这里就完整了。</b>
+  配置、编译、安装、命令行，都在这几张表里。
+  真查不到，就用 <code>cmake --help-command</code> 查阅它自身的帮助。
+</p>
+
+</section>
+
+<section class="lesson" id="apC">
+<h2><span class="no">C</span>容器速查</h2>
+
+<p>
+第 3 部分那六种容器，名字、功能、性质各不相同，放在一起容易忘。
+这一节按「你想做的操作」查：<b>忘了哪个操作叫什么，查阅对应那一小节。</b>
+</p>
+
+<h3 id="sC-1">六个容器速览</h3>
+
+<p>
+一共两栏要先记住：<b>它是什么</b>、<b>要 <code>#include</code> 哪个头文件</b>。
+漏掉那句 <code>#include</code>，编译器会说
+<code>‘vector’ is not a member of ‘std’</code>——不是你没写对名字，
+是没告诉它上哪儿找。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 24%"><col style="width: 14%"><col style="width: 62%"></colgroup>
+  <tr><th>写的</th><th>要 include</th><th>它是什么、什么时候用（在哪一课）</th></tr>
+  <tr>
+    <td><code>std::vector&lt;int&gt;</code></td>
+    <td><code>&lt;vector&gt;</code></td>
+    <td>连续排列的一块内存，按「第几个」取。<b>顺序就是你放进去的顺序</b>，重复的也留着（3.1）</td>
+  </tr>
+  <tr>
+    <td><code>std::string</code></td>
+    <td><code>&lt;string&gt;</code></td>
+    <td>一组字符，专门存放文本。可以连接、比较、截取一段（3.2）</td>
+  </tr>
+  <tr>
+    <td><code>std::map&lt;K, V&gt;</code></td>
+    <td><code>&lt;map&gt;</code></td>
+    <td>一张表：<b>给一个键，得到一个值</b>。键不重复、自动排好（3.4）</td>
+  </tr>
+  <tr>
+    <td><code>std::set&lt;T&gt;</code></td>
+    <td><code>&lt;set&gt;</code></td>
+    <td>只有键的 map：不重复、自动排好。<b>只问「有没有」</b>（3.5）</td>
+  </tr>
+  <tr>
+    <td><code>std::queue&lt;T&gt;</code></td>
+    <td><code>&lt;queue&gt;</code></td>
+    <td>队：<b>先进先出</b>。按来的先后办事（3.5）</td>
+  </tr>
+  <tr>
+    <td><code>std::stack&lt;T&gt;</code></td>
+    <td><code>&lt;stack&gt;</code></td>
+    <td>栈：<b>后进先出</b>。最近的先办（3.5）</td>
+  </tr>
+</table>
+
+<p>
+有三件事六个容器都会，名字还都一样，先记这一组：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 26%"><col style="width: 74%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr>
+    <td>有几样</td>
+    <td><code>v.size()</code>——六个都有</td>
+  </tr>
+  <tr>
+    <td>空没空</td>
+    <td><code>v.empty()</code>——六个都有。
+      <code>size() == 0</code> 也是一个意思，但 <code>empty()</code> 更顺眼</td>
+  </tr>
+  <tr>
+    <td>全倒掉</td>
+    <td><code>v.clear()</code>——<b>vector、string、map、set 有</b>；
+      <b>queue、stack 没有</b>（它们只能一个一个 <code>pop</code> 掉）
+      </td>
+  </tr>
+</table>
+
+<div class="aside">
+<b>size() 返回的数，跟 int 不是同一种</b>
+<p>
+它是「不带符号」的数。用它和 <code>int</code> 比较大小
+（<code>for (int i = 0; i &lt; v.size(); i++)</code> 那种），
+会产生一条 <code>-Wsign-compare</code> 警告。
+</p>
+<p>
+看见警告就加 <code>int()</code>：<code>int(line.size()) - 1</code>——
+3.2 和 3-5 那两处都是这么处理的。
+</p>
+</div>
+
+<h3 id="sC-2">每个容器会哪些动作</h3>
+
+<p>
+下面六小块，一块一个容器。<b>斜体那几句是「不返回元素」或者「会创建元素」的易错点</b>，
+其余都是直接用法。
+</p>
+
+<p><b><code>std::vector</code>（3.1）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>创建一个空的</td><td><code>std::vector&lt;int&gt; v;</code></td></tr>
+  <tr><td>创建 N 个元素</td><td><code>std::vector&lt;int&gt; v(N);</code>——<b>圆括号是「要几个」</b></td></tr>
+  <tr><td>一次给几个数</td><td><code>std::vector&lt;int&gt; v = {90, 85};</code></td></tr>
+  <tr><td>后面加一个</td><td><code>v.push_back(90);</code></td></tr>
+  <tr><td>取第 i 个</td><td><code>v[i]</code>——下标从 <b>0</b> 数</td></tr>
+  <tr><td>改第 i 个</td><td><code>v[i] = 90;</code></td></tr>
+  <tr><td>删除最后一个</td><td><code>v.pop_back();</code>——<b>不返回元素</b></td></tr>
+  <tr><td>逐个遍历</td><td><code>for (int x : v)</code>（副本，只读）／
+      <code>for (int&amp; x : v)</code>（原对象，可修改）</td></tr>
+  <tr><td>声明二维表</td><td><code>std::vector&lt;std::vector&lt;int&gt;&gt; grid;</code>
+      ——外层存放行、内层存放该行的元素；<b>每行可以有长有短</b>（3.1）</td></tr>
+  <tr><td>取得一行／取得一个元素</td><td><code>grid[i]</code> 是第 i 行，它自己还能
+      <code>.size()</code>；<code>grid[i][j]</code> 是第 i 行第 j 列
+      ——<b>先选择行，再选择该行中的第几个元素</b></td></tr>
+  <tr><td>逐行添加</td><td>内层 <code>push_back</code> 填满一行，再把整行
+      <code>push_back</code> 到外层——<b>外层仍为空的时候，
+      <code>grid[i]</code> 取不到元素</b></td></tr>
+</table>
+
+<p><b><code>std::string</code>（3.2）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>创建一个</td><td><code>std::string s = "abc";</code></td></tr>
+  <tr><td>后面接一段</td><td><code>s = s + "def";</code> 或 <code>s += "def";</code>
+      ——<b>加号两边至少要有一个是 std::string</b></td></tr>
+  <tr><td>有几个<b>字节</b></td><td><code>s.size()</code>——中文一个字三个字节</td></tr>
+  <tr><td>取第 i 个字节</td><td><code>s[i]</code>——拿出来是一个 <code>char</code></td></tr>
+  <tr><td>判断是否相等</td><td><code>a == b</code>——比较的是其中存放的那串字符，不是地址</td></tr>
+  <tr><td>比先后</td><td><code>a &lt; b</code>——一个字节一个字节比</td></tr>
+  <tr><td>读一整行</td><td><code>std::getline(std::cin, s);</code>
+      ——<b>前面刚用过 <code>&gt;&gt;</code> 的话，先 <code>std::cin.ignore();</code></b></td></tr>
+  <tr><td>查找一段字符串的位置</td><td><code>s.find("score=")</code>——返回的是位置；
+      <b>找不到是 <code>std::string::npos</code></b></td></tr>
+  <tr><td>截取一段</td><td><code>s.substr(2)</code>（从 2 到最后）／
+      <code>s.substr(0, 2)</code>（从 0 起两个）</td></tr>
+  <tr><td>逐个字符遍历</td><td><code>for (char c : s)</code></td></tr>
+</table>
+
+<p><b><code>std::map</code>（3.4）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>开一张空表</td><td><code>std::map&lt;std::string, int&gt; m;</code></td></tr>
+  <tr><td>放一个／改一个</td><td><code>m["apple"] = 3;</code>——本来没有就新建，本来有就改掉</td></tr>
+  <tr><td>取一个</td><td><code>m["apple"]</code>——<b>没有这个键的话，它会立即创建一个</b></td></tr>
+  <tr><td>在不在</td><td><code>m.count("apple")</code>——<b>1 就是有，0 就是没有</b>。
+      <b>问在不在只用这个，别用中括号</b></td></tr>
+  <tr><td>有几个键</td><td><code>m.size()</code></td></tr>
+  <tr><td>删除一个</td><td><code>m.erase("apple");</code></td></tr>
+  <tr><td>遍历</td><td><code>for (const auto&amp; kv : m)</code>——
+      <code>kv.first</code> 是键（<b>改不了</b>），<code>kv.second</code> 是值（能改）</td></tr>
+  <tr><td>数数</td><td><code>m[w]++;</code>——没有就先建一个（值 0）再加一，
+      <b>这是利用中括号创建元素这一特性的地方</b></td></tr>
+</table>
+
+<p><b><code>std::set</code>（3.5）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>创建一个</td><td><code>std::set&lt;int&gt; s;</code></td></tr>
+  <tr><td>插入一个</td><td><code>s.insert(5);</code>——<b>如果已经存在就不插入</b>
+      （所以插入后 <code>size()</code> 不一定变大）</td></tr>
+  <tr><td>在不在</td><td><code>s.count(5)</code>——1 或 0</td></tr>
+  <tr><td>有几个</td><td><code>s.size()</code></td></tr>
+  <tr><td>删除一个</td><td><code>s.erase(5);</code></td></tr>
+  <tr><td>遍历</td><td><code>for (int x : s)</code>／<code>for (const std::string&amp; w : s)</code>
+      ——<b>出来的是排好的</b></td></tr>
+</table>
+
+<p><b><code>std::queue</code>（3.5）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>创建一个</td><td><code>std::queue&lt;std::string&gt; q;</code></td></tr>
+  <tr><td>排到队尾</td><td><code>q.push("小明");</code></td></tr>
+  <tr><td>查看队头</td><td><code>q.front()</code>——<b>只查看，不取出</b></td></tr>
+  <tr><td>弹出队头</td><td><code>q.pop();</code>——<b>只删除，不返回值</b></td></tr>
+  <tr><td>按顺序遍历</td><td><code>while (!q.empty()) { ...q.front()...; q.pop(); }</code></td></tr>
+</table>
+
+<p><b><code>std::stack</code>（3.5）</b></p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>创建一个</td><td><code>std::stack&lt;std::string&gt; st;</code></td></tr>
+  <tr><td>放入栈顶</td><td><code>st.push("主页");</code></td></tr>
+  <tr><td>查看栈顶</td><td><code>st.top()</code>——<code>front()</code> 在这儿叫 <code>top()</code>，
+      只有这一处名称不同</td></tr>
+  <tr><td>弹出栈顶</td><td><code>st.pop();</code>——<b>同样不返回值</b></td></tr>
+  <tr><td>反向遍历</td><td><code>while (!st.empty()) { ...st.top()...; st.pop(); }</code></td></tr>
+</table>
+
+<h3 id="sC-3">两个值组合：pair</h3>
+
+<p>
+<code>std::pair</code> 是最小的容器：不多不少正好两个。
+遍历 map 时得到的每一项，都是这种类型。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>想做的操作</th><th>怎么写</th></tr>
+  <tr><td>要 include 什么</td><td><code>&lt;utility&gt;</code>——
+      <b>遍历 map 的时候不需要处理</b>，那种 pair 是 map 自己带的</td></tr>
+  <tr><td>创建一个</td><td><code>std::pair&lt;std::string, int&gt; p("apple", 3);</code>
+      ——尖括号里两个类型，圆括号里两个值，<b>按位置对应</b></td></tr>
+  <tr><td>另一种写法</td><td><code>std::pair&lt;std::string, int&gt; q = {"banana", 5};</code>
+      ——含义相同，大括号写法更短</td></tr>
+  <tr><td>取第一个</td><td><code>p.first</code></td></tr>
+  <tr><td>取第二个</td><td><code>p.second</code></td></tr>
+  <tr><td>改</td><td><code>p.first = "pear";</code>——两个位置都能改（map 里那个键不能）</td></tr>
+</table>
+
+<h3 id="sC-4">选择哪一个：四句话</h3>
+
+<p>
+不是记住各个容器，而是问自己四个问题（3.6 那四句）：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 44%"><col style="width: 56%"></colgroup>
+  <tr><th>问自己</th><th>回答后即可确定</th></tr>
+  <tr><td>按「第几个」取得，还是按名称取得？</td><td>第几个 → <code>vector</code>；按名字 → <code>map</code></td></tr>
+  <tr><td>同一个值会出现两次吗？</td><td>要保留每一次出现 → <code>vector</code>；只要「有哪几种」 → <code>set</code></td></tr>
+  <tr><td>是否需要自动排序？</td><td>要 → <code>map</code>、<code>set</code>；不要 → <code>vector</code>（插入顺序就是存放顺序）</td></tr>
+  <tr><td>先到的先处理，还是最近的先处理？</td><td>先到的先处理 → <code>queue</code>；最近的先处理 → <code>stack</code></td></tr>
+</table>
+
+<p>
+最容易混淆的三组：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>分不清的</th><th>问自己一句</th></tr>
+  <tr><td><code>vector</code> 还是 <code>set</code></td>
+    <td><b>重复的要不要留着？</b>要 → vector；只想知道有哪些 → set</td></tr>
+  <tr><td><code>map</code> 还是 <code>set</code></td>
+    <td><b>是否需要为每个键关联一个值？</b>需要 → map；不需要 → set</td></tr>
+  <tr><td><code>queue</code> 还是 <code>stack</code></td>
+    <td><b>先到的先处理，还是最近的先处理？</b>先到的先处理 → queue；最近的先处理 → stack</td></tr>
+</table>
+
+<p>
+拿不准就<b>先用 <code>vector</code></b>——它最直接，
+其他几种容器支持的操作它都支持，只是要自己多写几行。
+写到后来发现「我在反复查找某个元素是否存在」，
+那就是该换 <code>set</code> 或者 <code>map</code> 的判断依据了。
+</p>
+
+<h3 id="sC-5">容器上常见的报错</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 38%"><col style="width: 26%"><col style="width: 36%"></colgroup>
+  <tr><th>报错里的词</th><th>它在说什么</th><th>你多半写了什么</th></tr>
+
+  <tr>
+    <td><code>passing ‘const std::vector&lt;int&gt;’ as ‘this’ argument discards qualifiers</code></td>
+    <td>「你传入的这个 <code>this</code> 是<b>只读</b>的，可这个方法要修改它」</td>
+    <td>在一个 <code>const</code> 的参数／对象上动了手：<code>push_back</code>、
+      <code>drain</code>、<code>kv.first.clear()</code> 都是这句（3.3、3.4）</td>
+  </tr>
+  <tr>
+    <td><code>passing ‘const Battery’ as ‘this’ argument discards qualifiers</code></td>
+    <td>同上，只是这回的只读对象是你自己定义的类</td>
+    <td>拿 <code>const</code> 的对象叫了一个<b>没写 <code>const</code></b>
+      的成员函数——报错底下那条 <code>note</code> 会把它指给你（3.3）</td>
+  </tr>
+  <tr>
+    <td><code>assignment of read-only variable ‘N’</code></td>
+    <td>「往一个只读的<b>变量</b>里赋值」</td>
+    <td>给一个 <code>const</code> 的变量重新赋值。跟上一句是同一件事，
+      只是上一句说的是引用、这句说的是变量（3.3）</td>
+  </tr>
+  <tr>
+    <td><code>void value not ignored as it ought to be</code></td>
+    <td>「一个 <code>void</code> 类型的值本应被忽略，却在这里被使用」</td>
+    <td><code>int x = q.pop();</code>——<code>pop()</code> 只删除元素、
+      <b>不返回元素</b>。先用 <code>front()</code>／<code>top()</code> 取得元素再 pop（3.5）</td>
+  </tr>
+  <tr>
+    <td><code>invalid operands of types ‘const char [4]’ and ‘const char [4]’ to binary ‘operator+’</code></td>
+    <td>「两个 <code>const char</code> 数组不能相加」</td>
+    <td><code>"abc" + "def"</code>——两个双引号不能直接加。
+      <b>加号两边至少要有一个是 <code>std::string</code></b>（3.2）</td>
+  </tr>
+  <tr>
+    <td><code>warning: comparison of integer expressions of different signedness</code></td>
+    <td>「这两种数不是同一种，无法保证比较结果」——<b>这是警告，不是错误</b></td>
+    <td>把 <code>int</code> 和 <code>size()</code> 混合比较。
+      加 <code>int()</code>：<code>int(line.size()) - 1</code>（3.2、3-5）</td>
+  </tr>
+</table>
+
+<h3 id="sC-6">还没教的，先作初步认识</h3>
+
+<p>
+真实代码里还会遇到下面这些。<b>这一部分没教，大多在第 4 部分讲</b>——
+列在这儿不是让你现在用，是让你遇见的时候知道
+「这是尚未学到的内容」，而不是「我遗漏了学习内容」。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 38%"><col style="width: 62%"></colgroup>
+  <tr><th>会遇到的</th><th>它是什么</th></tr>
+  <tr>
+    <td><code>v.begin()</code>、<code>v.end()</code></td>
+    <td>表示「某一个位置」的对象，叫<b>迭代器</b>。
+      3.6 说过：想删中间那个、想往中间插一个，都得先有它。
+      第 4 部分专门讲</td>
+  </tr>
+  <tr>
+    <td><code>std::sort(v.begin(), v.end())</code></td>
+    <td>把一组元素排好。vector 自己不会排，需要调用它，
+      还要 <code>#include &lt;algorithm&gt;</code></td>
+  </tr>
+  <tr>
+    <td><code>m.find(k)</code></td>
+    <td>map 的另一种「查在不在」。这一部分一律用 <code>count</code>，
+      因为 <code>find</code> 要用它返回的值与 <code>m.end()</code> 比较——
+      <code>end()</code> 是什么，第 4 部分讲</td>
+  </tr>
+  <tr>
+    <td><code>std::unordered_map</code>、<code>std::unordered_set</code></td>
+    <td>也是表、也是集合，只是<b>不排序</b>。
+      代价和优点，第 4 部分那个「快慢」的话题里一并说</td>
+  </tr>
+  <tr>
+    <td><code>std::list</code>、<code>std::deque</code></td>
+    <td>另外两种顺序容器。名字认得就行，这一门课用不到它们</td>
+  </tr>
+</table>
+
+<p class="can">
+  <b>容器的事，C 里齐了。</b>
+  C 里查不到的，多半是上面那张「先认识一下」——那些在后面的课里。
+</p>
+
+</section>
+
+<section class="lesson" id="apD">
+<h2><span class="no">D</span>新特性速查</h2>
+
+<p>
+这一节收的是一批<b>新写法</b>：这些年陆续添进 C++ 的，
+真实工程里到处都是，这门课<b>大多在第 5 部分讲过了</b>
+（<a href="../lessons/cpp_advanced/05-内存与所有权.html#l5-4">5.4</a>、
+<a href="../lessons/cpp_advanced/05-内存与所有权.html#l5-5">5.5</a>）。
+列在这儿当速查。
+</p>
+
+<h3 id="sD-1">智能指针</h3>
+
+<p>
+先看它能办什么事：<b>「这个对象不用了，谁负责销毁」。</b>
+容器里的元素不需要你管理——<code>std::vector&lt;std::string&gt;</code>
+存放的那几个字符串，由容器自己销毁。可真实代码里还有另一种对象：
+用 <code>new</code> 创建出来的（5.1、5.2 讲），创建它、销毁它都得有人管理。
+<b>智能指针把这份责任写进了类型里</b>：它一消失，
+对象跟着销毁，不用谁记着写 <code>delete</code>。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>会遇到的</th><th>它在办什么事</th></tr>
+  <tr>
+    <td><code>std::unique_ptr&lt;Counter&gt;</code><br>
+      <code>std::make_unique&lt;Counter&gt;(...)</code></td>
+    <td><b>独占</b>：这个对象只有一个持有者。
+      持有者不能复制给其他对象，只能<b>移动</b>；
+      持有者销毁后，对象随之销毁</td>
+  </tr>
+  <tr>
+    <td><code>std::shared_ptr&lt;Counter&gt;</code><br>
+      <code>std::make_shared&lt;Counter&gt;(...)</code></td>
+    <td><b>共用</b>：可以有多个持有者，每增加一个引用计数加一；
+      <b>最后一个持有者销毁后</b>，对象才销毁</td>
+  </tr>
+  <tr>
+    <td><code>std::weak_ptr&lt;Counter&gt;</code></td>
+    <td>「只观察，不持有一份」——用来查询「那个对象是否仍然存在」。
+      使用场合较少，作初步认识即可</td>
+  </tr>
+</table>
+
+<p>
+两个 <code>make_</code> 开头的是「直接创建一个对象，交给智能指针管理」的
+简写，比先创建再包装一层更简洁，也更不容易写错。
+头文件是 <code>&lt;memory&gt;</code>。<b>怎么用、什么时候选哪一种，
+第 5 部分讲过了
+（<a href="../lessons/cpp_advanced/05-内存与所有权.html#l5-4">5.4</a>）。</b>
+</p>
+
+<h3 id="sD-2">移动与就地构造</h3>
+
+<p>
+3.1 里说过：往容器里添加元素，常常是<b>复制一份</b>进去的。
+下面这两条针对的是「能不复制就不复制」——<b>对象仍然是同一个对象，
+只是转移了存放位置</b>。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>会遇到的</th><th>它在办什么事</th></tr>
+  <tr>
+    <td><code>v2 = std::move(v1);</code></td>
+    <td><b>移动</b>：<code>v1</code> 里的元素整批转移进 <code>v2</code>，
+      不复制第二份；<code>v1</code> 随之变空。
+      「副本」的反面就是它</td>
+  </tr>
+  <tr>
+    <td><code>v.emplace_back(90);</code></td>
+    <td>在末尾<b>直接创建一个</b>，结果跟 <code>v.push_back(90)</code>
+      一样。对象复杂时，它省掉一次「先创建、再复制进去」</td>
+  </tr>
+</table>
+
+<p>
+<code>std::move</code> 这个名字容易引起误解：<b>它本身不移动</b>，
+只是把「这一份可以移动」告知编译器——真正执行移动的是构造过程。
+头文件是 <code>&lt;utility&gt;</code>；<code>emplace_back</code>
+不用另加头文件，它就在 <code>&lt;vector&gt;</code> 里。
+这两条第 5 部分也讲过了
+（<a href="../lessons/cpp_advanced/05-内存与所有权.html#l5-5">5.5</a>）。
+</p>
+
+<h3 id="sD-3">简洁的写法</h3>
+
+<p>
+下面两条不改变程序干什么，只改变写在纸上的样子——
+同一个意思，另一种写法。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>会遇到的</th><th>它是什么</th></tr>
+  <tr>
+    <td><code>for (const auto&amp; [k, v] : m)</code></td>
+    <td><b>结构化绑定</b>：3.4 里遍历 map 要写
+      <code>kv.first</code>、<code>kv.second</code>；
+      这种写法<b>直接定义两个名称</b>——<code>k</code> 是键、
+      <code>v</code> 是值。遍历存放 pair 的 vector 也同样适用</td>
+  </tr>
+  <tr>
+    <td><code>Counter* p = nullptr;</code></td>
+    <td><b>空指针</b>：这个写法基础课 6.3 教过。真实代码里还会遇见
+      老的两种写法——<code>NULL</code> 和 <code>0</code>，
+      跟 <code>nullptr</code> 是一个意思，<b>见到就知道是空的</b></td>
+  </tr>
+</table>
+
+<p>
+结构化绑定是写法，不用加头文件；<code>auto</code> 前面那个
+<code>&amp;</code> 和 3.1 的副本、原对象是同一件事——
+加 <code>&amp;</code> 是为了不复制那一份。
+</p>
+
+<h3 id="sD-4">std::array</h3>
+
+<p>
+定长的数组——基础课 4.1 那个数组，加上容器那一套功能。
+<b>元素个数从头到尾固定</b>，数量固定不变；但它和 vector 一样
+知道自己有几个、能遍历、能整个复制给别人。
+元素个数写代码的时候就定下来、又想要容器那些操作的地方，
+真实工程会用它。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>会遇到的</th><th>它是什么</th></tr>
+  <tr>
+    <td><code>std::array&lt;int, 3&gt; a = {1, 2, 3};</code></td>
+    <td>三个数，数量固定。<b>尖括号里第二个数是「几个」</b>——
+      在 vector 那儿这个数写在圆括号里（<code>(3)</code>），别写混</td>
+  </tr>
+  <tr>
+    <td><code>a.size()</code>、<code>a[i]</code>、
+      <code>for (int x : a)</code></td>
+    <td>跟 vector 一个样子——<b>这一行的动作，照 vector 那套理解就行</b></td>
+  </tr>
+</table>
+
+<p>
+头文件是 <code>&lt;array&gt;</code>。<b>这门课不专门讲它</b>，
+第 5 部分 <a href="../lessons/cpp_advanced/05-内存与所有权.html#s5-5-5">5.5.5</a>
+已经介绍过，了解即可。
+</p>
+
+</section>
+
+<section class="lesson" id="apE">
+<h2><span class="no">E</span>串口速查</h2>
+
+<p>
+  这一节是<a href="../lessons/cpp_advanced/07-串口.html">第 7 部分</a>的手册：
+  写串口程序时逐项核对的常数、字段与参数。
+  讲解在课里，这里只列结果，不展开推导。
+  帧格式与校验参数按 2026 赛季通信协议 V1.3.0 整理；
+  其他赛季以当季官方协议为准。
+</p>
+
+<h3 id="sE-1">常用波特率常量</h3>
+
+<p>
+  波特率（baud rate）用每秒多少位表示。设置时传给
+  <code>cfsetispeed</code> 与 <code>cfsetospeed</code> 的是
+  <code>termios.h</code> 里的常量，不是数字本身：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 40%"><col style="width: 60%"></colgroup>
+  <tr><th>常量</th><th>对应的速率</th></tr>
+  <tr><td><code>B9600</code></td><td>9600</td></tr>
+  <tr><td><code>B19200</code></td><td>19200</td></tr>
+  <tr><td><code>B38400</code></td><td>38400</td></tr>
+  <tr><td><code>B57600</code></td><td>57600</td></tr>
+  <tr><td><code>B115200</code></td><td>115200</td></tr>
+  <tr><td><code>B230400</code></td><td>230400</td></tr>
+  <tr><td><code>B460800</code></td><td>460800</td></tr>
+  <tr><td><code>B921600</code></td><td>921600</td></tr>
+</table>
+
+<p>
+  这些常量是否可用，取决于系统的头文件与驱动；编译时提示某个常量未声明，
+  就说明当前环境不提供它。设置之后用 <code>cfgetispeed</code> 与
+  <code>cfgetospeed</code> 读回核对。伪终端会接受这些设置，
+  但并不按对应的速率限制发送。
+</p>
+
+<p>
+  2026 赛季协议的表 1-1 里，电源管理模块与机器人之间、
+  自定义控制器与选手端之间用 115200，图传发送端与机器人之间用 921600。
+  这只是那份协议列出的连接；对接其他设备时，以对方规定的速率为准。
+</p>
+
+<h3 id="sE-2">8N1 要设的项</h3>
+
+<p>
+  8N1 指 8 位数据位、无校验位（none）、1 位停止位。
+  整套设置写在 <code>struct termios</code> 里，最后用
+  <code>tcsetattr(fd, TCSANOW, &amp;t)</code> 生效。逐项对照：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 22%"><col style="width: 44%"><col style="width: 34%"></colgroup>
+  <tr><th>项目</th><th>怎么设</th><th>读回怎么核对</th></tr>
+  <tr>
+    <td>原始模式</td>
+    <td><code>cfmakeraw(&amp;t);</code></td>
+    <td>关掉 <code>ICANON</code>、<code>ECHO</code>、<code>ECHOE</code>、
+      <code>OPOST</code>、<code>ISIG</code>、<code>IXON</code> 等</td>
+  </tr>
+  <tr>
+    <td>数据位 8</td>
+    <td><code>t.c_cflag &amp;= ~CSIZE;</code><br>
+      <code>t.c_cflag |= CS8;</code></td>
+    <td><code>(t.c_cflag &amp; CSIZE) == CS8</code></td>
+  </tr>
+  <tr>
+    <td>无校验</td>
+    <td><code>t.c_cflag &amp;= ~PARENB;</code></td>
+    <td><code>(t.c_cflag &amp; PARENB) == 0</code></td>
+  </tr>
+  <tr>
+    <td>停止位 1</td>
+    <td><code>t.c_cflag &amp;= ~CSTOPB;</code></td>
+    <td><code>(t.c_cflag &amp; CSTOPB) == 0</code></td>
+  </tr>
+  <tr>
+    <td>无硬件流控</td>
+    <td><code>t.c_cflag &amp;= ~CRTSCTS;</code></td>
+    <td><code>(t.c_cflag &amp; CRTSCTS) == 0</code></td>
+  </tr>
+  <tr>
+    <td>本地连接与接收</td>
+    <td><code>t.c_cflag |= (CLOCAL | CREAD);</code></td>
+    <td>两位都非 0</td>
+  </tr>
+  <tr>
+    <td>波特率</td>
+    <td><code>cfsetispeed(&amp;t, B115200);</code><br>
+      <code>cfsetospeed(&amp;t, B115200);</code></td>
+    <td>与 <code>cfgetispeed</code>、<code>cfgetospeed</code> 的返回值比较</td>
+  </tr>
+  <tr>
+    <td>使设置生效</td>
+    <td><code>tcsetattr(fd, TCSANOW, &amp;t);</code></td>
+    <td>再调用 <code>tcgetattr</code>，读到的才是真正生效的设置</td>
+  </tr>
+</table>
+
+<p>
+  <code>VMIN</code> 与 <code>VTIME</code> 放在 <code>t.c_cc</code> 数组里，
+  决定 <code>read</code> 何时返回。常用组合：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 34%"><col style="width: 66%"></colgroup>
+  <tr><th>设置</th><th><code>read</code> 的行为</th></tr>
+  <tr>
+    <td><code>VMIN = 1</code>、<code>VTIME = 0</code></td>
+    <td>至少读到 1 个字节才返回；没有数据就一直等</td>
+  </tr>
+  <tr>
+    <td><code>VMIN = 0</code>、<code>VTIME = 10</code></td>
+    <td>最多等 10 × 0.1 = 1 秒；有数据就返回，超时返回 0</td>
+  </tr>
+  <tr>
+    <td><code>VMIN = n</code>、<code>VTIME = 0</code></td>
+    <td>一直等到读满 n 个字节</td>
+  </tr>
+</table>
+
+<p>
+  设置完成后，可以在终端里用 <code>stty -F /dev/ttyUSB0 -a</code>
+  查看同一个设备的当前设置，与程序读回的值对照。
+</p>
+
+<h3 id="sE-3">帧格式</h3>
+
+<p>
+  帧（frame）是一段字段固定的字节。本课用的格式如下，
+  所有多字节字段低字节在前（小端）：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 16%"><col style="width: 20%"><col style="width: 16%"><col style="width: 48%"></colgroup>
+  <tr><th>偏移</th><th>字段</th><th>长度</th><th>说明</th></tr>
+  <tr>
+    <td>0</td><td><code>SOF</code></td><td>1</td>
+    <td>帧头，固定为 <code>0xA5</code></td>
+  </tr>
+  <tr>
+    <td>1</td><td><code>data_length</code></td><td>2</td>
+    <td>只数 data 段的字节数，不含命令码与两段 CRC</td>
+  </tr>
+  <tr>
+    <td>3</td><td><code>seq</code></td><td>1</td>
+    <td>帧序号</td>
+  </tr>
+  <tr>
+    <td>4</td><td><code>CRC8</code></td><td>1</td>
+    <td>校验第 0 字节到第 3 字节</td>
+  </tr>
+  <tr>
+    <td>5</td><td><code>cmd_id</code></td><td>2</td>
+    <td>命令码</td>
+  </tr>
+  <tr>
+    <td>7</td><td><code>data</code></td><td><code>data_length</code></td>
+    <td>数据段，长度可以为 0</td>
+  </tr>
+  <tr>
+    <td><code>7 + data_length</code></td><td><code>CRC16</code></td><td>2</td>
+    <td>校验第 0 字节到 data 段末尾</td>
+  </tr>
+</table>
+
+<p>
+  整帧长度 = <code>data_length + 9</code>。
+  一帧完整的例子：
+</p>
+
+<pre><code>A5 02 00 00 8C 01 00 12 34 D9 34</code></pre>
+
+<p>
+  这一帧 <code>data_length = 0x0002</code>，<code>seq = 0</code>，
+  <code>CRC8 = 0x8C</code>，<code>cmd_id = 0x0001</code>，
+  <code>data = 12 34</code>；帧尾两字节 <code>D9 34</code>，
+  即 CRC16 的值 <code>0x34D9</code>，低字节在前。
+</p>
+
+<p>
+  串口按 8 位数据位、1 位停止位、无校验位、无硬件流控工作。
+  本课例题的命令码 <code>0x0001</code>、<code>0x0002</code>、<code>0x0003</code>
+  是课程自编的示例，不对应任何官方业务命令。
+</p>
+
+<h3 id="sE-4">CRC8 与 CRC16</h3>
+
+<table class="lookup">
+  <colgroup><col style="width: 20%"><col style="width: 40%"><col style="width: 40%"></colgroup>
+  <tr><th></th><th>CRC8</th><th>CRC16</th></tr>
+  <tr>
+    <td>多项式</td>
+    <td><code>x^8 + x^5 + x^4 + 1</code>，反射写法 <code>0x8C</code></td>
+    <td>反射多项式 <code>0x8408</code></td>
+  </tr>
+  <tr>
+    <td>初值</td>
+    <td><code>0xFF</code></td>
+    <td><code>0xFFFF</code></td>
+  </tr>
+  <tr>
+    <td>校验范围</td>
+    <td>帧的第 0 字节到第 3 字节</td>
+    <td>帧的第 0 字节到 data 段末尾，不含帧尾两字节</td>
+  </tr>
+  <tr>
+    <td>标准算例</td>
+    <td><code>"123456789"</code> 得 <code>0x0B</code></td>
+    <td><code>"123456789"</code> 得 <code>0x6F91</code></td>
+  </tr>
+  <tr>
+    <td>上例帧上的值</td>
+    <td><code>0x8C</code></td>
+    <td><code>0x34D9</code>，帧尾写 <code>D9 34</code></td>
+  </tr>
+</table>
+
+<p>
+  两个算法结构相同：每处理一个字节，先与校验值异或，再重复 8 次——
+  最低位为 1 就右移一位后异或多项式，最低位为 0 就只右移。
+  CRC16 的结果占两个字节，低字节在前。
+  校验不过的帧整帧丢弃，不交给后续处理。
+</p>
+
+<h3 id="sE-5">常见错误与处置</h3>
+
+<p>
+  打开或读写串口失败时，程序里的 <code>errno</code> 是判断依据。
+  下面是这些错误在 C 语言库里的原文：
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 30%"><col style="width: 28%"><col style="width: 42%"></colgroup>
+  <tr><th>错误</th><th>含义</th><th>处置</th></tr>
+  <tr>
+    <td><code>No such file or directory</code><br>（<code>ENOENT</code>）</td>
+    <td>设备文件不存在</td>
+    <td>板子没有插好，或者设备名不对。先确认
+      <code>/dev/ttyUSB0</code>、<code>/dev/ttyACM0</code> 中哪一个存在；
+      伪终端要使用 <code>/dev/pts/</code> 下的路径</td>
+  </tr>
+  <tr>
+    <td><code>Permission denied</code><br>（<code>EACCES</code>）</td>
+    <td>当前用户没有打开这个设备的权限</td>
+    <td>查看设备文件的属主与权限；串口设备通常属于
+      <code>dialout</code> 组</td>
+  </tr>
+  <tr>
+    <td><code>Device or resource busy</code><br>（<code>EBUSY</code>）</td>
+    <td>设备已经被另一个程序打开</td>
+    <td>关掉占用的程序，例如串口终端或另一个调试进程，再重新运行</td>
+  </tr>
+  <tr>
+    <td><code>Input/output error</code><br>（<code>EIO</code>）</td>
+    <td>打开成功，读写时出错</td>
+    <td>USB 转串口设备被拔出，或者伪终端的主端已经关闭；
+      重新连接后再试</td>
+  </tr>
+  <tr>
+    <td><code>Interrupted system call</code><br>（<code>EINTR</code>）</td>
+    <td>系统调用被信号打断，这一次没有读走或写走数据</td>
+    <td>重新执行一次 <code>read</code> 或 <code>write</code>，
+      不算真正的失败</td>
+  </tr>
+</table>
+
+<p>
+  终端的工具软件在中文界面下会把这些句子译成中文，措辞可能不同；
+  判断时看 <code>errno</code> 的宏，不要按整句文字匹配。
+  程序自己的提示建议写成固定的中文，例如「打开失败」加设备路径，
+  不要直接把 <code>strerror</code> 的整句拼进输出，换一台机器输出就可能变。
+</p>
+
+<h3 id="sE-6">伪终端与模拟板怎么用</h3>
+
+<p>
+  没有板子时，用伪终端（pseudo terminal，简称 pty）练习。
+  一段程序调用 <code>posix_openpt</code> 创建主端，
+  再用 <code>grantpt</code>、<code>unlockpt</code> 与
+  <code>ptsname</code> 取得从端路径，然后按普通设备文件
+  <code>open</code> 从端。两端之间传递的字节与串口一致；
+  从端路径形如 <code>/dev/pts/3</code>，每次运行都可能不同。
+</p>
+
+<p>
+  第 7 部分配套的模拟板是 <code>fake_board.py</code>，用 Python 标准库
+  <code>pty</code> 创建伪终端，扮演串口的另一端。两种用法：
+</p>
+
+<pre><code>python3 fake_board.py
+python3 fake_board.py --run ./demo</code></pre>
+
+<p>
+  第一种是手动模式：模拟板打印从端路径，最多等待 60 秒；
+  在另一个终端里用这个路径运行 C++ 程序。
+  第二种是自动模式：模拟板启动 <code>./demo</code>，把从端路径作为参数
+  交给它，校验请求的两段 CRC，把应答分成 3 字节与 8 字节两批写出，
+  最后检查程序是否以退出码 0 结束。成功时模拟板自己不打印内容。
+</p>
+
+<p>
+  伪终端只传递字节：它接受波特率设置并返回成功，但不按对应的速率限制发送，
+  也不模拟校验位与电气信号。收发流程、组帧、CRC、半包处理与超时分支
+  可以在电脑上验证；真实波特率下的时序与电气层的连接质量，
+  要接上板子才能确认。伪终端是 Linux 的功能，
+  Windows 上的 COM 口使用另一套 API。
+</p>
+
+<p class="can">
+  <b>附录到这里就完了。</b>
+  报错了查阅 A，忘记 cmake 写法查阅 B，
+  容器的名称和操作想不起来查阅 C，
+  读代码遇到没学过的写法查阅 D，
+  写串口程序要核对参数查阅 E。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="../lessons/cpp_advanced/index.html">← 回课程目录</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../assets/toc.js"></script>
+<script src="../assets/code.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+make
+make
+make clean
+make
+./report < main.in

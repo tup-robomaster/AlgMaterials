@@ -1,0 +1,4 @@
+g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report
+./report < main.in

@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 6 部分 · 文件和异常 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a class="active" href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html" aria-current="page">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 6 部分 · 文件和异常</div>
+  <a class="toc-l" href="#l6-1"><span class="n">6.1</span>读文件</a>
+  <a class="toc-sub" href="#s6-1-1">打开文件</a>
+  <a class="toc-sub" href="#s6-1-2">用 <code>&gt;&gt;</code> 读取</a>
+  <a class="toc-sub" href="#e6-1">例题：逐个读取成绩</a>
+  <a class="toc-sub" href="#s6-1-3">不要用 <code>eof()</code> 判断结束</a>
+  <a class="toc-sub" href="#e6-2">例题：多输出的一行</a>
+  <a class="toc-sub" href="#s6-1-4">一次读一整行</a>
+  <a class="toc-sub" href="#e6-3">例题：按行读取</a>
+  <a class="toc-sub" href="#s6-1-5">练习</a>
+  <a class="toc-l" href="#l6-2"><span class="n">6.2</span>写文件</a>
+  <a class="toc-sub" href="#s6-2-1">创建与写入</a>
+  <a class="toc-sub" href="#s6-2-2">关闭文件</a>
+  <a class="toc-sub" href="#e6-4">例题：写入后读回</a>
+  <a class="toc-sub" href="#s6-2-3">追加写入</a>
+  <a class="toc-sub" href="#e6-5">例题：两次追加</a>
+  <a class="toc-sub" href="#s6-2-4">删除文件</a>
+  <a class="toc-sub" href="#s6-2-5">练习</a>
+  <a class="toc-l" href="#l6-3"><span class="n">6.3</span><code>throw</code> 与 <code>try</code> / <code>catch</code></a>
+  <a class="toc-sub" href="#s6-3-1">出错时怎么通知调用方</a>
+  <a class="toc-sub" href="#s6-3-2"><code>throw</code> 与 <code>try</code> / <code>catch</code></a>
+  <a class="toc-sub" href="#e6-6">例题：除数为 0</a>
+  <a class="toc-sub" href="#s6-3-3">异常离开函数时发生什么</a>
+  <a class="toc-sub" href="#e6-7">例题：沿途对象依次销毁</a>
+  <a class="toc-sub" href="#s6-3-4">几条写法纪律</a>
+  <a class="toc-sub" href="#s6-3-5">练习</a>
+  <a class="toc-l" href="#l6-4"><span class="n">6.4</span>标准异常</a>
+  <a class="toc-sub" href="#s6-4-1"><code>std::exception</code> 与 <code>what()</code></a>
+  <a class="toc-sub" href="#e6-8">例题：接住标准库抛出的异常</a>
+  <a class="toc-sub" href="#s6-4-2">几种常见的标准异常</a>
+  <a class="toc-sub" href="#s6-4-3">自定义异常类型</a>
+  <a class="toc-sub" href="#e6-9">例题：带文件名与原因的异常</a>
+  <a class="toc-sub" href="#s6-4-4">什么时候该用异常</a>
+  <a class="toc-sub" href="#s6-4-5">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 6 部分</div>
+  <h1>文件和异常</h1>
+  <p class="part-lead">
+    到第 5 部分为止，程序的数据来源只有两处：写在代码里的值，以及从键盘读入的输入；
+    结果输出到屏幕。实际使用的程序还要读写文件——数据、配置、运行记录都放在文件里。
+    文件可能不存在、打不开，读到的内容也可能不符合要求。
+    这一部分讲两件事：<b>用文件流读写文件</b>；
+    <b>出错时用异常把问题交给调用它的代码处理</b>。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l6-1">
+<h2><span class="no">6.1</span>读文件</h2>
+
+<p>
+  读文件的第一步是打开。C++ 标准库在 <code>&lt;fstream&gt;</code> 里提供了文件流：
+  <code>std::ifstream</code> 用于读取，<code>std::ofstream</code> 用于写入，
+  <code>std::fstream</code> 既能读也能写。这一课只使用 <code>std::ifstream</code>。
+</p>
+
+<h3 id="s6-1-1">打开文件</h3>
+
+<p>
+  打开一个文件，就是用一个文件名构造一个 <code>std::ifstream</code> 对象：
+</p>
+
+<pre><code>#include &lt;fstream&gt;
+
+std::ifstream in("6.1-scores.txt");
+if (!in) {
+    // 打开失败：文件不存在、路径不对，或者没有读取权限
+}</code></pre>
+
+<p>
+  <code>in</code> 是文件流对象。它可以用在 <code>if</code> 的条件里：
+  打开成功时为真，失败时为假。打开失败的原因通常有三种：
+  文件不存在、路径写错、当前用户没有读取权限。
+  <b>每一次打开都要检查</b>。不检查的话，后面的读取会全部失败，
+  程序拿到的仍然是变量的初始值，输出与预期不一致，却找不到原因。
+</p>
+
+<p>
+  文件名可以写相对路径，也可以写绝对路径。相对路径是相对于
+  <b>程序运行时的当前工作目录</b>，不是相对于源代码文件所在的位置。
+  这一点在实际使用时最重要：在命令行里先 <code>cd</code> 到数据文件所在的目录，
+  再运行程序；在集成开发环境里，要确认运行配置中的工作目录。
+  本课的示例程序和数据文件都放在 <code>示例代码/</code> 里，
+  在那一层编译、运行即可。
+</p>
+
+<p>
+  文件流对象离开作用域时会自动关闭文件，所以大多数情况下不必手写关闭。
+  需要提前关闭、或者关闭之后要重新打开同一个文件时，再调用 <code>in.close()</code>。
+</p>
+
+<h3 id="s6-1-2">用 <code>&gt;&gt;</code> 读取</h3>
+
+<p>
+  文件流的读取方式和 <code>std::cin</code> 完全一样：用 <code>&gt;&gt;</code>
+  把内容读到变量里，它会自动跳过空白字符（空格、制表符、换行）。
+</p>
+
+<pre><code>std::string name;
+int score = 0;
+while (in &gt;&gt; name &gt;&gt; score) {
+    std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  <code>in &gt;&gt; name &gt;&gt; score</code> 的结果是流本身，流对象可以用在条件里：
+  这一次读取成功时为真，失败时为假。<code>while</code> 的条件写读取动作，
+  读取失败时循环自然结束，这是文件读取的标准写法。
+</p>
+
+<p>
+  读取失败有两种常见原因：到达文件末尾，或者文件里的内容与变量的类型不匹配
+  （例如要读 <code>int</code>，遇到的却是字母）。两种情况下流都会进入失败状态，
+  循环结束。本课的数据文件格式都是正确的；需要处理格式错误时，
+  可以用第 6.4 课的 <code>std::stoi</code>，它会把不合格的内容作为异常报告出来。
+</p>
+
+<div class="eg" id="e6-1">
+  <div class="eg-h">例题 · 逐个读取成绩</div>
+  <p>
+    文件 <code>6.1-scores.txt</code> 每行一个姓名和一个分数：
+  </p>
+  <pre><code>张三 92
+李四 85
+王五 77
+赵六 60
+钱七 100</code></pre>
+  <p>
+    下面的程序逐个读入，输出每一条记录，最后计算平均分：
+  </p>
+  <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6.1-scores.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string name;
+    int score = 0;
+    int count = 0;
+    int sum = 0;
+    while (in &gt;&gt; name &gt;&gt; score) {
+        std::cout &lt;&lt; name &lt;&lt; " " &lt;&lt; score &lt;&lt; std::endl;
+        count++;
+        sum = sum + score;
+    }
+
+    std::cout &lt;&lt; "共 " &lt;&lt; count &lt;&lt; " 人，平均 " &lt;&lt; sum / double(count) &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">张三 92
+李四 85
+王五 77
+赵六 60
+钱七 100
+共 5 人，平均 82.8</pre>
+  <p>
+    <code>sum / double(count)</code> 把 <code>count</code> 转成 <code>double</code>
+    再相除，避免整数除法把小数部分丢掉。这个程序假定文件里至少有一个人：
+    如果文件是空的，<code>count</code> 为 0，除法就没有意义。
+    正式的程序应当在相除之前检查 <code>count</code>，这一点在第 6.4 课的练习里会用到。
+  </p>
+</div>
+
+<h3 id="s6-1-3">不要用 <code>eof()</code> 判断结束</h3>
+
+<p>
+  <code>in.eof()</code> 表示「上一次读取是否碰到了文件末尾」。
+  它只有在<b>读取动作已经尝试越过末尾之后</b>才变为真。
+  因此下面这种写法会多执行一次循环体：
+</p>
+
+<pre><code>while (!in.eof()) {
+    in &gt;&gt; name;
+    std::cout &lt;&lt; "读到：" &lt;&lt; name &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  最后一次读取没有读到新内容，流进入失败状态，但循环体已经执行了：
+  程序把变量里上一次的内容又输出了一遍。正确的写法是把读取本身放进条件，
+  由读取的结果决定是否继续：
+</p>
+
+<pre><code>while (in &gt;&gt; name) {
+    std::cout &lt;&lt; "读到：" &lt;&lt; name &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  <code>eof()</code> 仍然可以用来在循环结束后判断「是不是读到了文件末尾」，
+  用来区分类似「文件损坏」和「正常读完」的情况；但它不适合用来控制循环。
+</p>
+
+<div class="eg" id="e6-2">
+  <div class="eg-h">例题 · 多输出的一行</div>
+  <p>
+    文件 <code>6.1-names.txt</code> 有三行姓名。下面这份程序使用了
+    <code>while (!in.eof())</code>：
+  </p>
+  <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6.1-names.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string name;
+    while (!in.eof()) {
+        in &gt;&gt; name;
+        std::cout &lt;&lt; "读到：" &lt;&lt; name &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">读到：张三
+读到：李四
+读到：王五
+读到：王五</pre>
+  <p>
+    最后一行出现了两次。第四次进入循环时，文件已经读完，<code>in &gt;&gt; name</code>
+    没有读到新内容；但循环体仍然执行了一次，把 <code>name</code> 中上一次的
+    「王五」又输出了一遍。把循环条件改成 <code>while (in &gt;&gt; name)</code>
+    以后，这次失败的读取会直接结束循环，重复的一行就消失了。
+  </p>
+</div>
+
+<h3 id="s6-1-4">一次读一整行</h3>
+
+<p>
+  <code>&gt;&gt;</code> 以空白字符分隔，适合读一个个单词或数字。
+  要读一整行（行内可能包含空格），用 <code>std::getline</code>：
+</p>
+
+<pre><code>std::string line;
+while (std::getline(in, line)) {
+    std::cout &lt;&lt; line &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  <code>std::getline(in, line)</code> 从流中读到换行符为止，
+  把换行符之前的内容存入 <code>line</code>，并丢弃换行符本身。
+  它返回流对象，所以同样可以放进 <code>while</code> 的条件里。
+  空行也是有效的一行：<code>getline</code> 会把空字符串存入 <code>line</code> 并返回成功，
+  这和「到达文件末尾」不是一回事。
+</p>
+
+<p>
+  两种读法混用时有一个必须处理的地方：<code>in &gt;&gt; n</code> 读完数字以后，
+  换行符还留在流里；紧接着调用 <code>getline</code>，它读到的就是这个换行符，
+  得到的是一行空字符串。解决办法是在两者之间加一句 <code>in.ignore()</code>，
+  它会读取并丢弃一个字符（默认就是一个字符，正好是那个换行符）：
+</p>
+
+<pre><code>int n = 0;
+in &gt;&gt; n;
+in.ignore();          // 丢弃数字后面的换行符
+
+std::string line;
+std::getline(in, line);</code></pre>
+
+<div class="aside">
+  <b>旁注：<code>size()</code> 数的是字节</b>
+  <p>
+    <code>std::string::size()</code> 返回的是字节数，不是字符数。
+    对只含英文字符的文件，两者相同；UTF-8 编码下，一个汉字通常占三个字节，
+    <code>size()</code> 会把一个汉字算作三。需要按字符计数时，
+    要使用能识别 UTF-8 的工具，这不在本课范围内。
+  </p>
+</div>
+
+<div class="eg" id="e6-3">
+  <div class="eg-h">例题 · 按行读取</div>
+  <p>
+    文件 <code>6.1-lines.txt</code> 的每一行都包含空格或标点：
+  </p>
+  <pre><code>第一行 有空格
+第二行：有标点
+第三行</code></pre>
+  <p>
+    下面的程序按行读取，并在每一行前面加上行号：
+  </p>
+  <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6.1-lines.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string line;
+    int no = 1;
+    while (std::getline(in, line)) {
+        std::cout &lt;&lt; no &lt;&lt; ": " &lt;&lt; line &lt;&lt; std::endl;
+        no++;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">1: 第一行 有空格
+2: 第二行：有标点
+3: 第三行</pre>
+  <p>
+    如果改用 <code>in &gt;&gt; word</code>，第一行只会读到「第一行」，
+    后面的「有空格」会被当成下一段内容；<code>getline</code> 则保留了行内的空格。
+  </p>
+</div>
+
+<h3 id="s6-1-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 6-1</div>
+  <p>
+    文件 <code>6-1-in.txt</code> 的第一行是一个整数 <code>n</code>，
+    第二行是 <code>n</code> 个整数。读入这些数并求和，输出一行。
+    文件内容是：
+  </p>
+  <pre><code>5
+10 20 30 40 60</code></pre>
+  <pre class="out" data-label="预期输出">5 个数的和是 160</pre>
+  <p>
+    把程序保存为 <code>6-1.cpp</code>，与 <code>6-1-in.txt</code> 放在同一目录，
+    从那个目录运行。答案会把文件打开失败的检查也写进去，可以对照。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先打开文件并检查是否成功；第一行读 <code>n</code>，随后循环
+        <code>n</code> 次，每次读一个整数并累加。
+      </p>
+      <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::ifstream in("6-1-in.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    int n = 0;
+    in &gt;&gt; n;
+
+    int sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        in &gt;&gt; x;
+        sum = sum + x;
+    }
+
+    std::cout &lt;&lt; n &lt;&lt; " 个数的和是 " &lt;&lt; sum &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        <code>in &gt;&gt; n</code> 与后面的 <code>in &gt;&gt; x</code> 使用同一种读取方式，
+        空格和换行都会被跳过，所以第二行的多个整数可以连续读完。
+      </p>
+      <p>
+        打开失败时直接 <code>return 1</code>：调用方可以从退出码知道程序没有正常完成。
+        这道题的 <code>n</code> 与文件内容一致，所以不需要检查读取次数；
+        练习 6-10 会检查这一点。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-2</div>
+  <p>
+    文件 <code>6-2-in.txt</code> 有三行文字。逐行读入，统计一共有多少行、
+    一共有多少个字符，输出一行。文件内容是：
+  </p>
+  <pre><code>abc
+hello world
+C++</code></pre>
+  <pre class="out" data-label="预期输出">3 行，共 17 个字符</pre>
+  <p>
+    统计时按行读入，不要用 <code>&gt;&gt;</code>：这些行里有空格，
+    按空白分隔会把一行拆成好几段。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        按行读取，每读一行就把行数加一，并把这一行的长度加入字符总数。
+      </p>
+      <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6-2-in.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string line;
+    int lines = 0;
+    int chars = 0;
+    while (std::getline(in, line)) {
+        lines++;
+        chars = chars + int(line.size());
+    }
+
+    std::cout &lt;&lt; lines &lt;&lt; " 行，共 " &lt;&lt; chars &lt;&lt; " 个字符" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        <code>std::getline</code> 会把行内的空格保留下来，
+        所以「hello world」这一行算作 11 个字符，而不是两个单词。
+        <code>line.size()</code> 返回字节数；这份文件只含英文字符，
+        字节数与字符数相同。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-3</div>
+  <p>
+    文件 <code>6-3-in.txt</code> 的第一行是一个整数 <code>n</code>，
+    后面有 <code>n</code> 行文字。先读 <code>n</code>，再逐行读取后面的内容，
+    输出时在每一行前面加上行号。文件内容是：
+  </p>
+  <pre class="out" data-label="样例输入">3
+第一 行
+第二 行
+第三 行</pre>
+  <pre class="out" data-label="预期输出">1: 第一 行
+2: 第二 行
+3: 第三 行</pre>
+  <p>
+    关键在于 <code>in &gt;&gt; n</code> 之后留下的那个换行符：
+    不先处理掉，第一次 <code>getline</code> 会读到空行。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先读数量，再用 <code>in.ignore()</code> 丢弃数字后面的换行符，
+        然后逐行读取。
+      </p>
+      <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6-3-in.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    int n = 0;
+    in &gt;&gt; n;
+    in.ignore();
+
+    for (int i = 1; i &lt;= n; i++) {
+        std::string line;
+        std::getline(in, line);
+        std::cout &lt;&lt; i &lt;&lt; ": " &lt;&lt; line &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        如果去掉 <code>in.ignore()</code>，第一次 <code>getline</code>
+        读到的就是那个残留的换行符，输出会从「1: 」开头的一行空内容开始，
+        后面的行号全部错开一位。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>打开一个文件并检查是否成功；
+  用 <code>while (in &gt;&gt; x)</code> 逐个读取；
+  用 <code>while (std::getline(in, line))</code> 按行读取；
+  知道 <code>eof()</code> 不能用来控制循环，
+  知道 <code>&gt;&gt;</code> 之后接 <code>getline</code> 要先处理换行符。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l6-2">
+<h2><span class="no">6.2</span>写文件</h2>
+
+<p>
+  读和写是一对。程序的计算结果、运行记录、下一阶段要读的输入，都可能需要写进文件。
+  写入使用 <code>std::ofstream</code>，它也在 <code>&lt;fstream&gt;</code> 里。
+</p>
+
+<h3 id="s6-2-1">创建与写入</h3>
+
+<p>
+  用一个文件名构造 <code>std::ofstream</code>，文件不存在时会创建；
+  文件已经存在时，默认会<b>清空原有内容</b>，从头开始写：
+</p>
+
+<pre><code>std::ofstream out("6.2-report.txt");
+if (!out) {
+    // 创建失败：目录不存在、没有写入权限，或者磁盘已满
+}
+out &lt;&lt; "总分 414" &lt;&lt; std::endl;
+out &lt;&lt; "平均 82.8" &lt;&lt; std::endl;</code></pre>
+
+<p>
+  <code>out &lt;&lt; ...</code> 的写法和 <code>std::cout</code> 完全一样，
+  数字、字符串、<code>std::endl</code> 都可以直接写。
+  同样要检查打开是否成功：目录不存在或没有写入权限时，
+  后面的写入会全部失败，而程序不会自动报告。
+</p>
+
+<h3 id="s6-2-2">关闭文件</h3>
+
+<p>
+  <code>std::endl</code> 只负责换行并刷新这一行，写入的内容可能还在
+  <b>缓冲区（buffer）</b>里，尚未到达磁盘上的文件。
+  调用 <code>out.close()</code> 会把缓冲区的内容写入文件并关闭文件。
+  在同一个程序里紧接着重新打开这个文件读取，或者要让别的程序看到写入结果时，
+  必须先关闭。
+</p>
+
+<p>
+  文件流对象离开作用域时也会自动关闭，所以函数结束时不必特意写
+  <code>close()</code>。需要提前关闭，或者关闭后要重新打开同一个文件时，才手写这一句。
+</p>
+
+<div class="eg" id="e6-4">
+  <div class="eg-h">例题 · 写入后读回</div>
+  <p>
+    下面的程序写一份两行的报告，关闭文件后重新打开读回，确认写入的内容；
+    最后删除这份文件，方便重复运行：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ofstream out("6.2-report.txt");
+    if (!out) {
+        std::cout &lt;&lt; "文件创建失败" &lt;&lt; std::endl;
+        return 1;
+    }
+    out &lt;&lt; "总分 414" &lt;&lt; std::endl;
+    out &lt;&lt; "平均 82.8" &lt;&lt; std::endl;
+    out.close();
+
+    std::ifstream in("6.2-report.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+    std::string line;
+    while (std::getline(in, line)) {
+        std::cout &lt;&lt; line &lt;&lt; std::endl;
+    }
+
+    std::remove("6.2-report.txt");
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总分 414
+平均 82.8</pre>
+  <p>
+    注意先后顺序：写入之后先 <code>out.close()</code>，再用新的
+    <code>std::ifstream</code> 打开同一个文件。如果不关闭就读取，
+    缓冲区里的内容可能还没有写入文件，读到的内容会不完整。
+    最后的 <code>std::remove</code> 在 6.2.4 说明。
+  </p>
+</div>
+
+<h3 id="s6-2-3">追加写入</h3>
+
+<p>
+  默认方式会清空原有内容。要在文件末尾继续写、保留原有内容，
+  构造时加上第二个参数 <code>std::ios::app</code>：
+</p>
+
+<pre><code>std::ofstream out("6.2-log.txt", std::ios::app);
+out &lt;&lt; "新的一行" &lt;&lt; std::endl;</code></pre>
+
+<p>
+  <code>app</code> 是 append（追加）的缩写。文件不存在时会创建；
+  已经存在时，每一次写入都落到文件末尾。日志文件通常用这种方式：
+  每次运行追加一段记录，不覆盖以前的记录。
+</p>
+
+<div class="eg" id="e6-5">
+  <div class="eg-h">例题 · 两次追加</div>
+  <p>
+    下面的程序用追加方式打开同一个文件两次，每次写一行，最后读回全部内容：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::remove("6.2-log.txt");
+
+    std::ofstream first("6.2-log.txt", std::ios::app);
+    first &lt;&lt; "第一次写入" &lt;&lt; std::endl;
+    first.close();
+
+    std::ofstream second("6.2-log.txt", std::ios::app);
+    second &lt;&lt; "第二次写入" &lt;&lt; std::endl;
+    second.close();
+
+    std::ifstream in("6.2-log.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+    std::string line;
+    while (std::getline(in, line)) {
+        std::cout &lt;&lt; line &lt;&lt; std::endl;
+    }
+
+    std::remove("6.2-log.txt");
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">第一次写入
+第二次写入</pre>
+  <p>
+    如果第二次打开时去掉 <code>std::ios::app</code>，第二次写入会清空文件，
+    读回时就只剩「第二次写入」一行。这个对比说明了打开方式的作用。
+    程序开头和结尾的 <code>std::remove</code> 让每次运行都从空文件开始。
+  </p>
+</div>
+
+<h3 id="s6-2-4">删除文件</h3>
+
+<p>
+  <code>&lt;cstdio&gt;</code> 里的 <code>std::remove("文件名")</code> 用于删除文件，
+  成功时返回 0，失败时返回非 0。本课的示例程序在结尾删除自己创建的文件，
+  这样重复运行不会受到上一次留下的内容影响：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+
+std::remove("6.2-report.txt");</code></pre>
+
+<p>
+  删除之前要确认文件确实已经关闭，并且确实是要删除的那一份。
+  删除操作不可撤销，正式程序里通常不会在正常流程中随意删除数据文件；
+  这里只是为了保持示例目录干净。
+</p>
+
+<h3 id="s6-2-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 6-4</div>
+  <p>
+    读入一个整数 <code>n</code>，把 <code>1</code> 到 <code>n</code>
+    每个数写一行到文件 <code>6-4-out.txt</code>。关闭文件后重新打开，
+    把文件里的数逐个读回并求和，输出一行。</p>
+  <pre class="out" data-label="样例输入">5</pre>
+  <pre class="out" data-label="预期输出">写入 5 个数，读回来的和是 15</pre>
+  <p>
+    写完以后关闭文件，再重新打开读取；两次打开之间，缓冲区的内容才会写入文件。
+    这道题也练习了 <code>std::remove</code> 的用法。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        写入和读取分两步：先用 <code>std::ofstream</code> 写，
+        关闭之后再用 <code>std::ifstream</code> 打开同一个文件。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::ofstream out("6-4-out.txt");
+    if (!out) {
+        std::cout &lt;&lt; "文件创建失败" &lt;&lt; std::endl;
+        return 1;
+    }
+    for (int i = 1; i &lt;= n; i++) {
+        out &lt;&lt; i &lt;&lt; std::endl;
+    }
+    out.close();
+
+    std::ifstream in("6-4-out.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    int sum = 0;
+    int x = 0;
+    while (in &gt;&gt; x) {
+        sum = sum + x;
+    }
+
+    std::cout &lt;&lt; "写入 " &lt;&lt; n &lt;&lt; " 个数，读回来的和是 " &lt;&lt; sum &lt;&lt; std::endl;
+
+    std::remove("6-4-out.txt");
+    return 0;
+}</code></pre>
+      <p>
+        <code>out.close()</code> 不能省略：不关闭的话，缓冲区里的内容可能还没有
+        写入文件，紧接着读到的内容会不完整。
+      </p>
+      <p>
+        最后调用 <code>std::remove</code> 删除这个临时文件，
+        让程序可以反复运行；删除失败不影响程序结果，所以这里没有检查返回值。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-5</div>
+  <p>
+    文件 <code>6-5-in.txt</code> 里有一组整数。读入全部整数，统计个数与总和，
+    计算平均值，把这三项写成三行到 <code>6-5-out.txt</code>：
+    <code>个数</code>、<code>总和</code>、<code>平均</code> 各占一行。
+    关闭文件后再读回来，每一行前面加上「读回：」输出。文件内容是：
+  </p>
+  <pre class="out" data-label="样例输入">90 80 70 60 100</pre>
+  <pre class="out" data-label="预期输出">读回：个数 5
+读回：总和 400
+读回：平均 80</pre>
+  <p>
+    摘要写成三行（个数、总和、平均），关闭之后再读回来逐行输出，
+    用来确认写入的内容与预期一致。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第一次读取只做统计，不保留每个数；统计完成后把三项写入文件，
+        关闭后重新打开逐行读回。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ifstream in("6-5-in.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    int n = 0;
+    int sum = 0;
+    int x = 0;
+    while (in &gt;&gt; x) {
+        n++;
+        sum = sum + x;
+    }
+    in.close();
+
+    std::ofstream out("6-5-out.txt");
+    if (!out) {
+        std::cout &lt;&lt; "文件创建失败" &lt;&lt; std::endl;
+        return 1;
+    }
+    out &lt;&lt; "个数 " &lt;&lt; n &lt;&lt; std::endl;
+    out &lt;&lt; "总和 " &lt;&lt; sum &lt;&lt; std::endl;
+    out &lt;&lt; "平均 " &lt;&lt; sum / n &lt;&lt; std::endl;
+    out.close();
+
+    std::ifstream back("6-5-out.txt");
+    if (!back) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string line;
+    while (std::getline(back, line)) {
+        std::cout &lt;&lt; "读回：" &lt;&lt; line &lt;&lt; std::endl;
+    }
+    back.close();
+
+    std::remove("6-5-out.txt");
+    return 0;
+}</code></pre>
+      <p>
+        写入的三行带有固定的文字前缀（「个数」「总和」「平均」），
+        读回时按整行处理即可，不需要再拆分。
+        平均值用整数除法，输入数据的总和能被个数整除，所以结果是整数。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-6</div>
+  <p>
+    从键盘逐行读入文字，用追加方式写入 <code>6-6-log.txt</code>，
+    读到单独一行 <code>end</code> 时停止。然后重新打开这个文件，
+    先输出一行「日志内容：」，再把文件里的每一行输出。</p>
+  <pre class="out" data-label="样例输入">第一条
+第二条
+第三条
+end</pre>
+  <pre class="out" data-label="预期输出">日志内容：
+第一条
+第二条
+第三条</pre>
+  <p>
+    用追加方式打开，文件里原有的内容不会被清掉；程序结束前把文件删除，
+    这样下一次运行仍然从空文件开始。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        追加写入使用 <code>std::ios::app</code>，读到 <code>end</code> 时结束循环，
+        关闭后再以读取方式打开。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ofstream out("6-6-log.txt", std::ios::app);
+    if (!out) {
+        std::cout &lt;&lt; "文件打开失败" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::string line;
+    while (std::getline(std::cin, line)) {
+        if (line == "end") {
+            break;
+        }
+        out &lt;&lt; line &lt;&lt; std::endl;
+    }
+    out.close();
+
+    std::ifstream in("6-6-log.txt");
+    if (!in) {
+        std::cout &lt;&lt; "文件打不开" &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::cout &lt;&lt; "日志内容：" &lt;&lt; std::endl;
+    while (std::getline(in, line)) {
+        std::cout &lt;&lt; line &lt;&lt; std::endl;
+    }
+    in.close();
+
+    std::remove("6-6-log.txt");
+    return 0;
+}</code></pre>
+      <p>
+        <code>std::getline(std::cin, line)</code> 按行读取键盘输入，
+        行内的空格会保留；只有 <code>end</code> 单独成行时才作为结束标记，
+        包含 <code>end</code> 的其他文字不会被误判。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>创建或覆盖一个文件并写入；
+  用 <code>std::ios::app</code> 追加写入；
+  关闭文件后再重新打开读回；
+  用 <code>std::remove</code> 删除文件；
+  知道写入先经过缓冲区，关闭之后内容才确定到达文件。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l6-3">
+<h2><span class="no">6.3</span><code>throw</code> 与 <code>try</code> / <code>catch</code></h2>
+
+<p>
+  文件可能打不开，数据可能不符合要求，除数可能为 0。
+  函数遇到自己无法处理的情况时，需要把问题报告给调用它的代码。
+  这一课讲 C++ 的异常机制：用 <code>throw</code> 抛出，用 <code>try</code> / <code>catch</code> 捕获。
+</p>
+
+<h3 id="s6-3-1">出错时怎么通知调用方</h3>
+
+<p>
+  不用异常时，函数通常用一个特殊的返回值表示失败，例如返回 <code>-1</code>，
+  或者额外增加一个表示成功与否的参数。这种写法有两个问题：
+  调用方可能忘记检查返回值；失败的原因不容易表达清楚，
+  一个 <code>-1</code> 无法说明是「文件不存在」还是「格式不对」。
+</p>
+
+<p>
+  异常把这两件事分开：函数在出错的位置直接<b>抛出</b>一个对象，
+  正常的返回路径保持干净；调用方在需要处理的地方<b>捕获</b>，
+  不需要在每一层都写检查。没有捕获的异常会一直向外传递，
+  如果最终没有人捕获，程序会终止——失败不会被悄悄忽略。
+</p>
+
+<h3 id="s6-3-2"><code>throw</code> 与 <code>try</code> / <code>catch</code></h3>
+
+<p>
+  抛出一个异常用 <code>throw</code>，抛出的是一个对象。
+  最常用的是 <code>&lt;stdexcept&gt;</code> 里的 <code>std::runtime_error</code>，
+  构造时给一段说明文字：
+</p>
+
+<pre><code>#include &lt;stdexcept&gt;
+
+throw std::runtime_error("除数不能为 0");</code></pre>
+
+<p>
+  捕获异常用 <code>try</code> / <code>catch</code>。把可能出错的代码放进
+  <code>try</code> 块，后面跟一个或多个 <code>catch</code> 块：
+</p>
+
+<pre><code>try {
+    double result = divide(a, b);
+    std::cout &lt;&lt; "结果 " &lt;&lt; result &lt;&lt; std::endl;
+} catch (const std::exception&amp; e) {
+    std::cout &lt;&lt; "出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  <code>catch</code> 的参数写成 <code>const std::exception&amp;</code>：
+  <code>std::exception</code> 是标准库中所有异常类型的基类，前面抛出的
+  <code>std::runtime_error</code> 也从它派生；<code>what()</code> 是它的成员函数，
+  返回异常对象携带的说明文字。
+  参数按引用接收，避免复制异常对象；如果按值接收基类对象，
+  派生类新增的部分会被丢掉，这种情况叫对象切片（object slicing）。
+  加上 <code>const</code>，因为捕获方只读取，不修改。
+  捕获之后，程序从整个 <code>try</code> / <code>catch</code> 后面的第一条语句继续执行，
+  不会回到 <code>try</code> 块中出错的位置。
+  这里只用到这两个概念最基本的含义，想进一步了解，
+  可以自行搜索「C++ std::exception」「C++ 对象切片」学习。
+</p>
+
+<div class="eg" id="e6-6">
+  <div class="eg-h">例题 · 除数为 0</div>
+  <p>
+    <code>divide</code> 检查除数，为 0 时抛出 <code>std::runtime_error</code>；
+    主函数捕获并输出错误信息，然后继续执行：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+double divide(int a, int b) {
+    if (b == 0) {
+        throw std::runtime_error("除数不能为 0");
+    }
+    return a / double(b);
+}
+
+int main() {
+    int a = 10;
+    int b = 0;
+
+    try {
+        double result = divide(a, b);
+        std::cout &lt;&lt; "结果 " &lt;&lt; result &lt;&lt; std::endl;
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "程序继续执行" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">出错：除数不能为 0
+程序继续执行</pre>
+  <p>
+    <code>divide</code> 中 <code>throw</code> 之后的代码不会执行，
+    函数立即结束并把异常交给调用方。主函数捕获以后，
+    <code>try</code> 块里剩下的语句（输出结果那一行）被跳过，
+    程序从 <code>catch</code> 之后继续，所以最后一行仍然输出。
+  </p>
+</div>
+
+<h3 id="s6-3-3">异常离开函数时发生什么</h3>
+
+<p>
+  异常从抛出的位置向外传递，经过的每一层函数都会提前结束。
+  函数结束时，它的局部对象会按照构造的逆序销毁，析构函数正常执行。
+  这个过程叫作<b>栈展开（stack unwinding）</b>。
+</p>
+
+<p>
+  栈展开解释了第 5 部分 RAII 的意义：资源在构造函数中获得、在析构函数中释放，
+  即使函数因为异常提前结束，析构函数仍然会被调用，资源不会遗漏。
+  如果不用 RAII，而是手写 <code>new</code> / <code>delete</code>，
+  异常一跳过释放语句，内存就会泄漏。
+</p>
+
+<div class="eg" id="e6-7">
+  <div class="eg-h">例题 · 沿途对象依次销毁</div>
+  <p>
+    <code>Guard</code> 在构造和析构时各输出一行。<code>inner</code> 中抛出异常，
+    观察 <code>outer</code> 与 <code>inner</code> 的局部对象以什么顺序销毁：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+class Guard {
+public:
+    Guard(const std::string&amp; name) : name(name) {
+        std::cout &lt;&lt; "创建 " &lt;&lt; name &lt;&lt; std::endl;
+    }
+    ~Guard() {
+        std::cout &lt;&lt; "销毁 " &lt;&lt; name &lt;&lt; std::endl;
+    }
+
+private:
+    std::string name;
+};
+
+void inner() {
+    Guard g1("内层对象");
+    throw std::runtime_error("内层出错");
+}
+
+void outer() {
+    Guard g2("外层对象");
+    inner();
+    std::cout &lt;&lt; "这一行不会执行" &lt;&lt; std::endl;
+}
+
+int main() {
+    try {
+        outer();
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "捕获：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">创建 外层对象
+创建 内层对象
+销毁 内层对象
+销毁 外层对象
+捕获：内层出错</pre>
+  <p>
+    输出顺序说明了三件事：对象按构造的逆序销毁；
+    <code>inner</code> 中 <code>throw</code> 之后的语句不执行；
+    <code>outer</code> 中 <code>inner()</code> 之后的语句也不执行。
+    两个析构函数都执行了，异常最终在 <code>main</code> 中被捕获。
+  </p>
+</div>
+
+<h3 id="s6-3-4">几条写法纪律</h3>
+
+<ul>
+  <li><b>抛出时按值抛出，捕获时按 <code>const</code> 引用捕获。</b>
+    <code>throw std::runtime_error("...")</code> 抛出一个临时对象；
+    <code>catch (const std::exception&amp; e)</code> 接收它，不复制。</li>
+  <li><b>先捕获具体的类型，再捕获基类。</b>
+    <code>catch</code> 按书写顺序匹配，前面的块一旦匹配就不会再看后面的。
+    如果把 <code>std::exception</code> 写在最前面，后面针对具体类型的
+    <code>catch</code> 永远不会执行。</li>
+  <li><b>异常用于异常情况，不用于正常的流程控制。</b>
+    循环结束、查找不到元素这类预期之内的情况，用返回值或迭代器表示；
+    文件打不开、数据格式错误、参数越界这类无法在当前层处理的情况，才使用异常。</li>
+  <li><b>析构函数中不要让异常向外传播。</b>
+    栈展开过程中如果析构函数又抛出异常，程序会直接终止。
+    析构函数应当只做不会失败的操作，或者在内部处理掉可能出现的错误。</li>
+</ul>
+
+<h3 id="s6-3-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 6-7</div>
+  <p>
+    写一个函数 <code>safeDivide(int a, int b)</code>：<code>b</code> 为 0 时
+    抛出 <code>std::runtime_error("除数为 0")</code>，否则返回
+    <code>a / b</code>。主函数反复读入成对的整数，每一对调用一次，
+    捕获异常后输出「出错：除数为 0」，然后继续读下一对。</p>
+  <pre class="out" data-label="样例输入">10 2 7 0 9 3</pre>
+  <pre class="out" data-label="预期输出">10 / 2 = 5
+出错：除数为 0
+9 / 3 = 3</pre>
+  <p>
+    注意 <code>try</code> 写在循环里面：一组输入出错后，循环继续处理下一组。
+    如果写在循环外面，第一次异常就会结束整个循环。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        检查放在 <code>safeDivide</code> 里，捕获放在主函数的循环里：
+        每一组输入单独处理，出错不影响下一组。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+int safeDivide(int a, int b) {
+    if (b == 0) {
+        throw std::runtime_error("除数为 0");
+    }
+    return a / b;
+}
+
+int main() {
+    int a = 0;
+    int b = 0;
+    while (std::cin &gt;&gt; a &gt;&gt; b) {
+        try {
+            int result = safeDivide(a, b);
+            std::cout &lt;&lt; a &lt;&lt; " / " &lt;&lt; b &lt;&lt; " = " &lt;&lt; result &lt;&lt; std::endl;
+        } catch (const std::runtime_error&amp; e) {
+            std::cout &lt;&lt; "出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+        }
+    }
+    return 0;
+}</code></pre>
+      <p>
+        先调用 <code>safeDivide</code> 取得结果，再输出；
+        如果先输出「a / b = 」再调用，异常发生时屏幕上会留下半行内容。
+        这也是把可能失败的调用放在输出之前的原因。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-8</div>
+  <p>
+    写一个函数 <code>checkAge(int age)</code>：年龄小于 0 或大于 150 时
+    抛出 <code>std::out_of_range("年龄不在 0 到 150 之间")</code>，
+    否则输出「年龄 N 有效」。主函数反复读入年龄，捕获异常后输出
+    「拒绝：」加上异常中的说明文字。</p>
+  <pre class="out" data-label="样例输入">25 -3 150 200</pre>
+  <pre class="out" data-label="预期输出">年龄 25 有效
+拒绝：年龄不在 0 到 150 之间
+年龄 150 有效
+拒绝：年龄不在 0 到 150 之间</pre>
+  <p>
+    函数只负责检查和抛出，输出由调用方决定。这样同一个检查函数可以用在不同的程序里，
+    错误信息的写法也可以随调用方调整。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>checkAge</code> 只负责检查：合法就输出一行，不合法就抛出
+        <code>std::out_of_range</code>。主函数负责捕获并输出拒绝信息。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+void checkAge(int age) {
+    if (age &lt; 0 || age &gt; 150) {
+        throw std::out_of_range("年龄不在 0 到 150 之间");
+    }
+    std::cout &lt;&lt; "年龄 " &lt;&lt; age &lt;&lt; " 有效" &lt;&lt; std::endl;
+}
+
+int main() {
+    int age = 0;
+    while (std::cin &gt;&gt; age) {
+        try {
+            checkAge(age);
+        } catch (const std::out_of_range&amp; e) {
+            std::cout &lt;&lt; "拒绝：" &lt;&lt; e.what() &lt;&lt; std::endl;
+        }
+    }
+    return 0;
+}</code></pre>
+      <p>
+        <code>std::out_of_range</code> 的说明文字通过构造函数传入，
+        捕获方用 <code>e.what()</code> 取得。检查条件写成
+        <code>age &lt; 0 || age &gt; 150</code>，两个边界都包含在合法范围内。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>throw</code> 抛出异常，用 <code>try</code> / <code>catch</code> 捕获；
+  按 <code>const</code> 引用捕获并读取 <code>what()</code>；
+  说清异常离开函数时局部对象按逆序销毁；
+  遵守抛出与捕获的基本写法，按具体类型安排 <code>catch</code> 的顺序。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l6-4">
+<h2><span class="no">6.4</span>标准异常</h2>
+
+<p>
+  第 6.3 课用的 <code>std::runtime_error</code> 来自标准库。
+  标准库里的容器、字符串转换函数、内存分配等，在出错时也会抛出异常。
+  这一课先看这些标准异常的共同基类，再看怎么定义自己的异常类型。
+</p>
+
+<h3 id="s6-4-1"><code>std::exception</code> 与 <code>what()</code></h3>
+
+<p>
+  标准库中所有的异常类型都从 <code>std::exception</code> 派生
+  （<code>&lt;exception&gt;</code>）。它提供一个虚函数（virtual function）
+  <code>what()</code>，返回一段说明文字。虚函数是基类中声明、允许派生类重新定义，
+  调用时按对象的实际类型选择版本的成员函数；本课只用到 <code>what()</code>
+  这一个用途，具体写法不展开，需要时可以自行搜索「C++ 虚函数」学习。
+  按基类捕获，就能用一个 <code>catch</code> 接住所有标准异常：
+</p>
+
+<pre><code>try {
+    // 可能抛出标准异常的代码
+} catch (const std::exception&amp; e) {
+    std::cout &lt;&lt; "出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+  <b><code>what()</code> 返回的文字由标准库实现决定</b>，不同的编译器、
+  不同的标准库版本可能给出不同的内容。可以依赖的是异常的类型和它是否被抛出，
+  不要依赖具体文字来做判断或输出格式。
+</p>
+
+<div class="eg" id="e6-8">
+  <div class="eg-h">例题 · 接住标准库抛出的异常</div>
+  <p>
+    <code>std::vector::at</code> 在下标越界时抛出 <code>std::out_of_range</code>；
+    <code>std::stoi</code> 在字符串无法转换时抛出 <code>std::invalid_argument</code>，
+    在数字超出 <code>int</code> 范围时抛出 <code>std::out_of_range</code>。
+    下面的程序用同一个基类分别捕获：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 30};
+
+    try {
+        std::cout &lt;&lt; v.at(5) &lt;&lt; std::endl;
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "at 出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+
+    try {
+        int x = std::stoi("abc");
+        std::cout &lt;&lt; x &lt;&lt; std::endl;
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "stoi 出错：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">at 出错：vector::_M_range_check: __n (which is 5) &gt;= this->size() (which is 3)
+stoi 出错：stoi</pre>
+  <p>
+    这两行文字来自本机使用的标准库实现，换一个环境可能不同；
+    但两处抛出的异常类型是标准规定的：
+    <code>at</code> 抛出 <code>std::out_of_range</code>，
+    <code>stoi</code> 对「abc」抛出 <code>std::invalid_argument</code>。
+    程序真正应当处理的是类型，而不是这段文字。
+  </p>
+</div>
+
+<h3 id="s6-4-2">几种常见的标准异常</h3>
+
+<p>
+  标准异常大致分成两类：<b>逻辑错误</b>（程序本身的用法有问题，理论上可以避免）
+  和<b>运行时错误</b>（运行环境或输入导致，程序无法完全避免）。
+  常用的几种如下：
+</p>
+
+<ul>
+  <li><code>std::invalid_argument</code>——参数值不符合要求。
+    <code>std::stoi</code> 遇到不能转换的字符串时抛出。</li>
+  <li><code>std::out_of_range</code>——下标或数值超出允许范围。
+    <code>std::vector::at</code>、<code>std::stoi</code> 都可能抛出。</li>
+  <li><code>std::runtime_error</code>——运行时出现的、没有更具体分类的错误。
+    自定义异常通常从它派生。</li>
+  <li><code>std::bad_alloc</code>——内存分配失败，<code>new</code> 申请不到内存时抛出。</li>
+</ul>
+
+<p>
+  这些类型都从 <code>std::exception</code> 派生，前两个属于逻辑错误分支，
+  后两个属于运行时错误分支。需要按类别处理时，可以捕获
+  <code>std::logic_error</code> 或 <code>std::runtime_error</code>；
+  只需要统一报告时，捕获 <code>std::exception</code> 就够了。
+</p>
+
+<h3 id="s6-4-3">自定义异常类型</h3>
+
+<p>
+  标准异常类型表达的是通用的问题，程序自己的业务错误往往需要携带更多信息：
+  哪个文件、哪一行、哪个值不合格。这时可以定义一个自己的异常类型，
+  从 <code>std::runtime_error</code> 派生：
+</p>
+
+<pre><code>#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+class FileError : public std::runtime_error {
+public:
+    FileError(const std::string&amp; filename, const std::string&amp; reason)
+        : std::runtime_error(filename + "：" + reason) {}
+};</code></pre>
+
+<p>
+  <code>class FileError : public std::runtime_error</code> 表示
+  <code>FileError</code> 以 <code>std::runtime_error</code> 为基础：
+  它拥有基类的行为（包括 <code>what()</code>），并增加了自己的构造函数。
+  构造函数后面的 <code>: std::runtime_error(...)</code> 调用基类的构造函数，
+  把拼好的说明文字交给基类保存。
+</p>
+
+<p>
+  抛出和捕获的写法和标准异常一样。因为 <code>FileError</code> 是
+  <code>std::runtime_error</code> 的派生类型，按基类捕获也能接住它；
+  但要针对这个类型做不同处理时，应当先写 <code>catch (const FileError&amp;)</code>，
+  再写基类的 <code>catch</code>。
+</p>
+
+<div class="eg" id="e6-9">
+  <div class="eg-h">例题 · 带文件名与原因的异常</div>
+  <p>
+    下面的程序尝试打开一个不存在的文件，失败时抛出自定义的
+    <code>FileError</code>，异常对象中带有文件名和原因：
+  </p>
+  <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+class FileError : public std::runtime_error {
+public:
+    FileError(const std::string&amp; filename, const std::string&amp; reason)
+        : std::runtime_error(filename + "：" + reason) {}
+};
+
+void openOrThrow(const std::string&amp; filename) {
+    std::ifstream in(filename);
+    if (!in) {
+        throw FileError(filename, "无法打开");
+    }
+    std::cout &lt;&lt; "打开成功" &lt;&lt; std::endl;
+}
+
+int main() {
+    try {
+        openOrThrow("6.4-missing.txt");
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "捕获：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">捕获：6.4-missing.txt：无法打开</pre>
+  <p>
+    说明文字在 <code>FileError</code> 的构造函数中拼好，交给基类保存，
+    捕获方通过 <code>e.what()</code> 取得。调用方只需要处理
+    <code>std::exception</code>，不必了解这个类型内部保存了哪些字段。
+  </p>
+</div>
+
+<h3 id="s6-4-4">什么时候该用异常</h3>
+
+<p>
+  这一部分出现的错误大致有三类，处理方式各不相同：
+</p>
+
+<ul>
+  <li><b>可以当场处理的</b>：例如读入的年龄不合法，输出提示后继续读下一个。
+    在离出错位置最近的地方用 <code>try</code> / <code>catch</code> 处理。</li>
+  <li><b>当前层无法处理、需要调用方决定的</b>：例如打开配置文件失败。
+    抛出异常，让调用方决定是重试、换一个文件，还是终止程序。</li>
+  <li><b>程序逻辑错误</b>：例如下标越界、对空指针解引用。
+    这类问题应当在编写和测试阶段解决，异常只用于在出错时给出明确的报告，
+    不应当作为正常运行的一部分。</li>
+</ul>
+
+<p>
+  异常让「出错的路径」和「正常的路径」分开写，调用方可以选择在合适的层级处理。
+  代价是程序的执行路径多了一条：阅读代码时要同时考虑正常返回和异常退出，
+  这也是第 6.3 课强调栈展开和 RAII 的原因。
+</p>
+
+<h3 id="s6-4-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 6-9</div>
+  <p>
+    从键盘逐个读入单词，对每一个调用 <code>std::stoi</code> 转成整数。
+    转换成功时输出「单词 -&gt; 整数」；转换失败时分别捕获两种异常：
+    内容不是数字输出「不是数字」，数字超出 <code>int</code> 范围输出
+    「超出 int 范围」。</p>
+  <pre class="out" data-label="样例输入">42 abc 99999999999</pre>
+  <pre class="out" data-label="预期输出">42 -&gt; 42
+abc 不是数字
+99999999999 超出 int 范围</pre>
+  <p>
+    两个 <code>catch</code> 分别对应两种失败原因：内容不是数字、数字超出 <code>int</code> 的范围。
+    捕获时按具体类型写，才能分别处理。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每个单词都尝试用 <code>std::stoi</code> 转换，两个 <code>catch</code>
+        分别处理两类失败。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string s;
+    while (std::cin &gt;&gt; s) {
+        try {
+            int x = std::stoi(s);
+            std::cout &lt;&lt; s &lt;&lt; " -&gt; " &lt;&lt; x &lt;&lt; std::endl;
+        } catch (const std::invalid_argument&amp; e) {
+            std::cout &lt;&lt; s &lt;&lt; " 不是数字" &lt;&lt; std::endl;
+        } catch (const std::out_of_range&amp; e) {
+            std::cout &lt;&lt; s &lt;&lt; " 超出 int 范围" &lt;&lt; std::endl;
+        }
+    }
+    return 0;
+}</code></pre>
+      <p>
+        <code>std::invalid_argument</code> 表示内容不是数字，
+        <code>std::out_of_range</code> 表示数字本身合法，但超出了
+        <code>int</code> 能表示的范围。两者都是 <code>std::logic_error</code>
+        的派生类型，彼此没有继承关系，所以 <code>catch</code> 的先后顺序
+        不影响结果；按具体类型分别书写，读起来更清楚。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-10</div>
+  <p>
+    文件 <code>6-10-in.txt</code> 的第一行是记录数量，后面是若干行整数。
+    程序要读入全部整数并计算平均值，同时检查两件事：
+    文件打不开时抛出自定义异常 <code>MissingFile</code>；
+    实际读到的数量与第一行写的不一致时抛出 <code>std::runtime_error("数量不符")</code>。
+    文件内容是：
+  </p>
+  <pre><code>4
+80 90 70</code></pre>
+  <pre class="out" data-label="预期输出">数据错误：数量不符（文件写的是 4 个，实际读到 3 个）</pre>
+  <p>
+    这道题把前面几课的内容合在一起：打开文件、检查数量、抛出自定义异常、
+    按类型分别捕获。文件里的数量写成 4，实际只有 3 个数，程序应当报告数量不符。
+  </p>
+  <details class="ans" data-run="示例代码/答案/6-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        程序分两层检查：打开文件失败时抛出 <code>MissingFile</code>；
+        读到内容后核对数量，不一致时抛出 <code>std::runtime_error</code>。
+      </p>
+      <pre><code>#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+class MissingFile : public std::runtime_error {
+public:
+    explicit MissingFile(const std::string&amp; name)
+        : std::runtime_error("找不到文件：" + name) {}
+};
+
+int main() {
+    int n = 0;
+    int count = 0;
+    int sum = 0;
+
+    try {
+        std::ifstream in("6-10-in.txt");
+        if (!in) {
+            throw MissingFile("6-10-in.txt");
+        }
+
+        in &gt;&gt; n;
+        int x = 0;
+        while (in &gt;&gt; x) {
+            count++;
+            sum = sum + x;
+        }
+
+        if (count != n) {
+            throw std::runtime_error("数量不符");
+        }
+
+        std::cout &lt;&lt; "共 " &lt;&lt; n &lt;&lt; " 个，平均 " &lt;&lt; double(sum) / n &lt;&lt; std::endl;
+    } catch (const MissingFile&amp; e) {
+        std::cout &lt;&lt; "文件错误：" &lt;&lt; e.what() &lt;&lt; std::endl;
+    } catch (const std::runtime_error&amp; e) {
+        std::cout &lt;&lt; "数据错误：" &lt;&lt; e.what()
+                  &lt;&lt; "（文件写的是 " &lt;&lt; n &lt;&lt; " 个，实际读到 " &lt;&lt; count &lt;&lt; " 个）"
+                  &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>MissingFile</code> 的构造函数前面写了 <code>explicit</code>，
+        它表示禁止用 <code>std::string</code> 隐式构造 <code>MissingFile</code>；
+        这个关键字本课不展开，需要时可以自行搜索「C++ explicit」学习。
+        <code>MissingFile</code> 从 <code>std::runtime_error</code> 派生，
+        所以两个 <code>catch</code> 的顺序必须是先 <code>MissingFile</code>、
+        后 <code>std::runtime_error</code>；反过来写的话，
+        第一个 <code>catch</code> 会把所有 <code>MissingFile</code> 也接走。
+      </p>
+      <p>
+        这份数据的第一行写的是 4，后面只有 3 个数，所以走「数量不符」这一条。
+        把第一行改成 3，程序会输出平均值 80；把文件名改成不存在的文件，
+        会走第一个 <code>catch</code>，输出「文件错误：找不到文件：……」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>认出 <code>std::exception</code> 及其常见派生类型；
+  用 <code>catch (const std::exception&amp;)</code> 统一捕获；
+  从 <code>std::runtime_error</code> 派生自定义异常类型并携带信息；
+  按具体类型安排 <code>catch</code> 的顺序。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="05-内存与所有权.html">← 第 5 部分 · 内存与所有权</a>
+  <span class="spacer"></span>
+  <a class="next" href="07-串口.html">第 7 部分 · 串口（uart）基础 →</a>
+</nav>
+
+</main>
+
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

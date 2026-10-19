@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 1 部分 · 一个程序，几个文件 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a class="active" href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html" aria-current="page">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 1 部分 · 一个程序，几个文件</div>
+  <a class="toc-l" href="#l1-1"><span class="n">1.1</span>为什么不能都写在一个文件里</a>
+  <a class="toc-sub" href="#s1-1-1">先看一份能运行的</a>
+  <a class="toc-sub" href="#s1-1-2">它的问题在哪里</a>
+  <a class="toc-sub" href="#s1-1-3">拆分后的结构</a>
+  <a class="toc-sub" href="#s1-1-4">练习</a>
+  <a class="toc-l" href="#l1-2"><span class="n">1.2</span>#include 到底做了什么</a>
+  <a class="toc-sub" href="#s1-2-1">就是原样插入</a>
+  <a class="toc-sub" href="#s1-2-2">重复包含：直接运行一次</a>
+  <a class="toc-sub" href="#s1-2-3">卫士：挡住第二次</a>
+  <a class="toc-sub" href="#e1-1">例题：加了卫士的那一份</a>
+  <a class="toc-sub" href="#s1-2-4">两个文件都包含同一份</a>
+  <a class="toc-sub" href="#s1-2-5">练习</a>
+  <a class="toc-l" href="#l1-3"><span class="n">1.3</span>声明和定义</a>
+  <a class="toc-sub" href="#s1-3-1">头文件里放承诺</a>
+  <a class="toc-sub" href="#s1-3-2">第一个多文件程序</a>
+  <a class="toc-sub" href="#s1-3-3">和 1.1 比一比</a>
+  <a class="toc-sub" href="#s1-3-4">那个没写的 #include</a>
+  <a class="toc-sub" href="#s1-3-5">练习</a>
+  <a class="toc-l" href="#l1-4"><span class="n">1.4</span>一次编译几个文件</a>
+  <a class="toc-sub" href="#s1-4-1">一条命令拆成三条</a>
+  <a class="toc-sub" href="#s1-4-2">改一个文件，只重新编译那个</a>
+  <a class="toc-sub" href="#e1-2">例题：链接就是把 U 和 T 对应起来</a>
+  <a class="toc-sub" href="#s1-4-3">练习</a>
+  <a class="toc-l" href="#l1-5"><span class="n">1.5</span>链接错误长什么样</a>
+  <a class="toc-sub" href="#s1-5-1">直接运行一次</a>
+  <a class="toc-sub" href="#s1-5-2">一句一句读</a>
+  <a class="toc-sub" href="#s1-5-3">报错里的内部名称</a>
+  <a class="toc-sub" href="#s1-5-4">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 1 部分</div>
+  <h1>一个程序，几个文件</h1>
+  <p class="part-lead">
+    从这一部分起，程序不再是一个文件。五课只回答两件事：
+    <b>为什么要拆</b>、<b>拆分之后各部分如何对应</b>。
+    新教的只有三样：<code>#include</code> 的实际作用、头文件（承诺）和
+    <code>.cpp</code>（兑现）的分工、一次编几个文件。
+    学完你会认得那条最常见的链接错误，并且知道它在说什么。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-1">
+<h2><span class="no">1.1</span>为什么不能都写在一个文件里</h2>
+
+<p>
+这一部分从一份作业说起。它读入 10 个分数，输出一张统计表。
+</p>
+
+<h3 id="s1-1-1">先看一份能运行的</h3>
+
+<p>
+文件叫 <code>1.1-all-in-one.cpp</code>，八十几行，一个 <code>main</code>
+从头管到尾。向下阅读，先感受一下长度：
+</p>
+
+<pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // 十个分数，一个一个读进来
+    std::vector&lt;int&gt; scores(10);
+    for (int i = 0; i &lt; 10; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+
+    // 总分、最高、最低：一遍扫完
+    int total = 0;
+    int top = scores[0];
+    int low = scores[0];
+    for (int i = 0; i &lt; 10; i++) {
+        total = total + scores[i];
+        if (scores[i] &gt; top) {
+            top = scores[i];
+        }
+        if (scores[i] &lt; low) {
+            low = scores[i];
+        }
+    }
+
+    // 平均分：又单独扫了一遍
+    int totalAgain = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        totalAgain = totalAgain + scores[i];
+    }
+    double avg = totalAgain / 10.0;
+
+    // 五档各几个
+    int excellent = 0;
+    int good = 0;
+    int fair = 0;
+    int pass = 0;
+    int fail = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        if (scores[i] &gt;= 90) {
+            excellent++;
+        } else if (scores[i] &gt;= 80) {
+            good++;
+        } else if (scores[i] &gt;= 70) {
+            fair++;
+        } else if (scores[i] &gt;= 60) {
+            pass++;
+        } else {
+            fail++;
+        }
+    }
+
+    // 输出统计表
+    printf("分数    ");
+    for (int i = 0; i &lt; 10; i++) {
+        printf("%4d", scores[i]);
+    }
+    printf("\n");
+    printf("总分    %4d\n", total);
+    printf("平均    %4.1f\n", avg);
+    printf("最高    %4d\n", top);
+    printf("最低    %4d\n", low);
+    printf("优      %4d\n", excellent);
+    printf("良      %4d\n", good);
+    printf("中      %4d\n", fair);
+    printf("及格    %4d\n", pass);
+    printf("不及格  %4d\n", fail);
+
+    return 0;
+}</code></pre>
+
+<p>
+输入是十个分数，一行，用空格隔开：
+</p>
+
+<pre><code>92 85 77 60 58 100 73 88 95 64</code></pre>
+
+<p>
+编译并运行它：
+</p>
+
+<pre><code>g++ -Wall 1.1-all-in-one.cpp -o all-in-one
+./all-in-one &lt; 1.1-all-in-one.in</code></pre>
+
+<pre class="out" data-label="真实输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+
+<p>
+结果是对的。这份程序能编译通过、运行结果正确，每一句单看都没毛病。
+<b>问题不在对错。</b>
+</p>
+
+<h3 id="s1-1-2">它的问题在哪里</h3>
+
+<p>
+问题在于它无法继续扩展。四个毛病，一个比一个具体：
+</p>
+
+<ol>
+  <li>
+    <b>四项功能集中在一个函数里。</b>读输入、算总分最高最低、分档、输出统计表——
+    四件事，中间只有四行 <code>//</code> 注释当路标。
+    你哪天想找「平均分是怎么算的」，得从七十行里把它找出来。
+  </li>
+  <li>
+    <b>名称冲突。</b>文件里有个变量叫 <code>totalAgain</code>。
+    为什么会有这么个名字？因为 <code>total</code> 已经用过了——想再算一遍总分，
+    一个函数里名字不能重复，只能命名为 <code>totalAgain</code>，把那段循环又写了一遍。
+    <b>同一件事算两遍，只因为一个名字被占了。</b>
+  </li>
+  <li>
+    <b>无法单独测试一部分。</b>想验证「分档」那一段是否正确，只能把整份程序运行一遍、
+    把十个分数输入进去，再从整张表里辨认哪几行是它计算的结果。
+    <b>要测试一小部分，就得运行整个程序</b>——这个问题往后会越来越严重。
+  </li>
+  <li>
+    <b>修改一句，整份代码都要重新编译。</b>这一条到 1.4 会用实际测量结果说明。
+  </li>
+</ol>
+
+<p>
+八十几行还不算多。工程里的文件是两千行——上面这四条会跟着放大几十倍：
+名称冲突不只一处，而是大量出现；找一段代码靠搜索；改一行，整个团队都需要等待重新编译。
+</p>
+
+<h3 id="s1-1-3">拆分后的结构</h3>
+
+<p>
+1.3 会把这份程序拆成三个文件。拆分之后那个目录的结构如下：
+</p>
+
+<pre><code>cd 示例代码/1.3-两个文件
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">构建.txt
+main.cpp
+main.in
+stats.cpp
+stats.h</pre>
+
+<p>
+三个文件的分工如下：
+</p>
+
+<ul>
+  <li><b><code>stats.h</code></b>——<b>承诺</b>。只写「有哪些函数、各接受什么参数、各返回什么」，
+    一句实现都没有。谁想用这些函数，把这份声明插入文件开头即可。</li>
+  <li><b><code>stats.cpp</code></b>——<b>兑现</b>。承诺过的每一个函数，在这里写出实现。</li>
+  <li><b><code>main.cpp</code></b>——<b>使用</b>。只剩三步：读入、计算、输出。</li>
+</ul>
+
+<p>
+四个问题就是这样解决的：每块活一个函数，名字各归各的（<code>totalAgain</code>
+这个名字会消失）；要测试哪一部分，就编译哪一部分；修改一个文件，只重新编译那一个。
+</p>
+
+<p>
+<b>怎么做到的，是 1.2 到 1.4 的事。</b>这一课先记住那张表的形式——
+拆分之后运行输出仍然是同一张表，一个字符都不差。
+</p>
+
+<h3 id="s1-1-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-1</div>
+  <p>
+    把上面那份程序自己输入一遍（文件名就叫 <code>1.1-all-in-one.cpp</code>），
+    连输入文件 <code>1.1-all-in-one.in</code> 一起建好，编译出来运行一遍。
+    <b>这道题要的是实际操作，不是代码</b>——输入完查看自己屏幕上那张表。
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-run="示例代码/答案/1-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        答案就是课里那一份，一个字符都没有改动——<b>这道题要求实际操作，不是编写代码</b>。
+        再列一遍，方便你对照输入：
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // 十个分数，一个一个读进来
+    std::vector&lt;int&gt; scores(10);
+    for (int i = 0; i &lt; 10; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+
+    // 总分、最高、最低：一遍扫完
+    int total = 0;
+    int top = scores[0];
+    int low = scores[0];
+    for (int i = 0; i &lt; 10; i++) {
+        total = total + scores[i];
+        if (scores[i] &gt; top) {
+            top = scores[i];
+        }
+        if (scores[i] &lt; low) {
+            low = scores[i];
+        }
+    }
+
+    // 平均分：又单独扫了一遍
+    int totalAgain = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        totalAgain = totalAgain + scores[i];
+    }
+    double avg = totalAgain / 10.0;
+
+    // 五档各几个
+    int excellent = 0;
+    int good = 0;
+    int fair = 0;
+    int pass = 0;
+    int fail = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        if (scores[i] &gt;= 90) {
+            excellent++;
+        } else if (scores[i] &gt;= 80) {
+            good++;
+        } else if (scores[i] &gt;= 70) {
+            fair++;
+        } else if (scores[i] &gt;= 60) {
+            pass++;
+        } else {
+            fail++;
+        }
+    }
+
+    // 输出统计表
+    printf("分数    ");
+    for (int i = 0; i &lt; 10; i++) {
+        printf("%4d", scores[i]);
+    }
+    printf("\n");
+    printf("总分    %4d\n", total);
+    printf("平均    %4.1f\n", avg);
+    printf("最高    %4d\n", top);
+    printf("最低    %4d\n", low);
+    printf("优      %4d\n", excellent);
+    printf("良      %4d\n", good);
+    printf("中      %4d\n", fair);
+    printf("及格    %4d\n", pass);
+    printf("不及格  %4d\n", fail);
+
+    return 0;
+}</code></pre>
+      <p>
+        输入那十个数在 <code>1-1.in</code> 里，就是课里那一行：
+        <code>92 85 77 60 58 100 73 88 95 64</code>。
+      </p>
+      <p>
+        这一份用的全是基础课的内容：<code>vector</code>（第 4 部分）、
+        循环和 <code>if</code>（第 2 部分）、<code>printf</code>（第 1 部分）。
+        一行新的都没有——<b>无法编写就回去查阅，不要在这里勉强</b>，
+        第 1 部分后面每一课都默认你能自己写出这样的程序。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-2</div>
+  <p>
+    给这份程序加一行：<b>及格率</b>——60 分及以上的人占多少，写成百分比，
+    保留一位小数。加在「不及格」那一行的下面。
+  </p>
+  <p>
+    提示：一个数都不用重新数。上面那五个计数你已经有了，
+    及格的人就是其中四档加起来——<b>先想清楚再编写</b>，
+    这题真正练的是「在别人的文件里找到已有的函数」。
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1
+及格率  90.0%</pre>
+  <details class="ans" data-run="示例代码/答案/1-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>就多了一行 <code>printf</code>：</p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // 十个分数，一个一个读进来
+    std::vector&lt;int&gt; scores(10);
+    for (int i = 0; i &lt; 10; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+
+    // 总分、最高、最低：一遍扫完
+    int total = 0;
+    int top = scores[0];
+    int low = scores[0];
+    for (int i = 0; i &lt; 10; i++) {
+        total = total + scores[i];
+        if (scores[i] &gt; top) {
+            top = scores[i];
+        }
+        if (scores[i] &lt; low) {
+            low = scores[i];
+        }
+    }
+
+    // 平均分：又单独扫了一遍
+    int totalAgain = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        totalAgain = totalAgain + scores[i];
+    }
+    double avg = totalAgain / 10.0;
+
+    // 五档各几个
+    int excellent = 0;
+    int good = 0;
+    int fair = 0;
+    int pass = 0;
+    int fail = 0;
+    for (int i = 0; i &lt; 10; i++) {
+        if (scores[i] &gt;= 90) {
+            excellent++;
+        } else if (scores[i] &gt;= 80) {
+            good++;
+        } else if (scores[i] &gt;= 70) {
+            fair++;
+        } else if (scores[i] &gt;= 60) {
+            pass++;
+        } else {
+            fail++;
+        }
+    }
+
+    // 输出统计表
+    printf("分数    ");
+    for (int i = 0; i &lt; 10; i++) {
+        printf("%4d", scores[i]);
+    }
+    printf("\n");
+    printf("总分    %4d\n", total);
+    printf("平均    %4.1f\n", avg);
+    printf("最高    %4d\n", top);
+    printf("最低    %4d\n", low);
+    printf("优      %4d\n", excellent);
+    printf("良      %4d\n", good);
+    printf("中      %4d\n", fair);
+    printf("及格    %4d\n", pass);
+    printf("不及格  %4d\n", fail);
+    printf("及格率  %4.1f%%\n", (excellent + good + fair + pass) * 100.0 / 10);
+
+    return 0;
+}</code></pre>
+      <p>两个点：</p>
+      <p>
+        <b>一、一个数都没有重新统计。</b>及格的人 =
+        <code>excellent + good + fair + pass</code>——上面那五个计数器
+        已经把十个人分完了，加起来就是。这题真正练的是
+        <b>「先查找有没有现成的，找不到再开始编写」</b>，
+        往后在别人的文件里修改内容，依靠的都是这个习惯。
+      </p>
+      <p>
+        <b>二、<code>%%</code> 才能输出一个 <code>%</code>。</b>
+        <code>printf</code> 的引号里，单个 <code>%</code> 是格式符的开头
+        （<code>%4d</code>、<code>%4.1f</code> 那种），要输出一个真正的百分号，
+        需要写两个。遗漏了它会出现什么结果？实际试验一次即可知道——那一行的后半部分会变成
+        一段无法理解的内容。
+      </p>
+      <p>
+        课里那个 <code>totalAgain</code> 我没动。它不符合命名习惯，但这题只要求添加一行；
+        要修改它，等练习 1-6。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>没有新内容——但你能说出一份「全部放在 main 里」的程序
+  问题在哪里，而且很具体：哪四项功能集中在一起、哪个名称是被迫产生的。
+  <b>下一课讲一个你天天在写、却未必真明白的符号：<code>#include</code>。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-2">
+<h2><span class="no">1.2</span>#include 到底做了什么</h2>
+
+<p>
+0.2 那一课说过一句：<code>#include</code> 的作用就是<b>把那个文件从头到尾复制一遍，
+插入这个位置</b>。这一课要讨论的是这句话的后半部分——<b>重复包含会怎么样</b>。
+</p>
+
+<h3 id="s1-2-1">就是原样插入</h3>
+
+<p>
+先看个证据。下面这份 <code>util.h</code> 里有一个函数，<b>不只有声明，连函数体都在</b>：
+</p>
+
+<pre><code>int twice(int x) {
+    return x * 2;
+}</code></pre>
+
+<p>
+再看用它的人——<code>main.cpp</code> 里，这个头文件被 <code>#include</code> 了<b>两次</b>：
+</p>
+
+<pre><code>#include "util.h"
+#include "util.h"
+
+#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+（双引号那种是给「自己写的头文件」用的，尖括号那种是给标准库用的。区别到附录里说。）
+</p>
+
+<p>
+这两行 <code>#include</code> 不是「使用一下」，是<b>插入</b>。
+编译器读到的其实是这个：
+</p>
+
+<pre><code>int twice(int x) {
+    return x * 2;
+}
+int twice(int x) {
+    return x * 2;
+}
+
+#include &lt;iostream&gt;
+...</code></pre>
+
+<p>
+同一个函数，出现在同一个文件里两次。编译器当然不让。
+</p>
+
+<h3 id="s1-2-2">重复包含：直接运行一次</h3>
+
+<p>
+上面那两份文件就在课里（<code>1.2-重复包含-err</code> 那个目录），编译一下：
+</p>
+
+<pre><code>g++ -Wall main.cpp -o twice</code></pre>
+
+<pre class="diag" data-diag="1.2-重复包含-err/main.cpp"><code>In file included from main.cpp:2:
+util.h:1:5: error: redefinition of ‘int twice(int)’
+    1 | int twice(int x) {
+      |     ^~~~~
+In file included from main.cpp:1:
+util.h:1:5: note: ‘int twice(int)’ previously defined here
+    1 | int twice(int x) {
+      |     ^~~~~</code></pre>
+
+<p>
+读那行：<b>「<code>twice</code> 重复定义了」</b>。
+下面那条 <code>note</code> 指出第一次定义的位置。
+</p>
+
+<p>
+上面那句 <code>In file included from main.cpp:2</code> 说的是
+「这段内容是从 main.cpp 第 2 行那个 <code>#include</code> 插入的」——
+它甚至记录了是<b>哪一次</b>包含的。这就是「原样插入」最直接的证据。
+</p>
+
+<div class="aside warn">
+<b>别纠结行号</b>
+<p>
+报错里的行号指的是课里那份文件。你自己输入的那份少开头那几行注释，
+行号会小一点——<b>关注它指出的问题，不要和那个数字纠缠</b>。
+往后每次列出的报错都是这样。
+</p>
+</div>
+
+<h3 id="s1-2-3">卫士：挡住第二次</h3>
+
+<p>
+真写代码的时候，谁也无法确定一个头文件会被包含几遍——你 <code>#include</code> 了它，
+你 <code>#include</code> 的另一个头文件里可能也 <code>#include</code> 了它。
+所以头文件都必须能处理「第二次包含」。
+</p>
+
+<p>
+办法是在文件开头和结尾各加一段：
+</p>
+
+<pre><code>#ifndef TWICE_H
+#define TWICE_H
+
+int twice(int x) {
+    return x * 2;
+}
+
+#endif</code></pre>
+
+<p>
+三行，读法是：
+</p>
+
+<ul>
+  <li><code>#ifndef TWICE_H</code>——「<b>如果</b>没定义过 <code>TWICE_H</code> 这个名字，
+    下面到 <code>#endif</code> 为止的都算数」</li>
+  <li><code>#define TWICE_H</code>——「现在给你定义上」</li>
+  <li><code>#endif</code>——「到此为止」</li>
+</ul>
+
+<p>
+第二次包含的时候，<code>TWICE_H</code> 已经定义过了，
+<code>#ifndef</code> 那行不成立，<b>整段直接被跳过</b>——
+等于第一次进来以后，后面几次都是空的。包含几遍结果都一样。
+</p>
+
+<p>
+这个机制有一个名字，叫<b>头文件卫士</b>（guard）。
+那三行本身不是代码，是给预处理器看的指令，末尾没有分号。
+<code>TWICE_H</code> 这个名称可以任意指定，但全工程不能重——习惯上跟着文件名走。
+</p>
+
+<div class="eg" id="e1-1">
+  <div class="eg-h">例题 · 加了卫士的那一份</div>
+  <p>
+    课里有个目录叫 <code>1.2-卫士</code>，文件和刚才那个 <code>-err</code>
+    目录一模一样，只多了那三行：
+  </p>
+
+  <pre><code>#ifndef TWICE_H
+#define TWICE_H
+
+int twice(int x) {
+    return x * 2;
+}
+
+#endif</code></pre>
+
+  <p>
+    还是那个「重复包含」的 main，这次编译通过，运行结果也正确：
+  </p>
+
+  <pre><code>g++ -Wall main.cpp -o guard
+./guard</code></pre>
+
+  <pre class="out" data-label="真实输出">42</pre>
+
+  <p>
+    <b>两份文件的差别就是那三行。</b>一份报重复定义，一份输出 42。
+  </p>
+
+  <p>
+    还有一种写法：把三行换成一行 <code>#pragma once</code>，意思一样，
+    现在的编译器都认。老代码里两种都能见到，能够认出即可。
+  </p>
+</div>
+
+<h3 id="s1-2-4">两个文件都包含同一份</h3>
+
+<p>
+卫士解决的是「一个文件里重复包含」。还有另一种情况，它无法处理。
+</p>
+
+<p>
+假如工程里有两个 <code>.cpp</code>，都 <code>#include</code> 了同一个头文件
+（这是常事）。卫士保证每个文件里只包含一遍——<b>但两个文件各包含一遍，
+合起来就是两份定义</b>。
+</p>
+
+<p>
+课里也有这一份，目录叫 <code>1.2-重复定义-err</code>：两个源文件，
+都包含了那个 <code>util.h</code>。
+编译分两步进行：
+</p>
+
+<pre><code>g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c other.cpp -o other.o
+g++ main.o other.o -o dup-def</code></pre>
+
+<p>
+前两条没有输出任何内容就通过了——<b>每个文件单独看都是正确的</b>。
+第三条失败：
+</p>
+
+<pre class="diag" data-diag="1.2-重复定义-err/main.cpp"><code>/usr/bin/ld: other.o: in function `twice(int)':
+other.cpp:(.text+0x0): multiple definition of `twice(int)'; main.o:main.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status</code></pre>
+
+<p>
+这次报错的不是编译器，是<b>链接器</b>（<code>ld</code>）——
+它要把这两个 <code>.o</code> 合成一个程序，一数：<code>twice</code> 有两份。
+</p>
+
+<p>
+两句话：<b><code>multiple definition of twice</code></b>（twice 定义了不止一次）、
+<b><code>first defined here</code></b>（第一份在 main.o 那边）。
+谁先谁后看你链接时的顺序，看的是「谁重了、另一个在哪儿」。
+</p>
+
+<div class="aside tip">
+<b>所以头文件里到底能放什么</b>
+<p>
+这一课两种错误，原因是一样的：头文件里放进了<b>函数的定义</b>——带函数体的
+那种。卫士挡得住「同一个文件里重复包含」的；刚才链接器报告的问题，它挡不住。
+</p>
+<p>
+头文件里该放的是<b>声明</b>：函数的名字、参数和返回类型，末尾一个分号，
+不写函数体。声明出现多少遍都没事，只要每遍说的是同一件事；<b>一个函数的
+定义，全程序只能有一份</b>——同一份文件里多出第二份，编译器报
+<code>redefinition</code>；两个文件各一份，链接器报
+<code>multiple definition</code>。
+</p>
+<p>
+<b>下一课整课都在做这件事：声明留在 <code>.h</code>，函数体移到某一个
+<code>.cpp</code>。</b>
+</p>
+</div>
+
+<h3 id="s1-2-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-3</div>
+  <p>
+    一个文件里，同一个函数写两遍——就当作是被包含了两遍：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int twice(int x) {
+    return x * 2;
+}
+
+int twice(int x) {
+    return x * 2;
+}
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <p>
+    编译一下，把报错复制到答案里核对。重点不是把它改对，
+    是看清编译器说的那句 <code>redefinition</code>——
+    往后你在别的项目里遇到它，需要直接认出这是「重复包含」。
+  </p>
+  <details class="ans" data-err="示例代码/答案/1-3-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        程序就是练习里那一份，一个字符没有改动——这一份要的就是它无法编译：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int twice(int x) {
+    return x * 2;
+}
+
+int twice(int x) {
+    return x * 2;
+}
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>编译器输出的内容，一字不差地复制在这里：</p>
+      <pre class="diag"><code>1-3-err.cpp:14:5: error: redefinition of ‘int twice(int)’
+   14 | int twice(int x) {
+      |     ^~~~~
+1-3-err.cpp:10:5: note: ‘int twice(int)’ previously defined here
+   10 | int twice(int x) {
+      |     ^~~~~</code></pre>
+      <p>
+        一条 <code>error</code>，底下那条 <code>note</code> 提供辅助——
+        指出第一次定义的位置。
+      </p>
+      <ul>
+        <li><b><code>14:5</code></b>——第 14 行、第 5 个字符，也就是<b>后一个</b>
+          <code>twice</code>。它报告的是重复的那一个。</li>
+        <li><b><code>10:5</code></b>——第一次定义的位置。对照着数一下：
+          第 10 行和第 14 行各有一个 <code>int twice(int x)</code>，
+          中间隔着三行。</li>
+        <li><b><code>redefinition</code></b>——重复定义。看见这个词，
+          第一反应就是「同一个内容是不是被插入了两遍」。</li>
+      </ul>
+      <p>
+        这就是 1.2 那个真实案例的同一个问题：那边是头文件被包含了两遍，
+        这边是手动编写了两遍——<b>编译器看来完全相同</b>。
+      </p>
+      <p>
+        （课里那条报错前面还有一句 <code>In file included from main.cpp:2:</code>；
+        这一份是单文件，没有那一句。多出来的那句不是重点，
+        <code>error</code> 那行才是。）
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-4</div>
+  <p>
+    现在换个写法，让它能够编译通过、并且输出 42：<b>同名函数声明两遍、定义只留一份。</b>
+  </p>
+  <pre><code>int twice(int x);
+int twice(int x);
+
+int twice(int x) {
+    return x * 2;
+}</code></pre>
+  <p>
+    上面这两行只是函数声明——有个返回类型、有个名字和参数表，
+    末尾一个分号，<b>没有函数体</b>。这叫<b>声明</b>：只是在说
+    「有这样一个函数，形式如此」，没有说明它做什么。
+  </p>
+  <pre class="out" data-label="预期输出">42</pre>
+  <p>
+    做完这题你就明白卫士挡的是什么了：它阻止的是<b>重复定义</b>。
+    声明多包含几遍，编译器不会给出任何提示。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>声明两遍、定义一遍：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);
+int twice(int x);
+
+int twice(int x) {
+    return x * 2;
+}
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>运行输出 42。</p>
+      <p>
+        <b>声明写几遍，编译器不会有任何提示。</b>因为它记录的是同一件事：
+        「存在一个名为 <code>twice</code> 的函数，接受 <code>int</code>、返回 <code>int</code>」——
+        记录两遍仍然是同一件事。定义不同：那是「具体实现」，
+        两份做法放在一起，它无法确定该用哪一份定义，就报 <code>redefinition</code>。
+      </p>
+      <p>
+        回头再看 1.2 的包含卫士，它阻止的是什么就清楚了：<b>阻止的是定义</b>。
+        头文件里真只剩函数声明的话，包含两遍确实没有问题——可
+        <code>struct</code>、<code>class</code> 那种定义是不能重复的，
+        卫士挡的主要就是它们。所以通常的规则是：头文件一律添加包含卫士，
+        不要考虑这一份里到底有没有定义。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能说清 <code>#include</code> 是「原样插入」，
+  并且知道两种「由重复包含造成的错误」分别是什么形式——同一文件里包含两遍（
+  <code>redefinition</code>，编译器报告的）和两个文件各包含一遍
+  （<code>multiple definition</code>，链接器报告的）。
+  <b>下一课给头文件派个正经活：只放声明。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-3">
+<h2><span class="no">1.3</span>声明和定义</h2>
+
+<p>
+基础课讲过一条规矩：<b>要用一个函数，先定义它</b>——所以函数都写在
+<code>main</code> 上面。这一课要把这条规矩改一个字。
+</p>
+
+<h3 id="s1-3-1">头文件里放承诺</h3>
+
+<p>
+上一课那个错误，根子是「函数的定义被包含了两遍」。
+避免它的办法很直接：<b>头文件里只放声明，一个函数体都不放。</b>
+</p>
+
+<p>
+声明和定义的分工，用一句话说：
+</p>
+
+<ul>
+  <li><b>声明</b>是<b>承诺</b>：有这样一个函数，名称如此，接受这些参数、返回那个值。
+    末尾是分号，没有函数体。</li>
+  <li><b>定义</b>是<b>兑现</b>：函数体在这儿，工作是这么做的。
+    一个程序里，每个函数只能兑现一次。</li>
+</ul>
+
+<p>
+声明可以出现在多处——出现几遍都可以，编译器能识别出它们是同一个声明。
+兑现只许有一处。
+</p>
+
+<p>
+于是基础课那条规矩要改一个字：
+</p>
+
+<pre><code>要用它，先定义它。      ← 基础课（都在一个文件里，函数写在 main 上面）
+
+要用它，先声明它。      ← 从现在起（定义在别的文件里，看不见）</code></pre>
+
+<p>
+你用的每一个标准库函数，都是这么办的：<code>std::cout</code> 在
+<code>&lt;iostream&gt;</code> 里被<b>声明</b>，<b>定义</b>在标准库里，
+找不找得到是链接器的事（0.2 那一课看到过它怎么查找）。
+</p>
+
+<h3 id="s1-3-2">第一个多文件程序</h3>
+
+<p>
+把 1.1 那份拆分后就是三份文件。<b>先查看头文件</b>——
+它只有声明，没有函数实现：
+</p>
+
+<pre><code>#ifndef STATS_H
+#define STATS_H
+
+#include &lt;vector&gt;
+
+// 读 n 个分数回来
+std::vector&lt;int&gt; readScores(int n);
+
+// 平均分
+double average(std::vector&lt;int&gt;&amp; scores);
+
+// 输出统计表：分数、总分、平均、最高、最低、五档各几个
+void printReport(std::vector&lt;int&gt;&amp; scores);
+
+#endif</code></pre>
+
+<p>
+三行承诺，末尾都是分号。卫士那三行（1.2 讲的）照写在第一行和最后一行。
+</p>
+
+<p>
+<b>再看兑现的那份</b>，<code>stats.cpp</code>：
+</p>
+
+<pre><code>#include "stats.h"
+
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+std::vector&lt;int&gt; readScores(int n) {
+    std::vector&lt;int&gt; scores(n);
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+    return scores;
+}
+
+double average(std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        sum = sum + scores[i];
+    }
+    return sum / double(scores.size());
+}
+
+void printReport(std::vector&lt;int&gt;&amp; scores) {
+    ...（1.1 里「算总分最高最低」「五档各几个」「输出统计表」那三段，全部移到这里）...
+}</code></pre>
+
+<p>
+第一行 <code>#include "stats.h"</code> 不是为了给别人用，
+是<b>给自己核对</b>：把声明包含进来，编译器就会一句一句比——
+名字、参数、返回类型，和承诺对不上的，立即报告出来。
+</p>
+
+<p>
+（上面那个 <code>...</code> 是简化写法。整份文件一字不差地放在
+<code>1.3-两个文件</code> 那个目录里，你需要输入的就是它。）
+</p>
+
+<p>
+<b>最后是用它的那份</b>，<code>main.cpp</code>——从七十行变成七行：
+</p>
+
+<pre><code>#include "stats.h"
+
+int main() {
+    std::vector&lt;int&gt; scores = readScores(10);
+
+    printReport(scores);
+    return 0;
+}</code></pre>
+
+<p>
+<code>readScores</code> 和 <code>printReport</code> 这两个名字，
+编译器在 <code>stats.h</code> 里读取到声明——知道它们接受什么参数、返回什么值，
+所以敢让你调用。至于它们到底在哪儿、是谁写的，那是链接器的事（1.5 讲）。
+</p>
+
+<h3 id="s1-3-3">和 1.1 比一比</h3>
+
+<p>
+拆完这个目录，按照 <code>构建.txt</code> 输入两行：
+</p>
+
+<pre><code>g++ -Wall main.cpp stats.cpp -o report
+./report &lt; main.in</code></pre>
+
+<p>
+输出的表，和 1.1 那份<b>完全相同</b>——这不是口头说明，而是实际对比得到的
+（<code>../all-in-one</code> 是 1.1 那个编译出来的程序，<code>..</code> 是上一层目录）：
+</p>
+
+<pre><code>diff &lt;(../all-in-one &lt; ../1.1-all-in-one.in) &lt;(./report &lt; main.in)</code></pre>
+
+<pre class="out" data-label="真实输出">（没有任何输出）</pre>
+
+<p>
+<code>diff</code> 是个比对两个文件/两段输出的工具，
+<b>一样就没有任何输出</b>。没有输出，说明两份输出一个字节都不差。
+</p>
+
+<p>
+<b>拆分文件不改变结果。</b>这句话往后还会出现很多次——
+cmake、库、工程，都是「换一种组织方式，程序仍然是同一个程序」。
+</p>
+
+<h3 id="s1-3-4">那个没写的 #include</h3>
+
+<p>
+回头看 <code>main.cpp</code>。它在第五行以前就用了
+<code>std::vector</code>，可是<b>它自己没写 <code>#include &lt;vector&gt;</code></b>。
+为什么能够编译通过？
+</p>
+
+<p>
+因为 <code>stats.h</code> 里有那一行，而 <code>stats.h</code> 被插入了 ——
+<b>插入的是内容，内容里附带的 <code>#include</code> 当然也跟着插入</b>。
+这就是 1.2 那句话的又一次体现。
+</p>
+
+<div class="aside warn">
+<b>能编译通过不等于应当这样写</b>
+<p>
+上面那份是故意的，为了说明「包含」有多彻底。
+真写代码的时候规矩是<b>谁用谁 include</b>：<code>main.cpp</code> 自己用
+<code>vector</code>，就自己写一行 <code>#include &lt;vector&gt;</code>。
+</p>
+<p>
+不这么写会出什么事：哪天 <code>stats.h</code> 里不再需要 <code>vector</code>，
+那行被删掉，<code>main.cpp</code> 就突然无法编译了——而它的作者什么都没改。
+
+</p>
+</div>
+
+<h3 id="s1-3-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-5</div>
+  <p>
+    一个文件里，把函数的<b>定义移到 <code>main</code> 下面</b>，
+    上面只留一句声明——能够编译通过、输出 <code>42</code>：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);          // 只留这一行
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}
+
+int twice(int x) {         // 定义移到这里
+    return x * 2;
+}</code></pre>
+  <p>
+    （那两处 <code>//</code> 是给你指路的，留着删掉都行。）
+  </p>
+  <p>
+    这一题就是「头文件」的缩影：<b>上面的声明，等于一个只有一行的小头文件。</b>
+    你将来在 <code>stats.h</code> 里做的事，和刚才这一行是同一件事。
+  </p>
+  <pre class="out" data-label="预期输出">42</pre>
+  <details class="ans" data-run="示例代码/答案/1-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>定义移到下面，声明留在上面：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}
+
+int twice(int x) {
+    return x * 2;
+}</code></pre>
+      <p>42。</p>
+      <p>
+        编译器读文件是<b>自上往下</b>的。读到 <code>main</code> 里那句
+        <code>twice(21)</code> 的时候，它只要求一件事：<b>上面</b>见过一个叫
+        <code>twice</code> 的声明——读取到就允许调用。函数体在下面还是在文件末尾，
+        这一步它不检查。
+      </p>
+      <p>
+        这就是「头文件」的最小形式。<code>int twice(int x);</code> 这一行，
+        等于一个只有一行的小头文件；<code>stats.h</code> 里那三行承诺，
+        和它是一回事，只是多两行、另外指定了名称。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-6</div>
+  <p>
+    把 1.1 那份程序拆成三个函数，写在一个文件里：
+  </p>
+  <ol>
+    <li><code>readScores(int n)</code>：读 <code>n</code> 个分数，返回一个
+      <code>std::vector&lt;int&gt;</code>；</li>
+    <li><code>average(...)</code>：返回平均分；</li>
+    <li><code>printReport(...)</code>：输出那张表。</li>
+  </ol>
+  <p>
+    要求：<code>main</code> 里只剩两句调用；输出和 1.1 一字不差。
+    写完自己 <code>diff</code> 一下。
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <p>
+    做完这一题，再看 1.3 那个目录：<b>你手上这三块，就是
+    <code>stats.cpp</code> 里那三块。</b>把哪一部分移到哪个文件，
+    你已经全试过一遍了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>三块，加一个只剩两句的 <code>main</code>：</p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;int&gt; readScores(int n) {
+    std::vector&lt;int&gt; scores(n);
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+    return scores;
+}
+
+double average(std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        sum = sum + scores[i];
+    }
+    return sum / double(scores.size());
+}
+
+void printReport(std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    int top = scores[0];
+    int low = scores[0];
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        sum = sum + scores[i];
+        if (scores[i] &gt; top) {
+            top = scores[i];
+        }
+        if (scores[i] &lt; low) {
+            low = scores[i];
+        }
+    }
+
+    int excellent = 0;
+    int good = 0;
+    int fair = 0;
+    int pass = 0;
+    int fail = 0;
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        if (scores[i] &gt;= 90) {
+            excellent++;
+        } else if (scores[i] &gt;= 80) {
+            good++;
+        } else if (scores[i] &gt;= 70) {
+            fair++;
+        } else if (scores[i] &gt;= 60) {
+            pass++;
+        } else {
+            fail++;
+        }
+    }
+
+    printf("分数    ");
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        printf("%4d", scores[i]);
+    }
+    printf("\n");
+    printf("总分    %4d\n", sum);
+    printf("平均    %4.1f\n", average(scores));
+    printf("最高    %4d\n", top);
+    printf("最低    %4d\n", low);
+    printf("优      %4d\n", excellent);
+    printf("良      %4d\n", good);
+    printf("中      %4d\n", fair);
+    printf("及格    %4d\n", pass);
+    printf("不及格  %4d\n", fail);
+}
+
+int main() {
+    std::vector&lt;int&gt; scores = readScores(10);
+
+    printReport(scores);
+    return 0;
+}</code></pre>
+      <p>
+        和 1.1 那份 <code>diff</code> 一下是空的——<b>拆分文件不改变结果</b>。
+      </p>
+      <p>三个地方对照着 1.1 看：</p>
+      <ul>
+        <li><b><code>totalAgain</code> 不再存在。</b>那个名称当初是被迫产生的：
+          一个函数里名字不能重。现在 <code>average</code> 自己有名字、
+          自己有一块存放数据的地方，重复的那一遍循环也就不必再写了。</li>
+        <li><b><code>main</code> 只剩两句。</b>想单独测试哪一块，调用一下就行——
+          不需要运行整个程序，再从整张表里找出它计算的是哪几行。</li>
+        <li><b>三块各有各的名字。</b>每一块各自负责什么，可以直接看出。</li>
+      </ul>
+      <p>
+        再查看 1.3 那个目录：<code>stats.cpp</code> 里的三个函数和你刚写的
+        一模一样（那边多一行 <code>#include "stats.h"</code>）。
+        <b>你刚才做的事，就是拆分文件的前一半。</b>后一半是把这三块移入
+        另一个文件里去——那要等 1.3 讲完声明和定义。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能把「承诺」和「兑现」分开写了——
+  声明放一处、定义放另一处，还能说清为什么头文件里不许放函数体
+  （定义全程序只能有一份）。<b>下一课讲机器怎么把这两处拼起来。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-4">
+<h2><span class="no">1.4</span>一次编译几个文件</h2>
+
+<p>
+1.3 那两行命令里，<code>g++</code> 一次接受两个 <code>.cpp</code>。
+它在中间执行了什么？这一课把它拆开分析。
+</p>
+
+<h3 id="s1-4-1">一条命令拆成三条</h3>
+
+<p>
+课里有个目录叫 <code>1.4-分开编</code>，里面的文件和 1.3 那个目录一模一样，
+只有 <code>构建.txt</code> 换了一种写法：
+</p>
+
+<pre><code>g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</code></pre>
+
+<p>
+第一行的 <code>-c</code> 是 0.2 看到过的那个：<b>编译到 <code>.o</code> 就停止，不链接。</b>
+前两行各处理一个文件，第三行把两个 <code>.o</code> 交给链接器。
+</p>
+
+<p>
+运行完之后目录里多了三个文件，大小是这样：
+</p>
+
+<pre><code>wc -c main.o stats.o report</code></pre>
+
+<pre class="out" data-label="真实输出"> 6920 main.o
+22432 stats.o
+23888 report
+53240 总计</pre>
+
+<p>
+（<code>wc -c</code> 是数字节。这几个数不用记，也不用研究哪个比哪个大——
+从文件大小倒推不出程序在干什么，这话第 0 部分说过。）
+</p>
+
+<p>
+运行结果同样是那张表。<b><code>-c</code> 分开编译，与用一条命令编译完成，
+生成的程序相同。</b>
+</p>
+
+<h3 id="s1-4-2">改一个文件，只重新编译那个</h3>
+
+<p>
+那为什么要分？因为<b>分开之后就能只重新编译修改过的那个</b>。
+实际试验一下——把 <code>stats.cpp</code> 里平均分那一行修改一下
+（<code>%4.1f</code> 改成 <code>%5.2f</code>，小数多输出一位），然后<b>只重新编译它</b>：
+</p>
+
+<pre><code>g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</code></pre>
+
+<p>
+看两个 <code>.o</code> 的时间（<code>ls -l</code> 的第六第七列，时间和文件名）：
+</p>
+
+<pre><code>ls -l --time-style=+%H:%M:%S main.o stats.o | awk '{print $6, $7}'</code></pre>
+
+<pre class="out" data-label="真实输出">09:17:11 main.o
+09:17:37 stats.o</pre>
+
+<p>
+（<code>ls</code> 是按名字排的，不是按时间，所以 <code>main.o</code> 排到了前面——
+顺序别管，看那两个时间。）
+</p>
+
+<p>
+<code>main.o</code> 仍然是原来的时间（<b>没有重新编译</b>），<code>stats.o</code> 是新的。
+输出也跟着变了：<code>平均    79.20</code>。
+</p>
+
+<p>
+这就是分开编译的意义：<b>修改一个文件，只重新编译那一个。</b>
+工程一大，这一步省下的是几分钟到几十分钟。
+</p>
+
+<div class="aside">
+<b>你的时间当然跟我这儿不一样</b>
+<p>
+上面那两个时间是这台机器上的。你实际运行时得到的是你自己的时间——
+要看的不是数字，是<b>两个时间不一样</b>：一个是旧的、一个是新生成的。
+</p>
+</div>
+
+<div class="eg" id="e1-2">
+  <div class="eg-h">例题 · 链接就是把 U 和 T 对应起来</div>
+  <p>
+    0.2 那一课用 <code>nm</code> 看过：<code>.o</code> 里有些名字带
+    <code>U</code>，意思是「需要使用，但它不在当前文件中」。现在有两个
+    <code>.o</code> 了，正好看看它是怎么被补上的。
+  </p>
+
+  <p>
+    先看 <code>main.o</code> 里缺少什么符号（<code>-C</code> 仍然是那个「把经过修饰的名称
+    还原为可读形式」）：
+  </p>
+
+  <pre><code>nm -C main.o | grep ' U '</code></pre>
+
+  <pre class="out" data-label="真实输出">                 U __gxx_personality_v0
+                 U __stack_chk_fail
+                 U _Unwind_Resume
+                 U readScores(int)
+                 U printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)
+                 U operator delete(void*, unsigned long)</pre>
+
+  <p>
+    六条。头三条和最后一条是编译器自己添加的（异常处理、栈保护、
+    内存回收——<code>-Wall</code> 一直开启的内容），跟我们写的代码没有关系，暂时不管。
+    <b>中间那两条才是我们的</b>，正是 <code>main.cpp</code> 调用过、
+    却只看到过声明的那两个函数。
+  </p>
+
+  <p>
+    再看 <code>stats.o</code> 里<b>拿出来的</b>（<code>T</code> 是「我这儿有」）：
+  </p>
+
+  <pre><code>nm -C stats.o | grep ' T '</code></pre>
+
+  <pre class="out" data-label="真实输出">0000000000000000 T readScores(int)
+00000000000001ba T printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)
+0000000000000114 T average(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)</pre>
+
+  <p>
+    一个缺少定义、一个正好提供定义。<b>链接器执行的操作就是把这两份符号表对应起来。</b>
+    对应之后的程序里，那两个名称从「缺少定义」变为具有地址：
+  </p>
+
+  <pre><code>nm -C report | grep -E 'readScores|printReport'</code></pre>
+
+  <pre class="out" data-label="真实输出">00000000000014bd T readScores(int)
+0000000000001677 T printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)</pre>
+
+  <p>
+    （<code>stats.o</code> 里那个 <code>average</code> 没出现在
+    <code>main.o</code> 的符号表上——因为 <code>main.cpp</code> 没有直接调用它，
+    是 <code>printReport</code> 在内部使用的。需要哪个符号、提供哪个符号，取决于调用关系。）
+  </p>
+
+  <p>
+    下一页（1.5）要报的那条错误，就是这两份符号表无法对应的时候——
+    <b>有引用，但没有定义。</b>
+  </p>
+</div>
+
+<p>
+分开编译很方便，但有一个代价：<b>你得自己记着谁改过。</b>
+</p>
+
+<p>
+刚才那个「只重新编译 stats.o」是我手动执行的——我知道自己改了
+<code>stats.cpp</code>。文件变成五个、十个呢？改完之后：
+</p>
+
+<ul>
+  <li>哪些 <code>.o</code> 需要重新编译？</li>
+  <li>哪个头文件改了，意味着<b>所有</b>包含过它的 <code>.cpp</code> 都要重新编译？</li>
+  <li>顺序呢？先链接还是先完成编译？</li>
+</ul>
+
+<p>
+这三件事人无法长期承担。第 2 部分整个就是讲「把这些工作交给构建工具」——
+你只要告诉它「程序由哪几个文件编译成」，剩下的由它自动计算。
+</p>
+
+<p>
+<b>但那一课的前提是这一课</b>：构建工具也按照这三步执行，
+你认得那三步，它输出的内容你才能读懂。
+</p>
+
+<h3 id="s1-4-3">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-7</div>
+  <p>
+    拿练习 1-6 那份程序（文件名由你指定），
+    分两步编译出来：先 <code>-c</code> 出一个 <code>.o</code>，
+    再把这个 <code>.o</code> 链接成可执行文件。然后回答三件事，
+    写在你自己那份文件顶上当注释：
+  </p>
+  <ol>
+    <li>两条命令各是哪一条？</li>
+    <li>那个 <code>.o</code> 多大？链接出来的可执行文件多大？</li>
+    <li>把 <code>main</code> 里那句输出修改一个词，两步里哪一步必须重新执行？</li>
+  </ol>
+  <p>
+    （程序要是拆成两个 <code>.cpp</code>——像 1.3 那样——这儿就是
+    <code>-c</code> 两次、链接一次。执行的操作完全相同，只是多一个文件，
+    而且修改一个文件只重新编译那一个。）
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-run="示例代码/答案/1-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两条命令（名字换成你自己的）：</p>
+      <pre><code>g++ -Wall -c 1-7.cpp -o 1-7.o
+g++ 1-7.o -o report</code></pre>
+      <p>程序还是练习 1-6 那一份：</p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;int&gt; readScores(int n) {
+    std::vector&lt;int&gt; scores(n);
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+    return scores;
+}
+
+double average(std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        sum = sum + scores[i];
+    }
+    return sum / double(scores.size());
+}
+
+void printReport(std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    int top = scores[0];
+    int low = scores[0];
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        sum = sum + scores[i];
+        if (scores[i] &gt; top) {
+            top = scores[i];
+        }
+        if (scores[i] &lt; low) {
+            low = scores[i];
+        }
+    }
+
+    int excellent = 0;
+    int good = 0;
+    int fair = 0;
+    int pass = 0;
+    int fail = 0;
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        if (scores[i] &gt;= 90) {
+            excellent++;
+        } else if (scores[i] &gt;= 80) {
+            good++;
+        } else if (scores[i] &gt;= 70) {
+            fair++;
+        } else if (scores[i] &gt;= 60) {
+            pass++;
+        } else {
+            fail++;
+        }
+    }
+
+    printf("分数    ");
+    for (int i = 0; i &lt; int(scores.size()); i++) {
+        printf("%4d", scores[i]);
+    }
+    printf("\n");
+    printf("总分    %4d\n", sum);
+    printf("平均    %4.1f\n", average(scores));
+    printf("最高    %4d\n", top);
+    printf("最低    %4d\n", low);
+    printf("优      %4d\n", excellent);
+    printf("良      %4d\n", good);
+    printf("中      %4d\n", fair);
+    printf("及格    %4d\n", pass);
+    printf("不及格  %4d\n", fail);
+}
+
+int main() {
+    std::vector&lt;int&gt; scores = readScores(10);
+
+    printReport(scores);
+    return 0;
+}</code></pre>
+      <p>三件事的答案：</p>
+      <ul>
+        <li>
+          <b>一、</b>第一条 <code>-c</code> 只编译不链接，产出
+          <code>1-7.o</code>；第二条把这个 <code>.o</code> 交给链接器，
+          产出可执行文件。
+        </li>
+        <li>
+          <b>二、</b>这台机器上测量得到：<code>.cpp</code> 约 3 KB、
+          <code>.o</code> 约 22 KB、可执行文件约 23 KB。
+          你那几个数可能不同，观察大致范围即可。<code>.o</code> 比源文件大得多——
+          里面不只是你写的那些代码（1.4 那个例题用 <code>nm</code>
+          看过它装的是什么）。
+        </li>
+        <li>
+          <b>三、两步都必须重新执行。</b><code>.o</code> 是「这个文件的编译结果」，
+          源文件修改一个词，它就会过期；链接那一步也必须重新执行，否则装入程序里的
+          还是旧的那个 <code>.o</code>。
+        </li>
+      </ul>
+      <p>
+        （程序要是拆成两个 <code>.cpp</code>，第三条的答案就变了：
+        修改过的那一个重新编译，另一个保持不变，最后链接一次——这就是 1.4 正文里
+        那组时间戳。分开编译节省的时间，到那里才能体现。）
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能把「一条命令」拆成「一次编译一个、最后链接」，
+  能说明分开编译是为了减少重新编译的时间，也知道应当由构建工具记录这些关系。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l1-5">
+<h2><span class="no">1.5</span>链接错误长什么样</h2>
+
+<p>
+声明了、写好了、也编译过了——但程序仍然无法生成。
+这一课要演示的就是这种：<b>能够编译通过，但链接失败。</b>
+</p>
+
+<h3 id="s1-5-1">直接运行一次</h3>
+
+<p>
+课里那个目录叫 <code>1.5-少链接-err</code>：三个文件和 1.2 的
+<code>重复定义</code> 那个目录看上去一样，只有 <code>构建.txt</code> 是错的——
+它编译了 <code>main.cpp</code>，<b>遗漏了编译 <code>stats.cpp</code></b>：
+</p>
+
+<pre><code>g++ -Wall -c main.cpp -o main.o
+g++ main.o -o report</code></pre>
+
+<p>
+第一行顺利通过。第二行：
+</p>
+
+<pre class="diag" data-diag="1.5-少链接-err/main.cpp"><code>/usr/bin/ld: main.o: in function `main':
+main.cpp:(.text+0x29): undefined reference to `readScores(int)'
+/usr/bin/ld: main.cpp:(.text+0x35): undefined reference to `printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)'
+collect2: error: ld returned 1 exit status</code></pre>
+
+<p>
+<b><code>undefined reference to ...</code></b>——未定义的引用。
+往后你会经常看见它，每次的意思都一样：<b>有符号被引用，但没有定义。</b>
+</p>
+
+<h3 id="s1-5-2">一句一句读</h3>
+
+<p>
+这种报错篇幅很长，其实每行都在说明同一件事。逐行分析：
+</p>
+
+<ul>
+  <li><b><code>/usr/bin/ld:</code></b>——报错的是链接器，不是编译器。
+    看出来这一点很重要：<b>报错是 <code>undefined reference</code>，
+    说明你的语法一个字都没错</b>，不要再去修改代码。</li>
+  <li><b><code>undefined reference to `readScores(int)'</code></b>——
+    它要找的符号，名字和参数都写在引号里了。</li>
+  <li><b><code>main.cpp:(.text+0x29)</code></b>——<b>谁在找</b>。
+    这一行说的是「main.cpp 编译出来的代码里，有一处需要使用这个函数」。
+    <code>0x29</code> 是那段代码里的位置，你不用管它，每台机器都不一样。</li>
+  <li><b><code>in function `main'</code></b>——精确到是哪个函数需要它。
+    文件大了，这一句可以节省一半排查时间。</li>
+</ul>
+
+<p>
+所以这份报错翻译后的意思是：
+</p>
+
+<pre class="out" data-label="翻译">main.cpp 编译得到的目标文件，要用 readScores 和 printReport；
+但我检查了你提供的全部文件，没有一份包含这两个函数。——链接器</pre>
+
+<p>
+<b>它甚至告诉了你缺的是哪两个。</b>缺少哪个函数，就补充哪个函数的定义。
+</p>
+
+<h3 id="s1-5-3">报错里的内部名称</h3>
+
+<p>
+再查看它要找的那个符号，是否有些特殊：
+</p>
+
+<pre><code>printReport(std::vector&lt;int, std::allocator&lt;int&gt; &gt;&amp;)</code></pre>
+
+<p>
+你在代码里写的是 <code>printReport(scores)</code>，
+它在说的是同一个函数。括号里那一长组内容，是
+<code>std::vector&lt;int&gt;</code> 的完整写法——<code>vector</code> 其实有两个参数，
+第二个是「用哪个分配器管理内存」，平时不用写，库为它指定了默认值
+<code>std::allocator&lt;int&gt;</code>。
+</p>
+
+<p>
+链接器不使用简称：函数的名字在底层是由<b>名字 + 每个参数的类型</b>拼出来的
+（所以同名不同参数的两个函数才能共存）。
+它报的时候用的是全名，能够认出对应哪一行代码即可。
+</p>
+
+<div class="aside tip">
+<b>看到这一长组内容时，不必紧张</b>
+<p>
+记住三件事即可：<b>它说 <code>undefined reference</code> → 是「没有」不是「写错」；
+引号里是它要的符号；前面那个文件名是「谁在要」。</b>
+</p>
+</div>
+
+<h3 id="s1-5-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 1-8</div>
+  <p>
+    不用两个文件，一个文件也能报出一模一样的错——
+    <b>声明了，但从来没兑现</b>：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+  <p>
+    编译出来，查看报错。和课里那条比较一下，除了名字不一样，别的是不是都一样。
+  </p>
+  <p>
+    然后回答：<b><code>-c</code> 那一步为什么没有任何报错？</b>
+    （提示：编译一个文件的时候，它只知道「有承诺」，
+    兑现是下一步的事。）
+  </p>
+  <details class="ans" data-err="示例代码/答案/1-8-err.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>程序就是练习里的那一份，一个字符都没有改动：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>分两步编译（和 1.5 那个目录的 <code>构建.txt</code> 一样）：</p>
+      <pre><code>g++ -Wall -c 1-8-err.cpp -o 1-8-err.o
+g++ 1-8-err.o -o report</code></pre>
+      <p>第一条没有任何报错就通过了，第二条：</p>
+      <pre class="diag"><code>/usr/bin/ld: 1-8-err.o: in function `main':
+1-8-err.cpp:(.text+0xe): undefined reference to `twice(int)'
+collect2: error: ld returned 1 exit status</code></pre>
+      <p>
+        和课里 1.5 那条比一下：除了文件名和 <code>0xe</code> 那个数，
+        一个字符都不差。它需要的仍然是 <code>twice(int)</code>，
+        仍然是在 <code>main</code> 中需要的。
+      </p>
+      <p>
+        <b>「<code>-c</code> 那一步为什么没有任何报错」：</b>编译一个文件的时候，
+        编译器只管一件事——<b>这个文件里的语法对不对</b>。它读取到声明
+        <code>int twice(int x);</code>，就记录下「存在这个函数」，
+        <code>main</code> 里调用它也就不算错。<b>至于这个函数到底在哪里、
+        是否有人编写，是链接器下一步的事</b>，编译这一步完全不检查。
+      </p>
+      <p>
+        这也解释了为什么看见 <code>undefined reference</code>
+        不要回头修改语法：它不是「你写错了」，是「它没找到」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-9</div>
+  <p>
+    把它补充完整，输出 <code>42</code>——两种补充方式都可以，任选一种：
+  </p>
+  <ol>
+    <li>把函数写在 <code>main</code> 上面（基础课的老办法）；</li>
+    <li>保持声明在上面，函数体写在 <code>main</code> 下面（1.3 的新办法）。</li>
+  </ol>
+  <pre class="out" data-label="预期输出">42</pre>
+  <p>
+    补完之后，如果你用的是第二种补法，把上面那个
+    <code>int twice(int x);</code> 那一行删除后尝试——编译一下，查看报错变成了哪一条。
+    （第一种补法没有这一行，也就没有这一步。）
+    <b>同一条道理：该有的符号没有——只是这次报错的是编译器，不是链接器。</b>
+  </p>
+  <details class="ans" data-run="示例代码/答案/1-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>第二种补法——声明留在上面，函数体写在下面：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int twice(int x);
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; std::endl;
+    return 0;
+}
+
+int twice(int x) {
+    return x * 2;
+}</code></pre>
+      <p>42。</p>
+      <p>
+        第一种补法（把整个函数移到 <code>main</code> 上面）当然也可以，
+        那是基础课的原有办法。两种的区别只有一条：
+        <b>编译器读到 <code>main</code> 的时候，是否已经读取到这个名称。</b>
+      </p>
+      <p>
+        至于「把声明那行删掉」：删了它、函数体又留在下面，就无法编译了，
+        报的是 <code>error: ‘twice’ was not declared in this scope</code>，
+        位置正好指在 <code>main</code> 里那句 <code>twice(21)</code> 上。
+        编译器自上往下读，读到这里还没有读取到任何名为 <code>twice</code> 的声明，
+        只能报告「这个名称尚未声明」。
+      </p>
+      <p>
+        不要和上一题那条混淆：<b>上一题是链接期「有声明，但没有定义」，
+        这一条是编译期「根本没有声明」。</b>判断错误的人（<code>ld</code> 还是
+        <code>g++</code>）、字面、发生的时间，都不一样——
+        查看报错是谁输出的，就知道该往哪里查找。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>你能把 <code>undefined reference</code> 理解为通俗说明，
+  知道它在说明「谁需要、需要什么」，也知道这时候该回头看的不是语法。
+  <b>这一部分到这里就完整了：一个程序拆成几个文件，
+  每个文件里放什么、怎么编译、出错后从哪里查找。</b>
+  下一部分让构建工具替你记录这些命令。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="00-开始.html">← 第 0 部分 · 开始</a>
+  <a class="next" href="02-cmake-基础.html">第 2 部分 · cmake 基础 →</a>
+</nav>
+
+</main>
+
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

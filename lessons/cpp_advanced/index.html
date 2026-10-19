@@ -5,26 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>C++ 进阶课 — TUP 算法组</title>
 <link rel="stylesheet" href="../../assets/style.css">
-<style>
-/* 占位页的版式：一栏字、没有目录栏，跟 TUP.html 首页是一套。
-   样式写在本页里，不动 style.css，别的页不受影响。 */
-.stub {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 5rem 1.5rem 4rem;
-}
-.stub-slot {
-  margin: 2rem 0 0;
-  padding: 1.1rem 1.3rem;
-  background: var(--code-bg);
-  border-left: 3px solid var(--rule-strong);
-  border-radius: 0 4px 4px 0;
-  color: var(--ink-soft);
-  font-size: 0.94rem;
-}
-.stub-slot > b { color: var(--ink-mid); }
-.stub-slot p:last-child { margin-bottom: 0; }
-</style>
 <script src="../../assets/theme.js"></script>
 </head>
 <body>
@@ -36,6 +16,18 @@
   </a>
   <span class="sep" aria-hidden="true"></span>
   <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
     <nav class="nav-courses" aria-label="课程">
       <a href="../cpp_Basics/index.html">C++ 基础课</a>
       <a class="active" href="index.html">C++ 进阶课</a>
@@ -50,20 +42,423 @@
   <button class="theme-btn" type="button"></button>
 </header>
 
-<main class="stub">
+<div class="wrap">
 
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么用这份材料</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · 一个程序，几个文件</a>
+  <a class="toc-l" href="#p2">第 2 部分 · cmake 基础</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 容器</a>
+  <a class="toc-l" href="#p4">第 4 部分 · 时间复杂度与算法</a>
+  <a class="toc-l" href="#p5">第 5 部分 · 内存与所有权</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 文件和异常</a>
+  <a class="toc-l" href="#p7">第 7 部分 · 串口（uart）基础</a>
+  <a class="toc-l" href="#p8">第 8 部分 · 章末检测</a>
+  <a class="toc-l" href="#p9">附录</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
   <h1>C++ 进阶课</h1>
+  <p class="part-lead">
+    基础课教的是「在一个文件里写出一个能运行的程序」。这门课从那个终点往下走：
+    把程序拆成几个文件、让构建工具替你记住怎么编译、看懂一份实际运行的工程。
+    全部 9 个部分、46 课，已经全部放出。最后一部分是章末检测：
+    一道例题加五道题，把前面七个部分过一遍。
+  </p>
+</header>
 
-  <div class="stub-slot">
-    <p><b>作者很懒，还没写....</b></p>
-    <p>已经写好的是 <a href="../cpp_Basics/index.html">C++ 基础课</a>。</p>
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section id="how">
+  <h2 class="sec-plain">怎么用这份材料</h2>
+
+  <p>
+    <b>一、先上完基础课。</b>这门课默认你已经会了：变量与类型、判断与循环、
+    函数与传参、数组与 <code>vector</code>、<code>struct</code> 与
+    <code>class</code>、指针与引用。这些一样都不重讲——
+    第 1 部分一开始就默认你知道「函数是一段具有明确功能的代码」。
+    还没上过的话，先去 <a href="../cpp_Basics/index.html">C++ 基础课</a>。
+  </p>
+
+  <p>
+    <b>二、按顺序，不要跳。</b>第 2 部分整部分建立在第 1 部分上：
+    不先亲手输入一遍命令，就不知道 cmake 在替你做什么。
+  </p>
+
+  <p>
+    <b>三、每段代码都自己输入一遍、运行一遍。</b>这一部分之后，
+    程序不再是一个文件了——<b>漏掉一个文件、少编译一个文件，
+    屏幕上的报错还非常相似</b>。课里的程序都在 <code>示例代码/</code>
+    文件夹里，先自己输入，写不出来再去核对。
+  </p>
+
+  <p>
+    <code>示例代码/</code> 就<b>跟你正看的这一页在同一个文件夹里</b>。
+    想在终端里查看、编译，先 <code>cd</code> 进去：
+    <code>cd 示例代码</code>，再 <code>ls -1</code> 查看其中有哪些内容。
+    课里凡是让你「查看目录」的命令，都必须先进入那个目录——
+    否则 <code>ls</code> 列出的是你自己的主目录。
+  </p>
+
+  <p>
+    课里的 <code>cd</code> 都是<b>从 <code>示例代码/</code> 这一层往下写的</b>
+    （比如 <code>cd 示例代码/1.3-两个文件</code>）。
+    所以一节看完换下一节，要么先 <code>cd ..</code> 退回这一层，
+    要么直接另开一个终端——否则目录会一层比一层深，
+    下一节那条 <code>cd</code> 就无法找到对应目录了。
+  </p>
+
+  <p>
+    <b>四、每个练习都给了「预期输出」。</b>你的结果要和它<b>逐字符一致</b>，
+    差一个空格也是差。多文件工程和 cmake 的练习，
+    对的是<b>最后一条命令运行完之后</b>屏幕上的内容——
+    前面几条命令的输出，题面里也一并给了，按照它核对。
+  </p>
+
+  <p>
+    <b>五、遇到困难时，按这个顺序查找。</b>
+  </p>
+
+  <ol>
+    <li>
+      <b>报错看不懂</b>——先看是谁报的错（编译器、链接器、cmake、make 报错的样式各不一样）。
+      本课附录 A 头一节就讲这个。
+    </li>
+    <li>
+      <b>忘了怎么写</b>——单文件的语法查阅基础课那份附录；
+      <code>CMakeLists.txt</code> 怎么写，查阅本课附录 B；最小模板和常用命令都在那里。
+    </li>
+    <li>
+      <b>结果不对</b>——把实际输出和课里的「预期输出」并列对照，逐字符比较。
+    </li>
+  </ol>
+
+  <div class="aside">
+    <b>注</b>
+    <p>
+      文中部分代码块涉及终端操作。运行这些命令之前，先确认终端所在的位置是
+      <code>..（自己存放这个项目的目录）/..(本项目名称)/lessons/cpp_advanced</code>。
+    </p>
   </div>
 
-  <footer class="site-footer">
-    TUP 战队算法组 · C++ 进阶课
-  </footer>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">不教语法。说清楚这门课从哪里接上，把 <code>g++</code> 那一行逐段分析一遍。</p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">这门课从哪里接上</a>
+      <span class="d">基础课会了什么、这门课要去哪里，以及三样工具在不在（逐个 <code>--version</code>）</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">一行 g++ 背后</a>
+      <span class="d">预处理、编译、汇编、链接——四个中间产物实际列出查看。第 1 部分的地基</span>
+    </span></li>
+    <li><span class="n">0.3</span><span class="body">
+      <a class="t" href="00-开始.html#l0-3">课里的程序怎么编译怎么运行</a>
+      <span class="d">三种形态：单文件、多文件目录、cmake 目录；以及那份叫「构建.txt」的说明书</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a></h2>
+  <p class="part-note">从这一部分起，程序不再是一个文件。只回答两件事：为什么要拆、拆分之后各部分如何对应。</p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-一个程序几个文件.html#l1-1">为什么不能都写在一个文件里</a>
+      <span class="d">一个真实的错误示例，以及它的问题在哪里</span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-一个程序几个文件.html#l1-2">#include 到底做了什么</a>
+      <span class="d">就是「原样插入」；重复包含会怎样，<code>#pragma once</code> 解决的是什么</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-一个程序几个文件.html#l1-3">声明和定义</a>
+      <span class="d">为什么函数要写两遍：<code>.h</code> 放承诺，<code>.cpp</code> 兑现</span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-一个程序几个文件.html#l1-4">一次编译几个文件</a>
+      <span class="d"><code>-c</code> 出 <code>.o</code>，再链接起来。中间文件实际列出查看</span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-一个程序几个文件.html#l1-5">链接错误的形式</a>
+      <span class="d">直接运行一次 <code>undefined reference</code>，讲解如何阅读「谁在查找哪个符号」</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-cmake-基础.html">第 2 部分 · cmake 基础</a></h2>
+  <p class="part-note">把那一组手动输入的命令交给构建工具：先交给 <code>make</code>，再交给 <code>cmake</code>。</p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-cmake-基础.html#l2-1">手动输入 g++ 的方式已经不够用</a>
+      <span class="d">文件一多，那行命令就无法记住。Makefile 逐行看：冒号左边是产物，右边是依赖</span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-cmake-基础.html#l2-2">第一份 CMakeLists.txt</a>
+      <span class="d">四行，替换手动输入的一长串命令。含 cmake 4 那个「版本号不能写得太小」的易错点</span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-cmake-基础.html#l2-3">多文件：源文件、头文件目录、标准</a>
+      <span class="d">两个 <code>.cpp</code> 怎么列、头文件去哪里查找、标准怎么设置。同时查看三种报错</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-cmake-基础.html#l2-4">常用的那十几条命令</a>
+      <span class="d">组织成一张「命令表」，①–⑩ 逐条实际运行。末尾讲中文可以出现在哪些位置</span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-cmake-基础.html#l2-5">读一份真实的 CMakeLists</a>
+      <span class="d">一百七十五行，实际运行的工程里的那一份。认识的逐段识别，没见过的先跳过</span>
+    </span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-容器.html">第 3 部分 · 容器</a></h2>
+  <p class="part-note">接着基础课那个 <code>vector</code> 往下走：数据应当存放在什么容器里。六种容器，一课一种，最后一课教怎么选择。</p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-容器.html#l3-1">vector 再进一步</a>
+      <span class="d">基础课 4.1 那个易错点的后续。不使用下标的遍历、副本还是原对象、<code>pop_back</code> 和 <code>clear</code>、尖括号里放什么</span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-容器.html#l3-2">std::string</a>
+      <span class="d">它也是一种容器。连接、比较、取子串；<code>size</code> 统计的是字节数；读一整行；查找一段、截取一段；两个双引号不能直接相加</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-容器.html#l3-3">const</a>
+      <span class="d">一条限定作用于两个位置。三种参数并列、写在变量上的 <code>const</code>、范围 for 里那个变量、写在自己定义的类上</span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-容器.html#l3-4">pair 与 map</a>
+      <span class="d">两个值组合在一起；键不一定是数字；是否存在用 <code>count</code> 判断；它自身保持有序；中括号会创建元素</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-容器.html#l3-5">set / queue / stack<span class="star">★ 有动画</span></a>
+      <span class="d">只判断是否存在、先进先出、后进先出。末尾那个「<code>pop</code> 不返回元素」的易错点</span>
+    </span></li>
+    <li><span class="n">3.6</span><span class="body">
+      <a class="t" href="03-容器.html#l3-6">这么多容器怎么选择</a>
+      <span class="d">四句话，从「要查询什么」反推到「该使用哪种容器」。无法确定就先用 <code>vector</code></span>
+    </span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p4">
+  <h2><a href="04-算法.html">第 4 部分 · 时间复杂度与算法</a></h2>
+  <p class="part-note">回答第 3 部分留下的两个问题：删除中间元素、插入中间元素，还有「同样是查找一个元素，为什么有快有慢」。衡量标准叫时间复杂度，工具叫迭代器——学完再打开 <code>&lt;algorithm&gt;</code> 那一整套现成的工具。</p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-算法.html#l4-1">怎么估一段代码快不快<span class="star">★ 有动画</span></a>
+      <span class="d">统计循环执行几次：一层 <code>O(n)</code>、两层 <code>O(n²)</code>、每次缩小一半 <code>O(log n)</code>。n 翻一倍时步数翻几倍，比记住名称更有用</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-算法.html#l4-2">迭代器<span class="star">★ 有动画</span></a>
+      <span class="d">能表示「第几个位置」的对象：<code>begin</code> / <code>end</code> / <code>++</code> / <code>*</code> 四个操作，还有 <code>end()</code> 为什么是「最后一个元素的后面」</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-算法.html#l4-3">删中间、插中间</a>
+      <span class="d"><code>erase</code> 需要的是位置而不是编号；删除中间元素要把后面的元素向前移动；「一边遍历一边删除」时 for 循环第三段留空的形式</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-算法.html#l4-4">现成的工具</a>
+      <span class="d"><code>find</code>、<code>count</code>、<code>max_element</code>、<code>reverse</code>、<code>sort</code>——每个都是「两个位置 + 一个值」</span>
+    </span></li>
+    <li><span class="n">4.5</span><span class="body">
+      <a class="t" href="04-算法.html#l4-5">lambda</a>
+      <span class="d">条件也能当参数。<code>_if</code> 结尾的那几个工具接收条件；方括号里要写谁；给 <code>sort</code> 添加一条「谁排前面」的规则</span>
+    </span></li>
+    <li><span class="n">4.6</span><span class="body">
+      <a class="t" href="04-算法.html#l4-6">让 sort 能处理你自己定义的类型</a>
+      <span class="d">自己定义的 <code>struct</code> 无法排序？给它一条规则；同时学习如何阅读那种很长的模板报错</span>
+    </span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p5">
+  <h2><a href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a></h2>
+  <p class="part-note">回答第 3 部分留下的问题：容器里的元素存放在哪里、什么时候销毁，一直由容器管理。这一部分详细说明这件事——变量有两处存储位置（栈和堆），「申请一块内存、用完释放」为什么最容易出错，以及最后怎么把释放写进类型里，从此不需要直接编写 <code>delete</code>。</p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-内存与所有权.html#l5-1">栈和堆</a>
+      <span class="d">变量有两处存储位置：栈上的由函数管理，进入和离开作用域时自动分配和释放；堆上的由你管理，申请一块内存（<code>new</code>）、用完释放（<code>delete</code>）。同时解释「容器里的元素为什么不存放在容器对象内部」</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-内存与所有权.html#l5-2"><code>new</code> 和 <code>delete</code> 为什么危险<span class="star">★ 有动画</span></a>
+      <span class="d">三种错误用法实际运行演示：申请了不释放（未释放的内存持续累积）、释放两次（程序立即中止）、释放后继续使用（不报错，但结果无效）。第一次教 <code>p-&gt;name</code> 这个箭头运算符</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-内存与所有权.html#l5-3">RAII：把释放写进类型里</a>
+      <span class="d">把释放写进析构函数：无论从哪条路径退出都不会遗漏。配一条纪律——内部存着指针的类要把拷贝关掉（<code>= delete</code>）</span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-内存与所有权.html#l5-4">智能指针</a>
+      <span class="d">把 5.3 那件事交给标准库：用 <code>make_unique</code> 创建、离开作用域自动销毁、只能移动不能复制；另外两个（<code>shared_ptr</code> / <code>weak_ptr</code>）先作初步认识，细节查阅附录 D</span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-内存与所有权.html#l5-5">移动与简洁的写法</a>
+      <span class="d">复制与移动的适用场合：<code>std::move</code> 移动一次、<code>emplace_back</code> 直接在目标位置构造而不复制、结构化绑定给键值命名，最后认识 <code>std::array</code></span>
+    </span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p6">
+  <h2><a href="06-文件和异常.html">第 6 部分 · 文件和异常</a></h2>
+  <p class="part-note">程序的数据不再只来自键盘和代码。这一部分讲怎么读写文件，以及文件打不开、数据不合格时，怎么用异常把问题交给调用方处理。</p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-文件和异常.html#l6-1">读文件</a>
+      <span class="d">用 <code>ifstream</code> 打开文件并检查是否成功；用 <code>&gt;&gt;</code> 逐个读取、用 <code>getline</code> 按行读取；解释为什么不能用 <code>eof()</code> 判断结束，以及 <code>&gt;&gt;</code> 之后接 <code>getline</code> 要先处理换行符</span>
+    </span></li>
+    <li><span class="n">6.2</span><span class="body">
+      <a class="t" href="06-文件和异常.html#l6-2">写文件</a>
+      <span class="d">用 <code>ofstream</code> 创建或覆盖文件；关闭文件后再读回；用 <code>std::ios::app</code> 追加写入；用 <code>std::remove</code> 删除文件</span>
+    </span></li>
+    <li><span class="n">6.3</span><span class="body">
+      <a class="t" href="06-文件和异常.html#l6-3"><code>throw</code> 与 <code>try</code> / <code>catch</code></a>
+      <span class="d">用 <code>throw</code> 报告错误、用 <code>try</code> / <code>catch</code> 处理；异常离开函数时局部对象按逆序销毁（栈展开）；几条写法纪律</span>
+    </span></li>
+    <li><span class="n">6.4</span><span class="body">
+      <a class="t" href="06-文件和异常.html#l6-4">标准异常</a>
+      <span class="d"><code>std::exception</code> 与 <code>what()</code>；常见的标准异常类型；从 <code>std::runtime_error</code> 派生自定义异常；什么时候该用异常</span>
+    </span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="outline-part" id="p7">
+  <h2><a href="07-串口.html">第 7 部分 · 串口（uart）基础</a></h2>
+  <p class="part-note">程序开始和外部设备通信。这一部分从字节与位运算讲起，打开并配置串口，按真实裁判系统串口协议的帧格式（A5 帧、CRC8 与 CRC16）组帧、校验，用接收缓冲区处理粘包与半包，最后把收包循环接到一个简易的裁判系统上显示出来。</p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-串口.html#l7-1">十六进制与字节</a>
+      <span class="d">一个字节用两个十六进制数字表示；用 <code>unsigned char</code> 与 <code>std::uint8_t</code> 保存 0 到 255；用 <code>printf("%02X")</code> 输出两位十六进制</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-串口.html#l7-2">位运算</a>
+      <span class="d"><code>&amp;</code>、<code>|</code>、<code>^</code>、<code>~</code>、<code>&lt;&lt;</code>、<code>&gt;&gt;</code>；用掩码置位、清位、翻转、取某一位；用常量给标志位命名</span>
+    </span></li>
+    <li><span class="n">7.3</span><span class="body">
+      <a class="t" href="07-串口.html#l7-3">打开串口</a>
+      <span class="d">串口是设备文件；<code>open</code> 的 <code>O_RDWR | O_NOCTTY</code> 与返回值检查；<code>close</code>；没有硬件时用 <code>posix_openpt</code> 造伪终端练习</span>
+    </span></li>
+    <li><span class="n">7.4</span><span class="body">
+      <a class="t" href="07-串口.html#l7-4">配置串口</a>
+      <span class="d"><code>termios</code> 与 8N1；用 <code>cfmakeraw</code> 关掉终端处理；设置波特率；用 <code>VMIN</code> 与 <code>VTIME</code> 控制读的等待；设置后读回核对</span>
+    </span></li>
+    <li><span class="n">7.5</span><span class="body">
+      <a class="t" href="07-串口.html#l7-5">读写字节流</a>
+      <span class="d"><code>read</code> 与 <code>write</code> 的返回值；一次读不保证拿到一整帧；短读与短写；用 <code>unsigned char</code> 缓冲区保存字节</span>
+    </span></li>
+    <li><span class="n">7.6</span><span class="body">
+      <a class="t" href="07-串口.html#l7-6">一帧长什么样</a>
+      <span class="d"><code>A5</code> 帧的七个字段与偏移；<code>data_length</code> 只数 data 段；整帧长度为 <code>data_length + 9</code>；多字节字段低字节在前</span>
+    </span></li>
+    <li><span class="n">7.7</span><span class="body">
+      <a class="t" href="07-串口.html#l7-7">CRC 校验</a>
+      <span class="d">CRC8 校验帧头、CRC16 校验整帧；多项式、初值与覆盖范围；标准算例与帧上的实际值；校验不过的帧整体丢弃</span>
+    </span></li>
+    <li><span class="n">7.8</span><span class="body">
+      <a class="t" href="07-串口.html#l7-8">粘包与半包<span class="star">★ 有动画</span></a>
+      <span class="d">串口是字节流，没有消息边界；用接收缓冲区保存尚未处理的字节；一次读到多帧时循环取出；不足一帧时保留并等待</span>
+    </span></li>
+    <li><span class="n">7.9</span><span class="body">
+      <a class="t" href="07-串口.html#l7-9">状态机收包</a>
+      <span class="d">找帧头、验 CRC8、读长度、等收齐、验 CRC16；任一步失败丢 1 个字节重新找；用模拟板在没有硬件时完成一问一答</span>
+    </span></li>
+    <li><span class="n">7.10</span><span class="body">
+      <a class="t" href="07-串口.html#l7-10">一个简易的裁判系统</a>
+      <span class="d">把收包循环接到本地网页；总览、机器人状态表、按字段着色的数据包卡片与日志；观察坐标、血量、弹量随帧更新</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p8">
+  <h2><a href="08-章末检测.html">第 8 部分 · 章末检测</a></h2>
+  <p class="part-note">不教新语法。一道例题把单文件程序改造成多文件工程，五道检测题各盯住一个方向，覆盖前面七个部分。</p>
+  <ul class="ol-list">
+    <li><span class="n">8.1</span><span class="body">
+      <a class="t" href="08-章末检测.html#l8-1">例题 · 训练日志汇总</a>
+      <span class="d">从一份能运行的记录程序出发：坏行被当成结尾、九件事挤在 <code>main</code> 里；先拆出读取函数，再把声明、实现与主程序分成三个文件，用 CMake 构建</span>
+    </span></li>
+    <li><span class="n">8.2</span><span class="body">
+      <a class="t" href="08-章末检测.html#l8-2">五道检测题</a>
+      <span class="d">8-1 拆成三个文件；8-2 词频统计；8-3 只可移动的缓冲区；8-4 读配置；8-5 从字节流里取帧</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p9">
+  <h2><a href="../../reference/附录-进阶.html">附录</a></h2>
+  <p class="part-note">不是用来通读的，是遇到问题时查阅的。单文件那些语法，查阅基础课那份附录。</p>
+  <ul class="ol-list">
+    <li><span class="n">A</span><span class="body">
+      <a class="t" href="../../reference/附录-进阶.html#apA">编译与链接报错速查</a>
+      <span class="d">先分清是编译器、链接器、cmake 还是 make 报的错，再逐个词对照检查</span>
+    </span></li>
+    <li><span class="n">B</span><span class="body">
+      <a class="t" href="../../reference/附录-进阶.html#apB">cmake 速查表</a>
+      <span class="d">最小模板、常用命令、常用变量、命令行；还有课里没讲、以后会遇到的那几条</span>
+    </span></li>
+    <li><span class="n">C</span><span class="body">
+      <a class="t" href="../../reference/附录-进阶.html#apC">容器速查</a>
+      <span class="d">六个容器各支持哪些操作、四个都会而那两样没有的那一条、容器上常见的报错</span>
+    </span></li>
+    <li><span class="n">D</span><span class="body">
+      <a class="t" href="../../reference/附录-进阶.html#apD">新特性速查</a>
+      <span class="d">智能指针、移动与就地构造、简洁的写法、<code>std::array</code>；第 5 部分讲过后可作速查</span>
+    </span></li>
+    <li><span class="n">E</span><span class="body">
+      <a class="t" href="../../reference/附录-进阶.html#apE">串口速查</a>
+      <span class="d">常用波特率常量、8N1 要设的项、帧格式、CRC8 与 CRC16 的参数和算例、常见错误与伪终端用法</span>
+    </span></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · C++ 进阶课
+</footer>
 
 </main>
+</div>
 
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
 </body>
 </html>

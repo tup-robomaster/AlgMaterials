@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 部分 · 开始 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a class="active" href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html" aria-current="page">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 0 部分 · 开始</div>
+  <a class="toc-l" href="#l0-1"><span class="n">0.1</span>这门课从哪儿接上</a>
+  <a class="toc-sub" href="#s0-1-1">先对一遍账</a>
+  <a class="toc-sub" href="#s0-1-2">这门课要去的地方</a>
+  <a class="toc-sub" href="#s0-1-3">确认工具都在</a>
+  <a class="toc-sub" href="#s0-1-4">这门课的几条规矩</a>
+  <a class="toc-sub" href="#s0-1-5">练习</a>
+  <a class="toc-l" href="#l0-2"><span class="n">0.2</span>一行 g++ 背后</a>
+  <a class="toc-sub" href="#s0-2-1">四个程序依次执行</a>
+  <a class="toc-sub" href="#s0-2-2">第一步：预处理</a>
+  <a class="toc-sub" href="#s0-2-3">第二步：编译</a>
+  <a class="toc-sub" href="#s0-2-4">第三步：汇编</a>
+  <a class="toc-sub" href="#s0-2-5">第四步：链接</a>
+  <a class="toc-sub" href="#e0-1">例题：一条命令留下全部中间产物</a>
+  <a class="toc-sub" href="#s0-2-6">半成品为什么无法运行</a>
+  <a class="toc-sub" href="#s0-2-7">练习</a>
+  <a class="toc-l" href="#l0-3"><span class="n">0.3</span>课里的程序怎么编译怎么运行</a>
+  <a class="toc-sub" href="#s0-3-1">三种形态</a>
+  <a class="toc-sub" href="#s0-3-2">形态一：单个文件</a>
+  <a class="toc-sub" href="#s0-3-3">形态二：一个目录</a>
+  <a class="toc-sub" href="#s0-3-4">形态三：cmake 目录</a>
+  <a class="toc-sub" href="#s0-3-5">串口没有板子也能练</a>
+  <a class="toc-sub" href="#s0-3-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 0 部分</div>
+  <h1>开始</h1>
+  <p class="part-lead">
+    基础课教完的是「一个文件里写出一个能运行的程序」。这门课从那个终点往下走：
+    一个程序分成几个文件、让构建工具替你记住编译命令、使用别人写好的库。
+    这三课不教语法，只做三件事——说清楚这门课从哪儿接上、
+    把 <code>g++</code> 那一行逐段分析一遍、交代课里的程序该怎么编译怎么运行。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-1">
+<h2><span class="no">0.1</span>这门课从哪儿接上</h2>
+
+<p>
+这一课是新旧两份教材之间的衔接处。
+先把基础课那边教过的内容逐项核对一遍，再说这门课要往哪里去。
+</p>
+
+<h3 id="s0-1-1">先对一遍账</h3>
+
+<p>
+基础课九个部分，教过的是这些：
+</p>
+
+<ul>
+  <li>变量、类型、运算——包括整数除法和取余这两个易错点</li>
+  <li><code>cout</code>、<code>cin</code>、<code>printf</code>：屏幕和键盘</li>
+  <li><code>if</code> / <code>while</code> / <code>for</code>，还有套在一起用</li>
+  <li>函数：怎么把一段功能拆出去、怎么传参、值传递和引用传递</li>
+  <li>数组和 <code>std::vector</code></li>
+  <li><code>struct</code> 和 <code>class</code>：构造函数、析构函数、继承</li>
+  <li>地址和指针，三种传参的差别</li>
+  <li>程序出错的时候怎么自己看报错</li>
+</ul>
+
+<p>
+这门课默认这些你都写过。<b>没有的话回基础课去</b>——不是客套话，是真的会遇到困难：
+第 1 部分第一个例子就把函数声明和定义拆到两个文件里，你要是还没写过函数，那页无法阅读。
+</p>
+
+<h3 id="s0-1-2">这门课要去的地方</h3>
+
+<p>
+基础课里所有的程序都长一个样：一个 <code>.cpp</code> 文件，从上往下读，几十行到一百行。
+这门课要教的是那之后的事。
+</p>
+
+<p>
+真实的程序不长那样。一个能运行的工程，是几十个文件分布在一个目录树里，
+每个文件只管一件事；里面有你没见过的写法；有别人写好的库要接进来；
+编译不是输入一行 <code>g++</code>，是输入一条 <code>make</code>。
+<b>从「会写一个程序」到「能够读懂、修改那样一个工程」，中间这一段就是这门课。</b>
+</p>
+
+<p>
+它分成九个部分（第 0 部分就是这里）：
+</p>
+
+<ul>
+  <li><b>第 1 部分 · 一个程序，几个文件</b>——<code>#include</code> 到底干了什么、
+    声明和定义为什么要写两遍、一次编译几个文件、链接错误怎么读</li>
+  <li><b>第 2 部分 · cmake 基础</b>——文件一多，手动输入 <code>g++</code> 就难以记住，
+    换成写一份构建说明；最后读一份真实工程里的构建说明</li>
+  <li><b>第 3 部分 · 容器</b>——<code>std::string</code>、<code>map</code>、
+    <code>set</code>、<code>queue</code>，这么多种怎么挑</li>
+  <li><b>第 4 部分 · 时间复杂度与算法</b>——同样的结果，为什么有的程序快一千倍；
+    标准库里的算法怎么用</li>
+  <li><b>第 5 部分 · 内存与所有权</b>——栈和堆、<code>new</code> 与
+    <code>delete</code> 为什么危险、智能指针，还有 <code>std::move</code>、
+    结构化绑定这批新写法</li>
+  <li><b>第 6 部分 · 文件和异常</b>——从磁盘读写、出错了怎么往外传</li>
+  <li><b>第 7 部分 · 串口</b>——按字节收发、一帧长什么样、怎么判断收全了</li>
+  <li><b>第 8 部分 · 章末检测</b></li>
+</ul>
+
+<p>
+顺序是排过的：第 1、2 部分是地基，从第 3 部分起，每个例子都必须先能编译通过，再讨论其他内容。
+</p>
+
+<h3 id="s0-1-3">确认工具都在</h3>
+
+<p>
+这门课要用四样工具，都在命令行里。花一分钟逐个输入一遍。
+</p>
+
+<p>
+<b>第一个，编译器。</b>
+</p>
+
+<pre><code>g++ --version</code></pre>
+
+<p>
+这台机器上输出的是这样（你屏幕上的版本号可能跟这里不一样，不一样也是正确的）：
+</p>
+
+<pre class="out" data-label="真实输出">g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.</pre>
+
+<p>
+<b>第二个，cmake。</b>第 2 部分开始要用。
+</p>
+
+<pre><code>cmake --version</code></pre>
+
+<pre class="out" data-label="真实输出">cmake version 4.1.2</pre>
+
+<p>
+<b>第三个，make。</b>cmake 最后会把活交给它，第 2 部分会讲清两者的分工。
+</p>
+
+<pre><code>make --version</code></pre>
+
+<pre class="out" data-label="真实输出">GNU Make 4.3</pre>
+
+<p>
+<b>第四个，python3。</b>这门课的程序都用不着它，但第 7 部分讲串口的时候，
+会拿它写一个「假装是对面那块板子」的小程序，好让你手边没有硬件也能把收发试一试。
+它在 Ubuntu 上是自带的。
+</p>
+
+<pre><code>python3 --version</code></pre>
+
+<pre class="out" data-label="真实输出">Python 3.12.3</pre>
+
+<div class="aside warn">
+<b>哪一个说「未找到命令」</b>
+<p>
+英文系统上写的是 <code>command not found</code>。那就是没装，
+在终端里输入这一条进行安装（<code>g++</code> 换成缺少的那个名字）：
+</p>
+<pre><code>sudo apt install g++ cmake make python3</code></pre>
+<p>
+会问你要密码。<b>输密码的时候屏幕上什么都不会显示</b>——不显示星号，光标也不移动，
+这是正常的，照常输入完按回车。安装完再输入一次确认。
+</p>
+</div>
+
+<h3 id="s0-1-4">这门课的几条规矩</h3>
+
+<p>
+第一条，也是最重要的一条：<b>课里列出的每一段代码、每一段输出，都是实际运行过的。</b>
+你照着输入，屏幕上应该出现相同的结果。
+</p>
+
+<p>
+第二条：<b>页面上列出的程序，旁边都有一份能编译的文件，两份一个字符都不差。</b>
+改的时候两边一起改。
+</p>
+
+<p>
+第三条：<b>每道练习都有答案，折叠着。</b>先自己写，写不出来再展开。
+写错了、遇到困难，展开对照，比一开始就查看答案更有用。
+</p>
+
+<h3 id="s0-1-5">练习</h3>
+
+<p>
+下面三道题是基础检查，不是新课——用的全是基础课学过的。
+<b>做不出来的，回基础课查阅对应那一课</b>，查阅完再往下走。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 0-1</div>
+  <p>
+    读两个整数，输出它们的和。
+  </p>
+  <pre class="out" data-label="样例输入">3 5</pre>
+  <pre class="out" data-label="预期输出">8</pre>
+  <p>
+    要用 <code>std::cin</code>。上面第一块是输入，第二块是程序打出来的结果。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两个数分两次读，中间不需要区分空格还是回车——<code>cin</code> 会自动跳过：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int a = 0;
+    int b = 0;
+    std::cin &gt;&gt; a &gt;&gt; b;
+    std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        那两句 <code>= 0</code> 是习惯，不写也能编译通过。这样写是为了防止一种情况：
+        万一读不进来（比如你忘了给输入），变量里至少是个 0，
+        不会是一个奇怪的数字。
+      </p>
+      <div class="aside">
+        <b>「3 5」那一行是输入</b>
+        <p>
+          它写在「样例输入」块里，是喂给程序的内容。程序不会把输入的字符
+          再输出一遍，所以「预期输出」块里只有那个 <code>8</code>。
+        </p>
+      </div>
+      <p>
+        这是基础课<b>第 1 部分</b>的内容（数字和字）加上<b>第 2 部分</b>的输入。
+        遇到困难的话，回去查阅那两课。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-2</div>
+  <p>
+    写一个函数，接受三个整数，返回其中最大的那个。在 <code>main</code> 里拿
+    <code>12</code>、<code>7</code>、<code>30</code> 试一下。
+  </p>
+  <pre class="out" data-label="预期输出">30</pre>
+  <p>
+    注意：函数要有返回类型、要有名字、要被 <code>main</code> 调用。
+    这三样缺一个都无法编译——缺少哪个就会报出对应的信息。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>一个函数，两次比较。<code>m</code> 先作为初始最大值，后两个依次与之比较：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int max3(int a, int b, int c) {
+    int m = a;
+    if (b &gt; m) {
+        m = b;
+    }
+    if (c &gt; m) {
+        m = c;
+    }
+    return m;
+}
+
+int main() {
+    std::cout &lt;&lt; max3(12, 7, 30) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        写成三层 <code>if / else if</code> 直接在 <code>main</code> 里输出也可以，
+        结果一模一样。拆成函数是<b>下一部分要用的写法</b>：
+        第 1 部分第二课就把这个函数整体移入另一个文件，
+        <code>main</code> 里只留一句调用。
+      </p>
+      <p>
+        末尾那句 <code>return m;</code> 不要遗漏。遗漏了编译器会给出
+        <code>no return statement in function returning non-void</code> 的警告，
+        程序仍然可以编译——但运行输出的那个数是随机的，
+        因为函数返回时没有提供返回值，得到的内容无法确定。
+        基础课 0.2 那个「不写 return」的例子讲的就是这件事。
+      </p>
+      <p>
+        这题是基础课<b>第 3 部分</b>（把代码拆开）的内容。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-3</div>
+  <p>
+    读五个成绩，装进一个 <code>std::vector&lt;int&gt;</code>，
+    输出总分和平均分。
+  </p>
+  <pre class="out" data-label="样例输入">90 85 77 92 88</pre>
+  <pre class="out" data-label="预期输出">总分 432
+平均 86.4</pre>
+  <p>
+    总分是整数，平均分带小数点——所以平均分那个除法里，得有一边是小数，
+    不然 <code>432 / 5</code> 会得到 <code>86</code>。这是基础课讲过的整数除法易错点，
+    再遇到一次就记住了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>先创建一个含五个元素的 vector，一边读一边往 <code>sum</code> 里加：</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; scores(5);
+    int sum = 0;
+
+    for (int i = 0; i &lt; 5; i++) {
+        std::cin &gt;&gt; scores[i];
+        sum = sum + scores[i];
+    }
+
+    std::cout &lt;&lt; "总分 " &lt;&lt; sum &lt;&lt; std::endl;
+    std::cout &lt;&lt; "平均 " &lt;&lt; sum / 5.0 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        两个易错点都在这一题里：
+      </p>
+      <p>
+        <b>一、平均分那个除数是 <code>5.0</code>，不是 <code>5</code>。</b>
+        写 <code>sum / 5</code> 的话，两边都是整数，432 除以 5 得 86——
+        小数点后面的部分直接舍弃，不四舍五入。基础课 1.3 那个整数除法，
+        在这里它不会报错，只会给出一个看上去正确、实际错误的答案。
+        <b>这种错比报错难发现得多。</b>
+      </p>
+      <p>
+        <b>二、<code>std::vector&lt;int&gt; scores(5);</code> 那个圆括号。</b>
+        它说的是「创建五个元素」。要是如果不注意写成方括号 <code>scores[5]</code>，
+        编译器<b>不会有任何提示</b>——那也是一句合法的声明，只不过意思是
+        「五个 <code>vector</code>」。等你下一句往里面读数的时候它才报错，
+        说找不到一个能读进 <code>vector</code> 的 <code>&gt;&gt;</code>。
+        圆括号是「创建几个元素」，方括号是「几个这种对象」，不要混淆。
+      </p>
+      <p>
+        这题是基础课<b>第 4 部分</b>（一堆数据）的 <code>vector</code>，
+        加上第 2 部分的循环。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>知道自己站在哪儿——
+  基础课那些内容仍然掌握，四样工具都装好了，这门课要往哪里去也清楚了。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-2">
+<h2><span class="no">0.2</span>一行 g++ 背后</h2>
+
+<p>
+基础课里，编写程序就是输入一行 <code>g++ -Wall hello.cpp -o hello</code>，
+中间发生了什么，屏幕上什么都没显示。
+这一课把它拆开——<b>因为第 1 部分整部分都在讲「拆开之后的那几件事」，
+不先确认拆开后的结构，那些课就缺少实际依据。</b>
+</p>
+
+<h3 id="s0-2-1">四个程序依次执行</h3>
+
+<p>
+<code>g++</code> 不是一个程序，它负责调度。你给它一个 <code>.cpp</code>，
+它按顺序调用四个程序，前一个的输出交给下一个：
+</p>
+
+<ul>
+  <li><b>预处理器</b>——把 <code>#include</code> 插入进来、把 <code>#define</code>
+    换掉。这一步只认以 <code>#</code> 开头的行，看不懂 C++ 语法</li>
+  <li><b>编译器</b>——把 C++ 翻译成汇编（机器码的另一种表示形式，人可以直接阅读）</li>
+  <li><b>汇编器</b>——把汇编翻译成机器码</li>
+  <li><b>链接器</b>——把几个机器码文件和库组合在一起，确定每个符号的地址，
+    才能生成可运行的程序</li>
+</ul>
+
+<p>
+平常只看到最后一个结果：一条命令输入后，生成一个可执行文件。
+要查看中间那三步，需要让 <code>g++</code> 执行到中途某一步就停止。
+</p>
+
+<p>
+先准备一份程序——只包含一行输出。
+它的用处是<b>能被拆开</b>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "四步走完，程序才存在。" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+下面每一步都在这个目录里输入。每一步都会多出一个文件，名字里的
+<code>.i</code>、<code>.s</code>、<code>.o</code> 就是那一步的产物。
+</p>
+
+<h3 id="s0-2-2">第一步：预处理（-E）</h3>
+
+<p>
+<code>-E</code> 是「只做预处理，做完就停」：
+</p>
+
+<pre><code>g++ -E 0.2-four-steps.cpp -o 0.2-four-steps.i</code></pre>
+
+<p>
+输入完不会有任何输出——这一步正常就是这样，没有输出就表示成功。查看多出来的文件有多大：
+</p>
+
+<pre><code>wc -c 0.2-four-steps.cpp 0.2-four-steps.i</code></pre>
+
+<pre class="out" data-label="真实输出">   369 0.2-four-steps.cpp
+907794 0.2-four-steps.i
+908163 总计</pre>
+
+<pre><code>wc -l 0.2-four-steps.i</code></pre>
+
+<pre class="out" data-label="真实输出">36592 0.2-four-steps.i</pre>
+
+<p>
+<b>369 字节变成了 907794 字节——两千四百多倍。</b>
+那个 36592 是 <code>-l</code> 数出来的行数，三万多行。打开看看开头：
+</p>
+
+<pre><code># 0 "0.2-four-steps.cpp"
+# 0 "&lt;built-in&gt;"
+# 0 "&lt;command-line&gt;"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 0 "&lt;command-line&gt;" 2
+# 1 "0.2-four-steps.cpp"</code></pre>
+
+<p>
+那些 <code>#</code> 开头的行是预处理器留下的记号，意思是「下面这几行是从哪个文件的第几行复制过来的」。
+真正的代码在下面。
+</p>
+
+<p>
+末尾是这样。三万多行不要查阅，直接看最后八行：
+</p>
+
+<pre><code>tail -8 0.2-four-steps.i</code></pre>
+
+<pre class="out" data-label="真实输出"># 6 "0.2-four-steps.cpp" 2
+
+
+# 7 "0.2-four-steps.cpp"
+int main() {
+    std::cout &lt;&lt; "四步走完，程序才存在。" &lt;&lt; std::endl;
+    return 0;
+}</pre>
+
+<p>
+你自己写的那四行在这儿，前面三万多行全是开头那行
+<code>#include &lt;iostream&gt;</code> 插入进来的。
+</p>
+
+<p>
+<b>这就是 <code>#include</code> 的作用：把那个文件从头到尾复制一遍，插入这个位置。</b>
+不是「引用」不是「链接」，就是复制。第 1 部分整部分都在讲这一句话带来的后果——
+比如同一个文件被包含两遍会怎么样。
+</p>
+
+<h3 id="s0-2-3">第二步：编译（-S）</h3>
+
+<p>
+<code>-S</code> 是「翻译成汇编，翻译完就停止」：
+</p>
+
+<pre><code>g++ -S 0.2-four-steps.cpp -o 0.2-four-steps.s</code></pre>
+
+<p>
+这次的产物是 1692 字节、68 行——比上一步小得多，因为那些注释和记号都被丢弃了。
+中间那一段是这样：
+</p>
+
+<pre><code>	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB1988:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp</code></pre>
+
+<p>
+能认出 <code>main</code> 吗？就是你编写的那个 <code>main</code>。
+上面两行 <code>.globl</code>、<code>.type</code> 是向外部声明：
+「这里有一个名为 main 的函数，任何代码都可以使用」。再往下那些 <code>pushq</code>、
+<code>movq</code> 才是真正的指令。
+</p>
+
+<p>
+那行中文也复制过来了，只是换了一种写法——汇编文件里只允许出现 ASCII 字符，
+一个汉字得拆成三个数字，写成 <code>\345\233\233</code> 这样。
+（<code>\345\233\233</code> 就是「四」。这种写法阅读起来不直观，但可以逐字还原。）
+</p>
+
+<h3 id="s0-2-4">第三步：汇编（-c）</h3>
+
+<p>
+<code>-c</code> 是「翻译成机器码，翻译完就停止」：
+</p>
+
+<pre><code>g++ -c 0.2-four-steps.cpp -o 0.2-four-steps.o</code></pre>
+
+<p>
+产物 <code>.o</code> 叫<b>目标文件</b>，2176 字节。里面已经是机器码了。
+查看它是什么格式：
+</p>
+
+<pre><code>file -b 0.2-four-steps.o | cut -d, -f1</code></pre>
+
+<pre class="out" data-label="真实输出">ELF 64-bit LSB relocatable</pre>
+
+<p>
+注意最后那个词：<code>relocatable</code>，可重定位。
+意思有两层：<b>一、它还不知道自己将来会被放置在内存的什么位置；二、它还不知道
+<code>std::cout</code> 在哪里。</b>它还缺少符号。
+</p>
+
+<p>
+缺什么？让 <code>nm</code> 列出它包含的所有「名称」：
+</p>
+
+<pre><code>nm -C 0.2-four-steps.o | grep ' U ' | head -4</code></pre>
+
+<pre class="out" data-label="真实输出">                 U _GLOBAL_OFFSET_TABLE_
+                 U std::ostream::operator&lt;&lt;(std::ostream&amp; (*)(std::ostream&amp;))
+                 U std::ios_base_library_init()
+                 U std::cout</pre>
+
+<p>
+（<code>nm</code> 是列符号表的，<code>-C</code> 是「把经过修饰的名称还原为可读形式」，
+后面的管道是「只保留包含 U 的行、只保留前四行」。）
+</p>
+
+<p>
+<code>U</code> 是 undefined，未定义——「这个符号需要被使用，但它不在当前文件中」。
+你要用的 <code>std::cout</code> 就在这份名单上：它是标准库中的符号，
+<code>.o</code> 里只有一条使用 cout 的声明，没有 cout 本身。
+</p>
+
+<h3 id="s0-2-5">第四步：链接</h3>
+
+<p>
+最后一步，把 <code>.o</code> 交给链接器，这次不给它 <code>-c</code> 之类的参数：
+</p>
+
+<pre><code>g++ 0.2-four-steps.o -o 0.2-four-steps</code></pre>
+
+<p>
+输出 16512 字节。运行一下：
+</p>
+
+<pre><code>./0.2-four-steps</code></pre>
+
+<pre class="out" data-label="真实输出">四步走完，程序才存在。</pre>
+
+<p>
+链接器执行的操作，就是把上一步符号表上的 <code>U</code> 全部补齐。
+再查看同一个 <code>std::cout</code>：
+</p>
+
+<pre><code>nm -C 0.2-four-steps | grep -E 'cout|GLOBAL_OFFSET'</code></pre>
+
+<pre class="out" data-label="真实输出">0000000000003fa8 d _GLOBAL_OFFSET_TABLE_
+0000000000004040 B std::cout@GLIBCXX_3.4</pre>
+
+<p>
+<code>U</code> 没了，换成了一个地址 <code>0000000000004040</code>。
+<b>链接就是把尚未确定地址的符号全部确定下来。</b>
+</p>
+
+<p>
+那些符号从哪里来？从库。标准库 <code>libstdc++</code>、C 库 <code>libc</code>，
+它们早就装在这台机器上了，链接器知道去哪儿找。
+这份程序用到的 <code>cout</code>、<code>endl</code> 都在标准库里——
+所以最后一步是四个步骤里唯一一个<b>要使用别人写好的库</b>的步骤。
+</p>
+
+<div class="eg" id="e0-1">
+  <div class="eg-h">例题 · 一条命令留下全部中间产物</div>
+  <p>
+    四步分开执行，需要输入四条命令。有一种简便的做法：<code>-save-temps</code>，
+    「中间产物都别删，留下来」。
+  </p>
+
+  <pre><code>cd 示例代码
+g++ -save-temps -Wall 0.2-four-steps.cpp -o four-steps</code></pre>
+
+  <p>
+    一条命令完成整个过程，然后执行 <code>ls -1</code> 查看：
+  </p>
+
+  <pre class="out" data-label="真实输出">0.2-four-steps.cpp
+four-steps
+four-steps-0.2-four-steps.ii
+four-steps-0.2-four-steps.o
+four-steps-0.2-four-steps.s</pre>
+
+  <p>
+    四个中间产物全在，文件名是「可执行文件名 + 原名 + 后缀」。
+  </p>
+
+  <p>
+    <b>注意预处理那一份叫 <code>.ii</code>，不是 <code>.i</code>。</b>
+    这是 C++ 和 C 的一个小区别：C 的预处理产物是 <code>.i</code>，
+    C++ 的因为还可能带上模板之类的信息，叫 <code>.ii</code>。
+    两条路都对，识别后缀时不要固定理解为某一种。
+  </p>
+
+  <p>
+    这个 <code>.ii</code> 和你手动 <code>-E</code> 出来的那个一样大——
+    907794 字节，一个字节不差。
+  </p>
+</div>
+
+<h3 id="s0-2-6">半成品为什么无法运行</h3>
+
+<p>
+<code>.o</code> 里装的已经是机器码了。既然这样，为什么不能直接运行它？尝试一下：
+</p>
+
+<pre><code>./0.2-four-steps.o</code></pre>
+
+<pre class="out" data-label="真实输出">bash: 行 1: ./0.2-four-steps.o: 权限不够</pre>
+
+<p>
+「权限不够」——这个问题容易解决，给它添加可执行位：
+</p>
+
+<pre><code>chmod +x 0.2-four-steps.o
+./0.2-four-steps.o</code></pre>
+
+<pre class="out" data-label="真实输出">bash: 行 1: ./0.2-four-steps.o: 无法执行二进制文件：可执行文件格式错误</pre>
+
+<p>
+这次是「格式错误」。两个文件都是 ELF 格式，差在文件头里写的一行字：
+</p>
+
+<pre><code>file -b 0.2-four-steps.o | cut -d, -f1</code></pre>
+
+<pre class="out" data-label="真实输出">ELF 64-bit LSB relocatable</pre>
+
+<pre><code>file -b 0.2-four-steps | cut -d, -f1</code></pre>
+
+<pre class="out" data-label="真实输出">ELF 64-bit LSB pie executable</pre>
+
+<p>
+一个写着 <code>relocatable</code>（半成品），一个写着 <code>pie executable</code>
+（可执行）。系统根据这个词决定是否把它作为程序运行。
+<b>半成品就是半成品，添加任何权限都无法运行。</b>
+</p>
+
+<p>
+记住这个顺序，第 1 部分要用：<b>先编译成 <code>.o</code>、再链接，</b>
+这两步分开，就是「一次编译几个文件」能成立的原因。
+</p>
+
+<h3 id="s0-2-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 0-4</div>
+  <p>
+    把课里那份程序自己输入一遍（文件名就叫 <code>0.2-four-steps.cpp</code>），
+    然后四条命令逐条执行完：
+  </p>
+  <pre><code>g++ -E 0.2-four-steps.cpp -o 0.2-four-steps.i
+g++ -S 0.2-four-steps.cpp -o 0.2-four-steps.s
+g++ -c 0.2-four-steps.cpp -o 0.2-four-steps.o
+g++ 0.2-four-steps.o -o 0.2-four-steps</code></pre>
+  <p>
+    最后执行 <code>ls -l</code> 查看，记录五个文件的大小——
+    <b>下一题要用</b>。中间那三个文件一个都别删。
+  </p>
+  <pre class="out" data-label="预期输出">四步走完，程序才存在。</pre>
+  <details class="ans" data-run="示例代码/答案/0-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这题的答案就是课里那一份，一个字符都没有改动——<b>这道题要求实际操作，不要你编写代码</b>。
+        再列一遍，方便你对照输入：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "四步走完，程序才存在。" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        四条命令执行完，目录里是五个文件。<code>wc -c</code> 全部测量一遍，
+        就是这么五份：
+      </p>
+      <pre class="out" data-label="实际大小">   369 0.2-four-steps.cpp
+907794 0.2-four-steps.i
+  1692 0.2-four-steps.s
+  2176 0.2-four-steps.o
+ 16512 0.2-four-steps</pre>
+      <p>
+        和屏幕上的结果对照一遍。前面那个数是字节数。
+        <b>哪个数与这里相差较大，那一步就有问题</b>——比如 <code>.i</code>
+        要是只有几百字节，说明你没走 <code>-E</code>，或者少了个参数。
+      </p>
+      <p>
+        注释和空行会让 <code>.cpp</code> 的大小跟你这里相差几行，
+        不需要为此花费精力；重要的是那三个中间产物是不是都在。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-5</div>
+  <p>
+    把源程序里那行中文改短，改成 <code>hi</code>。然后<b>四步全部重新执行一遍</b>。
+  </p>
+  <p>
+    注意是全部重新执行。只重新执行后面几步是不行的——前面几步的产物还是旧的，
+    你会拿一个包含旧字符串的 <code>.o</code> 去链接，运行输出仍然是旧的那句话。
+  </p>
+  <pre class="out" data-label="预期输出">hi</pre>
+  <p>
+    改完把这五个文件的大小跟上一题对一遍，看看哪几个变了、变了多少。
+    对完再展开答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/0-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        改完那一行，<b>四步全部重新执行一遍</b>。第二步的易错点在这里：
+        只重新执行后两步的话，你链接进去的是旧的 <code>.o</code>，
+        运行输出仍然是「四步走完，程序才存在。」
+      </p>
+      <p>改完之后那一份（只动了 <code>cout</code> 前面那一行）：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "hi" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>五份产物前后对比（左边是上一题那份）：</p>
+      <pre class="out" data-label="前后对照">            .cpp        .i      .s      .o
+原来          369    907794    1692    2176
+改成 hi       338    907763    1552    2136
+差            -31       -31    -140     -40</pre>
+      <p>
+        <b>先看前两列：<code>.cpp</code> 少了 31 字节，<code>.i</code> 也正好少了 31 字节，
+        一个字节不差。</b>
+        这就是 0.2 那句「<code>#include</code> 就是原样插入」的证据——
+        预处理出来的文件里，你自己写的那几行原样保留在那里，你少写多少它就少多少。
+        开头插入的那三万多行，一个字节都没有改动。
+      </p>
+      <p>
+        <code>.s</code> 减少得最多，140 字节。因为那行中文在汇编里需要拆成
+        <code>\345\233\233</code> 这样一个一个的数字写法，字数一变，
+        整个字符串的写法跟着变，不是简单的加减。
+      </p>
+      <p>
+        <code>.o</code> 少了 40 字节。可执行文件那一份我没列——
+        它的大小由链接器安排各段布局决定，跟源程序长短没有简单的对应关系：
+        这份材料里三份不同的程序编译出来，分别是 16512、16512、16496，看不出规律。
+        <b>不要期望从文件大小倒推程序在做什么。</b>
+      </p>
+      <p>
+        你那几个数和这里差几个字节很正常（换个 g++ 版本就不一样）。
+        要看的不是绝对值，是<b>「它跟着变了没有」</b>。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>知道 <code>g++</code> 那一行背后是四个程序，
+  能自己把中间产物一样一样留下来看，也知道 <code>.o</code> 是半成品、
+  链接器补的是「那些不知道在哪儿的名字」。
+  <b>这一段是第 1 部分的地基。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l0-3">
+<h2><span class="no">0.3</span>课里的程序怎么编译怎么运行</h2>
+
+<p>
+最后一课交代一件事：<b>这门课里的示例长什么样，取得之后怎么让它运行。</b>
+往后每一课都会碰到，先说清楚，省得你在某一页上卡住。
+</p>
+
+<h3 id="s0-3-1">三种形态</h3>
+
+<p>
+这门课的示例有三种形式，可以直接区分：
+</p>
+
+<ul>
+  <li><b>单个文件</b>——一个 <code>.cpp</code> 平铺在示例文件夹里。
+    第 0、1 部分大多数是这种，编译方法与基础课完全相同</li>
+  <li><b>一个目录</b>——目录里有几个文件，外加一份 <code>构建.txt</code></li>
+  <li><b>一个目录（带 cmake）</b>——目录里有 <code>CMakeLists.txt</code>，
+    也有一份 <code>构建.txt</code></li>
+</ul>
+
+<p>
+后两种有一条共同的规矩，记住这一条就够了：
+</p>
+
+<p>
+<b>目录旁边那份 <code>构建.txt</code>，从上往下就是需要输入的命令。</b>
+</p>
+
+<p>
+下面两种各看一个真的。
+</p>
+
+<h3 id="s0-3-2">形态一：单个文件</h3>
+
+<p>
+跟基础课一模一样，没有什么新内容：
+</p>
+
+<pre><code>g++ -Wall hello.cpp -o hello
+./hello</code></pre>
+
+<p>
+练习的答案也是这种。每道题的答案程序，文件名就是练习号，
+和课里那些示例放在一个文件夹里。想不起来怎么写的时候可以直接把它编译出来运行一遍——
+<b>但先自己写</b>，看答案学不会写程序。
+</p>
+
+<h3 id="s0-3-3">形态二：一个目录</h3>
+
+<p>
+先看一个最小的。课里有一个目录，里面两个文件：
+</p>
+
+<pre><code>cd 示例代码/0.3-一个目录
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">构建.txt
+main.cpp</pre>
+
+<p>
+（<code>-1</code> 是「一行一个」——不加它，终端会把文件横向排列成多列，
+下面列出的内容就跟你的屏幕对不上了。）
+</p>
+
+<p>
+<code>main.cpp</code> 还是那个 hello 程序，程序里输出的内容改了一句：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "这个程序在一个目录里运行。" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<p>
+旁边那份 <code>构建.txt</code> 里就两行：
+</p>
+
+<pre><code>g++ -Wall main.cpp -o hello
+./hello</code></pre>
+
+<p>
+第一行编译，第二行运行。输入完是这样：
+</p>
+
+<pre><code>g++ -Wall main.cpp -o hello
+./hello</code></pre>
+
+<pre class="out" data-label="真实输出">这个程序在一个目录里运行。</pre>
+
+<p>
+第一条命令没有输出任何内容——编译成功就是这样。
+第二条输出了那句话。目录里这时候多了一个 <code>hello</code>，
+那就是编译生成的程序。
+</p>
+
+<p>
+<b>为什么要专门写一份 <code>构建.txt</code>？</b>因为到了第 1 部分，
+同一个目录里的文件会变成三个、五个，编译方法也不止一种（用不用 <code>-c</code>？
+先编译哪个？）。
+</p>
+
+<h3 id="s0-3-4">形态三：cmake 目录</h3>
+
+<p>
+再看一个目录。这里面三个文件：
+</p>
+
+<pre><code>cd 示例代码/0.3-cmake目录
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">构建.txt
+CMakeLists.txt
+main.cpp</pre>
+
+<p>
+多出来的 <code>CMakeLists.txt</code> 长这样，四行：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+<p>
+<b>现在不用看懂它。</b>第 2 部分整整一部分都在讲这四行。
+</p>
+
+<p>
+<code>构建.txt</code> 这次是五条：
+</p>
+
+<pre><code>mkdir -p build
+cd build
+cmake ..
+make
+./demo</code></pre>
+
+<p>
+逐条输入。<code>cmake ..</code> 会输出十来行文字，那是正常的：
+</p>
+
+<pre><code>cmake ..</code></pre>
+
+<pre class="out" data-label="真实输出">-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/demo/build</pre>
+
+<p>
+最后那行报的是它把构建文件写到哪儿了，每台机器上路径不一样，不重要。
+括号里那个 <code>0.2s</code> 是它花了多久，每次也不一样。
+</p>
+
+<p>
+然后是 <code>make</code>：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">[ 50%] Building CXX object CMakeFiles/demo.dir/main.cpp.o
+[100%] Linking CXX executable demo
+[100%] Built target demo</pre>
+
+<p>
+三行，三件事：编译 <code>main.cpp</code>、链接、完成。
+<b>看第二行——它先自动编译了一个 <code>.o</code>，再链接。</b>
+这就是 0.2 那四步，只是现在有人替你安排。
+</p>
+
+<pre><code>./demo</code></pre>
+
+<pre class="out" data-label="真实输出">这一份，是 cmake 辅助编译的。</pre>
+
+<p>
+<b>你不用再记 <code>-E</code>、<code>-S</code>、<code>-c</code> 那些参数了。</b>
+写清楚「我要编译哪几个文件」，剩下的 cmake 和 make 替你决定。
+</p>
+
+<div class="aside tip">
+<b>build 那个目录不是你的代码</b>
+<p>
+<code>cmake ..</code> 生成的 <code>build</code> 目录里，很快会出现十几个文件：
+<code>Makefile</code>、<code>CMakeCache.txt</code>、一堆 <code>.cmake</code>……
+全是它自己的中转文件，别去动。
+</p>
+<p>
+要重新执行的时候，把 <code>build</code> 整个删掉、再照着 <code>构建.txt</code>
+执行一遍即可。<b>这个目录随时可以删</b>——它不是代码，它是由代码算出来的。
+</p>
+</div>
+
+<h3 id="s0-3-5">串口没有板子也能练</h3>
+
+<p>
+最后交代一件事。这门课第 7 部分整个讲串口——怎么打开一个串口、
+怎么一个字节一个字节地收发、怎么判断一帧收全了。
+</p>
+
+<p>
+没有板子也能练：第 7 部分用 Linux 的伪终端（pseudo terminal，简称 pty）
+造一对软件串口，再用上面提到的 python3 程序充当对面那块板子。
+打开、配置、收发字节、组帧、CRC 校验、粘包与半包、收包循环，
+这些都能在电脑上真实运行。真板子与软件串口的差别在电气信号与真实波特率：
+软件串口接受波特率设置，但不按那个速度限制发送。到那时候我会写清楚
+哪几句在电脑上就能试、哪几句必须插上板子才有意义。
+现在不用管，记着有这回事就行。
+</p>
+
+<h3 id="s0-3-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 0-6</div>
+  <p>
+    自己搭一个目录，里面两个文件：一个叫 <code>main.cpp</code>，
+    内容照上面<b>形态二</b>那份写；另一个叫 <code>构建.txt</code>，
+    就是上面那两行。
+  </p>
+  <p>
+    按照 <code>构建.txt</code> 输入一遍，运行。
+    然后把 <code>main.cpp</code> 里那句话改成你自己的，<b>重新编译一遍再运行</b>。
+    不重新编译，运行的仍然是上一次那个程序——基础课 0.1 就说过这件事，
+    在这里再出现一次也不奇怪。
+  </p>
+  <pre class="out" data-label="预期输出">这个程序在一个目录里运行，构建.txt 是它的说明文件。</pre>
+  <details class="ans" data-run="示例代码/答案/0-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>把那一行改掉，然后<b>重新编译一遍</b>：</p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "这个程序在一个目录里运行，构建.txt 是它的说明文件。" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>运行输出：</p>
+      <pre class="out" data-label="预期输出">这个程序在一个目录里运行，构建.txt 是它的说明文件。</pre>
+      <p>
+        这题真正要说的是「重新编译一遍」这一要求。
+        改完 <code>main.cpp</code> 直接输入 <code>./hello</code>，输出的仍然是上一句话——
+        因为 <code>hello</code> 是上一次编译出来的那个文件，
+        它跟你的源代码早就没有关系了。
+      </p>
+      <p>
+        <b>改代码 → 重新编译 → 再运行</b>，这三步是一件事。
+        省略中间那一步，你会得到一个「看上去很正常、其实是旧的」结果——
+        这种错误最难检查，因为屏幕上没有任何内容提示你。
+        往后每一课都围绕这个循环进行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-7</div>
+  <p>
+    再把上面那个 cmake 目录自己搭一遍：<code>main.cpp</code>、
+    <code>CMakeLists.txt</code>、<code>构建.txt</code>，三个文件都照<b>形态三</b>写，
+    一个标点都不要改。然后按照 <code>构建.txt</code> 输入五条命令，运行。
+  </p>
+  <p>
+    然后打开 <code>CMakeLists.txt</code>，把最后一行
+    <code>add_executable(demo main.cpp)</code> 里的
+    <code>demo</code> 改成 <code>radar</code>（就改这一个词），
+    回到 <code>build</code> 目录里再输入一次 <code>make</code>。
+  </p>
+  <p>两个问题，先自己回答再展开看：</p>
+  <ol>
+    <li>新出来的可执行文件叫什么名字？</li>
+    <li>原来那个 <code>./demo</code> 还能运行吗？</li>
+  </ol>
+  <pre class="out" data-label="预期输出">这一份，是 cmake 辅助编译的。</pre>
+  <details class="ans" data-run="示例代码/答案/0-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>两个问题，逐个说明。</p>
+      <p>
+        先交代一句：这题改的是 <code>CMakeLists.txt</code>，程序一个字符都没有改动。
+        它还是 0.3 里那一份：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "这一份，是 cmake 辅助编译的。" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>
+        <b>一、新生成的可执行文件名为 <code>radar</code>。</b>
+        改完不用处理其他内容，直接输入 <code>make</code>——它会发现
+        <code>CMakeLists.txt</code> 发生了变化，自己先把配置那一步重新执行一遍，然后：
+      </p>
+      <pre class="out" data-label="真实输出">[ 50%] Building CXX object CMakeFiles/radar.dir/main.cpp.o
+[100%] Linking CXX executable radar
+[100%] Built target radar</pre>
+      <p>
+        三行里那个名字全从 <code>demo</code> 变成了 <code>radar</code>。
+        <code>add_executable</code> 后面第一个词，就是「编译出来的程序叫什么」。
+      </p>
+      <p><b>二、原来那个 <code>./demo</code> 还在，还能运行。</b>输出完全相同：</p>
+      <pre><code>./radar</code></pre>
+      <pre class="out" data-label="预期输出">这一份，是 cmake 辅助编译的。</pre>
+      <pre><code>./demo</code></pre>
+      <pre class="out" data-label="预期输出">这一份，是 cmake 辅助编译的。</pre>
+      <p>
+        为什么？因为 <code>cmake</code> 和 <code>make</code> <b>不替你删旧文件</b>。
+        现在 <code>build</code> 目录里有两个可执行文件：一个刚编译的，
+        一个上一次编译的、已经不再被使用。
+      </p>
+      <p>
+        这件事记住：<b>改完名称，旧的那个不会自动消失。</b>
+        以后工程大了，改了目标名却发现「怎么还是原来的结果」，
+        多半就是运行到了旧文件上。处理的办法就是前面那个方框里说明的——
+        把 <code>build</code> 整个删除后重新执行一遍。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>取得这门课里任何一个示例，
+  都知道需要输入哪几条命令；见到一个目录，知道先查找那份 <code>构建.txt</code>。
+  第 0 部分到这儿结束，下一部分开始进入实质性内容。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

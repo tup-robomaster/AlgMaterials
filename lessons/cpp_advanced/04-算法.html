@@ -1,0 +1,4172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 4 部分 · 时间复杂度与算法 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a class="active" href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<!-- 左边那棵树：顶栏那排「第 N 部分」竖过来，写全名。
+     宽屏下顶栏那排由 CSS 收起来，这一份接手；窄屏下反过来，
+     树收起来、顶栏那排回来当导航。 -->
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html" aria-current="page">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 4 部分 · 时间复杂度与算法</div>
+  <a class="toc-l" href="#l4-1"><span class="n">4.1</span>怎么估一段代码快不快</a>
+  <a class="toc-sub" href="#s4-1-1">先数一数</a>
+  <a class="toc-sub" href="#s4-1-2">跟着动画执行一遍</a>
+  <a class="toc-sub" href="#s4-1-3">n 翻一倍，步数翻几倍</a>
+  <a class="toc-sub" href="#s4-1-4">给它一个名称</a>
+  <a class="toc-sub" href="#s4-1-5">第三种：每次缩小一半</a>
+  <a class="toc-sub" href="#e4-1">例题：名单里的重名</a>
+  <a class="toc-sub" href="#s4-1-6">练习</a>
+  <a class="toc-l" href="#l4-2"><span class="n">4.2</span>迭代器</a>
+  <a class="toc-sub" href="#s4-2-1">一个指向位置的对象</a>
+  <a class="toc-sub" href="#s4-2-2">跟着动画执行一遍</a>
+  <a class="toc-sub" href="#s4-2-3">写成 for 就是一行</a>
+  <a class="toc-sub" href="#s4-2-4">它能记住一个位置</a>
+  <a class="toc-sub" href="#s4-2-5">别的容器也有</a>
+  <a class="toc-sub" href="#s4-2-6">不是所有迭代器都能 +1</a>
+  <a class="toc-sub" href="#e4-2">例题：最高分在谁身上</a>
+  <a class="toc-sub" href="#s4-2-7">练习</a>
+  <a class="toc-l" href="#l4-3"><span class="n">4.3</span>删中间、插中间</a>
+  <a class="toc-sub" href="#s4-3-1">删中间那个</a>
+  <a class="toc-sub" href="#s4-3-2">后面的元素向前移动</a>
+  <a class="toc-sub" href="#s4-3-3">往中间插一个</a>
+  <a class="toc-sub" href="#s4-3-4">一边走一边删</a>
+  <a class="toc-sub" href="#s4-3-5">string 也能这么删</a>
+  <a class="toc-sub" href="#s4-3-6">erase 要位置，不要编号</a>
+  <a class="toc-sub" href="#e4-3">例题：插进去还得是有序的</a>
+  <a class="toc-sub" href="#s4-3-7">练习</a>
+  <a class="toc-l" href="#l4-4"><span class="n">4.4</span>现成的工具</a>
+  <a class="toc-sub" href="#s4-4-1">它们都要两个位置</a>
+  <a class="toc-sub" href="#s4-4-2">find：找得到，找不到</a>
+  <a class="toc-sub" href="#s4-4-3">计数、取最大最小、反转</a>
+  <a class="toc-sub" href="#s4-4-4">sort：一句话排好</a>
+  <a class="toc-sub" href="#e4-4">例题：一份成绩单的统计报告</a>
+  <a class="toc-sub" href="#s4-4-5">练习</a>
+  <a class="toc-l" href="#l4-5"><span class="n">4.5</span>lambda</a>
+  <a class="toc-sub" href="#s4-5-1">条件也能当参数</a>
+  <a class="toc-sub" href="#s4-5-2">那段小代码长什么样</a>
+  <a class="toc-sub" href="#s4-5-3">count 与 count_if</a>
+  <a class="toc-sub" href="#s4-5-4">方括号里写谁</a>
+  <a class="toc-sub" href="#s4-5-5">忘了写会怎样</a>
+  <a class="toc-sub" href="#s4-5-6">给 sort 一条规矩</a>
+  <a class="toc-sub" href="#e4-5">例题：数一句话里的数字</a>
+  <a class="toc-sub" href="#s4-5-7">练习</a>
+  <a class="toc-l" href="#l4-6"><span class="n">4.6</span>让 sort 认得你的类型</a>
+  <a class="toc-sub" href="#s4-6-1">自己定义的 struct，sort 不认</a>
+  <a class="toc-sub" href="#s4-6-2">那么长的报错怎么读</a>
+  <a class="toc-sub" href="#s4-6-3">给它一条规矩</a>
+  <a class="toc-sub" href="#s4-6-4">pair 不用给规矩</a>
+  <a class="toc-sub" href="#e4-6">例题：排行榜</a>
+  <a class="toc-sub" href="#s4-6-5">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 4 部分</div>
+  <h1>时间复杂度与算法</h1>
+  <p class="part-lead">
+    第 3 部分结尾留下了两个问题：<b>想删除中间的元素、想往中间插入一个元素，怎么办</b>；
+    还有<b>同样是查找一个元素，为什么有快有慢</b>。
+    这一部分把这两个问题都解决。解决前一个问题的工具是<b>迭代器</b>，
+    衡量步数的标准是<b>时间复杂度</b>——
+    一个说「位置」，一个说「步数」。
+    学会这两样，再打开 <code>&lt;algorithm&gt;</code> 那一整套现成的工具，
+    以后排序、找最大，都不用自己写循环了。
+  </p>
+</header>
+
+<section class="lesson" id="l4-1">
+<h2><span class="no">4.1</span>怎么估一段代码快不快</h2>
+
+<p>
+到这儿为止，写程序的标准一直是「能运行、结果正确」。
+从这一课起多问一句：<b>同样的结果，要花多少步。</b>
+</p>
+
+<p>
+这不是找事。第 3 部分留了两句话没说透——
+3.6 里那句「凭什么 map 按名字就能直接取值」，
+4.1 末尾那句「vector 报个下标就能跳到第 5 个」。
+这两句话说的是同一件事：<b>步数</b>。
+没有这个标准，就只能说「感觉 map 快一点」，说不清快在哪里。
+</p>
+
+<h3 id="s4-1-1">先数一数</h3>
+
+<p>
+最直接的做法是计时：运行一遍，查看花费了多少秒。可计时有两个问题——
+跟机器有关（同一份程序，旧电脑上就是慢），
+跟当时忙不忙也有关（后台运行着其他程序，数值就会波动）。
+换台机器、换个编译器，同一个问题能报出三个数，无法在课上说明。
+</p>
+
+<p>
+有一个标准与机器无关：<b>统计那行代码执行了几遍。</b>
+执行一遍算一步。步数只跟「n 有多大」有关，跟你用哪台电脑无关——
+这是三项中唯一可以事先计算的内容。
+</p>
+
+<p>
+下面这份程序，全部的工作只有一项：把一个计数加 1。两个循环都执行这件事，
+差的只是<b>套了几层</b>。输入第一行是 <code>n</code>：
+</p>
+
+<pre><code>5</code></pre>
+
+<p>程序是这样：</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int one = 0;
+    for (int i = 0; i &lt; n; i++) {
+        one = one + 1;
+    }
+
+    int two = 0;
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            two = two + 1;
+        }
+    }
+
+    std::cout &lt;&lt; "一层：" &lt;&lt; one &lt;&lt; " 次" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "两层：" &lt;&lt; two &lt;&lt; " 次" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">一层：5 次
+两层：25 次</pre>
+
+<p>
+看这两个数：<b>一层那个执行了 5 次，两层那个执行了 25 次。</b>
+n 是 5，一层就是 5——它跟着 n 走，<code>n</code> 有多大就执行多少次。
+两层是 <code>5 × 5</code>：外层执行一次，内层从头到尾遍历一遍，
+外层执行五次，内层就遍历五遍。
+</p>
+
+<p>
+这就是全部的做法：<b>数一数这行代码会执行几遍。</b>
+不需要实际逐行计数——确认循环嵌套了几层就够了。下面那个动画，是把这两句话
+一步一步放给你看。
+</p>
+
+<h3 id="s4-1-2">跟着动画执行一遍</h3>
+
+<p>
+<code>n</code> 还是 5。点「下一步」，观察 <code>one</code> 和
+<code>two</code> 这两个变量怎样递增：
+</p>
+
+<div class="viz" data-viz="steps"></div>
+
+<p>
+有两处值得停下来确认：
+</p>
+
+<ul>
+  <li><b>第一个循环结束时 <code>one</code> 停在 5。</b>
+    不是 4 也不是 6——<code>i</code> 从 0 到 4 是五次，执行次数与 n 相同。
+    动画里那一句「i 加到 5，5 &lt; 5 不成立」，说的就是最后一次由谁终止。</li>
+  <li><b>第二个循环每完成一次外层循环，<code>two</code> 增加 5。</b>
+    外层执行五次，每次增加 5，最后停在 25。
+    <b>一层是「执行次数」，两层是「执行次数乘执行次数」</b>——25 是这样得到的。</li>
+</ul>
+
+<p>
+把 n 换成 1000：一层那个一千步，两层那个是一百万步。
+这就是为什么两个循环看上去只差一层，执行时间却相差悬殊——
+下一节把这件事摆成一张表。
+</p>
+
+<h3 id="s4-1-3">n 翻一倍，步数翻几倍</h3>
+
+<p>
+5 和 25 看上去差不多，是因为 5 太小了。让 n 一千一千地增加，
+把次数输出并排比较：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    for (int n = 1000; n &lt;= 8000; n = n * 2) {
+        int one = 0;
+        for (int i = 0; i &lt; n; i++) {
+            one = one + 1;
+        }
+
+        int two = 0;
+        for (int i = 0; i &lt; n; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                two = two + 1;
+            }
+        }
+
+        std::cout &lt;&lt; "n = " &lt;&lt; n &lt;&lt; "：一层 " &lt;&lt; one
+                  &lt;&lt; " 步，两层 " &lt;&lt; two &lt;&lt; " 步" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">n = 1000：一层 1000 步，两层 1000000 步
+n = 2000：一层 2000 步，两层 4000000 步
+n = 4000：一层 4000 步，两层 16000000 步
+n = 8000：一层 8000 步，两层 64000000 步</pre>
+
+<p>
+一行一行读：
+</p>
+
+<ul>
+  <li>n 从 1000 翻到 2000，<b>一层那个从 1000 变 2000</b>——
+    跟着翻一倍。</li>
+  <li>同一行，<b>两层那个从一百万变四百万</b>——翻了四倍。</li>
+  <li>再翻一次，一层四千，两层一千六百万。再翻一次，
+    一层八千，两层六千四百万。</li>
+</ul>
+
+<p>
+<b>n 每翻一倍，两层那个就翻四倍。</b>
+n 才涨到 8 倍，步数已经涨了 64 倍。再翻几次，两层那个的数字就大到
+你不想看了——而真正的程序里，n 常常是几十万。
+</p>
+
+<p>
+这就是为什么「能运行就行」不够用。<b>写的时候多套一层循环，
+只多写两行；执行时的代价却完全不同。</b>
+</p>
+
+<h3 id="s4-1-4">给它一个名称</h3>
+
+<p>
+「步数跟着 n 怎么长」这件事，说全了太长，所以有一套简写。
+这套简写你现在天天见，只是没认出来——<b>时间复杂度</b>（time complexity）
+和那个大写的 O。
+</p>
+
+<p>
+写法是把「增长最快的那一项」选取出来，写进 O 的括号里，
+n 前面的常数一律不要：
+</p>
+
+<table>
+  <tr>
+    <th>记号</th>
+    <th>读作</th>
+    <th>什么样的代码长这样</th>
+  </tr>
+  <tr>
+    <td><code>O(1)</code></td>
+    <td>常数时间</td>
+    <td>不管 n 多大，步数都不变。取 <code>v[3]</code>、<code>v.size()</code>、
+      问 set 里有没有某个数（3.5）都算</td>
+  </tr>
+  <tr>
+    <td><code>O(n)</code></td>
+    <td>线性时间</td>
+    <td>一层循环从头走到尾。n 翻倍，步数翻倍</td>
+  </tr>
+  <tr>
+    <td><code>O(n²)</code></td>
+    <td>平方时间</td>
+    <td>两层嵌套的循环。n 翻倍，步数翻四倍</td>
+  </tr>
+  <tr>
+    <td><code>O(log n)</code></td>
+    <td>对数时间</td>
+    <td>每次循环把范围缩小一半。n 翻倍，步数只增加一步——下一节讲</td>
+  </tr>
+</table>
+
+<p>
+三个地方要提醒：
+</p>
+
+<ul>
+  <li><b>常数不管。</b><code>2n</code> 和 <code>100n</code> 都写成
+    <code>O(n)</code>。n 一大，前面那个数是 2 还是 100 就不重要了——
+    n 自己才是决定性的。两个循环并排（前一个走完再走后一个）
+    也是 <code>O(n)</code>：它执行 2n 步，仍然按 n 增长。</li>
+  <li><b>只看最大的那一项。</b>一段代码里既有 <code>O(n²)</code>
+    的部分又有 <code>O(n)</code> 的部分，合起来写 <code>O(n²)</code>：
+    n 大了以后，平方那一项把别的全盖住了。</li>
+  <li><b>O 说的是「上界」，不是秒数。</b><code>O(n)</code> 的程序
+    不一定比 <code>O(n²)</code> 的先执行完——n 很小时，
+    常数项起决定作用。它管的是<b>n 变大以后谁增长得更快</b>。</li>
+</ul>
+
+<div class="aside tip">
+  <b>O 是给谁看的</b>
+  <p>
+    读懂真实代码、跟人讨论「这个写法行不行」时，它是通用语言——
+    一句「这层里面又套了一层，变成 n² 了」比长时间解释更清楚。
+    平时写程序不用去算它，只要认得出<b>两种最需要注意的形式</b>：
+    循环里套循环、和循环里夹着一个 find 或 count。
+    见到这两样，先停一下，问问 n 能有多大。
+  </p>
+</div>
+
+<h3 id="s4-1-5">第三种：每次缩小一半</h3>
+
+<p>
+一层、两层都是循环逐个执行，慢和快的差别只是执行次数。
+还有一类循环形式完全不同：<b>每次循环，需要检查的范围就缩小一半。</b>
+</p>
+
+<p>
+一千个排好序的数里查找一个数。直接的方法是从头逐个比较，最坏要比较一千次。
+另一种方法每次都从中间分开：检查中间的元素，比目标大就排除右半部分，
+比目标小就排除左半部分。一千个数，十次就查找完成：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; 1000; i++) {
+        v.push_back(i * 2);          // 0 2 4 … 1998，从小到大排好的
+    }
+
+    int target = 0;
+    std::cin &gt;&gt; target;
+
+    int linear = 0;
+    int linear_at = -1;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        linear = linear + 1;
+        if (v[i] == target) {
+            linear_at = i;
+            break;
+        }
+    }
+
+    int steps = 0;
+    int lo = 0;
+    int hi = int(v.size()) - 1;
+    int pos = -1;
+    while (lo &lt;= hi) {
+        steps = steps + 1;
+        int mid = (lo + hi) / 2;
+        if (v[mid] == target) {
+            pos = mid;
+            break;
+        }
+        if (v[mid] &lt; target) {
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+
+    std::cout &lt;&lt; "一千个数里找 " &lt;&lt; target &lt;&lt; "：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "  从头逐个比较：" &lt;&lt; linear &lt;&lt; " 次";
+    if (linear_at &gt;= 0) {
+        std::cout &lt;&lt; "，在第 " &lt;&lt; linear_at &lt;&lt; " 个";
+    }
+    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; "  每次缩小一半：" &lt;&lt; steps &lt;&lt; " 次";
+    if (pos &gt;= 0) {
+        std::cout &lt;&lt; "，在第 " &lt;&lt; pos &lt;&lt; " 个";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<p>
+输入是要找的那个数 <code>1998</code>——表里最后一个，对「从头找」
+来说是最坏的情况：
+</p>
+
+<pre class="out" data-label="预期输出">一千个数里找 1998：
+  从头逐个比较：1000 次，在第 999 个
+  每次缩小一半：10 次，在第 999 个</pre>
+
+<p>
+<b>一千次对十次。</b>结果一模一样，步数差一百倍。这就是
+<code>O(n)</code> 和 <code>O(log n)</code> 的距离。
+</p>
+
+<p>
+为什么是十次？因为每缩小一次范围，剩下的个数就除以 2：
+1000 → 500 → 250 → …，除到 1 大约需要十次。
+所以这个次数跟 n 的关系是「n 要除几次 2 才到 1」——
+n 翻一倍只是多执行一次，也就是 <code>O(log n)</code>，增长幅度几乎可以忽略。
+一千要十步，一百万也才二十步。
+</p>
+
+<div class="aside warn">
+  <b>它有一个前提：数据必须已经排好序</b>
+  <p>
+    「缩小一半」为什么可以排除一半？因为你已经知道<b>左边的都比中间小</b>。
+    这些数只要是无序的，排除错误的一半后就再也无法找回。
+    <b>排好序是这种方法成立的全部前提</b>——排序本身要花步数（4.4 会讲），
+    所以只有「找很多次」的时候这笔账才划算。
+  </p>
+  <p>
+    现在能回答 3.6 那句了：<b>map 按名字就能直接取值，是因为它内部
+    一直是有序的</b>（3.4 里见过它自动排序后输出），
+    它在内部使用的就是这种「缩小一半」的查找方法。
+    而 vector 从头找到尾，是逐个比较——
+    这就是快慢的出处。
+  </p>
+</div>
+
+<div class="eg" id="e4-1">
+  <div class="eg-h">例题 · 名单里的重名</div>
+  <p>
+    读入 n 个名字，判断有没有重名。这题本身不难，难的是<b>两种写法</b>——
+    两份程序使用同一份输入，把它们统计出来的步数放在一起比较：
+  </p>
+  <pre><code>6
+小李
+小王
+小张
+小李
+小赵
+小钱</code></pre>
+  <p>
+    <b>写法一：两两比较。</b>每个名字都跟后面的比较一遍，
+    比较到相同就记录下来。这是最直接的写法：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;std::string&gt; name;
+    for (int i = 0; i &lt; n; i++) {
+        std::string s;
+        std::cin &gt;&gt; s;
+        name.push_back(s);
+    }
+
+    int count = 0;
+    bool found = false;
+    for (int i = 0; i &lt; int(name.size()); i++) {
+        for (int j = i + 1; j &lt; int(name.size()); j++) {
+            count = count + 1;
+            if (name[i] == name[j]) {
+                found = true;
+            }
+        }
+    }
+
+    std::cout &lt;&lt; n &lt;&lt; " 个名字，两两比了 " &lt;&lt; count &lt;&lt; " 次" &lt;&lt; std::endl;
+    if (found) {
+        std::cout &lt;&lt; "有重名" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "没有重名" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">6 个名字，两两比了 15 次
+有重名</pre>
+  <p>
+    <b>写法二：一边读一边查询 set。</b>3.5 那个只判断存在性的容器正好用于这个目的——
+    每读一个名字，先判断「其中是否已经有它」，没有就插入：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;set&gt;
+#include &lt;string&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::set&lt;std::string&gt; seen;
+    int ask = 0;
+    bool found = false;
+    for (int i = 0; i &lt; n; i++) {
+        std::string s;
+        std::cin &gt;&gt; s;
+
+        ask = ask + 1;
+        if (seen.count(s) &gt; 0) {
+            found = true;
+        }
+        seen.insert(s);
+    }
+
+    std::cout &lt;&lt; n &lt;&lt; " 个名字，问了 " &lt;&lt; ask &lt;&lt; " 次" &lt;&lt; std::endl;
+    if (found) {
+        std::cout &lt;&lt; "有重名" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "没有重名" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">6 个名字，问了 6 次
+有重名</pre>
+  <p>
+    两份程序说的是同一件事，答案也一样，可一个进行了 15 次比较，
+    另一个只进行了 6 次查询。把 n 换成一千：
+  </p>
+  <ul>
+    <li><b>两两比较</b>：<code>1000 × 999 ÷ 2</code>，
+      差不多 <b>五十万次</b>。这是 <code>O(n²)</code>——
+      名单再长一倍，次数翻四倍。</li>
+    <li><b>问 set</b>：一千次「问」，每次问内部还要走 <code>log n</code>
+      步（大约 10 步），合起来是 <b>一万步上下</b>。
+      名单再长一倍，只多三分之一。这是 <code>O(n log n)</code>。</li>
+  </ul>
+  <p>
+    <b>把 n 改成 1000 个名字，两种写法各运行一遍</b>，
+    那个「五十万次」可以直接看到。
+  </p>
+  <p>
+    总结一句：<b>选择写法的时候，先考虑「数据量增长后会怎样」，
+    而不是「这几十个数据运行得快不快」。</b>
+    手边的数据永远小，学生的名单也就几十个人；
+    真实的数据长起来，才见分晓。
+  </p>
+</div>
+
+<h3 id="s4-1-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-1</div>
+  <p>
+    写一个程序：读一个 <code>n</code>，用<b>一层循环</b>把 1 加到 n
+    的和算出来，然后把这段代码执行了几次也输出。</p>
+  <pre class="out" data-label="样例输入">100</pre>
+  <pre class="out" data-label="预期输出">1 加到 100 = 5050
+循环执行了 100 次</pre>
+  <p>
+    写完之后再想一个问题（不用写程序）：<b>不算循环，直接算</b>
+    <code>n × (n + 1) / 2</code>，那样是几步？
+    两种写法各是什么时间复杂度？
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        一层循环在累加的同时计数，<code>round</code> 每执行一轮增加 1：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    int sum = 0;
+    int round = 0;
+    for (int i = 1; i &lt;= n; i++) {
+        sum = sum + i;
+        round = round + 1;
+    }
+
+    std::cout &lt;&lt; "1 加到 " &lt;&lt; n &lt;&lt; " = " &lt;&lt; sum &lt;&lt; std::endl;
+    std::cout &lt;&lt; "循环执行了 " &lt;&lt; round &lt;&lt; " 次" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>round</code> 不是把 <code>n</code> 原样输出作为结果，而是真正统计出来的——
+        让你直接看到「执行了 100 轮」和「n 是 100」是同一个数。
+      </p>
+      <p>
+        后面那个不用写程序的问题，答案是：
+      </p>
+      <ul>
+        <li><b>循环那份是 <code>O(n)</code></b>：n 翻一倍，轮数翻一倍。
+          这一步的代价跟着 n 长。</li>
+        <li><b>公式那份是 <code>O(1)</code></b>：<code>n * (n + 1) / 2</code>
+          只需要几次乘法与除法，与 n 的大小无关。这一部分是它唯一一次出场，
+          记住有这样一个公式即可。</li>
+      </ul>
+      <p>
+        两个都能算对，区别在 n 变大以后：n 增大到一亿，循环那一份需要等待一段时间，
+        公式那一份仍然只需要几次运算。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-2</div>
+  <p>
+    下面几段代码，<code>n</code> 都是 1000。先<b>自行估算</b>每一段里
+    标了记号那一行会执行几次，估完再写成程序运行，对照结果。
+  </p>
+  <pre><code>// 一
+for (int i = 0; i &lt; n; i++) {
+    for (int j = 0; j &lt; n; j++) {
+        for (int k = 0; k &lt; n; k++) {
+            work();          // 这条执行几次？
+        }
+    }
+}
+
+// 二
+for (int i = 0; i &lt; n; i++) {
+    work();                  // 这条执行几次？
+}
+for (int j = 0; j &lt; 5; j++) {
+    work();                  // 这条执行几次？
+}
+
+// 三
+int x = n;
+while (x &gt; 1) {
+    x = x / 2;
+    work();                  // 这条执行几次？
+}</code></pre>
+  <p>
+    三个答案分别是 <code>n³</code>、<code>n + 5</code>、<code>log₂n</code>
+    的取整。第三段那个 <code>x = x / 2</code> 就是 4.1 那个「每次缩小一半」
+    的另一种写法。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三段都是数出来的，估的时候不用写程序：
+      </p>
+      <ul>
+        <li><b>一</b>：三层循环嵌套。外层执行 n 次，每执行一次中层执行 n 次，
+          每执行一次内层再执行 n 次——乘起来是 <code>n³</code>，
+          1000 的三次方，十亿。</li>
+        <li><b>二</b>：两个循环<b>并列</b>，不是嵌套。
+          一个执行 n 次、一个执行 5 次，加起来 <code>n + 5</code>，1005 次。
+          <b>并列是加法，嵌套是乘法</b>——这一条是这一课最容易混淆的地方。</li>
+        <li><b>三</b>：每执行一轮 x 缩小一半，执行几轮就是「1000 缩小几次到 1」。
+          <code>2^9 = 512</code> 不够、<code>2^10 = 1024</code> 够了，
+          所以是 9 轮，也就是 <code>log₂n</code> 取整。
+          写法上是 <code>while</code> 加一句 <code>x = x / 2</code>，
+          不再是 <code>for</code> 了——4.1 那个「每次缩小一半」的另一种写法。</li>
+      </ul>
+      <p>
+        估算完再让程序运行一遍，核对这三个数：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+
+int main() {
+    const int n = 1000;
+
+    long long one = 0;
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            for (int k = 0; k &lt; n; k++) {
+                one = one + 1;
+            }
+        }
+    }
+
+    int two = 0;
+    for (int i = 0; i &lt; n; i++) {
+        two = two + 1;
+    }
+    for (int j = 0; j &lt; 5; j++) {
+        two = two + 1;
+    }
+
+    int three = 0;
+    int x = n;
+    while (x &gt; 1) {
+        x = x / 2;
+        three = three + 1;
+    }
+
+    std::cout &lt;&lt; "一：" &lt;&lt; one &lt;&lt; " 次（n 的三次方）" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "二：" &lt;&lt; two &lt;&lt; " 次（n 加 5）" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "三：" &lt;&lt; three &lt;&lt; " 次（log2n 取整）" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="预期输出">一：1000000000 次（n 的三次方）
+二：1005 次（n 加 5）
+三：9 次（log2n 取整）</pre>
+      <p>
+        第一段那十亿是实际运行得到的，不是计算出来的：运行时需要等待半秒左右，
+        就是它。<b>把 n 改成 2000 再运行一遍</b>——等待的时间变成八倍
+        （2000 的三次方正好是 1000 的三次方的八倍），
+        这半秒和四秒的差别，就是 <code>O(n³)</code> 要让你记住的结论。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-3</div>
+  <p>
+    把 4.1 那两份找数的程序改一改：表里放 <b>一百万个</b>数
+    （还是 0、2、4……这么排好），要找的数还是最后一个。
+    先估算两份程序各需要执行多少次，估算完成后运行查看。
+  </p>
+  <p>
+    提示：一百万个数的表太大，不要把次数逐行输出，
+    只要最后那一句总结。<code>std::vector&lt;int&gt;</code>
+    装一百万个 int 是没问题的（3.1 讲过它是按需长的）。
+  </p>
+  <pre class="out" data-label="预期输出（前面是你要填的估算）">一百万个数里找 1999998：
+  从头逐个比较：1000000 次
+  每次缩小一半：20 次</pre>
+  <p>
+    重点不是写对程序，是<b>先估算后运行</b>：估算 1000000 和 20 这两个数，
+    靠的就是这一课教的「数一数」。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        4.1 正文那份找数的程序改两个数就是这一题：表长改成一百万，
+        要找的 1999998 正好在最后一个位置——两种找法里最耗时的情况。
+        两个数都是估出来的：
+      </p>
+      <ul>
+        <li><b>从头逐个比较</b>：最坏的情况就是遍历整张表，1000000 次。
+          要找的正好在最后一个位置，所以这就是最坏情况。</li>
+        <li><b>每次缩小一半</b>：需要 2 的几次方才覆盖 1000000。
+          <code>2^19 = 524288</code> 不够，<code>2^20 = 1048576</code> 够了，
+          所以 20 次。</li>
+      </ul>
+      <p>
+        估算完再运行，让计数器把这两个数验证一遍：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; 1000000; i++) {
+        v.push_back(i * 2);          // 0 2 4 … 1999998，从小到大排好的
+    }
+
+    int target = 1999998;            // 最后一个元素的位置
+
+    int linear = 0;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        linear = linear + 1;
+        if (v[i] == target) {
+            break;
+        }
+    }
+
+    int steps = 0;
+    int lo = 0;
+    int hi = int(v.size()) - 1;
+    while (lo &lt;= hi) {
+        steps = steps + 1;
+        int mid = (lo + hi) / 2;
+        if (v[mid] == target) {
+            break;
+        }
+        if (v[mid] &lt; target) {
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+
+    std::cout &lt;&lt; "一百万个数里找 " &lt;&lt; target &lt;&lt; "：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "  从头逐个比较：" &lt;&lt; linear &lt;&lt; " 次" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "  每次缩小一半：" &lt;&lt; steps &lt;&lt; " 次" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="预期输出">一百万个数里找 1999998：
+  从头逐个比较：1000000 次
+  每次缩小一半：20 次</pre>
+      <p>
+        1000000 比 20——差了五万倍。这个对比就是 4.1 那一节的全部重点，
+        也是「估算运行速度」这件事的用处：<b>两个数估算出来放在一起，
+        差多少可以直接看出</b>，不必把程序运行完才能判断。
+      </p>
+      <p>
+        估算的时候不要去统计「第二轮第三轮分别执行了哪些位置」，
+        只看<b>「每执行一轮，需要查看的范围缩小多少」</b>：每执行一轮缩小一半，
+        所以是 20 次。这也是 4.1 那个「每次缩小一半」之所以快的全部原因。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>取得一段代码，能数出它里面的循环要执行多少步，
+  能说出「n 翻倍它翻几倍」——一层是 <code>O(n)</code>，
+  套两层是 <code>O(n²)</code>，每次缩小一半是 <code>O(log n)</code>。
+  更重要的是<b>知道什么时候该停下来想这一步</b>：
+  循环里套循环、循环里夹着查找一个元素，就是那种时候。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-2">
+<h2><span class="no">4.2</span>迭代器</h2>
+
+<p>
+这一课把 3.1 那句「想删中间那个，还做不到」补上。
+补上它需要一个新的概念，这个概念也是第 4 部分的正题——
+<b>能指向「某一个位置」的对象</b>，叫<b>迭代器</b>（iterator）。
+</p>
+
+<h3 id="s4-2-1">一个指向位置的对象</h3>
+
+<p>
+先说清楚为什么需要它。3.1 里删除元素只有一个函数
+<code>v.pop_back()</code>——「删除最后一个」。
+它的问题不是不够用，而是<b>它不会说明「第几个」</b>：
+你想删除第 3 个，需要一个对象能<b>指向第 3 个的位置</b>，
+才能告诉它「就是这个」。
+</p>
+
+<p>
+下标不行吗？<code>v[2]</code> 得到的不是位置，是<b>那个元素</b>——
+一个 <code>int</code>。给 <code>erase</code> 一个 30，它无法知道
+你说的是「第 2 个」还是「值等于 30 的那个」。
+<b>位置和值是两回事</b>，需要一个专门表示位置的对象。
+</p>
+
+<p>
+迭代器的四句话，先记住，下面的动画逐个演示：
+</p>
+
+<ul>
+  <li><b><code>v.begin()</code></b>——第一个元素的位置。</li>
+  <li><b><code>v.end()</code></b>——<b>最后一个元素的后面</b>的位置。
+    这一条最容易记错：它<b>不是</b>最后一个元素。
+    后面会讲为什么非得这么定。</li>
+  <li><b><code>++it</code></b>——向后移动一个位置。</li>
+  <li><b><code>*it</code></b>——它指向<b>那个元素</b>。
+    基础课 6.3 那个 <code>*p</code> 也是这个星号，含义相同。</li>
+</ul>
+
+<p>
+下面这份程序，就是把这三个元素（存放的是 3、1、4）从头遍历到尾。
+第 3 行那个 <code>auto</code> 是 3.4.5 学的，这里用它省略一长组类型名：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {3, 1, 4};
+
+    auto it = v.begin();
+    std::cout &lt;&lt; *it &lt;&lt; std::endl;
+
+    ++it;
+    std::cout &lt;&lt; *it &lt;&lt; std::endl;
+
+    ++it;
+    std::cout &lt;&lt; *it &lt;&lt; std::endl;
+
+    ++it;
+    if (it == v.end()) {
+        std::cout &lt;&lt; "已到达末尾" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">3
+1
+4
+已到达末尾</pre>
+
+<p>
+四次输出里前三次是 <code>*it</code>，第四次是「已到达末尾」——
+因为第四次 <code>++it</code> 之后，it 已经越过了最后一个元素，
+正好等于 <code>v.end()</code>。<b>这就是 end() 的用处：
+它是「没有元素了」的标记</b>，跟 3.2 里
+<code>find</code> 找不到时给的那个 <code>npos</code> 是一个角色。
+</p>
+
+<h3 id="s4-2-2">跟着动画执行一遍</h3>
+
+<p>
+还是那三个位置。点「下一步」，观察 <code>it</code> 那个变量——
+它里面存的不是数，而是<b>指向哪里</b>：
+</p>
+
+<div class="viz" data-viz="iter"></div>
+
+<p>
+观察两处：
+</p>
+
+<ul>
+  <li><b><code>it = v.begin()</code> 那一步，它取得的是位置，不是 3。</b>
+    它里面写的是「→ v[0]」，那个箭头的意思就是「指向」。
+    真要问它指着的位置上是什么，才写 <code>*it</code>。</li>
+  <li><b>最后一步它指向「尾后」。</b>三个位置走完，第四个位置是不存在的——
+    可它仍然可以指向那个「不存在的位置」。
+    有了这个位置，循环就好写了：
+    <b>没到头就继续，到头了就停</b>。</li>
+</ul>
+
+<h3 id="s4-2-3">写成 for 就是一行</h3>
+
+<p>
+上一份那样逐个手动移动，写起来比较繁琐。移动位置这件事其实有固定模式，
+写成 for 就是一行：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {90, 85, 77};
+
+    for (auto it = score.begin(); it != score.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">90
+85
+77</pre>
+
+<p>
+这一行请记住，它出现的频率非常高：
+</p>
+
+<pre><code>for (auto it = v.begin(); it != v.end(); ++it)</code></pre>
+
+<p>
+四段各管一件事：<b>起点</b> <code>begin()</code>；
+<b>终点</b> <code>end()</code>——注意是
+<code>it != v.end()</code>，不是 <code>&lt;</code>，
+因为 map 那种迭代器根本无法比较大小（下一节说明）；
+<b>每次循环移动一个位置</b> <code>++it</code>；
+循环体中使用 <code>*it</code>。
+</p>
+
+<p>
+跟 3.1 那个范围 for 放在一起比较：
+</p>
+
+<pre><code>for (int x : score) {
+    std::cout &lt;&lt; x &lt;&lt; std::endl;
+}</code></pre>
+
+<p>
+<b>两者是一回事。</b>范围 for 是这套写法的另一种形式：编译器把它展开，
+就是上面那个 <code>begin / != end / ++</code>。
+所以什么时候用哪个：<b>从头到尾走完、不需要位置</b>——用范围 for，
+短、不容易错；<b>中途要停、要记住遍历到了哪里、要对位置做操作</b>——
+用迭代器，因为范围 for 隐藏的正是这些操作。
+</p>
+
+<h3 id="s4-2-4">它能记住一个位置</h3>
+
+<p>
+「记住一个位置」才是迭代器真正值钱的地方。看这一份：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    auto it = score.begin();
+    while (it != score.end() &amp;&amp; *it &lt; 60) {
+        ++it;
+    }
+
+    if (it == score.end()) {
+        std::cout &lt;&lt; "一个及格的都没有" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "第一个及格的是 " &lt;&lt; *it &lt;&lt; std::endl;
+        std::cout &lt;&lt; "它在第 " &lt;&lt; (it - score.begin()) &lt;&lt; " 个" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">第一个及格的是 68
+它在第 2 个</pre>
+
+<p>
+循环出来之后，<code>it</code> <b>停在第一个及格的那个元素上</b>——
+它记住的是位置，所以在循环外面仍然可以使用。这就是 3.1 需要的
+「指向某一个位置」。
+</p>
+
+<p>
+那一句 <code>it - score.begin()</code> 也是新内容：<b>两个位置相减，
+得到的是「隔着几个元素」</b>，也就是它的编号。起点是
+<code>score.begin()</code>，所以这个差就是「它在第几个（从 0 数）」。
+68 在第 2 个，答案正是 2。
+</p>
+
+<div class="aside">
+  <b>跟下标对一下</b>
+  <p>
+    同一个位置，下标说 <code>score[2]</code>，迭代器说
+    <code>score.begin() + 2</code>——<b>加法就是「从某个位置往后跨几个元素」</b>。
+    两个说法是一回事，可迭代器多一项能力：
+    <b>它能指向 end()</b>，下标做不到（<code>score[5]</code> 是越界）。
+    下一课删、插要用的正是这一点。
+  </p>
+</div>
+
+<h3 id="s4-2-5">别的容器也有</h3>
+
+<p>
+迭代器不限定容器：vector 有，string 有，map、set 都有。
+不同的只有「<code>*it</code> 取得的是什么」：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; age;
+    age["小李"] = 19;
+    age["小王"] = 20;
+    age["小张"] = 18;
+
+    for (auto it = age.begin(); it != age.end(); ++it) {
+        std::cout &lt;&lt; it-&gt;first &lt;&lt; " " &lt;&lt; it-&gt;second &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; "--- 逐个字符遍历 ---" &lt;&lt; std::endl;
+
+    std::string s = "abc";
+    for (auto it = s.begin(); it != s.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小张 18
+小李 19
+小王 20
+--- 逐个字符遍历 ---
+a
+b
+c</pre>
+
+<p>
+两处新内容：
+</p>
+
+<ul>
+  <li><b><code>it-&gt;first</code></b>：map 里存放的是 pair（3.4 学的），
+    <code>*it</code> 取得的就是一个完整的 pair。
+    所以取键要用 <code>it-&gt;first</code>、取值要用 <code>it-&gt;second</code>。
+    写成 <code>(*it).first</code> 完全相同——<code>-&gt;</code>
+    只是「先 <code>*</code> 再 <code>.</code>」的缩写，省略一对括号。</li>
+  <li><b>string 也能这样遍历</b>，取得的是一个字符。
+    需要逐个字符查看的时候，这是 3.2 那些
+    <code>substr</code>、<code>find</code> 之外的另一条路。</li>
+</ul>
+
+<p>
+顺序再核对一下：map 输出是「小张、小李、小王」，
+跟 3.4 里看到的一样，跟 4.4 里 <code>sort</code> 三个中文名排出来的
+也一样——<b>都是按字节比较得到的顺序</b>。
+</p>
+
+<h3 id="s4-2-6">不是所有迭代器都能 +1</h3>
+
+<p>
+上一节那个 <code>score.begin() + 2</code>，用起来很方便。换到 map 上：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; age;
+    age["小李"] = 19;
+    age["小王"] = 20;
+
+    auto it = age.begin();
+    it = it + 1;
+
+    std::cout &lt;&lt; it-&gt;first &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="diag"><code>4.2-iter-plus-err.cpp: In function ‘int main()’:
+4.2-iter-plus-err.cpp:19:13: error: no match for ‘operator+’ (operand types are ‘std::_Rb_tree_iterator&lt;std::pair&lt;const std::__cxx11::basic_string&lt;char&gt;, int&gt; &gt;’ and ‘int’)
+   19 |     it = it + 1;
+      |          ~~ ^ ~
+      |          |    |
+      |          |    int
+      |          std::_Rb_tree_iterator&lt;std::pair&lt;const std::__cxx11::basic_string&lt;char&gt;, int&gt; &gt;
+</code></pre>
+
+<p>
+报错里那个又长又复杂的名字 <code>std::_Rb_tree_iterator&lt;…&gt;</code>，
+就是「map 的迭代器」的真名——它底下是一棵红黑树
+（Rb 是 red-black 的缩写），所以迭代器名字里带着树。
+</p>
+
+<p>
+要紧的是最后那句：<b>它和 int 类型不匹配</b>。
+</p>
+
+<p>
+为什么 vector 能加、map 不能？因为两者的元素排列方式不同：
+</p>
+
+<ul>
+  <li><b>vector 的元素在内存里连续存放</b>，说「往后跨 3 个位置」，
+    它一步就跳过去了——这种能力叫<b>随机访问</b>（random access）。</li>
+  <li><b>map 是树结构</b>，元素之间没有「相邻」这回事，
+    从一个到下一个要沿树的结构移动。所以它只支持 <code>++</code>，
+    一次移动一个位置，想跨三个位置就写三遍 <code>++it</code>。</li>
+</ul>
+
+<p>
+记法很简单：<b><code>++</code> 所有容器都认，<code>+</code> 只有
+vector（和 string）支持。</b>无法确定时就写 <code>++</code>，
+所有容器都能使用，只是稍显繁琐。
+</p>
+
+<div class="eg" id="e4-2">
+  <div class="eg-h">例题 · 最高分在谁身上</div>
+  <p>
+    一组「名字 + 分数」（3.4 学的 pair，正好存放两项数据）。
+    要求：找出最高分，并说出<b>是谁</b>、<b>排在第几个</b>。
+  </p>
+  <p>
+    这道题的关键是：遍历的过程中不能只看分数，还得<b>把「最高分在哪里」
+    记下来</b>——否则遍历结束后就找不到它了。
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;std::pair&lt;std::string, int&gt;&gt; roster = {{"小李", 90},
+                                                       {"小王", 77},
+                                                       {"小张", 95},
+                                                       {"小赵", 85}};
+
+    auto best = roster.begin();
+    for (auto it = roster.begin(); it != roster.end(); ++it) {
+        if (it-&gt;second &gt; best-&gt;second) {
+            best = it;
+        }
+    }
+
+    std::cout &lt;&lt; "最高分是 " &lt;&lt; best-&gt;second &lt;&lt; std::endl;
+    std::cout &lt;&lt; "他是 " &lt;&lt; best-&gt;first &lt;&lt; "（第 " &lt;&lt; (best - roster.begin())
+              &lt;&lt; " 个）" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">最高分是 95
+他是 小张（第 2 个）</pre>
+  <p>
+    分开分析：
+  </p>
+  <ul>
+    <li><b><code>best</code> 是个迭代器</b>，一开始指向第一个元素。
+      它不是「目前最高的分数」，而是「目前最高的那个<b>位置</b>」。</li>
+    <li>每次循环取得 <code>it-&gt;second</code>（当前分数）跟
+      <code>best-&gt;second</code>（目前最高的分数）比较。
+      <b>比较的是分数，替换的是位置</b>——<code>best = it;</code>
+      这一句的作用就是「记住它在这里」。</li>
+    <li>循环结束后，<code>best</code> 仍然指向那个位置。
+      三个问题一次答完：分数 <code>best-&gt;second</code>、
+      名字 <code>best-&gt;first</code>、第几个
+      <code>best - roster.begin()</code>。</li>
+  </ul>
+  <p>
+    要是只记分数（用一个 <code>int top</code>），走完就只剩一个 95，
+    人是谁、在第几个，都得再找一遍。<b>「记住位置」这件事，
+    就是迭代器跟普通变量最大的区别。</b>
+  </p>
+</div>
+
+<h3 id="s4-2-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-4</div>
+  <p>
+    用迭代器把一个 vector <b>倒序</b>输出，</p>
+  <pre class="out" data-label="样例输入">3
+10 20 30</pre>
+  <pre class="out" data-label="预期输出">30
+20
+10</pre>
+  <p>
+    提示：<code>v.end()</code> 指向最后一个元素的<b>后面</b>，
+    所以第一件要做的事是先 <code>--it</code> 退回来。
+    循环写成 <code>for (auto it = v.end(); it != v.begin(); )</code>
+    这种形式，向后移动改成向前移动。
+    第一次编写时容易多输出一个或者少输出一个，对照预期输出核对。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        起点是 <code>v.end()</code>，它指向最后一个元素的后面。所以每一轮
+        先把 <code>it</code> 回退一个位置、再输出——先回退后输出，顺序就反过来了：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    for (auto it = v.end(); it != v.begin();) {
+        --it;
+        std::cout &lt;&lt; *it &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        三个地方值得停一下：
+      </p>
+      <ul>
+        <li><b>先回退，后输出。</b>一开始 <code>it</code> 指向
+          <code>end()</code>，这个位置不能解引用，先输出就会出错。</li>
+        <li><b>停止的条件是「到达第一个元素」，不是「到达 end()」</b>——
+          循环写成 <code>it != v.begin()</code>。第一个元素正好是最后要输出的
+          那个，所以「后退、输出、检查是否停止」这一组操作执行完，一个元素都没有遗漏。</li>
+        <li><b>空表也安全</b>：n 是 0 的时候 <code>v.end()</code> 就是
+          <code>v.begin()</code>，条件一开始就不成立，一次都不执行。</li>
+      </ul>
+      <p>
+        把 <code>--it</code> 和 <code>std::cout</code> 那两行对调一下，
+        就能看见「先输出后回退」为什么会出错——输出了不该访问的位置上的值。
+        这一部分讲解的 <code>end()</code> 是什么，实际写错一次，理解最清楚。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-5</div>
+  <p>
+    读一组分数（第一行是 n，第二行是 n 个分数），找出<b>最低分</b>，
+    并说出它在第几个、是第几个输入的（从 1 数）。</p>
+  <pre class="out" data-label="样例输入">5
+88 62 95 62 70</pre>
+  <pre class="out" data-label="预期输出">最低分是 62
+它在第 1 个（从 0 数），是第 2 个输入的（从 1 数）</pre>
+  <p>
+    提示：跟例题方法相同，只不过这次记录的是最小的那个位置。
+    <b>有并列的时候</b>——这题里 62 出现两次——
+    上面这个答案说明：<b>只有严格更小才换</b>，所以记住的是最先出现的那个。
+    <code>&gt;</code> 换成 <code>&lt;</code>，其余部分照写。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        跟 4.2 那个「记住位置」的写法完全相同，只是比较的方向反过来：
+        记住最小的那个<b>位置</b>，逐个比较，遇到更小的就更新。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; score;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        score.push_back(x);
+    }
+
+    int pos = 0;
+    for (int i = 1; i &lt; int(score.size()); i++) {
+        if (score[i] &lt; score[pos]) {
+            pos = i;
+        }
+    }
+
+    std::cout &lt;&lt; "最低分是 " &lt;&lt; score[pos] &lt;&lt; std::endl;
+    std::cout &lt;&lt; "它在第 " &lt;&lt; pos &lt;&lt; " 个（从 0 数），是第 " &lt;&lt; pos + 1
+              &lt;&lt; " 个输入的（从 1 数）" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        两处留意：
+      </p>
+      <ul>
+        <li><b>记的是位置，不是分数。</b><code>pos</code> 里装的是
+          「第几个」，分数用 <code>score[pos]</code> 去取。
+          好处是「最低分是几分」和「它在第几个」两个问题一起答了。</li>
+        <li><b><code>&lt;</code> 不是 <code>&lt;=</code>。</b>
+          这题的 62 出现两次，用严格小于，第一个 62 站稳了不动，
+          所以是「第 1 个」。换成 <code>&lt;=</code>，后一个 62 会替换它，
+          答案变成第 3 个。<b>并列的时候要哪一个，必须自己决定</b>，
+          定完在注释里写清楚。</li>
+      </ul>
+      <p>
+        把那个符号反过来（<code>&gt;</code>）就是「最高分在第几个」，
+        两个程序只差一个字符。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-6</div>
+  <p>
+    用迭代器在一个 map 里查找一个名字。找得到就输出「XX 的年龄是 N」，
+    找不到就输出「名单里没有 XX」。名字从输入读取，</p>
+  <pre class="out" data-label="样例输入">小王</pre>
+  <pre class="out" data-label="预期输出">小王的年龄是 20</pre>
+  <p>
+    名单随便定几个（小李 19、小王 20、小张 18 就行）。
+    提示：查找完成后用 <code>it == m.end()</code> 判断是否找到——
+    <b>end() 就是那个「没找到」的记号</b>。
+    再输入 <code>小赵</code>，查看另一种输出是否正确。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个人的年龄写在 map 里，名字从输入读取，用 <code>find</code> 查找：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; age;
+    age["小李"] = 19;
+    age["小王"] = 20;
+    age["小张"] = 18;
+
+    std::string name;
+    std::cin &gt;&gt; name;
+
+    auto it = age.find(name);
+    if (it == age.end()) {
+        std::cout &lt;&lt; "名单里没有 " &lt;&lt; name &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; it-&gt;first &lt;&lt; "的年龄是 " &lt;&lt; it-&gt;second &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>find</code> 返回的内容有两种用法，这是 map 上的
+        <code>find</code> 跟 vector 上那个不同的地方：
+      </p>
+      <ul>
+        <li><b>找到的时候</b>：它指向那个键值对，
+          键在 <code>first</code>、值在 <code>second</code>——
+          所以年龄是 <code>it-&gt;second</code>，名字是 <code>it-&gt;first</code>。</li>
+        <li><b>没找到的时候</b>：它给的是 <code>m.end()</code>。
+          「最后一个元素的后面」在这儿不当位置用，当<b>记号</b>用——
+          跟 <code>end()</code> 比较一下，就知道是否找到。4.2 讲过
+          <code>end()</code> 就是那个「没找到」的记号，这题用上了。</li>
+      </ul>
+      <p>
+        输入换成 <code>小赵</code> 再运行一遍，输出的是「名单里没有 小赵」。
+        两条路径都执行一遍，这题才算完成。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>能写
+  <code>for (auto it = v.begin(); it != v.end(); ++it)</code>
+  这一行，也知道它跟范围 for 等价；
+  能<b>在遍历过程中记住一个位置</b>，遍历结束后还能用它完成操作；
+  还知道 <code>end()</code> 是「最后一个元素的后面」，它既是循环的终点，
+  也是「没找到」的记号。下一课用它删中间、插中间。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-3">
+<h2><span class="no">4.3</span>删中间、插中间</h2>
+
+<p>
+3.1 留的那句「想删中间那个、想往中间插一个，还做不到」，
+这一课解决这个问题。需要的内容上一课已经具备——<b>能指向位置的对象</b>。
+</p>
+
+<h3 id="s4-3-1">删中间那个</h3>
+
+<p>
+函数叫 <code>erase</code>，<b>它要求的是位置</b>，不是编号，也不是值。
+想删第 2 个，就把「第 2 个的位置」给它：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 30, 40, 50};
+
+    std::cout &lt;&lt; "删之前：" &lt;&lt; std::endl;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 个：" &lt;&lt; v[i] &lt;&lt; std::endl;
+    }
+
+    v.erase(v.begin() + 2);
+
+    std::cout &lt;&lt; "删之后：" &lt;&lt; std::endl;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 个：" &lt;&lt; v[i] &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">删之前：
+第 0 个：10
+第 1 个：20
+第 2 个：30
+第 3 个：40
+第 4 个：50
+删之后：
+第 0 个：10
+第 1 个：20
+第 2 个：40
+第 3 个：50</pre>
+
+<p>
+看 <code>v.begin() + 2</code> 那个 <code>+ 2</code>：
+<b>它说的是「起点往后两个元素」</b>，也就是第 2 个——被删掉的是 30。
+想删第 1 个就写 <code>+ 1</code>，第一个元素就写 <code>v.begin()</code>，
+不加任何偏移。
+</p>
+
+<p>
+删除完成以后，后面的编号全部向前移动一位：40 从「第 3 个」变成了
+「第 2 个」，50 从「第 4 个」变成了「第 3 个」。
+</p>
+
+<h3 id="s4-3-2">后面的元素向前移动</h3>
+
+<p>
+上面那个编号的变化不是巧合，是<b>删的代价</b>。
+vector 的元素在内存里连续存放，中间删除一个，后面的元素就必须逐个向前移动
+填补——否则中间就会空出一个位置。
+</p>
+
+<pre>10  20  30  40  50      v.erase(v.begin() + 2);
+
+10  20  40  40  50      40 向前移动一个位置，覆盖 30
+10  20  40  50  50      50 向前移动一个位置，覆盖 40
+10  20  40  50          最后一个被丢弃，size 减 1</pre>
+
+<p>
+这个动作决定了一件事：<b>删除的位置越靠前，需要移动的元素越多。</b>
+删除第 0 个，后面全部要向前移动一遍——那是 <code>O(n)</code>；
+删除最后一个，一个都不需要移动——那是 <code>O(1)</code>。
+4.1 那个标准在这里第一次发挥实际作用。
+</p>
+
+<p>
+（3.1 里 <code>pop_back()</code> 的代价很低，就是这个原因：
+它删除的正好是最后一个，不需要移动任何元素。）
+</p>
+
+<h3 id="s4-3-3">往中间插一个</h3>
+
+<p>
+插入是同一种操作的相反过程：<b>必须先把后面的元素向后移动，空出一个位置。</b>
+函数叫 <code>insert</code>，第一个参数是<b>插在哪个位置</b>，
+第二个是<b>插什么</b>：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 40};
+
+    v.insert(v.begin() + 2, 30);
+
+    std::cout &lt;&lt; "插在中间之后：" &lt;&lt; std::endl;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 个：" &lt;&lt; v[i] &lt;&lt; std::endl;
+    }
+
+    v.insert(v.begin(), 0);
+
+    std::cout &lt;&lt; "又插在最前面：" &lt;&lt; std::endl;
+    for (int i = 0; i &lt; int(v.size()); i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 个：" &lt;&lt; v[i] &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">插在中间之后：
+第 0 个：10
+第 1 个：20
+第 2 个：30
+第 3 个：40
+又插在最前面：
+第 0 个：0
+第 1 个：10
+第 2 个：20
+第 3 个：30
+第 4 个：40</pre>
+
+<p>
+<code>v.insert(v.begin() + 2, 30)</code> 的意思是：<b>在「第 2 个」
+那个位置上，先开辟空间，把 30 写入</b>。原来的 40 就向后移动了一个位置，
+从「第 2 个」变成了「第 3 个」。
+</p>
+
+<p>
+<b>位置是「插在谁前面」。</b><code>v.begin() + 2</code> 指向 40，
+所以 30 插在 40 前面。插在最前面就写 <code>v.begin()</code>——
+一样，是「插在第 0 个前面」。
+</p>
+
+<p>
+插入的代价跟删除一样：<b>插入位置越靠前，需要向后移动的元素越多。</b>
+插在最前面是 <code>O(n)</code>，插在最后面一个都不需要移动。
+想在最后面加，用 3.1 那个 <code>push_back</code>——
+它就是「插在末尾」的专用函数。
+</p>
+
+<h3 id="s4-3-4">一边走一边删</h3>
+
+<p>
+现在最需要注意的一个易错点。<b>想「把不及格的删掉」，于是在遍历中删除——
+这样写是错误的：</b>
+</p>
+
+<pre><code>for (auto it = score.begin(); it != score.end(); ++it) {
+    if (*it &lt; 60) {
+        score.erase(it);        // 删除之后 it 还有效吗？
+    }
+}</code></pre>
+
+<p>
+问题出在 <code>erase(it)</code> 之后：<b>它指向的那个位置已经不存在，
+后面的元素也都向前移动了。</b>这个 <code>it</code> 现在指向哪里
+无法确定——更严重的是，循环随后还要执行 <code>++it</code>，
+在刚移动过的元素上再向后移动一步，就会遗漏一个元素。
+</p>
+
+<p>
+<b>换一种写法：<code>erase</code> 会把「下一个位置的迭代器」
+返回给你，继续使用它即可。</b>
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 90, 52, 68, 30, 91};
+
+    for (auto it = score.begin(); it != score.end(); ) {
+        if (*it &lt; 60) {
+            it = score.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    std::cout &lt;&lt; "及格的：";
+    for (int x : score) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">及格的：90 68 91 </pre>
+
+<p>
+这份程序里有<b>三处</b>跟平常的 for 不一样，一处都不能少：
+</p>
+
+<ol>
+  <li><b><code>it = score.erase(it);</code></b>——
+    接收它返回的「下一个」，it 就处在正确的位置。</li>
+  <li><b>删除后就不执行 <code>++it</code>。</b>因为接收的那个位置
+    已经是「下一个」了，再增加就会跳过一个元素。</li>
+  <li><b>for 的第三个空着不写</b>——<code>for (…; …;)</code>。
+    平常那句 <code>++it</code> 移动到循环体里了：及格就移动一个位置，
+    没及格就接收 <code>erase</code> 返回的下一个位置。<b>两种情况都只前进一个位置，
+    不会遗漏。</b></li>
+</ol>
+
+<p>
+这种形式（<code>it = v.erase(it)</code> 加一个空着的第三段）
+是「边走边删」的标准写法，以后会反复见到。
+</p>
+
+<h3 id="s4-3-5">string 也能这么删</h3>
+
+<p>
+<code>erase</code> 不只 vector 有。<b>string 本身就是存放字符的容器</b>——
+4.2 里它已经有 <code>begin()</code> 和 <code>end()</code>，
+所以这一课的这两种工具它同样可以使用。把电话里的横线去掉，
+就是把上面那个「一边遍历一边删除」原样应用到 string 上：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string phone = "138-0013-8000";
+
+    for (auto it = phone.begin(); it != phone.end(); ) {
+        if (*it == '-') {
+            it = phone.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    std::cout &lt;&lt; "去掉横线：" &lt;&lt; phone &lt;&lt; std::endl;
+
+    phone.insert(phone.begin() + 3, '-');
+
+    std::cout &lt;&lt; "再插回去：" &lt;&lt; phone &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">去掉横线：13800138000
+再插回去：138-00138000</pre>
+
+<p>
+三处新内容，其实一处都不新：
+</p>
+
+<ul>
+  <li><b>那个循环一个字都没改</b>——就是上面那个
+    <code>it = phone.erase(it)</code>、for 第三段空着的形式，
+    只是容器从 vector 换成了 string。
+    <code>138-0013-8000</code> 里有两个横线，两个都会删掉。</li>
+  <li><b><code>*it == '-'</code>：迭代器取得的是一个字符</b>，
+    所以用它和字符比较。单引号那对是字符、双引号是字符串（3.2 学的）。</li>
+  <li><b>插回去那句给的是位置</b>——<code>phone.begin() + 3</code>，
+    跟 vector 完全相同，不是编号。</li>
+</ul>
+
+<p>
+string 另有一套<b>用编号的写法</b>，处理「中间那一段」的时候更方便：
+</p>
+
+<pre><code>s.erase(3, 1);      // 从第 3 个开始，删掉 1 个字符
+s.insert(3, "-");   // 从第 3 个开始，插一段进去</code></pre>
+
+<p>
+这套写法前面见过——3.2 的 <code>substr(3, 1)</code> 就是它：
+「从第 3 个开始，截取 1 个」。<b>编号在前、数字在后，
+string 从头到尾用的都是这套</b>；vector 那边没有，只有位置版。
+</p>
+
+<h3 id="s4-3-6">erase 要位置，不要编号</h3>
+
+<p>
+最容易出错的一个易错点，编译器也能拦住你。想把 3.1 里那句
+「删第 2 个」的直觉直接应用过来：
+</p>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 30};
+
+    v.erase(2);
+
+    std::cout &lt;&lt; v.size() &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="diag"><code>4.3-erase-index-err.cpp: In function ‘int main()’:
+4.3-erase-index-err.cpp:15:12: error: no matching function for call to ‘std::vector&lt;int&gt;::erase(int)’
+   15 |     v.erase(2);
+      |     ~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1534:7: note: candidate: ‘std::vector&lt;_Tp, _Alloc&gt;::iterator std::vector&lt;_Tp, _Alloc&gt;::erase(const_iterator) [with _Tp = int; _Alloc = std::allocator&lt;int&gt;; iterator = std::vector&lt;int&gt;::iterator; const_iterator = std::vector&lt;int&gt;::const_iterator]’
+ 1534 |       erase(const_iterator __position)
+      |       ^~~~~
+/usr/include/c++/13/bits/stl_vector.h:1534:28: note:   no known conversion for argument 1 from ‘int’ to ‘std::vector&lt;int&gt;::const_iterator’
+ 1534 |       erase(const_iterator __position)
+      |             ~~~~~~~~~~~~~~~^~~~~~~~~~
+</code></pre>
+
+<p>
+那句 <code>no matching function for call to 'std::vector&lt;int&gt;::erase(int)'</code>
+翻译过来就是：<b>「你提供的是 int 类型，可它没有接受 int 的版本。」</b>
+下面那些 <code>candidate:</code> 是它列出的候选函数，说明它接受哪些类型——
+两个候选都写着 <code>iterator</code>，接收的是位置。
+</p>
+
+<p>
+改法就是加上 <code>v.begin() +</code>：
+</p>
+
+<pre><code>v.erase(v.begin() + 2);     // 删第 2 个</code></pre>
+
+<p>
+这个报错其实比较明确——<b>它连「你给错了、应该给什么」都写在上面了，
+按照它修改即可。</b>真正需要养成的是这个判断习惯：
+<b>vector 的删除和插入，第一个参数永远是位置，不是编号。</b>
+</p>
+
+<div class="eg" id="e4-3">
+  <div class="eg-h">例题 · 插进去还得是有序的</div>
+  <p>
+    给你一组<b>已经排好序</b>的数，再给一个数，把它插进去，
+    插完还得是有序的。输入是：
+  </p>
+  <pre><code>6
+10 20 30 50 60 70
+40</code></pre>
+  <p>
+    40 应该插在 30 和 50 之间。这题的难点是<b>必须先找到应该插在哪里</b>，
+    再执行插入。而「查找」这一步，正好使用 4.2 学的迭代器：
+  </p>
+  <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    int fresh = 0;
+    std::cin &gt;&gt; fresh;
+
+    auto it = v.begin();
+    while (it != v.end() &amp;&amp; *it &lt; fresh) {
+        ++it;
+    }
+
+    v.insert(it, fresh);
+
+    for (int x : v) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">10 20 30 40 50 60 70 </pre>
+  <p>
+    那段 <code>while</code> 是全部的关键：<b>从头向后遍历，
+    只要还比要插入的那个数小就继续，一旦遇到不小于它的就停止。</b>
+    停止时 <code>it</code> 指向第一个不小于 40 的数，也就是 50——
+    40 正好应该插在它前面。所以 <code>v.insert(it, fresh)</code> 一次完成。
+  </p>
+  <p>
+    两种边界情况这个写法都对，值得自己验一遍：
+  </p>
+  <ul>
+    <li><b>要插的数比所有数都大</b>（比如输入 99）：循环会一直走到
+      <code>it == v.end()</code> 才停，而 <code>v.insert(v.end(), 99)</code>
+      就是「插在最后面」——结果正确。</li>
+    <li><b>要插的数比所有数都小</b>（比如输入 5）：第一个数就比它大，
+      一次都没有执行就停止了，<code>it</code> 还是 <code>begin()</code>——
+      插在最前面，也对。</li>
+  </ul>
+  <p>
+    <b>把输入换成 99 和 5 各运行一遍</b>，上面这两条自行确认。
+  </p>
+</div>
+
+<h3 id="s4-3-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-7</div>
+  <p>
+    读一组整数（第一行 n，第二行 n 个数），读一个 <code>k</code>，
+    删除<b>第 k 个</b>（从 0 计数），然后把剩下的输出。</p>
+  <pre class="out" data-label="样例输入">5
+10 20 30 40 50
+2</pre>
+  <pre class="out" data-label="预期输出">删掉第 2 个（原来是 30）之后：10 20 40 50 </pre>
+  <p>
+    提示：<code>v.erase(v.begin() + k)</code>。
+    这句和「删第 k 个」的对应关系是这一课的重点，
+    写完自己把 k 改成 0 和 4 各运行一遍查看。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先把要删的那个数复制下来，再删除——删除后就无法找到它了，
+        而输出里要报「原来是 30」：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    int k = 0;
+    std::cin &gt;&gt; k;
+
+    int gone = v[k];
+    v.erase(v.begin() + k);
+
+    std::cout &lt;&lt; "删掉第 " &lt;&lt; k &lt;&lt; " 个（原来是 " &lt;&lt; gone &lt;&lt; "）之后：";
+    for (int x : v) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>v.begin() + k</code> 是这一课的中心句：
+        <b>「第 k 个的位置」就是「从第一个元素的位置往后移 k 个元素」。</b>
+        <code>begin()</code> 指向第 0 个，所以 <code>+ 2</code> 指向第 2 个，
+        删掉的正是 30。k 从 0 计数，与下标一致。
+      </p>
+      <p>
+        把 k 改成 0 运行一遍（10 没了），再改成 4 运行一遍（50 没了）——
+        三个位置各试一次，<code>begin() + k</code> 以后就不会记错。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-8</div>
+  <p>
+    读一组整数，<b>把所有偶数删除</b>，只保留奇数。</p>
+  <pre class="out" data-label="样例输入">8
+3 8 5 12 7 4 9 6</pre>
+  <pre class="out" data-label="预期输出">剩下的奇数：3 5 7 9 </pre>
+  <p>
+    提示：用「一边遍历一边删除」那个标准形式——
+    <code>it = v.erase(it)</code>，for 的第三段空着。
+    别写 <code>for (…; …; ++it)</code>，
+    那样删除后再 <code>++it</code> 会遗漏一个数。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        4.3 那个标准写法，条件是「是不是偶数」：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    for (auto it = v.begin(); it != v.end();) {
+        if (*it % 2 == 0) {
+            it = v.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    std::cout &lt;&lt; "剩下的奇数：";
+    for (int x : v) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        这个写法是这一课唯一值得记住的，分两点说明：
+      </p>
+      <ul>
+        <li><b><code>it = v.erase(it)</code></b>——<code>erase</code>
+          把「下一个该看的位置」返回给你，接收它后继续遍历。
+          必须接收返回值：删除之后那个位置上已经是别的数了，
+          旧的 <code>it</code> 再用来遍历就是错误的。</li>
+        <li><b>for 的第三段空着。</b>移动迭代器这件事已经移入循环体——
+          删除时接收 <code>erase</code> 返回的位置，没有删除时执行 <code>++it</code>。
+          第三段要是再填一个 <code>++it</code>，删除完那一轮会多遍历一个元素，
+          正好漏掉紧跟着的那个数。这一条是这题唯一的易错点。</li>
+      </ul>
+      <p>
+        漏掉的那个数查看输入就知道：8 后面跟着 5，删除 8 之后
+        要是多走一个元素，5 就会被遗漏。这也是它难以检查的地方——
+        漏掉的数不会报错，只是留在结果里。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-9</div>
+  <p>
+    把上面那个「去除横线」的任务换一种做法：
+    <b>不将位置 3 直接写入代码</b>，先用 3.2 的 <code>find</code>
+    找出横线在第几个，再用那个编号去 <code>erase</code>。
+    </p>
+  <pre class="out" data-label="样例输入">138-00138000</pre>
+  <pre class="out" data-label="预期输出">原来：138-00138000
+横线在第 3 个
+去掉横线：13800138000</pre>
+  <p>
+    提示：<code>find</code> 找不到时给的是 <code>npos</code>
+    （3.2 学的），记得判一下——
+    用户完全可能输入一个本来就<b>没有横线</b>的电话。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        跟 4.3 正文那份的区别只有一个：那份将 3 直接写入代码，
+        这份先用 <code>find</code> 查找。<code>find</code> 给的是位置，
+        <code>erase</code> 要的正好也是位置，两个接得上：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string phone;
+    std::cin &gt;&gt; phone;
+
+    std::cout &lt;&lt; "原来：" &lt;&lt; phone &lt;&lt; std::endl;
+
+    if (phone.find('-') == std::string::npos) {
+        std::cout &lt;&lt; "这串里没有横线" &lt;&lt; std::endl;
+        return 0;
+    }
+
+    int pos = int(phone.find('-'));
+    std::cout &lt;&lt; "横线在第 " &lt;&lt; pos &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    phone.erase(pos, 1);
+
+    std::cout &lt;&lt; "去掉横线：" &lt;&lt; phone &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>npos</code> 那一句不能省（3.2 学的）：用户完全可能输入一个
+        本来就没有横线的号码，那时候 <code>find</code> 给的是一组
+        「没有这个位置」的记号，用它去 <code>erase</code> 就会出错。
+        <b>先判断「在不在」，再操作它</b>——这个顺序在 3.2 就定下了。
+      </p>
+      <p>
+        输入换成 <code>13800138000</code> 运行一遍，输出的是
+        「这串里没有横线」，程序正常运行。那一句判断的就是这个。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-10</div>
+  <p>
+    读一组整数，读一个 <code>x</code>，<b>在所有奇数前面各插入一个 0</b>。
+    </p>
+  <pre><code>5
+2 3 6 7 8
+0</code></pre>
+  <p>
+    上面这个输入的格式比较复杂，改成下面这样更清楚：第一行 n，
+    第二行 n 个数，要插入的内容直接写在程序里（只插入 0）：
+  </p>
+  <pre class="out" data-label="样例输入">5
+2 3 6 7 8</pre>
+  <pre class="out" data-label="预期输出">2 0 3 6 0 7 8 </pre>
+  <p>
+    提示：这也是「一边遍历一边插入」，而且比删除更复杂——
+    <b><code>insert</code> 同样会把「指向新插入元素的迭代器」返回给你</b>。
+    插入 0 之后，你的 it 指向那个 0，还必须向后跨两个元素才能继续检查下一个数
+    （跨过 0，再跨过原来的奇数）。写完对照预期输出核对。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        仍然是遍历过程中修改容器，只是这一次是插入而不是删除：
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    for (auto it = v.begin(); it != v.end();) {
+        if (*it % 2 != 0) {
+            it = v.insert(it, 0);
+            it = it + 2;
+        } else {
+            ++it;
+        }
+    }
+
+    for (int x : v) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>insert</code> 跟 <code>erase</code> 一样，会返回位置——
+        返回的是<b>刚插入的那个 0 的位置</b>。所以插完不能直接
+        <code>++it</code>：那样下一个访问的仍然是原来那个奇数（它仍然是奇数），
+        又会在它前面插入一个 0，无法结束。
+        要 <code>it = it + 2</code>，一次跨过两个元素：<b>跨过刚插的 0，
+        再跨过原来那个奇数</b>，才能到达下一个需要访问的数。
+      </p>
+      <p>
+        按照输入执行一遍：2 不是奇数，跳过；3 是奇数，前面插 0，
+        现在 <code>it</code> 指向那个 0，跨过两个元素到达 6（0 和 3 都跨过了）；
+        6 跳过；7 前面插 0，跨过两个元素就到达末尾——<code>end()</code>，循环停止。
+        <b>那个 2 的来源，从输入推算一遍就清楚了</b>，
+        比死记硬背可靠。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b><code>erase</code> 和 <code>insert</code>
+  都能用了，知道它们<b>要的是位置</b>、以及那个
+  <code>v.begin() + k</code> 该怎么写；
+  知道删除中间、插入中间要移动整段，所以都比删除末尾代价高；
+  还会写「一边遍历一边删除」那个 <code>it = v.erase(it)</code>
+  加空着第三段的形式。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-4">
+<h2><span class="no">4.4</span>现成的工具</h2>
+
+<p>
+4.2 那个 <code>for (auto it = v.begin(); …)</code> 还有个用处——
+它是这一课那些工具的<b>共同入口</b>。
+</p>
+
+<h3 id="s4-4-1">它们都要两个位置</h3>
+
+<p>
+C++ 自带一大批现成的工具，都在一个叫 <code>&lt;algorithm&gt;</code>
+的头文件里。查找、计数、取最大最小、排序，这些经常重复编写的循环，
+里面全都有现成的，不用自己写。
+</p>
+
+<p>
+用它们的方法都一样：<b>每个工具都需要两个位置——从哪里开始，
+到哪里为止。</b>而那两个位置正是迭代器：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+
+std::find(v.begin(), v.end(), 要查找的元素);
+std::count(v.begin(), v.end(), 要统计的元素);
+std::sort(v.begin(), v.end());</code></pre>
+
+<p>
+所以上一课讲迭代器的那一段是有用的。<b>先有迭代器，才用得上这一批工具</b>——
+记住这一条，这一课的语法就没有多少新内容了，全是「两个位置 + 一个元素」。
+</p>
+
+<div class="aside tip">
+  <b>到哪里为止是「不含」的</b>
+  <p>
+    第二个位置给的都是 <code>v.end()</code>，而它指向最后一个元素的后面，
+    所以<b>最后一个元素是包含在其中的</b>——<code>end()</code> 本身指向的位置上
+    没有元素。<br>
+    这个「含头不含尾」的规矩等一下用得上：
+    想让工具只处理<b>前三个</b>，就写
+    <code>v.begin(), v.begin() + 3</code>，第四个不在范围内。
+  </p>
+</div>
+
+<h3 id="s4-4-2">find：找得到，找不到</h3>
+
+<p>
+<code>find</code> 在范围里查找一个值，找到就把那个位置返回给你，
+找不到就把 <code>end()</code> 返回给你——<b>跟 3.2 里 string 的
+<code>find</code> 相同的性质</b>，只是一个返回编号一个返回位置：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {45, 52, 68, 91, 73};
+
+    auto it = std::find(v.begin(), v.end(), 68);
+    if (it == v.end()) {
+        std::cout &lt;&lt; "没找到 68" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "找到 68，它在第 " &lt;&lt; (it - v.begin()) &lt;&lt; " 个" &lt;&lt; std::endl;
+    }
+
+    auto miss = std::find(v.begin(), v.end(), 100);
+    if (miss == v.end()) {
+        std::cout &lt;&lt; "100 不在里面" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">找到 68，它在第 2 个
+100 不在里面</pre>
+
+<p>
+拿位置换编号还是那句 <code>it - v.begin()</code>，
+跟 4.2 例题里一样。
+</p>
+
+<p>
+另外说明一下代价：<code>find</code> 是<b>从头逐个比较</b>的，
+<code>O(n)</code>——它没有 4.1 那个「每次缩小一半」的能力。为什么？
+因为 <b><code>find</code> 不知道任何信息，它不知道你的数据是否已经排序。</b>
+想用每次缩小一半那种方法，得先自己把数据排好（下面那个
+<code>sort</code> 正是用于这个目的）。
+</p>
+
+<h3 id="s4-4-3">计数、取最大最小、反转</h3>
+
+<p>
+同一类工具还有一组，一起查看：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    std::cout &lt;&lt; "最高的 " &lt;&lt; *std::max_element(score.begin(), score.end())
+              &lt;&lt; " 分" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "最低的 " &lt;&lt; *std::min_element(score.begin(), score.end())
+              &lt;&lt; " 分" &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "68 出现了 "
+              &lt;&lt; std::count(score.begin(), score.end(), 68) &lt;&lt; " 次" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "60 出现了 "
+              &lt;&lt; std::count(score.begin(), score.end(), 60) &lt;&lt; " 次" &lt;&lt; std::endl;
+
+    std::reverse(score.begin(), score.end());
+    std::cout &lt;&lt; "倒过来：";
+    for (int x : score) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">最高的 91 分
+最低的 45 分
+68 出现了 1 次
+60 出现了 0 次
+倒过来：73 91 68 52 45</pre>
+
+<p>
+两处要说一下：
+</p>
+
+<ul>
+  <li><b><code>max_element</code> 给的是位置，所以要加星号取值</b>——
+    <code>*std::max_element(…)</code>。
+    4.2 例题里那个 <code>best</code> 就是你手动编写的版本；
+    这个工具完成的功能完全相同，只是已经写好。
+    它给位置也有好处：想知道「最高分在第几个」，
+    把星号换成 <code>- score.begin()</code> 就行。</li>
+  <li><b><code>count</code> 数的是「等于这个值的有几个」</b>，
+    找不到就是 0（可以和 <code>find</code> 对比着记住：
+    查找元素用 <code>find</code>，统计个数用 <code>count</code>）。</li>
+</ul>
+
+<p>
+<code>std::reverse</code> 是就地倒过来：第 0 个和最后一个换，
+第 1 个和倒数第二个换……换到一半就换完了。
+<b>它不排序，只是把整个序列反转</b>——查看那个结果
+（<code>73 91 68 52 45</code>），与输入顺序相反，元素仍然是无序的。
+</p>
+
+<h3 id="s4-4-4">sort：一句话排好</h3>
+
+<p>
+这一批工具里最常用的一个：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {45, 52, 68, 91, 73};
+    std::sort(v.begin(), v.end());
+    std::cout &lt;&lt; "排完：";
+    for (int x : v) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    std::vector&lt;std::string&gt; words = {"banana", "apple", "cherry"};
+    std::sort(words.begin(), words.end());
+    std::cout &lt;&lt; "英文排完：";
+    for (const std::string&amp; w : words) {
+        std::cout &lt;&lt; w &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    std::vector&lt;std::string&gt; names = {"小李", "小王", "小张"};
+    std::sort(names.begin(), names.end());
+    std::cout &lt;&lt; "中文排完：";
+    for (const std::string&amp; w : names) {
+        std::cout &lt;&lt; w &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">排完：45 52 68 73 91 
+英文排完：apple banana cherry 
+中文排完：小张 小李 小王 </pre>
+
+<p>
+三行说明白：
+</p>
+
+<ul>
+  <li><b>默认从小到大。</b>数字按大小；<b>字符串按字节比较</b>——
+    英文那边 <code>apple</code> 在最前面看上去很自然，
+    中文那行的顺序就是 3.4 里 map 自动排出来的那个顺序，
+    一个字都没变。<b>这不是按拼音排的</b>（3.2 埋的那颗种子，
+    在这儿结的果）。</li>
+  <li><b><code>const std::string&amp;</code> 是 6.5 的引用</b>，
+    意思是「只读取，不复制」。
+    排序之后用范围 for 输出，加上它可以省去一次复制——数据量大时有区别。</li>
+  <li><b>代价是 <code>O(n log n)</code>。</b>比一遍 <code>find</code>
+    那种 <code>O(n)</code> 贵，比两层循环那种 <code>O(n²)</code>
+    便宜得多。<b>排序是一个分界点</b>：排完之后，<code>find</code>
+    那些工具仍然是 <code>O(n)</code>，但「每次缩小一半」那种方法可以使用了
+    （那是后面进阶的内容，这里先知道这个结论）。</li>
+</ul>
+
+<p>
+想知道「从大到小」怎么办？<code>sort</code> 接受第三个参数——
+<b>一条「谁该排在前面」的规矩</b>。那正是下一课的正题。
+</p>
+
+<div class="eg" id="e4-4">
+  <div class="eg-h">例题 · 一份成绩单的统计报告</div>
+  <p>
+    读 n 个分数，输出一份简要报告：最高、最低、平均、中位数。
+    输入是：
+  </p>
+  <pre><code>7
+90 77 95 85 60 72 88</code></pre>
+  <pre class="out" data-label="预期输出">最高 95 分
+最低 60 分
+平均 567 / 7 = 81 分（整数除法，抹掉小数）
+从小到大：60 72 77 85 88 90 95 
+中位数是第 3 个（从 0 数）：85 分</pre>
+  <p>
+    这一课的四样工具在这里都用上了——而且<b>每个都只用一行</b>：
+  </p>
+  <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; score;
+    int sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        score.push_back(x);
+        sum = sum + x;
+    }
+
+    std::cout &lt;&lt; "最高 " &lt;&lt; *std::max_element(score.begin(), score.end())
+              &lt;&lt; " 分" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "最低 " &lt;&lt; *std::min_element(score.begin(), score.end())
+              &lt;&lt; " 分" &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "平均 " &lt;&lt; sum &lt;&lt; " / " &lt;&lt; n &lt;&lt; " = "
+              &lt;&lt; sum / n &lt;&lt; " 分（整数除法，抹掉小数）" &lt;&lt; std::endl;
+
+    std::sort(score.begin(), score.end());
+
+    std::cout &lt;&lt; "从小到大：";
+    for (int x : score) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; "中位数是第 " &lt;&lt; n / 2 &lt;&lt; " 个（从 0 数）："
+              &lt;&lt; score[n / 2] &lt;&lt; " 分" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <p>
+    三个地方值得停一下：
+  </p>
+  <ul>
+    <li><b>中位数为什么要先排？</b>因为中位数就是「排好之后正当中那个」。
+      <b>排序这一步是它的前提</b>，不是可有可无的一步。
+      正当中那个的下标是 <code>n / 2</code>——7 个数是 7 / 2 = 3，
+      第 3 个（从 0 数）就是四个小的、三个大的中间那个 85。
+      （个数是偶数时中位数取哪一个是另一回事，这儿不管。）</li>
+    <li><b>求和是在读取时一并完成的</b>，没有另外写一遍循环。
+      一次遍历能完成的事不要分成两次——这也是 4.1 那个标准的用法。</li>
+    <li><b>平均那一行把算式也输出了</b>（<code>567 / 7 = 81</code>），
+      为的是直接展示一件事：<b><code>sum / n</code> 是整数除法</b>——
+      两个 int 相除，小数直接省略，不四舍五入。这份成绩单正好整除，
+      换个数据就看出来了：删掉最后那个 88 再运行，六个数是
+      479 / 6 = 79.8…，程序输出的是 79。要得到真小数得用
+      <code>double</code>，那是另一回事。</li>
+  </ul>
+  <p>
+    <b>把输入换成偶数个数</b>（比如删掉最后那个 88）：
+    查看 <code>n / 2</code> 算出来的中位数是哪个，也查看平均那一行的
+    除法省略了多少小数。
+  </p>
+</div>
+
+<h3 id="s4-4-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-11</div>
+  <p>
+    读一组分数，<b>求出最高分，并说出它在第几个</b>。
+    </p>
+  <pre class="out" data-label="样例输入">5
+88 62 95 62 70</pre>
+  <pre class="out" data-label="预期输出">最高分是 95
+它在第 2 个</pre>
+  <p>
+    提示：<code>max_element</code> 给的是位置——
+    <b>不要急于加星号</b>。先用这个位置减去
+    <code>v.begin()</code> 得到编号，再通过 <code>*</code> 取得分数，
+    两个问题一起回答。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这题只有一个需要注意的地方：<code>max_element</code> 给的是<b>位置</b>，
+        不是分数。两个问题都从这一个位置得到答案：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; score;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        score.push_back(x);
+    }
+
+    auto it = std::max_element(score.begin(), score.end());
+
+    std::cout &lt;&lt; "最高分是 " &lt;&lt; *it &lt;&lt; std::endl;
+    std::cout &lt;&lt; "它在第 " &lt;&lt; (it - score.begin()) &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        两句话对着看：
+      </p>
+      <ul>
+        <li><b><code>*it</code></b>——那个位置上的值，也就是 95。
+          星号表示取出该位置上的值。</li>
+        <li><b><code>it - score.begin()</code></b>——那个位置在第几个。
+          两个位置一减，得到的是「隔着几个元素」，也就是 2。
+          4.2 讲过 <code>begin()</code> 是第 0 个，所以「第 2 个」输出的就是 2。</li>
+      </ul>
+      <p>
+        换成 <code>min_element</code> 就是「最低分在第几个」，
+        形式一个字符都不需要改。另外记住一条：并列最大（好几个 95）的时候，
+        它给的是<b>最先出现的那个</b>——要最后一个必须自己遍历一遍。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-12</div>
+  <p>
+    读一组整数，统计其中<b>大于 60 的有几个</b>，并把它们从小到大输出。
+    </p>
+  <pre class="out" data-label="样例输入">7
+90 77 95 85 60 72 88</pre>
+  <pre class="out" data-label="预期输出">大于 60 的有 6 个：72 77 85 88 90 95 </pre>
+  <p>
+    提示：这一课的工具里，只有 <code>count</code> 是「等于某个值」的，
+    <b>没有现成的「大于 60 的」</b>。所以先自己统计（一个循环加一个
+    <code>if</code>，4.1 学过的那种），排序再用 <code>sort</code>。
+    统计那部分下一课有现成的写法，先手动编写一遍正好。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        现成的工具里没有「大于 60 的」这种说法（<code>count</code> 只认
+        「等于」），所以两件事都自己遍历一遍，最后用 <code>sort</code> 完成排序：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; score;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        score.push_back(x);
+    }
+
+    int count = 0;
+    for (int x : score) {
+        if (x &gt; 60) {
+            count = count + 1;
+        }
+    }
+
+    std::vector&lt;int&gt; pass;
+    for (int x : score) {
+        if (x &gt; 60) {
+            pass.push_back(x);
+        }
+    }
+
+    std::sort(pass.begin(), pass.end());
+
+    std::cout &lt;&lt; "大于 60 的有 " &lt;&lt; count &lt;&lt; " 个：";
+    for (int x : pass) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        两处可以留意：
+      </p>
+      <ul>
+        <li><b>统计的那一遍和挑选的那一遍用的是同一个条件</b>（<code>x &gt; 60</code>），
+          写了两遍。下一课的 <code>count_if</code> 能把统计的那一遍省去——
+          先手动编写一遍，到时候才知道它替你省去的是什么，
+          也知道它无法省略的（把元素挑选出来）仍然需要自己编写。</li>
+        <li><b>原表没有改动。</b>挑选出来的是一个新 vector，<code>sort</code>
+          排序的是它，原来那份分数的顺序保持不变。</li>
+      </ul>
+      <p>
+        补充一点：<code>count</code> 那个数其实用 <code>pass.size()</code>
+        也能得到。写成两条路径是为了让你看清「统计」和「挑选」是两件事，
+        实际编写的时候挑选完再查看大小，可以少遍历一遍。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-13</div>
+  <p>
+    把 4.1 那道「名单里的重名」用这一课的工具重写一遍：
+    先 <code>sort</code>，然后<b>只看相邻的两个</b>有没有一样的。
+    输入还是那六行：
+  </p>
+  <pre class="out" data-label="样例输入">6
+小李
+小王
+小张
+小李
+小赵
+小钱</pre>
+  <pre class="out" data-label="预期输出">排完：小张 小李 小李 小王 小赵 小钱
+有重名</pre>
+  <p>
+    提示：排完之后，<b>两个一样的名字一定相邻</b>——
+    所以只要比 <code>v[i]</code> 和 <code>v[i+1]</code>，
+    一遍就够，不用两两比较。
+    这一版是什么时间复杂度？（跟 4.1 那两个写法比一比：
+    这一版比「两两比较」快多少？比「问 set」呢？）
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        4.1 那两版都是「两两比较」，这一版使用排序：排序完之后，
+        一样的两个名字必然相邻，所以遍历一遍、每次只看相邻的两个就够：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;std::string&gt; name;
+    for (int i = 0; i &lt; n; i++) {
+        std::string s;
+        std::cin &gt;&gt; s;
+        name.push_back(s);
+    }
+
+    std::sort(name.begin(), name.end());
+
+    std::cout &lt;&lt; "排完：";
+    for (const std::string&amp; s : name) {
+        std::cout &lt;&lt; s &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    bool dup = false;
+    for (int i = 0; i + 1 &lt; int(name.size()); i++) {
+        if (name[i] == name[i + 1]) {
+            dup = true;
+        }
+    }
+
+    std::cout &lt;&lt; (dup ? "有重名" : "没有重名") &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        三个版本放在一起比较——这才是这道题要说明的内容：
+      </p>
+      <ul>
+        <li><b>两两比较</b>：<code>O(n²)</code>。六个名字比 15 次，
+          一万个名字比五千万次，名字一多就慢到不可接受。</li>
+        <li><b>问 set</b>：<code>O(n log n)</code> 上下，代价是多占一份
+          set 的内存。</li>
+        <li><b>这一版</b>：排序 <code>O(n log n)</code> 加一遍
+          <code>O(n)</code>，合起来还是 <code>O(n log n)</code>，
+          不用多开一份容器。<b>跟「问 set」一个量级，原地做。</b></li>
+      </ul>
+      <p>
+        「排序完成后再查看相邻元素」这个思路很有用：凡是「有没有两个一样」
+        「有没有距离太近的」这类问题，多半可以先排一遍再检查相邻元素。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>打开 <code>&lt;algorithm&gt;</code>
+  这一批工具了——<code>find</code>、<code>count</code>、
+  <code>max_element</code>、<code>min_element</code>、<code>reverse</code>、
+  <code>sort</code>，每个都是「两个位置 + 一个元素」；
+  知道 <code>max_element</code> 给的是位置所以要加星号；
+  也知道 <code>sort</code> 默认按字节从小到大，
+  代价是 <code>O(n log n)</code>。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-5">
+<h2><span class="no">4.5</span>lambda</h2>
+
+<p>
+上一课最后留下了一个问题：「想知道从大到小怎么办？<code>sort</code>
+接受第三个参数——那条『谁该排在前面』的规矩。」
+这一课讲的就是那条规矩怎么写。
+</p>
+
+<h3 id="s4-5-1">条件也能当参数</h3>
+
+<p>
+先说一个 4.4 留下的不方便。<code>find</code> 只会问一件事：
+<b>「等于这个吗」</b>。可实际想问的常常不是相等——
+「第一个<b>及格</b>的在哪」「第一个<b>比他高</b>的在哪」。
+</p>
+
+<p>
+4.4 那个 <code>find</code> 帮不上忙。得自己开个循环，
+一边遍历一边判断条件，还得记住遍历到了哪里——4.2 例题那种形式。
+</p>
+
+<p>
+有一个现成的：<b><code>find_if</code></b>（那个 <code>_if</code>
+就是「带条件的」意思）。它跟 <code>find</code> 的用法一样，
+只是第二个参数不收「一个值」，收<b>一条条件</b>：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    auto it = std::find_if(score.begin(), score.end(),
+                           [](int x) { return x &gt;= 60; });
+
+    if (it == score.end()) {
+        std::cout &lt;&lt; "一个及格的都没有" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "第一个及格的是 " &lt;&lt; *it &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">第一个及格的是 68</pre>
+
+<p>
+跟 4.2 例题那份手动编写的循环比较：<b>同一个答案，循环不用写了。</b>
+「及格」这件事缩成了方括号后面那一小段。那一小段就是这一课的主题。
+</p>
+
+<h3 id="s4-5-2">那段小代码长什么样</h3>
+
+<p>
+把那一部分单独拿出来查看：
+</p>
+
+<pre><code>[](int x) { return x &gt;= 60; }</code></pre>
+
+<p>
+它叫 <b>lambda</b>，是一个<b>没有名字的小函数</b>——
+直接写在调用处，写在它要被使用的地方，不需要在外面另外定义名称。
+四段逐个看：
+</p>
+
+<table>
+  <tr>
+    <th>这一段</th>
+    <th>是什么</th>
+  </tr>
+  <tr>
+    <td><code>[]</code></td>
+    <td>开头必须是它，告诉编译器「这儿开始是一个 lambda」。
+      <b>跟下标、跟数组都没关系</b>，就是 lambda 的记号。
+      里面稍后要写内容（见下面「方括号里写谁」）</td>
+  </tr>
+  <tr>
+    <td><code>(int x)</code></td>
+    <td>参数，跟普通函数的参数一模一样。
+      这儿是「我把容器里的<b>一个元素</b>交给你看」——
+      所以类型是元素类型：分数是 int，写 <code>int x</code></td>
+  </tr>
+  <tr>
+    <td><code>{ … }</code></td>
+    <td>函数体。里面要<b>返回 true 或 false</b>：
+      合条件就 true，不合就 false</td>
+  </tr>
+  <tr>
+    <td><code>return</code></td>
+    <td>跟普通函数一样。短的话能写成一行</td>
+  </tr>
+</table>
+
+<p>
+所以 <code>[](int x) { return x &gt;= 60; }</code> 这句话的含义就是：
+<b>「传入一个 x，计算它是否大于等于 60」。</b>
+<code>find_if</code> 使用它，从第一个数开始逐个判断，
+判断到哪个元素返回 true，就停在那个位置上。
+</p>
+
+<p>
+<code>find_if</code> 找的是<b>第一个</b>答 true 的。45 答 false，52 答 false，
+68 答 true——所以停在 68，正好是「第一个及格的」。
+</p>
+
+<div class="aside tip">
+  <b>为什么需要这个机制</b>
+  <p>
+    想给 <code>find</code> 换一个条件，本来只有两个办法：
+    修改 <code>find</code> 的代码（那是标准库，无法修改），
+    或者自己写一遍循环（每换一个条件写一遍）。
+    lambda 把「条件」变成了<b>一个可以传递的参数</b>——
+    传入「及格」就是查找及格，传入「比 60 大」就是查找……
+    逻辑完全没有变化，只是条件换了。
+  </p>
+  <p>
+    它是 C++11 才有的。老代码里见不到，新代码里到处都是。
+  </p>
+</div>
+
+<h3 id="s4-5-3">count 与 count_if</h3>
+
+<p>
+<code>count</code> 也有带 <code>_if</code> 的兄弟，区别一模一样：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    std::cout &lt;&lt; "等于 52 的有 "
+              &lt;&lt; std::count(score.begin(), score.end(), 52) &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    int pass = std::count_if(score.begin(), score.end(),
+                             [](int x) { return x &gt;= 60; });
+    std::cout &lt;&lt; "及格的（&gt;= 60）有 " &lt;&lt; pass &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">等于 52 的有 1 个
+及格的（&gt;= 60）有 3 个</pre>
+
+<p>
+这一对写法很好记：<b>名字后面带 <code>_if</code> 的那个，第三个参数
+接收的是条件；不带 <code>_if</code> 的那个，接收的是值。</b>
+</p>
+
+<ul>
+  <li><code>find(v.begin(), v.end(), 68)</code>——找等于 68 的那个。</li>
+  <li><code>find_if(v.begin(), v.end(), [](int x) { return x &gt;= 60; })</code>
+    ——找第一个及格的。</li>
+  <li><code>count(v.begin(), v.end(), 60)</code>——数等于 60 的有几个。</li>
+  <li><code>count_if(v.begin(), v.end(), [](int x) { return x &gt;= 60; })</code>
+    ——数及格的有几个。</li>
+</ul>
+
+<p>
+回到练习 4-12：那道题里「大于 60 的有几个」要手动编写循环，
+就是因为当时还没有 <code>count_if</code>。现在可以直接换成一行。
+</p>
+
+<h3 id="s4-5-4">方括号里写谁</h3>
+
+<p>
+<code>[](int x) { return x &gt;= 60; }</code> 里那个 60 是直接写入代码的。
+想把 60 换成一个可以修改的界限，就得把那个变量从外面引入——
+<b>方法是在方括号里写上它的名字</b>：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    int line = 60;
+    auto it = std::find_if(score.begin(), score.end(),
+                           [line](int x) { return x &gt;= line; });
+    std::cout &lt;&lt; "及格线定为 " &lt;&lt; line &lt;&lt; "：第一个达到的是 " &lt;&lt; *it &lt;&lt; std::endl;
+
+    line = 90;
+    auto high = std::find_if(score.begin(), score.end(),
+                             [line](int x) { return x &gt;= line; });
+    std::cout &lt;&lt; "及格线定为 " &lt;&lt; line &lt;&lt; "：第一个达到的是 " &lt;&lt; *high &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">及格线定为 60：第一个达到的是 68
+及格线定为 90：第一个达到的是 91</pre>
+
+<p>
+<b><code>[line]</code> 就是把外面那个 <code>line</code> 引入 lambda 使用。</b>
+这个动作叫<b>捕获</b>（capture），捕获的对象是外面那个变量。
+</p>
+
+<p>
+查看第二段：<code>line</code> 改成 90 之后，新写的那个 lambda
+用 <code>[line]</code> 捕获的是<b>当时</b>的 90，
+所以第二个问题查找的是「第一个达到 90 的」，答案是 91。
+同一段代码，界限设在哪里就按哪个界限查找——这就是把条件抽取出来的好处。
+</p>
+
+<p>
+两个常问的：
+</p>
+
+<ul>
+  <li><b>为什么没有捕获就不能直接使用？</b>可以理解为一条规则：
+    方括号里没有写的名字，lambda 就当作不存在。
+    这是有意设计的——<b>写明了才能知道这段代码依赖外面的哪些变量</b>，
+    之后阅读代码的人查看方括号就能知道它依赖谁。</li>
+  <li><b>捕获进来的变量能修改吗？</b>这里是用来比较大小（只读），所以什么都不需要加。
+    想在 lambda 里修改外面那个变量是另一回事，需要写 <code>[&amp;line]</code>
+    （前面加一个 &amp;，表示引用原变量而不是复制副本）——
+    这是引用的用法（6.5），现阶段不需要，知道有这种写法即可。</li>
+</ul>
+
+<h3 id="s4-5-5">忘了写会怎样</h3>
+
+<p>
+方括号里漏写了是最常见的一个错，而且编译器说的话很直白。
+把上面那份的 <code>[line]</code> 改回 <code>[]</code>：
+</p>
+
+<pre class="diag"><code>4.5-capture-err.cpp: In lambda function:
+4.5-capture-err.cpp:18:52: error: ‘line’ is not captured
+   18 |                            [](int x) { return x &gt;= line; });
+      |                                                    ^~~~
+4.5-capture-err.cpp:18:29: note: the lambda has no capture-default
+   18 |                            [](int x) { return x &gt;= line; });
+      |                             ^
+4.5-capture-err.cpp:16:9: note: ‘int line’ declared here
+   16 |     int line = 60;
+      |         ^~~~</code></pre>
+
+<p>
+三句话，一句比一句有用：
+</p>
+
+<ol>
+  <li><b><code>error: 'line' is not captured</code></b>——
+    直译是「line 没有被捕获」。也就是说「你使用了外面那个 line，
+    可是方括号里没有写它」。<b>看到 <code>not captured</code>，
+    就去补方括号</b>，没有第二种可能。</li>
+  <li><b><code>note: the lambda has no capture-default</code></b>——
+    「这个 lambda 没有默认捕获」。意思是方括号里空空如也，
+    什么也没有捕获。它是在告诉你：问题就出在那对空的方括号上。</li>
+  <li><b><code>note: 'int line' declared here</code></b>，底下还指向
+    <code>int line = 60;</code>——「你所说的这个 line 是在这里声明的」。
+    名字重复、或者记不清是哪个 line 的时候，这一句能节省一些查找时间。</li>
+</ol>
+
+<p>
+这个报错的好处是<b>不需要猜测</b>：哪里错了、错在哪个方括号、
+那个变量在哪里声明，三句话全部给出了答案。
+</p>
+
+<h3 id="s4-5-6">给 sort 一条规矩</h3>
+
+<p>
+回到上一课留的那个问题：<code>sort</code> 从大到小怎么办。
+第三个参数就是那条 lambda——<b>它回答的问题是「a 该排在 b 前面吗」</b>：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; score = {45, 52, 68, 91, 73};
+
+    std::sort(score.begin(), score.end(), [](int a, int b) { return a &gt; b; });
+
+    std::cout &lt;&lt; "从高到低：";
+    for (int x : score) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">从高到低：91 73 68 52 45 </pre>
+
+<p>
+看那个 lambda 跟前面几个不一样的地方：<b>它有两个参数。</b>
+<code>find_if</code> 是「给你一个元素，你说是还不是」，
+所以一个参数；<code>sort</code> 是「给你两个元素，
+你说<b>谁该在前面</b>」，所以两个。
+</p>
+
+<p>
+<code>return a &gt; b;</code> 的意思：<b>a 比 b 大的时候答 true——</b>
+也就是「大的排前面」。默认那条规矩是 <code>a &lt; b</code>（小的排前面），
+所以从小到大；把它反过来写，就倒过来了。
+</p>
+
+<div class="aside warn">
+  <b>这条规矩要守得住</b>
+  <p>
+    写 <code>a &gt;= b</code> 会出错。相等的时候它返回 true——
+    等于说「a 和 b 谁在前都行」，可它两边都这么返回。
+    <code>sort</code> 按这个规矩可能无法正常结束（运行时报错，或者排序结果错乱）。
+    <b>规矩只保留一条：严格大于就写 <code>&gt;</code>，严格小于就写 <code>&lt;</code>，
+    不要加那个等号。</b>
+  </p>
+</div>
+
+<div class="eg" id="e4-5">
+  <div class="eg-h">例题 · 数一句话里的数字</div>
+  <p>
+    读一整行（可能带空格），数出里面有几个数字字符、几个大写字母。
+    输入是：
+  </p>
+  <pre><code>A3 和 B7 两个通道，共 25 个点</code></pre>
+  <pre class="out" data-label="预期输出">A3 和 B7 两个通道，共 25 个点
+数字 4 个，大写字母 2 个</pre>
+  <p>
+    「数字」是 3、7、2、5，四个；大写字母是 A、B，两个。
+    <b>整份程序里一个循环都没写</b>：
+  </p>
+  <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string line;
+    std::getline(std::cin, line);
+
+    int digits = std::count_if(line.begin(), line.end(),
+                               [](char c) { return c &gt;= '0' &amp;&amp; c &lt;= '9'; });
+
+    int upper = std::count_if(line.begin(), line.end(),
+                              [](char c) { return c &gt;= 'A' &amp;&amp; c &lt;= 'Z'; });
+
+    std::cout &lt;&lt; line &lt;&lt; std::endl;
+    std::cout &lt;&lt; "数字 " &lt;&lt; digits &lt;&lt; " 个，大写字母 " &lt;&lt; upper &lt;&lt; " 个" &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+  <p>
+    三处值得说：
+  </p>
+  <ul>
+    <li><b>string 也有 <code>begin()</code> / <code>end()</code></b>
+      （4.2 见过），所以 <code>count_if</code> 一样能用。
+      元素是一个字符，所以参数写 <code>char c</code>。</li>
+    <li><b>字符能直接比大小</b>——<code>'0'</code> 到 <code>'9'</code>
+      在字符表里是相邻的，所以「大于等于 '0' 而且小于等于 '9'」
+      问的就是「这是不是个数字」。<b>注意引号</b>：
+      <code>'0'</code> 是字符 0，<code>0</code> 是数字零，两者不同。</li>
+    <li><b>一行里有中文不碍事。</b>中文那几个字节既不落在数字那一段，
+      也不落在大写字母那一段，所以数出来不会多。</li>
+  </ul>
+  <p>
+    <b>把那行文字改成自己的一句话</b>——比如故意混入几个数字和
+    大写字母，先自己数一遍，再运行程序核对。
+  </p>
+</div>
+
+<h3 id="s4-5-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-14</div>
+  <p>
+    读一组分数，用 <code>find_if</code> 找出<b>第一个不及格的</b>，
+    并说出它在第几个。</p>
+  <pre class="out" data-label="样例输入">5
+90 77 45 62 58</pre>
+  <pre class="out" data-label="预期输出">第一个不及格的是 45
+它在第 2 个</pre>
+  <p>
+    提示：条件就是这一课那句反过来写——<code>x &lt; 60</code>。
+    记得判断一下 <code>it == v.end()</code>（全都及格的时候会到达末尾），
+    第一次写很容易漏。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        4.5 例题里那句 <code>x &gt;= 60</code>（第一个及格的）反过来写，
+        其余部分不变：条件放进方括号里的圆括号，<code>find_if</code> 用它遍历一遍：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; score;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        score.push_back(x);
+    }
+
+    auto it = std::find_if(score.begin(), score.end(),
+                           [](int x) { return x &lt; 60; });
+
+    if (it == score.end()) {
+        std::cout &lt;&lt; "全都及格了" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "第一个不及格的是 " &lt;&lt; *it &lt;&lt; std::endl;
+        std::cout &lt;&lt; "它在第 " &lt;&lt; (it - score.begin()) &lt;&lt; " 个" &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>if (it == score.end())</code> 这一句是 4.2 学的知识：
+        <b><code>end()</code> 就是「没找到」的记号</b>。
+        这题非写它不可——全都及格的时候 <code>find_if</code> 会遍历到末尾，
+        那时候 <code>*it</code> 是在读一个不存在的元素。
+      </p>
+      <p>
+        把输入换成 <code>5 / 90 77 95 85 62</code> 再运行一遍
+        （一个不及格的都没有），输出的是「全都及格了」，程序正常运行。
+        两条路径都实际运行过，这句判断才算掌握。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-15</div>
+  <p>
+    读一组整数，用 <code>count_if</code> 统计其中<b>在 10 到 20 之间</b>
+    的（包括 10 和 20）有几个，再把它们挑选出来输出一遍。</p>
+  <pre class="out" data-label="样例输入">8
+5 15 22 10 18 20 3 12</pre>
+  <pre class="out" data-label="预期输出">在 10 到 20 之间的有 5 个：15 10 18 20 12 </pre>
+  <p>
+    提示：条件是两句话用 <code>&amp;&amp;</code> 连起来
+    （「不小于 10」而且「不大于 20」），写法跟例题里数数字那句一样。
+    <b>挑选出来并输出</b>那部分需要自己写循环——
+    这一课的工具只会<b>回答有没有、有几个</b>，
+    不会把元素挑选出来，那需要自己遍历一遍。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        条件是两个条件用 <code>&amp;&amp;</code> 连起来的一句话，
+        <code>count_if</code> 用它统计一遍：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    auto in_range = [](int x) { return x &gt;= 10 &amp;&amp; x &lt;= 20; };
+
+    int count = int(std::count_if(v.begin(), v.end(), in_range));
+
+    std::cout &lt;&lt; "在 10 到 20 之间的有 " &lt;&lt; count &lt;&lt; " 个：";
+    for (int x : v) {
+        if (in_range(x)) {
+            std::cout &lt;&lt; x &lt;&lt; " ";
+        }
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        三处值得说：
+      </p>
+      <ul>
+        <li><b>条件有了名称。</b><code>auto in_range = [](int x) {...};</code>
+          这一句把 lambda 存进一个变量（4.5 讲过 lambda 本身就是一个值）。
+          统计一遍、挑选一遍用的是同一条条件，只写了一份，
+          以后要改「10 到 20」只改这一处。</li>
+        <li><b>工具只回答「有几个」。</b><code>count_if</code> 不会把选中的
+          元素给你，「是哪些」仍然需要自己遍历一遍——这一遍无法省略。</li>
+        <li><b>挑选出来的是原顺序</b>（15 10 18 20 12），不是排序后的。
+          要从小到大再 <code>sort</code> 一下。</li>
+      </ul>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-16</div>
+  <p>
+    读一组整数，再读一个界限值 <code>k</code>，把<b>大于 k 的数从大到小</b>
+    输出。</p>
+  <pre class="out" data-label="样例输入">6
+45 82 68 91 30 73
+50</pre>
+  <pre class="out" data-label="预期输出">大于 50 的，从大到小：91 82 73 68 </pre>
+  <p>
+    提示：这一课的两项内容一起使用——<b>条件用 lambda，
+    排序也用 lambda</b>。想一次做对不太容易，分两步：
+    先把大于 k 的挑选进一个新 vector（循环加 <code>if</code>），
+    再 <code>sort</code> 那个新 vector，规矩就写这一课的
+    <code>a &gt; b</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两件事分开做，各用各的写法：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; n; i++) {
+        int x = 0;
+        std::cin &gt;&gt; x;
+        v.push_back(x);
+    }
+
+    int k = 0;
+    std::cin &gt;&gt; k;
+
+    std::vector&lt;int&gt; big;
+    for (int x : v) {
+        if (x &gt; k) {
+            big.push_back(x);
+        }
+    }
+
+    std::sort(big.begin(), big.end(), [](int a, int b) { return a &gt; b; });
+
+    std::cout &lt;&lt; "大于 " &lt;&lt; k &lt;&lt; " 的，从大到小：";
+    for (int x : big) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        <b>挑选</b>这件事没有现成的工具：这一课的工具只回答
+        「有没有、有几个、最大最小是哪个」，不负责把元素挑选出来。
+        挑选就是一条 <code>if</code> 加 <code>push_back</code>，
+        跟以前写过的循环一样。
+      </p>
+      <p>
+        <b>排序</b>这件事就是 4.5 那条规矩：<code>sort</code> 接受第三个参数，
+        <code>a &gt; b</code> 是从大到小。理解那条规矩的方法是按一句话理解——
+        <b>「a 比 b 大的时候，a 排在前面」</b>，所以大的在前。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>会写 lambda 了——<code>[]</code> 开头、
+  圆括号接收一个或多个参数、里面 <code>return</code> 一个 true/false；
+  知道 <code>_if</code> 结尾的那几个工具接收条件，
+  也知道外面的变量要在方括号里写明（忘了写就去补方括号）；
+  还给 <code>sort</code> 传过规矩了。下一课把这条规矩用到自己定义的类型上。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-6">
+<h2><span class="no">4.6</span>让 sort 认得你的类型</h2>
+
+<p>
+这一课是第 4 部分的结尾，也是这一部分唯一一次跟「自己定义的类型」打交道
+（基础课 5.1 那个 <code>struct</code>）。事情很小：
+<b>自己定义的类型，<code>sort</code> 不认。</b>
+</p>
+
+<h3 id="s4-6-1">自己定义的 struct，sort 不认</h3>
+
+<p>
+先创建一个对象，名字加分数：
+</p>
+
+<pre><code>struct Student {
+    std::string name;
+    int score;
+};</code></pre>
+
+<p>
+4.4 里 <code>sort</code> 排 int 很顺，排 string 也行——
+因为它俩都知道「谁比谁大」。可 <code>Student</code> 是我们自己拼的：
+<b>两个 <code>Student</code> 谁大？</b>
+按分数还是按名字？两种都说得通，编译器无法替你决定。
+</p>
+
+<p>
+所以下面这份程序无法编译——<b>这一份就是列出来供人观察的</b>：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+int main() {
+    std::vector&lt;Student&gt; roster = {{"小李", 90}, {"小王", 77}};
+
+    std::sort(roster.begin(), roster.end());
+
+    std::cout &lt;&lt; roster[0].name &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+
+<pre class="diag"><code>4.6-sort-struct-err.cpp:24:14:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator&lt;’ (operand types are ‘Student’ and ‘Student’)
+   45 |       { return *__it1 &lt; *__it2; }
+      |                ~~~~~~~^~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67:
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template&lt;class _IteratorL, class _IteratorR, class _Container&gt; bool __gnu_cxx::operator&lt;(const __normal_iterator&lt;_IteratorL, _Container&gt;&amp;, const __normal_iterator&lt;_IteratorR, _Container&gt;&amp;)’
+ 1250 |     operator&lt;(const __normal_iterator&lt;_IteratorL, _Container&gt;&amp; __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:45:23: note:   ‘Student’ is not derived from ‘const __gnu_cxx::__normal_iterator&lt;_IteratorL, _Container&gt;’
+   45 |       { return *__it1 &lt; *__it2; }
+      |                ~~~~~~~^~~~~~~~</code></pre>
+
+<p>
+这份报错篇幅确实很长：七八行，全是 <code>__gnu_cxx</code>、
+<code>_IteratorL</code> 这种带下划线的内部名称。但真正有用的只有一句。
+</p>
+
+<h3 id="s4-6-2">那么长的报错怎么读</h3>
+
+<p>
+三条规则，以后见到这种长报错就按这个顺序查看：
+</p>
+
+<ol>
+  <li>
+    <b>先找 <code>error:</code> 那一行。</b>
+    这里只有一句：<code>no match for 'operator&lt;' (operand types are
+    'Student' and 'Student')</code>。翻译过来是
+    <b>「找不到能用的 <code>&lt;</code>：两个 Student 用来比较大小，
+    我不知道该怎么办」</b>。这就是全部的问题所在。
+  </li>
+  <li>
+    <b>底下那些 <code>note: candidate:</code> 不要看。</b>
+    那是编译器列出的候选函数：「我这儿有这些
+    <code>&lt;</code>，你看有没有能用的」。一条条都是 <code>__gnu_cxx</code>
+    里的内部名称，跟你的代码没有关系。<b>candidate 列得越长，
+    越说明它一个都不合适。</b>
+  </li>
+  <li>
+    <b>往回看第一行，那句 <code>required from here</code>。</b>
+    这行是<b>你代码里的位置</b>——第 24 行，正好是
+    <code>std::sort(roster.begin(), roster.end());</code>。
+    「required from here」的意思是「上面那一堆，是<b>因为这里</b>要使用它才产生的」。
+    <b>这一行是最有用的一行：它把你送回你写的那句。</b>
+  </li>
+</ol>
+
+<p>
+所以以后读这种报错，顺序是<b>从下往上</b>：
+先看有没有 <code>required from here</code> 指向你的某一行，
+再去那一行附近，查找 <code>error:</code> 那句话说了什么，
+底下那些 <code>note: candidate</code> 全都可以不看。
+</p>
+
+<div class="aside tip">
+  <b>为什么 sort 里会出现「查找 &lt;」</b>
+  <p>
+    报错里那句是 <code>{ return *__it1 &lt; *__it2; }</code>——
+    库里面的一个小函数，作用就是「比较两个元素」。
+    <code>sort</code> 排序的时候不断执行这件事：<b>它只会用
+    <code>&lt;</code> 来判断谁该在前面</b>，没有别的能力。
+    int 和 string 都会 <code>&lt;</code>，所以一切正常；
+    Student 不会，所以它就停在这里了。
+  </p>
+</div>
+
+<h3 id="s4-6-3">给它一条规矩</h3>
+
+<p>
+改法就是上一课学的那个：给 <code>sort</code> 第三个参数——
+<b>一条「谁该排在前面」的规矩</b>。这时它不再需要自己比较
+<code>&lt;</code>，而由你指定规则：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+void print(const std::vector&lt;Student&gt;&amp; roster) {
+    for (const Student&amp; s : roster) {
+        std::cout &lt;&lt; s.name &lt;&lt; " " &lt;&lt; s.score &lt;&lt; std::endl;
+    }
+}
+
+int main() {
+    std::vector&lt;Student&gt; roster = {{"小李", 90}, {"小王", 77},
+                                   {"小张", 95}, {"小赵", 85}};
+
+    std::cout &lt;&lt; "原来的顺序：" &lt;&lt; std::endl;
+    print(roster);
+
+    std::sort(roster.begin(), roster.end(),
+              [](const Student&amp; a, const Student&amp; b) { return a.score &gt; b.score; });
+
+    std::cout &lt;&lt; "按分数从高到低：" &lt;&lt; std::endl;
+    print(roster);
+
+    std::sort(roster.begin(), roster.end(),
+              [](const Student&amp; a, const Student&amp; b) { return a.name &lt; b.name; });
+
+    std::cout &lt;&lt; "按名字排：" &lt;&lt; std::endl;
+    print(roster);
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">原来的顺序：
+小李 90
+小王 77
+小张 95
+小赵 85
+按分数从高到低：
+小张 95
+小李 90
+小赵 85
+小王 77
+按名字排：
+小张 95
+小李 90
+小王 77
+小赵 85</pre>
+
+<p>
+三处值得说：
+</p>
+
+<ul>
+  <li><b>参数写成 <code>const Student&amp;</code>，不是 <code>Student</code>。</b>
+    <code>&amp;</code> 是引用（6.5），意思是「只读取，不复制」——
+    比 int 大得多的类型（Student 里有一个 string），
+    每比较一次都复制一遍代价太高。<code>const</code> 表示「只读取，不修改」。
+    <b>这两个关键字一起写上，是这类参数的标准写法</b>，以后照写即可。</li>
+  <li><b>规矩决定排序结果。</b>按分数排完，小王 77 排在最后；
+    再按名字排，最后两个的位置又交换了——<b>同一个 vector，
+    换了规矩就是另一种排法</b>，这就是把规矩当作参数传入的好处。</li>
+  <li><b>两个规矩排出来的结果差在最后两个。</b>
+    按分数，小赵 85 排在小王 77 前面；按名字，反过来——
+    <b>小王在小赵前面</b>，因为「王」的字节比「赵」小。
+    名字的字节顺序跟分数的高低<b>本来是两回事</b>，
+    前两个恰好排成一样，不要以为它们总是一样：换几个名字再运行，
+    差异会出现得更多。</li>
+</ul>
+
+<p>
+那一份 <code>print</code> 是单独抽取出来的：同一段操作（输出三遍名单）
+写第二遍的时候就应该定义名称了。参数写成
+<code>const std::vector&lt;Student&gt;&amp;</code> 也是同一个道理。
+</p>
+
+<h3 id="s4-6-4">pair 不用给规矩</h3>
+
+<p>
+有个例外值得知道：<b><code>pair</code> 本身就会比较，不用给规矩。</b>
+它的规矩是现成的——
+</p>
+
+<pre><code>先比 first；first 一样，再比 second。</code></pre>
+
+<p>
+所以 <code>pair</code> 的 vector 直接 <code>sort</code> 就能排，
+一行 lambda 都不用写：
+</p>
+
+<pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;std::pair&lt;std::string, int&gt;&gt; v = {{"小李", 90}, {"小王", 77},
+                                                  {"小李", 60}};
+
+    std::sort(v.begin(), v.end());
+
+    for (const std::pair&lt;std::string, int&gt;&amp; p : v) {
+        std::cout &lt;&lt; p.first &lt;&lt; " " &lt;&lt; p.second &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="预期输出">小李 60
+小李 90
+小王 77</pre>
+
+<p>
+看那个顺序：两个「小李」相邻，而且<b>分数小的那个在前面</b>
+（60 在 90 前）——first 一样的时候它接着比了 second。
+这就是那条现成的规则在起作用。
+</p>
+
+<p>
+3.4 里 map 输出时自己是有序的，用的正是这条规矩——
+map 里面装的就是一堆 pair，按 first（键）排好。
+<b>这里前后一致。</b>
+</p>
+
+<div class="eg" id="e4-6">
+  <div class="eg-h">例题 · 排行榜</div>
+  <p>
+    按分数从高到低给这五个人排名次，输出结果。名单直接写在程序里：
+  </p>
+  <pre><code>小李 90
+小张 95
+小王 90
+小赵 85
+小陈 95</code></pre>
+  <pre class="out" data-label="预期输出">第 1 名  小张 95
+第 2 名  小陈 95
+第 3 名  小李 90
+第 4 名  小王 90
+第 5 名  小赵 85</pre>
+  <p>
+    这道题有两个易错点：<b>同分的怎么办</b>，还有<b>名次怎么输出</b>。
+    先看程序：
+  </p>
+  <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+int main() {
+    std::vector&lt;Student&gt; roster = {{"小李", 90}, {"小张", 95}, {"小王", 90},
+                                   {"小赵", 85}, {"小陈", 95}};
+
+    std::sort(roster.begin(), roster.end(),
+              [](const Student&amp; a, const Student&amp; b) {
+                  if (a.score != b.score) {
+                      return a.score &gt; b.score;
+                  }
+                  return a.name &lt; b.name;
+              });
+
+    for (int i = 0; i &lt; int(roster.size()); i++) {
+        std::cout &lt;&lt; "第 " &lt;&lt; i + 1 &lt;&lt; " 名  " &lt;&lt; roster[i].name &lt;&lt; " "
+                  &lt;&lt; roster[i].score &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+  <p>
+    两处：
+  </p>
+  <ul>
+    <li><b>那条 lambda 里写了两句。</b>
+      分数不一样，就比分数（大的在前）；
+      分数一样，就比名字（<code>a.name &lt; b.name</code>，按字节）。
+      <b>第二句不是可有可无的</b>——没有它，两个同分的人谁在前就无法确定，
+      同一份输入多运行几次，名单可能不一样。
+      写排序规矩的时候，<b>「一样的时候怎么办」永远要考虑到</b>。</li>
+    <li><b>名次就是「它在第几个」</b>：循环里的 <code>i</code> 从 0 计数，
+      名次从 1 计数，所以输出的是 <code>i + 1</code>。
+      这就是 4.2 那句「位置换编号」的另一个用法。</li>
+  </ul>
+  <p>
+    还有个细节：<b>同分的人里面，小陈排在小张后面</b>，因为
+    「小陈」的字节比「小张」小。要是想让同分的按输入顺序排，
+    那得再记住「第几个输入的」——那道题留给你自己试。
+  </p>
+  <p>
+    <b>把两个名字改成排列顺序相反的</b>（比如把「小张」改成「小赵」），
+    查看同分的那一对如何交换位置——那句 <code>a.name &lt; b.name</code>
+    的作用就显现出来了。
+  </p>
+</div>
+
+<h3 id="s4-6-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-17</div>
+  <p>
+    读一组「名字 分数」，按<b>分数从低到高</b>排，输出结果。
+    输入用例题那份名单：
+  </p>
+  <pre class="out" data-label="样例输入">5
+小张 95
+小李 90
+小王 90
+小赵 85
+小陈 95</pre>
+  <pre class="out" data-label="预期输出">小赵 85
+小李 90
+小王 90
+小张 95
+小陈 95</pre>
+  <p>
+    提示：只改例题那条规矩里的一个符号——<code>a.score &gt; b.score</code>
+    改成 <code>a.score &lt; b.score</code>，分数就从高到低变成从低到高。
+    <b>第二句不用动</b>：同分的还是按名字排，所以两对同分的顺序
+    跟例题里完全相同。先自己思考一遍，再运行一遍核对答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        跟例题只差一个符号：例题那条规矩的第一句是
+        <code>a.score &gt; b.score</code>（分数高的在前），
+        换成 <code>&lt;</code>（低的在前），整张表的顺序就相反了：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;Student&gt; roster;
+    for (int i = 0; i &lt; n; i++) {
+        Student s;
+        std::cin &gt;&gt; s.name &gt;&gt; s.score;
+        roster.push_back(s);
+    }
+
+    std::sort(roster.begin(), roster.end(),
+              [](const Student&amp; a, const Student&amp; b) {
+                  if (a.score != b.score) {
+                      return a.score &lt; b.score;
+                  }
+                  return a.name &lt; b.name;
+              });
+
+    for (const Student&amp; s : roster) {
+        std::cout &lt;&lt; s.name &lt;&lt; " " &lt;&lt; s.score &lt;&lt; std::endl;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        第二句（分数一样比名字）一个字符没有改动，这正是这题要看的地方：
+        <b>整张表的顺序相反了，但两对同分的内部顺序没有变化</b>——
+        小李还是排在小王前面，小张还是排在小陈前面。
+        决定它俩谁先谁后的是名字那句话，跟分数那句怎么写没关系。
+      </p>
+      <p>
+        名单就是例题那五个人，从输入读入（第一行是人数，顺序任意，
+        无论什么顺序都要排序）：
+      </p>
+      <pre><code>5
+小张 95
+小李 90
+小王 90
+小赵 85
+小陈 95</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-18</div>
+  <p>
+    读一组「名字 分数」，找出<b>分数最高的那个人的名字</b>；
+    同分的话，名字靠前的那个（按字节）。输入用例题那份名单
+    （小张和小陈都是 95）：
+  </p>
+  <pre class="out" data-label="样例输入">5
+小张 95
+小李 90
+小王 90
+小赵 85
+小陈 95</pre>
+  <pre class="out" data-label="预期输出">最高分是 95
+他是 小张</pre>
+  <p>
+    提示：这一部分学的内容在这里都用上了——
+    先排（规矩跟例题一样，两句话），排完第 0 个就是答案。
+    换一种写法也可以：自己逐个比较一遍（4.2 例题那种形式），
+    或者用 <code>max_element</code>（4.4），
+    但同分时的取舍得自己写规矩。<b>三种写法都写一遍</b>，
+    这一部分的内容就联系起来了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/4-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        最直接的一条路径：先排序，再取第 0 个元素。规矩跟例题一样两句话：
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+int main() {
+    int n = 0;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;Student&gt; roster;
+    for (int i = 0; i &lt; n; i++) {
+        Student s;
+        std::cin &gt;&gt; s.name &gt;&gt; s.score;
+        roster.push_back(s);
+    }
+
+    std::sort(roster.begin(), roster.end(),
+              [](const Student&amp; a, const Student&amp; b) {
+                  if (a.score != b.score) {
+                      return a.score &gt; b.score;
+                  }
+                  return a.name &lt; b.name;
+              });
+
+    std::cout &lt;&lt; "最高分是 " &lt;&lt; roster[0].score &lt;&lt; std::endl;
+    std::cout &lt;&lt; "他是 " &lt;&lt; roster[0].name &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+      <p>
+        排序完成后 <code>roster[0]</code> 就是答案。题面要求的「同分时名字靠前」
+        已经在第二条规矩里交代清楚了：小张和小陈都是 95，
+        <b>「张」的字节比「陈」小</b>，所以小张排在前面。
+      </p>
+      <p>
+        题面说另外两条路径也各写一遍。两条路径的要点在这里：
+      </p>
+      <ul>
+        <li><b>自己逐个比较一遍</b>（4.2 例题那个形式）：记住「目前最高的
+          位置」，遇到更高的就换。同分怎么办要写清楚——只写
+          <code>score[i] &gt; score[best]</code> 的话，同分时先出现的那个
+          会被保留，这份输入里恰好是小张，<b>但那是巧合</b>：
+          把小陈放在小张前面，答案就不是小张了。
+          要它无论怎么排都正确，比较必须写成「分数更高，或者分数一样而名字更靠前」。</li>
+        <li><b>用 <code>max_element</code></b>（4.4）：它默认按分数比，
+          同分给最先出现的那个，仍然要处理上面那个问题——同分的取舍
+          仍然需要自己编写一条比较规则传入。</li>
+      </ul>
+      <p>
+        三条路径比较完能看出一个结论：<b>「同分怎么算」这件事，
+        只有先排序这条路径有一处专门的地方书写它</b>（规矩的第二句）。
+        这就是这一部分最后要留下的结论——排序不仅决定顺序，
+        它还是把「谁先谁后」这件事<b>明确说明</b>的地方。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>自己定义的 <code>struct</code> 也能排序了——
+  给它一条 lambda 说明「谁该排在前面」，规矩里
+  「分数一样时怎么办」也必须交代清楚；
+  还学会了阅读那种篇幅很长的模板报错：
+  先找 <code>required from here</code> 指向你的哪一行、
+  再看那句 <code>error:</code>、<code>candidate</code> 那一组不看。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="03-容器.html">← 第 3 部分 · 容器</a>
+  <span class="spacer"></span>
+  <a class="next" href="05-内存与所有权.html">第 5 部分 · 内存与所有权 →</a>
+</nav>
+
+</main>
+
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/viz.js"></script>
+<script>
+/* ---------------------------------------------------------------
+   4.1 的动画：数步数。
+
+   使用的是 4.1 正文里那份统计步数的程序，n = 5。
+   每个循环各执行完整的一轮，中间的那几轮不重复演示（第一轮和最后一轮
+   完整演示，中间只显示一句），否则一步就是 25 轮，翻页次数过多。
+
+   每一步的数字都实际运行核对过：
+   把同一个过程执行一遍，两边的数字一致。
+   --------------------------------------------------------------- */
+VIZ.steps = {
+  code: [
+    "int one = 0;",
+    "for (int i = 0; i < n; i++) {",
+    "    one = one + 1;",
+    "}",
+    "",
+    "int two = 0;",
+    "for (int i = 0; i < n; i++) {",
+    "    for (int j = 0; j < n; j++) {",
+    "        two = two + 1;",
+    "    }",
+    "}",
+    "",
+    "std::cout << \"一层：\" << one << \" 次\" << std::endl;",
+    "std::cout << \"两层：\" << two << \" 次\" << std::endl;"
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "n 是 5。下面的程序要统计：<b>这两行加 1 各执行了几遍</b>。" +
+            "先说结论——一层那个执行 5 遍，两层那个执行 25 遍。下面看它是如何进行的。",
+      mem: [{ name: "n", value: 5, state: "" }],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "定义一个变量 <b>one</b>，初值为 0。它用来统计「一层那个循环执行了几轮」。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "进入第一个循环。<code>i</code> 从 0 开始，条件 <code>i &lt; 5</code> 成立，" +
+            "第一轮开始。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 0, state: "" },
+            { name: "i", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "把 <b>one</b> 加 1，变成 1。<b>这一行就是「一步」</b>——" +
+            "它执行了几遍，就是执行了多少步。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 1, state: "write" },
+            { name: "i", value: 0, state: "" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "i 到 1，one 加 1 变成 2。<b>每执行一轮，one 增加 1</b>——" +
+            "它记录的就是执行轮数。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 2, state: "write" },
+            { name: "i", value: 1, state: "" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "这样一轮一轮执行下去……执行到 <b>i = 4</b> 这一轮，" +
+            "one 增加到 <b>5</b>。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 5, state: "write" },
+            { name: "i", value: 4, state: "" }],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "回头看条件：<code>i</code> 加到了 <b>5</b>，" +
+            "<code>5 &lt; 5</code> 不成立——<b>循环到这儿就停了。</b>" +
+            "所以 <code>one</code> 那一行一共执行了 <b>5 遍</b>——" +
+            "i 是 0、1、2、3、4，正好五轮，跟 n 一样多。",
+      mem: [{ name: "n", value: 5, state: "" },
+            { name: "one", value: 5, state: "" },
+            { name: "i", value: 5, state: "" }],
+      screen: []
+    },
+    {
+      line: 5,
+      note: "另开一个变量 <b>two</b>，也先放 0。它数的是两层那个循环。" +
+            "<code>one</code> 就留在那儿不动了——它的 5 已经记下了。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "外层循环开始，<code>i</code> 又从 0 开始。" +
+            "<b>外层每执行一轮，内层执行完整的一遍。</b>",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 0, state: "" },
+            { name: "i", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 7,
+      note: "内层循环开始，<code>j</code> 从 0 开始。内层是一个完整的循环，" +
+            "它要从 0 一直执行到 4。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 0, state: "" },
+            { name: "i", value: 0, state: "" },
+            { name: "j", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 8,
+      note: "内层执行第一轮：two 从 0 变 1。" +
+            "<b>注意这一步内层是「里面的循环」，它每执行一轮 two 就增加 1。</b>",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 1, state: "write" },
+            { name: "i", value: 0, state: "" },
+            { name: "j", value: 0, state: "" }],
+      screen: []
+    },
+    {
+      line: 8,
+      note: "……内层执行到 <b>j = 4</b>，two 增加到 <b>5</b>。" +
+            "内层执行完了完整的一遍，<b>一遍是 5 步</b>。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 5, state: "write" },
+            { name: "i", value: 0, state: "" },
+            { name: "j", value: 4, state: "" }],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "内层到 <b>5</b>，<code>5 &lt; 5</code> 不成立——内层停止。" +
+            "<b>但外层还没有停止</b>：回到外层这一行，把 i 加 1 变成 1，" +
+            "条件仍然成立——于是<b>内层又必须从 j = 0 重新遍历一遍</b>。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 5, state: "" },
+            { name: "i", value: 1, state: "write" },
+            { name: "j", value: 0, state: "new" }],
+      screen: []
+    },
+    {
+      line: 8,
+      note: "第二遍执行完，two 到 <b>10</b>。" +
+            "<b>外层每执行完一轮，two 就增加 5</b>——这一遍又是 5 步。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 10, state: "write" },
+            { name: "i", value: 1, state: "" },
+            { name: "j", value: 4, state: "" }],
+      screen: []
+    },
+    {
+      line: 8,
+      note: "外层再执行三轮（i = 2、3、4），每轮内层都是 5 步：" +
+            "two 走到 <b>15、20、25</b>。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 25, state: "write" },
+            { name: "i", value: 4, state: "" },
+            { name: "j", value: 4, state: "" }],
+      screen: []
+    },
+    {
+      line: 6,
+      note: "外层也到 5 了，两个循环全停。" +
+            "计算一下步数：<b>外层一共执行 5 轮，每轮内层执行 5 步，" +
+            "5 × 5 = 25</b>。这个 25 是这么来的。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 25, state: "" },
+            { name: "i", value: 5, state: "" },
+            { name: "j", value: 5, state: "" }],
+      screen: []
+    },
+    {
+      line: 12,
+      note: "把 <b>one</b> 输出到屏幕上：<b>5</b>。",
+      mem: [{ name: "one", value: 5, state: "read" },
+            { name: "two", value: 25, state: "" }],
+      screen: ["一层：5 次"],
+      flows: [{ from: "one", to: ":screen" }]
+    },
+    {
+      line: 13,
+      note: "再把 <b>two</b> 输出：<b>25</b>。" +
+            "两个数放在一起就能看出差别——<b>n 是 5，" +
+            "一层正好是 n，两层是 n 乘 n</b>。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 25, state: "read" }],
+      screen: ["一层：5 次", "两层：25 次"],
+      flows: [{ from: "two", to: ":screen" }]
+    },
+    {
+      line: null,
+      note: "把 n 换一个数字：n 是 1000 的时候，一层那个是一千步，" +
+            "<b>两层那个是一百万步</b>。看上去只差一层循环，" +
+            "差的是这个数。这就是 <b>O(n)</b> 和 <b>O(n²)</b> 的区别。",
+      mem: [{ name: "one", value: 5, state: "" },
+            { name: "two", value: 25, state: "" }],
+      screen: ["一层：5 次", "两层：25 次"]
+    }
+  ]
+};
+
+/* ---------------------------------------------------------------
+   4.2 的动画：迭代器。
+
+   走的是 4.2 正文里那份走数组的程序，装的是 3、1、4。
+   要讲的就一件事：<b>it 里存储的是「指向哪里」，不是那个数</b>。
+   所以这个动画里 it 的值写成「→ v[0]」这种形式，跟基础课 6.6
+   指针那个动画是一个写法（那儿写的是「→ a」）。
+
+   数字和每一步的顺序都实际运行对过一遍。
+   --------------------------------------------------------------- */
+VIZ.iter = {
+  code: [
+    "std::vector<int> v = {3, 1, 4};",
+    "",
+    "auto it = v.begin();",
+    "std::cout << *it << std::endl;",
+    "",
+    "++it;",
+    "std::cout << *it << std::endl;",
+    "",
+    "++it;",
+    "std::cout << *it << std::endl;",
+    "",
+    "++it;",
+    "if (it == v.end()) {",
+    "    std::cout << \"已到达末尾\" << std::endl;",
+    "}"
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "三个元素依次是 3、1、4。<b>它们左边标着编号</b>——" +
+            "begin() 是第一个，end() 是最后一个元素的后面。",
+      mem: [],
+      screen: []
+    },
+    {
+      line: 0,
+      note: "把 3、1、4 放入容器。编号是 0、1、2——" +
+            "<code>v[0]</code> 是 3，<code>v[1]</code> 是 1，" +
+            "<code>v[2]</code> 是 4。",
+      mem: [{ name: "v[0]", value: 3, state: "new" },
+            { name: "v[1]", value: 1, state: "new" },
+            { name: "v[2]", value: 4, state: "new" }],
+      screen: []
+    },
+    {
+      line: 2,
+      note: "<b>it 定义出来了，它取得的是 begin() 的位置</b>，也就是第一个元素的位置。" +
+            "查看其中写的是「→ v[0]」——<b>它存储的是「指向哪里」，不是 3</b>。" +
+            "这一点最容易记错。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v[0]", state: "new" }],
+      screen: []
+    },
+    {
+      line: 3,
+      note: "<code>*it</code>：查看它指向的那个元素的值是什么。" +
+            "需要取值，才写这个星号。屏幕上输出 <b>3</b>。",
+      mem: [{ name: "v[0]", value: 3, state: "read" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v[0]", state: "" }],
+      screen: ["3"],
+      flows: [{ from: "v[0]", to: ":screen" }]
+    },
+    {
+      line: 5,
+      note: "<code>++it</code>：向后移动一个位置。它现在指向 <b>v[1]</b>——" +
+            "<b>移动的是位置，元素一个都没有动。</b>",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v[1]", state: "write" }],
+      screen: ["3"]
+    },
+    {
+      line: 6,
+      note: "再执行一次 <code>*it</code>，这次取得的是第二个位置的 <b>1</b>。" +
+            "同一句 <code>std::cout</code>，输出不同的数——" +
+            "<b>变化的只是 it 指向的位置。</b>",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "read" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v[1]", state: "" }],
+      screen: ["3", "1"],
+      flows: [{ from: "v[1]", to: ":screen" }]
+    },
+    {
+      line: 8,
+      note: "再向后移动一个位置，指向 <b>v[2]</b>——三个元素中的最后一个。" +
+            "元素 4 仍然没有动。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v[2]", state: "write" }],
+      screen: ["3", "1"]
+    },
+    {
+      line: 9,
+      note: "第三次 <code>*it</code>，取得的是 <b>4</b>。三个元素都遍历完了。" +
+            "同一句 <code>std::cout</code> 已经输出了三个数。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "read" },
+            { name: "it", value: "→ v[2]", state: "" }],
+      screen: ["3", "1", "4"],
+      flows: [{ from: "v[2]", to: ":screen" }]
+    },
+    {
+      line: 11,
+      note: "<b>最后这一次 ++it 之后就超出了范围：它指向「尾后」，" +
+            "也就是 end()。</b>那个位置上没有元素——" +
+            "但它仍然是一个有效的位置，专门用来作为「到达末尾」的标记。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v.end()", state: "write" }],
+      screen: []
+    },
+    {
+      line: 12,
+      note: "判断 <code>it == v.end()</code>：<b>成立</b>。" +
+            "所以进入 if 分支——<b>这就是「遍历完成」的判断</b>，" +
+            "跟 3.2 里 find 找不到时给出的 npos 作用相同。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v.end()", state: "read" }],
+      screen: []
+    },
+    {
+      line: 13,
+      note: "输出「已到达末尾」。整份程序的结果：<b>3、1、4、已到达末尾</b>。",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v.end()", state: "" }],
+      screen: ["3", "1", "4", "已到达末尾"]
+    },
+    {
+      line: null,
+      note: "回头看那句 <code>for (auto it = v.begin(); it != v.end(); ++it)</code>：" +
+            "起点是 begin，终点是 end，每次循环 <code>++it</code> 移动一个位置——" +
+            "<b>三个组成部分全在这个动画里出现过。</b>",
+      mem: [{ name: "v[0]", value: 3, state: "" },
+            { name: "v[1]", value: 1, state: "" },
+            { name: "v[2]", value: 4, state: "" },
+            { name: "it", value: "→ v.end()", state: "" }],
+      screen: ["3", "1", "4", "已到达末尾"]
+    }
+  ]
+};
+</script>
+</body>
+</html>

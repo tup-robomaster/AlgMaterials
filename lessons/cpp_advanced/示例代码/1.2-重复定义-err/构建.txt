@@ -1,0 +1,3 @@
+g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c other.cpp -o other.o
+g++ main.o other.o -o dup-def

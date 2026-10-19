@@ -1,0 +1,3271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · cmake 基础 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a class="active" href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html" aria-current="page">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · cmake 基础</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>手动输入 g++ 到头了</a>
+  <a class="toc-sub" href="#s2-1-1">三条命令，文件一多就不够用</a>
+  <a class="toc-sub" href="#s2-1-2">把配方写下来：一份 Makefile</a>
+  <a class="toc-sub" href="#s2-1-3">它省在哪儿</a>
+  <a class="toc-sub" href="#s2-1-4">Tab 和空格：当场跑一次</a>
+  <a class="toc-sub" href="#s2-1-5">可它也是手写的</a>
+  <a class="toc-sub" href="#s2-1-6">练习</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>第一份 CMakeLists.txt</a>
+  <a class="toc-sub" href="#s2-2-1">四行，一行一行读</a>
+  <a class="toc-sub" href="#s2-2-2">build 目录，和那三条命令</a>
+  <a class="toc-sub" href="#s2-2-3">那串参数去哪儿了</a>
+  <a class="toc-sub" href="#s2-2-4">第一行那串数字不能乱写</a>
+  <a class="toc-sub" href="#s2-2-5">练习</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>多文件：源文件、头文件目录、标准</a>
+  <a class="toc-sub" href="#s2-3-1">两个 .cpp 怎么列</a>
+  <a class="toc-sub" href="#s2-3-2">头文件去哪儿找</a>
+  <a class="toc-sub" href="#s2-3-3">当场跑一次：忘了那一行</a>
+  <a class="toc-sub" href="#s2-3-4">标准设错了</a>
+  <a class="toc-sub" href="#s2-3-5">target 的名字只能是 ASCII</a>
+  <a class="toc-sub" href="#s2-3-6">练习</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>常用的那十几条命令</a>
+  <a class="toc-sub" href="#s2-4-1">一张命令桌</a>
+  <a class="toc-sub" href="#s2-4-2">①–④ 名字、变量、打印、开关</a>
+  <a class="toc-sub" href="#s2-4-3">⑤–⑥ 找库、拉子目录</a>
+  <a class="toc-sub" href="#s2-4-4">⑦–⑧ 生成头文件、加参数</a>
+  <a class="toc-sub" href="#s2-4-5">⑨–⑩ 编译什么、安装到哪</a>
+  <a class="toc-sub" href="#s2-4-6">中文能待在哪儿</a>
+  <a class="toc-sub" href="#s2-4-7">练习</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>读一份真实的 CMakeLists</a>
+  <a class="toc-sub" href="#s2-5-1">先说清楚这是哪一份</a>
+  <a class="toc-sub" href="#s2-5-2">一张地图</a>
+  <a class="toc-sub" href="#s2-5-3">你认识的那些</a>
+  <a class="toc-sub" href="#s2-5-4">先跳过的那些</a>
+  <a class="toc-sub" href="#s2-5-5">README 让新人改的三处</a>
+  <a class="toc-sub" href="#s2-5-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>cmake 基础</h1>
+  <p class="part-lead">
+    第 1 部分最后，你那个工程是用三条手动输入的 <code>g++</code> 命令编译的。
+    这一部分把这串命令交出去：先交给 <code>make</code>，再交给 <code>cmake</code>。
+    五课下来，你能自己写一份 <code>CMakeLists.txt</code>，
+    也能读懂一份一百多行的——那种真在跑的工程里的cmake。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>手动输入 g++ 到头了</h2>
+
+<p>
+1.4 那一课，你把一条命令拆成了三条：
+</p>
+
+<pre><code>g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</code></pre>
+
+<p>
+三个文件，三条命令，还行。这一课先说清楚「再多几个会怎么样」，
+然后把这件事交给两个工具。它们的分工只有一句话，
+但这句话是这一部分的地基，先摆在这儿：
+</p>
+
+<div class="aside">
+<b>make 按配方执行，cmake 写配方</b>
+<p>
+<code>make</code> 是那个真正执行构建的：你给它一份<strong>配方</strong>，
+它照着一步步执行命令，还知道哪几步不用重来。
+<code>cmake</code> 不执行构建，它是替<strong>你</strong>写那份配方的——
+你只告诉它「我这个工程是什么样的」，配方它自己生成。
+</p>
+</div>
+
+<h3 id="s2-1-1">三条命令，文件一多就不够用</h3>
+
+<p>
+三个文件三条命令。三十个文件呢？三十条。
+真正麻烦的还不是「打得多」，是<strong>每改一次都得重来一遍</strong>，
+而且你得记住哪几个文件跟着变了。
+</p>
+
+<p>
+比如你只改了 <code>stats.cpp</code> 里的一行——<code>main.cpp</code> 一个字没动，
+为什么重新编译它？可手动输入的人往往不区分这件事，常常把三条命令全部执行一遍，
+然后在旁边等。
+</p>
+
+<p>
+让机器记这件事。它的办法是：把「谁靠谁」和「怎么做」写成一份文件，
+摆在工程里。这份文件叫 <b>Makefile</b>。
+</p>
+
+<h3 id="s2-1-2">把配方写下来：一份 Makefile</h3>
+
+<p>
+就是 1.4 那三条命令，写成配方长这样：
+</p>
+
+<pre><code>report: main.o stats.o
+	g++ main.o stats.o -o report
+
+main.o: main.cpp stats.h
+	g++ -Wall -c main.cpp -o main.o
+
+stats.o: stats.cpp stats.h
+	g++ -Wall -c stats.cpp -o stats.o
+
+clean:
+	rm -f *.o report</code></pre>
+
+<p>
+一行一行读。冒号<b>左边</b>是要生成的文件，<b>右边</b>是生成它依赖的文件：
+</p>
+
+<ul>
+  <li><code>report</code> 靠 <code>main.o</code> 和 <code>stats.o</code>；</li>
+  <li><code>main.o</code> 靠 <code>main.cpp</code> 和 <code>stats.h</code>；</li>
+  <li><code>stats.o</code> 靠 <code>stats.cpp</code> 和 <code>stats.h</code>。</li>
+</ul>
+
+<p>
+冒号下面那一行缩进的，是<b>做法</b>——原样交给 shell 执行，
+就是 1.4 里你手动输入的那几条，一个字都没有变。
+</p>
+
+<p>
+最后那个 <code>clean</code> 是另一回事：它不产出任何文件，
+就是把产物删掉重来。这类「假目标」是约定俗成的，名字叫 <code>clean</code>
+（<code>rm</code> 就是 remove）。
+</p>
+
+<p>
+有了这份文件，编译就变成一句话：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</pre>
+
+<p>
+注意它把每条命令都打在屏幕上了。<b>make 不藏着掖着</b>——
+你随时看得见它到底编了哪几个文件、跳过了哪几个。
+这一点从今往后都有用：出了问题，先看它这一步做了什么。
+</p>
+
+<h3 id="s2-1-3">它省在哪儿</h3>
+
+<p>
+什么都不改，再来一次：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">make: “report”已是最新。</pre>
+
+<p>
+一条命令都没跑。现在改一处：把 <code>stats.cpp</code> 里打平均分那行的
+<code>%4.1f</code> 改成 <code>%5.2f</code>（多留一位小数），保存，再 <code>make</code>：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</pre>
+
+<p>
+只有两条。<code>main.cpp</code> 一个字没动，make 就没碰它。
+</p>
+
+<p>
+它凭什么知道？看<b>时间</b>。<code>stats.o</code> 比 <code>stats.cpp</code> 老，
+那就是「源文件改过了，重做」；<code>main.o</code> 比 <code>main.cpp</code> 新，
+那就跳过。整件事就这么朴素——make 不认识 C++，
+它只看文件名和修改时间。
+</p>
+
+<p>
+那它怎么知道改了 <code>stats.h</code> 要重编谁？靠 Makefile 里写的那两行。
+把 <code>stats.h</code> 的时间戳更新一下（一个字符都不用改），再 <code>make</code>：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">g++ -Wall -c main.cpp -o main.o
+g++ -Wall -c stats.cpp -o stats.o
+g++ main.o stats.o -o report</pre>
+
+<p>
+两个都重编了。因为 <code>main.o</code> 和 <code>stats.o</code> 的依赖里
+都写着 <code>stats.h</code>——就是这两行：
+</p>
+
+<pre><code>main.o: main.cpp stats.h
+stats.o: stats.cpp stats.h</code></pre>
+
+<p>
+<b>这两行里那个 <code>stats.h</code> 不是装饰，是 make 唯一的依据。</b>
+漏写一个头文件，改了它 make 也不会重新编——
+编译生成的文件和源码不一致，而它不会有任何提示。
+这是 Makefile 最常见的坏法，比报错难查得多。
+</p>
+
+<p>
+程序照旧打出那张表，平均分那行现在是两位小数：
+</p>
+
+<pre class="out" data-label="真实输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.20
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+
+<h3 id="s2-1-4">Tab 和空格：当场跑一次</h3>
+
+<p>
+Makefile 有一个著名的易错点，值得当场运行一次：
+<b>做法那一行开头必须是一个 Tab</b>，四个空格不行。
+</p>
+
+<p>
+把上面第一段做法开头的 Tab 换成四个空格，别的都不动，然后 <code>make</code>：
+</p>
+
+<pre class="diag" data-diag="练习2-2-err/Makefile"><code>Makefile:2: *** 缺失分隔符。 停止。</code></pre>
+
+<p>
+「缺失分隔符」说的就是「这一行我看不出是做法」。
+</p>
+
+<p>
+为什么这个易错点如此有名？因为它<b>不可见</b>。在编辑器里，
+一个 Tab 和四个空格看上去几乎一样，目录里也看不出来。
+更麻烦的是有些编辑器会自动把 Tab 转成空格——
+看起来是在帮你排版。
+</p>
+
+<div class="aside warn">
+<b>真遇到了怎么办</b>
+<p>
+上面那句报错里带着 <code>Makefile:2</code>，行号是准的。
+照着行号找到那一行，把行首那几个空格删掉、按一下 Tab 键。
+Makefile 里凡是缩进的地方都是 Tab，从头到尾一个空格都不要用。
+</p>
+</div>
+
+<h3 id="s2-1-5">可它也是手写的</h3>
+
+<p>
+Makefile 省掉的是「记不住」，可它自己还是人写的。
+文件一多，这份「谁依赖谁」的清单也要一行一行写——
+第 2.5 课那份真实工程，三十个源文件，就需要三十来行。
+</p>
+
+<p>
+而且它认地方：这份文件是写给 Linux 上那个 <code>make</code> 看的。
+换一套工具链，规则、写法、连命令的名字都不一样。
+</p>
+
+<p>
+那，配方能不能也自动生成？能。这就是 <code>cmake</code> 干的事。
+</p>
+
+<p>
+给 cmake 的不是配方，是一句「我这个工程是什么样的」。
+比如四行：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+<p>
+运行一遍 cmake 之后，<code>build/</code> 里生成一份 <b>181 行</b>的
+Makefile——上面那些规则、依赖、Tab，全是它生成的。
+那份文件的开头两行是它自己写的：
+</p>
+
+<pre class="out" data-label="真实输出"># CMAKE generated file: DO NOT EDIT!
+# Generated by "Unix Makefiles" Generator, CMake Version 4.1</pre>
+
+<p>
+「这个文件是 cmake 生成的，别改」——它的原话。
+<b>从今往后，配方那一层不归你管了。</b>
+你要维护的只有那四行：工程叫什么、用哪个标准、要编哪个程序。
+</p>
+
+<p>
+剩下五课就是把这四行认全，再多认十几条常用命令。
+</p>
+
+<h3 id="s2-1-6">练习</h3>
+
+<p>
+这一课两道题都需要实际操作。第一道要的是实际体验。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 2-1</div>
+  <p>
+    把这一课那份工程自己输入一遍。五个文件：
+    <code>Makefile</code>（上面那份，一个字别改，做法行用 Tab）、
+    <code>main.cpp</code>、<code>stats.cpp</code>、<code>stats.h</code>
+    （就是 1.4 那三份），再建一个输入文件 <code>main.in</code>，
+    里面是那十个分数，一行，用空格隔开。
+  </p>
+  <p>
+    <code>main.in</code> 里是这一行十个分数：
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <p>
+    然后按这个顺序执行一遍，每一步都看一眼屏幕：<br>
+    ① <code>make</code>　② 什么都不改，再 <code>make</code>
+    ③ <code>make clean</code>　④ 再 <code>make</code>　⑤ <code>./report &lt; main.in</code>
+  </p>
+  <p>
+    第 ② 步该是一句话，不是三条命令——那是这一课最值钱的地方。
+  </p>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-1/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        五个文件，和 1.4 那三份是同一份内容，多出来的两项是
+        <code>Makefile</code> 和 <code>main.in</code>。
+      </p>
+      <pre data-name="Makefile"><code>report: main.o stats.o
+	g++ main.o stats.o -o report
+
+main.o: main.cpp stats.h
+	g++ -Wall -c main.cpp -o main.o
+
+stats.o: stats.cpp stats.h
+	g++ -Wall -c stats.cpp -o stats.o
+
+clean:
+	rm -f *.o report</code></pre>
+
+      <p>
+        <b>做法那几行开头是一个 Tab，不是四个空格。</b>
+        页面上看不出来——你复制过去之后，要自己确认一下：
+        把光标移动到 <code>g++</code> 前面，按一下退格键，
+        该是一下退掉整个 Tab，而不是退掉一个空格。
+      </p>
+      <p>
+        五步执行完，屏幕上是这些（<code>make clean</code> 那一步没有输出，
+        是正常的——<code>rm</code> 删除后不输出任何内容）：
+      </p>
+      <p>
+        ① <code>make</code>：三条命令全部执行一遍；
+      </p>
+      <p>
+        ② 再 <code>make</code>：只输出一句
+        <code>make: “report”已是最新。</code>
+        <b>这一步是这道题的正题。</b>一个文件都没有编译，
+        因为它检查时间戳，发现所有文件都比自己的产物旧；
+      </p>
+      <p>
+        ③ <code>make clean</code>：把 <code>*.o</code> 和
+        <code>report</code> 删掉，没有输出；
+      </p>
+      <p>
+        ④ 再 <code>make</code>：又三条——上一步把产物删除了，
+        它必须从头执行；
+      </p>
+      <p>
+        ⑤ <code>./report &lt; main.in</code>：输出那张表。
+      </p>
+      <p>
+        如果第 ② 步输出的仍然是三条命令，多半是
+        <code>make</code> 没有找到那份 Makefile（比如你在上一级目录里输入的），
+        它就认为「没有需要执行的操作」了。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-2</div>
+  <p>
+    拿你刚建好的那份 Makefile，把 <code>report</code> 那条做法开头的 Tab
+    换成四个空格（只改这一行）。然后 <code>make</code>，看它说什么。
+  </p>
+  <p>
+    看清楚那句话里带着的<b>行号</b>——这就是以后查这个问题的线索。
+    改回来（删掉空格、按一下 Tab）再 <code>make</code> 一次，它应该照常运行。
+  </p>
+  <pre class="diag" data-diag="练习2-2-err/Makefile"><code>Makefile:2: *** 缺失分隔符。 停止。</code></pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-2-err/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        就把 <code>report</code> 那条做法开头的 Tab 换成四个空格：
+      </p>
+      <pre data-name="Makefile"><code>report: main.o stats.o
+    g++ main.o stats.o -o report
+
+main.o: main.cpp stats.h
+    g++ -Wall -c main.cpp -o main.o
+
+stats.o: stats.cpp stats.h
+    g++ -Wall -c stats.cpp -o stats.o
+
+clean:
+    rm -f *.o report</code></pre>
+
+      <p>
+        然后 <code>make</code>，它一条命令都不执行编译，直接输出：
+      </p>
+      <pre class="diag"><code>Makefile:2: *** 缺失分隔符。 停止。</code></pre>
+      <p>
+        <code>Makefile:2</code> 说的是这份 <b>Makefile 的第 2 行</b>——
+        对照上面那份文件数一下：第 1 行是 <code>report: main.o stats.o</code>，
+        第 2 行就是那条做法。<b>位置给得是准的。</b>
+      </p>
+      <p>
+        「缺失分隔符」里的「分隔符」就是 make 为 Tab 指定的名称：
+        在它看来，冒号下面那一行必须以一个 Tab 开头，
+        那才表示「这是做法」。四个空格不是记号，
+        所以它读到这里，觉得第 1 行那句
+        <code>report: main.o stats.o</code> 后面没有做法，就停止了。
+      </p>
+      <p>
+        改回来之后（删掉那几个空格、按一下 Tab 键），
+        <code>make</code> 照常运行。
+      </p>
+      <p>
+        <b>不要只靠肉眼观察。</b>一个 Tab 和四个空格在屏幕上看上去几乎一样，
+        在有些编辑器里还会显示成同样宽。确实无法确定的时候，
+        <code>cat -A Makefile</code> 能把 Tab 显示为 <code>^I</code>，
+        空格仍然显示为空格——可以直接区分。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>一份手写的 Makefile，
+  以及看懂 <code>make</code> 每次打出来的那几行——它编了谁、跳过了谁、为什么。
+  <b>下一课不再手写配方：只写四行，让 cmake 把配方生成出来。</b>
+</p>
+
+</section>
+
+<!-- §2-2 -->
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>第一份 CMakeLists.txt</h2>
+
+<p>
+先说清楚名字。你要写的这份文件叫 <b>CMakeLists.txt</b>，
+一个字母都不能改，尤其别漏了最后那个 <code>s</code>。
+它摆在工程的<b>根目录</b>，和你的 <code>.cpp</code> 放在一起。
+</p>
+
+<h3 id="s2-2-1">四行，一行一行读</h3>
+
+<p>
+就这四行：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+<p>
+<b>第一行，<code>cmake_minimum_required(VERSION 3.16)</code>。</b>
+这句话是对 cmake 说的：「我这份文件是按 3.16 那个版本的规矩写的，
+你别拿比它更老的版本来跑。」
+</p>
+
+<p>
+它不是「要求你的 cmake 至少是 3.16」——本机装的是 4.1.2，
+比 3.16 新，仍然运行正常。
+它的意思是<b>版本低了要拦住</b>，因为老版本可能不认你写的某些写法。
+最低写多少，取决于你用了多新的写法：这四行里最简单的写法，
+写 3.10 也能跑。
+</p>
+
+<p>
+这个数字还有一个用处，「第一行那串数字不能乱写」那一节会讲——
+它是一个会当场报错的位置。先记住它长这样。
+</p>
+
+<p>
+<b>第二行，<code>project(demo LANGUAGES CXX)</code>。</b>
+给这个工程起个名字，顺便说清楚它用什么语言。
+</p>
+
+<p>
+<code>demo</code> 是工程名。让它和你的可执行文件同名最简洁，
+不过它俩其实不是一回事——名字只是个标签，
+真正决定「编出什么」的是第四行。
+</p>
+
+<p>
+<code>LANGUAGES CXX</code> 说的是「这个工程用 C++」
+（<code>CXX</code> 就是 C++ 的写法，两个 X 是早年 C++ 编译器叫
+<code>c++</code> 留下的习惯）。
+不写这一句，cmake 会默认去试 C 和 C++ 两套，配置的时候多花几秒。
+写上，它就只找 C++ 那套。
+</p>
+
+<p>
+<b>第三行，<code>set(CMAKE_CXX_STANDARD 17)</code>。</b>
+<code>set</code> 是「定义一个名字并保存值」。这儿保存的是一个 cmake
+<b>本来就认</b>的名字：<code>CMAKE_CXX_STANDARD</code>，
+意思是「C++ 用哪一版的标准」。
+</p>
+
+<p>
+为什么是 17 不是 11？因为你要用的特性里，
+<code>auto</code>、<code>nullptr</code>、范围 <code>for</code> 是 11 的，
+结构化绑定、<code>if</code> 里带初始化是 17 的。
+写 17，这些都能用。
+</p>
+
+<p>
+<b>第四行，<code>add_executable(demo main.cpp)</code>。</b>
+这一行才是真正执行构建的：<b>编一个可执行文件，叫 <code>demo</code>，
+拿 <code>main.cpp</code> 编。</b>
+</p>
+
+<div class="aside">
+<b>四行各自管什么</b>
+<p>
+第一行管「规矩」，第二行管「这是个什么工程」，
+第三行管「用哪版语言」，第四行管「编出什么」。
+前三行是铺垫，第四行是活。
+一份 CMakeLists.txt 里可以有<b>好几个</b> <code>add_executable</code>
+——那就是「这个工程要编出好几个程序」。
+</p>
+</div>
+
+<h3 id="s2-2-2">build 目录，和那三条命令</h3>
+
+<p>
+现在把它跑起来。规矩是<b>在工程里另建一个目录</b>，在那里跑：
+</p>
+
+<pre><code>mkdir -p build
+cd build
+cmake ..</code></pre>
+
+<p>
+一条一条看。
+</p>
+
+<p>
+<code>mkdir -p build</code> 建一个叫 <code>build</code> 的目录
+（<code>-p</code> 是「已经有了就别说」）。
+</p>
+
+<p>
+<code>cd build</code> 走进去。
+</p>
+
+<p>
+<code>cmake ..</code> 跑 cmake，后面那个 <code>..</code> 是<b>上一级目录</b>——
+也就是告诉它「CMakeLists.txt 在上一级目录，
+生成的文件放在我当前所在的目录」。
+</p>
+
+<p>
+跑出来是这样：
+</p>
+
+<pre class="out" data-label="真实输出">-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: build</pre>
+
+<p>
+前面六行是它在<b>找编译器</b>：找着了（<code>/usr/bin/c++</code>）、
+试了一下、记录下来了。这几行只有第一次配置的时候会输出，
+以后再运行就不会这么详细。
+</p>
+
+<p>
+中间那两句 <code>Configuring done</code> / <code>Generating done</code>
+说明它的任务完成了：<b>配置</b>完了，<b>生成</b>完了。
+</p>
+
+<p>
+最后一句 <code>Build files have been written to: build</code>
+是「配方写好了，摆在 build 里」。你那儿打出来的会是<b>完整路径</b>
+（<code>/home/你的名字/…/build</code> 这样），
+这一页上为省地方写成了简写——后面凡是带路径的行都是这个道理，
+你照着看一眼就知道是哪一条。
+</p>
+
+<p>
+注意它到这里就<b>停止了</b>。它一个 <code>.cpp</code> 都没有编译。
+cmake 的工作到「写好构建规则」为止，编译不由它负责。
+</p>
+
+<p>
+看看它写了什么：
+</p>
+
+<pre><code>ls</code></pre>
+
+<pre class="out" data-label="真实输出">CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile</pre>
+
+<p>
+四个文件。那个 <b>Makefile</b> 就是 2.1 里你手动写了很久的构建规则——
+你没有写，是它生成的。
+</p>
+
+<p>
+<code>CMakeCache.txt</code> 是个备忘录：上一回找到的编译器、
+你给的设置，都记在里面，下回直接用。
+<code>CMakeFiles/</code> 是一个目录：中间产物、每个目标各自的规则，
+都存放在那里。<code>cmake_install.cmake</code> 负责「安装到其他目录」，
+2.4 讲 <code>install</code> 的时候用到它。
+</p>
+
+<p>
+接下来照 2.1 的老规矩来：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">[ 50%] Building CXX object CMakeFiles/demo.dir/main.cpp.o
+[100%] Linking CXX executable demo
+[100%] Built target demo</pre>
+
+<p>
+和 2.1 里那份手写的 Makefile 输出的内容很像——本来就是同一类。
+</p>
+
+<p>
+然后跑：
+</p>
+
+<pre><code>./demo</code></pre>
+
+<pre class="out" data-label="真实输出">这份程序是 cmake 编译得到的。
+四行 CMakeLists.txt，替换了手动输入的那串参数。</pre>
+
+<div class="aside warn">
+<b>build 里的文件不要提交</b>
+<p>
+<code>build/</code> 整个目录都是<b>生成物</b>：几百个文件、夹着机器上
+的绝对路径、换台机器就得重来一遍。它不该进版本库
+（1.4 讲过的「中间文件不提交」那条，到这儿是同一个道理，
+只是这次的中间文件有一堆）。
+</p>
+<p>
+真要清理，最直接的一条是 <code>rm -rf build</code>，然后再建再配。
+cmake 跑得快，配置一遍几秒钟，不用担心。
+</p>
+</div>
+
+<h3 id="s2-2-3">那串参数去哪儿了</h3>
+
+<p>
+1.4 里你手动输入的是这串：
+</p>
+
+<pre><code>g++ -Wall -std=c++17 -c main.cpp -o main.o</code></pre>
+
+<p>
+那个 <code>-Wall</code>、那个 <code>-std=c++17</code>，
+到 cmake 里写成什么了？第三行那个 <code>set</code> 管的正是后者。
+看一眼它到底传了什么参数：
+</p>
+
+<pre><code>cat CMakeFiles/demo.dir/flags.make</code></pre>
+
+<p>
+这个文件里记着这个目标编译时用的每一段参数。其中三行是关键：
+</p>
+
+<pre class="out" data-label="真实输出">CXX_DEFINES =
+CXX_INCLUDES =
+CXX_FLAGS = -std=gnu++17</pre>
+
+<p>
+<code>CXX_FLAGS</code> 那行就是「传给编译器的参数」：
+<code>set(CMAKE_CXX_STANDARD 17)</code> 变成了 <code>-std=gnu++17</code>。
+</p>
+
+<p>
+<b>注意是 <code>gnu++17</code>，不是 <code>c++17</code>。</b>
+这不是打错了，是 cmake 故意的：它默认允许编译器那些
+「标准之外、GNU 加的」扩展。想要严格的标准，得多写一句
+关掉扩展：
+</p>
+
+<pre><code>set(CMAKE_CXX_EXTENSIONS OFF)</code></pre>
+
+<p>
+平时两种写法没差别，读到别人的 <code>CMakeLists.txt</code>
+里写着 <code>gnu++17</code> 的时候，
+知道有这一回事就行。
+</p>
+
+<p>
+<code>CXX_DEFINES</code> 和 <code>CXX_INCLUDES</code> 这两行是空的，
+因为你还没要宏、没说头文件去哪儿找——那是 2.3 和 2.4 的事。
+它们空着，但位置保留：以后写入的内容都放在这两行里。
+</p>
+
+<p>
+还想看得更细，让 make 把每条命令原样打出来：
+</p>
+
+<pre><code>make VERBOSE=1</code></pre>
+
+<p>
+在那一大堆输出里，真正编 <code>main.cpp</code> 的是这么一条：
+</p>
+
+<pre class="out" data-label="真实输出（中间两段路径用 … 省了）">/usr/bin/c++   -std=gnu++17 -MD -MT CMakeFiles/demo.dir/main.cpp.o -MF … -o … -c main.cpp</pre>
+
+<p>
+先说那两个 <code>…</code>：这一行在你机器上是<b>连着的 149 个字符</b>。
+<code>-MF</code> 和 <code>-o</code> 后面各跟着一串目标文件的路径——
+还是 <code>CMakeFiles/demo.dir/main.cpp.o</code> 这个名字，
+一个带 <code>.d</code> 一个不带，页面上排不下，拿 <code>…</code> 省了；
+其余字符一个都没有改动。这一行<b>不用背也不用复制</b>，看它包含什么即可。
+</p>
+
+<p>
+中间那几个 <code>-MD</code>、<code>-MF</code>、<code>-MT</code>
+是在生成一份「谁靠谁」的清单——就是 2.1 里你手写在 Makefile 里、
+还怕写漏的那几行。cmake 让编译器自己把这份清单吐出来，
+<b>所以它不会漏</b>：你 <code>#include</code> 了什么，它就知道要盯什么。
+这一条比你手写强，强在这儿。
+</p>
+
+<p>
+<code>-Wall</code> 不在上面——第四行没让它加。
+想在 cmake 里加编译参数，用的是 2.4 那条 <code>add_compile_options</code>。
+</p>
+
+<h3 id="s2-2-4">第一行那串数字不能乱写</h3>
+
+<p>
+第一行那个数字不是随便填的，写错了它当场拦你。
+把 <code>3.16</code> 改成 <code>3.0</code> 试试：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.0)</code></pre>
+
+<pre class="diag" data-diag="2.2-老版本-err/CMakeLists.txt"><code>CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 has been removed from CMake.
+
+  Update the VERSION argument &lt;min&gt; value.  Or, use the &lt;min&gt;...&lt;max&gt; syntax
+  to tell CMake that the project requires at least &lt;min&gt; but has been updated
+  to work with policies introduced by &lt;max&gt; or earlier.
+
+  Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+
+
+-- Configuring incomplete, errors occurred!</code></pre>
+
+<p>
+<b>读这份报错的方法，和读编译器的报错一模一样。</b>
+第一行给位置：<code>CMakeLists.txt:1</code>，
+第 1 行，出在 <code>cmake_minimum_required</code> 这一句上。
+底下缩进的几段是它给你说的话。
+</p>
+
+<p>
+<code>Compatibility with CMake &lt; 3.5 has been removed from CMake</code>
+——「和 3.5 以前的那些兼容性，已经从 cmake 里拿掉了」。
+说白一点：<b>你写的 3.0 太老了，这个 cmake 不认了。</b>
+</p>
+
+<p>
+为什么会这样？cmake 有个「规矩」（它叫 policy）：
+一份老文件照着老规矩跑，一份新文件照着新规矩跑。
+为了让新规矩能推进，它得有个截止线——
+新版 cmake 把「3.5 以前」这一档整个删了。
+所以你写 3.0，它就当你是在说「我这文件是远古时候写的」，
+直接拒绝。
+</p>
+
+<p>
+下面还给了一条路：<code>-DCMAKE_POLICY_VERSION_MINIMUM=3.5</code>。
+<b>看见这条不要急着采用</b>——它的意思是「我知道它版本老，仍然运行」。
+真拿到一份写着老版本号的旧工程，正确动作是<b>把那个数字改大</b>，
+而不是加参数硬压。加参数是留给「改不动那份文件」的时候的。
+</p>
+
+<p>
+还有一个地方容易混：这个数字<b>不是</b>「你的 cmake 版本」。
+本机是 4.1.2，你写 3.16、3.20、3.28 都能跑。
+写小了才拦你。
+</p>
+
+<div class="aside">
+<b>去哪查本机是哪个版本</b>
+<p>
+<code>cmake --version</code>。头一行就是版本号。
+第 0 部分让你逐个 <code>--version</code> 的那一轮里就有它。
+</p>
+</div>
+
+<h3 id="s2-2-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-3</div>
+  <p>
+    从零建一个目录，写一份四行的 <code>CMakeLists.txt</code>，
+    编一个 <code>demo</code>。程序本身随便——打一行字就行。
+  </p>
+  <p>
+    然后走完整的那一遍：<code>mkdir -p build</code> →
+    <code>cd build</code> → <code>cmake ..</code> → <code>make</code> →
+    <code>./demo</code>。
+  </p>
+  <p>
+    配置那一步，你那儿打出来的最后一行会带<b>完整路径</b>；
+    前面找编译器那六行只有第一次才有——
+    你要是把 <code>build</code> 删了重建，它们会再出现一遍。
+  </p>
+  <p>
+    跑完再看一眼 <code>ls</code>：该是 <code>CMakeCache.txt</code>、
+    <code>CMakeFiles</code>、<code>cmake_install.cmake</code>、
+    <code>Makefile</code> 四样。
+  </p>
+  <pre class="out" data-label="预期输出">这份程序是 cmake 编译得到的。
+四行 CMakeLists.txt，替换了手动输入的那串参数。</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-3/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        一份四行的 <code>CMakeLists.txt</code>：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+      <p>
+        四行各自的作用：第一行「按 3.16 那个版本的规矩写」，
+        第二行「工程叫 demo，用 C++」，第三行「C++ 用 17 版」，
+        第四行「用 main.cpp 编译一个叫 demo 的程序」。
+        <b>真正执行构建的只有第四行</b>，前三行是铺垫。
+      </p>
+      <p>
+        然后四步：
+      </p>
+      <pre><code>mkdir -p build
+cd build
+cmake ..
+make
+./demo</code></pre>
+      <p>
+        第 ③ 步最后一行，你这里输出的会是完整路径
+        （<code>/home/你的名字/…/build</code>），
+        和课文里那份简写的应当一致。
+      </p>
+      <p>
+        第 ③ 步执行完 <code>ls</code>，应当看见
+        <code>CMakeCache.txt</code>、<code>CMakeFiles</code>、
+        <code>cmake_install.cmake</code>、<code>Makefile</code> 四样。
+        <b>这个 Makefile 不需要你编写任何内容</b>——你只编写了那四行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-4</div>
+  <p>
+    把练习 2-3 那份的第一行，从 <code>VERSION 3.16</code>
+    改成 <code>VERSION 3.0</code>，然后重新配置一遍：
+  </p>
+  <p>
+    <code>rm -rf build</code>，再 <code>mkdir -p build</code> →
+    <code>cd build</code> → <code>cmake ..</code>。
+  </p>
+  <p>
+    （一定要把旧的 <code>build</code> 删掉再来。
+    留着旧的，cmake 会用 <code>CMakeCache.txt</code> 里记着的老设置，
+    你可能看不见这个错。）
+  </p>
+  <p>
+    看清楚报错第一行给的<b>行号</b>和<b>命令名</b>，
+    再把它改回 <code>3.16</code>，重新配置一次，该恢复正常。
+  </p>
+  <pre class="diag" data-diag="2.2-老版本-err/CMakeLists.txt"><code>CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake &lt; 3.5 has been removed from CMake.
+
+  Update the VERSION argument &lt;min&gt; value.  Or, use the &lt;min&gt;...&lt;max&gt; syntax
+  to tell CMake that the project requires at least &lt;min&gt; but has been updated
+  to work with policies introduced by &lt;max&gt; or earlier.
+
+  Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+
+
+-- Configuring incomplete, errors occurred!</code></pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-4-err/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第一行改成 <code>VERSION 3.0</code>，就这一处：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.0)
+project(demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(demo main.cpp)</code></pre>
+
+      <p>
+        要点是<b>先删除旧的 build 再重新执行</b>：
+      </p>
+      <pre><code>rm -rf build
+mkdir -p build
+cd build
+cmake ..</code></pre>
+      <p>
+        留着旧的 <code>build</code> 不删，cmake 会读
+        <code>CMakeCache.txt</code> 里记录的旧设置，
+        你可能完全看不到这个错误——<b>这是一种很难检查的失败方式：
+        修改了内容，运行输出仍然是原来的结果。</b>
+        往后凡是「改了 CMakeLists.txt 却看不出变化」，
+        第一件事就是删除 <code>build</code> 重新执行。
+      </p>
+      <p>
+        报错就是课文里那一段，它给的位置是
+        <code>CMakeLists.txt:1</code>，说的是
+        <code>cmake_minimum_required</code> 这一句。
+      </p>
+      <pre class="diag"><code>CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake &lt; 3.5 has been removed from CMake.
+
+  Update the VERSION argument &lt;min&gt; value.  Or, use the &lt;min&gt;...&lt;max&gt; syntax
+  to tell CMake that the project requires at least &lt;min&gt; but has been updated
+  to work with policies introduced by &lt;max&gt; or earlier.
+
+  Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+
+
+-- Configuring incomplete, errors occurred!</code></pre>
+      <p>
+        注意<b>下面还给出了一条强制运行的办法</b>：
+        <code>-DCMAKE_POLICY_VERSION_MINIMUM=3.5</code>。
+        不要把它当成修法——它是「我知道它版本旧，先运行查看」，
+        留给无法修改那份文件的时候使用。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>一份四行的 <code>CMakeLists.txt</code>，
+  并且能从头到尾把它跑起来——建 <code>build</code>、配置、编译、运行。
+  <b>下一课加文件：两个 <code>.cpp</code> 怎么列、
+  头文件去哪儿找、C++ 标准设错了会怎样。</b>
+</p>
+
+</section>
+
+<!-- §2-3 -->
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>多文件：源文件、头文件目录、标准</h2>
+
+<p>
+1.3 那份两文件工程——<code>main.cpp</code> 加 <code>stats.cpp</code>，
+承诺放在 <code>stats.h</code> 里，头文件还搁在 <code>include/</code> 这个子目录里。
+这一课把它迁移到 cmake 上。这次文件多了一个，多出来的事有三件。
+</p>
+
+<h3 id="s2-3-1">两个 .cpp 怎么列</h3>
+
+<p>
+先看目录长什么样：
+</p>
+
+<pre><code>统计表/
+├── CMakeLists.txt
+├── main.cpp
+├── main.in
+├── stats.cpp
+└── include/
+    └── stats.h</code></pre>
+
+<p>
+那份 <code>CMakeLists.txt</code>：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(report main.cpp stats.cpp)
+
+target_include_directories(report PRIVATE include)</code></pre>
+
+<p>
+第一行、第二行、第四行（<code>set</code> 那行）都是 2.2 认得的。
+新的只有两处：
+</p>
+
+<p>
+<b><code>add_executable</code> 后面跟了两个 <code>.cpp</code>。</b>
+就这个。要编到一个程序里的源文件，全列在这一行，
+<b>空格隔开，一行写不完就换行接着写</b>
+（换行不分行，cmake 是按空白分的）。
+这份是 2.1 里你手写 Makefile 时最烦的那件事——
+「谁要编进去」，在这儿变成一句话。
+</p>
+
+<p>
+<b>还有一条，容易漏：<code>stats.h</code> 不列在这儿。</b>
+你可能会想「头文件也是文件，为什么不算」。
+因为这一行回答的问题是「<b>哪些 .cpp 要编</b>」，
+而头文件从来不单独编——它是被 <code>#include</code>
+贴进 <code>.cpp</code> 里跟着一起编的。
+列在这儿，cmake 会去试着把它当源文件编，那是不对的。
+</p>
+
+<p>
+那头文件的事谁管？下一行。
+</p>
+
+<p>
+工程名这回写的是 <code>统计表</code>——<b>中文，可以的</b>。
+它只是个标签，不进任何命令。可下一行那个 <code>report</code>
+就不同了，它是<b>要变成文件名的</b>，
+所以只能是 ASCII。为什么，这一课最后一节专门说。
+</p>
+
+<h3 id="s2-3-2">头文件去哪儿找</h3>
+
+<p>
+第六行：
+</p>
+
+<pre><code>target_include_directories(report PRIVATE include)</code></pre>
+
+<p>
+拆成三截读。
+</p>
+
+<p>
+<b><code>target_include_directories</code></b>——
+「给某个目标，添上几个找头文件的目录」。
+</p>
+
+<p>
+<b><code>report</code></b>——给谁添。就是 <code>add_executable</code>
+建出来的那个目标。这一行必须写在 <code>add_executable</code>
+<b>后面</b>：先有目标，才能为它添加设置。
+</p>
+
+<p>
+<b><code>PRIVATE include</code></b>——添哪些目录，
+以及这个「添」算谁的。
+<code>include</code> 是目录名，就是楼上那个 <code>include/</code>。
+</p>
+
+<p>
+<code>PRIVATE</code> 这个词先照着写，它的意思等 2.4 讲 <code>PUBLIC</code>
+的时候一起说——那时有个「库」要用它，两种写法的差别才看得出来。
+现在你只要知道：<b>这一行让 <code>#include "stats.h"</code>
+能找到 <code>include/stats.h</code>。</b>
+</p>
+
+<p>
+它是怎么起作用的？回去看 2.2 里那个 <code>flags.make</code>。
+加了这一行之后，<code>CXX_INCLUDES</code> 那行不再空着了，
+里面会多出一段 <code>-I</code> 打头的参数，指向 <code>include</code>。
+编译器认的就是这个 <code>-I</code>——
+它就是 1.4 里那串手动输入参数中的同一个选项。
+</p>
+
+<p>
+现在跑：
+</p>
+
+<pre><code>mkdir -p build
+cd build
+cmake ..
+make</code></pre>
+
+<pre class="out" data-label="真实输出">[ 33%] Building CXX object CMakeFiles/report.dir/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/report.dir/stats.cpp.o
+[100%] Linking CXX executable report
+[100%] Built target report</pre>
+
+<p>
+两个 <code>.cpp</code> 各编各的，最后链接成 <code>report</code>。
+这个「编译两个、链接一个」的形式，就是 1.4 讲的那三步，
+只不过现在是 cmake 替你排的。
+</p>
+
+<p>
+跑起来看看：
+</p>
+
+<pre><code>./report &lt; ../main.in</code></pre>
+
+<pre class="out" data-label="真实输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+
+<p>
+和 1.4 手动输入那三条命令编译得到的，完全相同。
+</p>
+
+<h3 id="s2-3-3">当场跑一次：忘了那一行</h3>
+
+<p>
+<code>target_include_directories</code> 这一行忘写会怎么样？
+最简洁的办法不是猜测，是删掉它运行一遍。删掉之后
+<code>cmake ..</code> <b>照样成功</b>——配置这一步不看源文件，
+它不知道 <code>main.cpp</code> 里 <code>#include</code> 了什么。
+</p>
+
+<p>
+错到 <code>make</code> 那一步才出：
+</p>
+
+<pre class="diag" data-diag="2.3-找不到头文件-err/main.cpp"><code>[ 33%] Building CXX object CMakeFiles/report.dir/main.cpp.o
+main.cpp:1:10: fatal error: stats.h: 没有那个文件或目录
+    1 | #include "stats.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make[2]: *** [CMakeFiles/report.dir/build.make:79：CMakeFiles/report.dir/main.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:87：CMakeFiles/report.dir/all] 错误 2
+make: *** [Makefile:91：all] 错误 2</code></pre>
+
+<p>
+一层一层读。
+</p>
+
+<p>
+<b>第一行</b>是 make 在报「我正在做哪一步」：
+<code>Building CXX object CMakeFiles/report.dir/main.cpp.o</code>。
+它是 g++ 那句话前面的「我开始了」。
+</p>
+
+<p>
+<b>中间那几行</b>是 g++ 自己说的，1.4 见过：
+<code>main.cpp</code> 第 1 行第 10 列，
+<code>fatal error</code>，<code>stats.h</code> 找不到。
+底下把那一行复制给你看，<code>^~~~~~~~~</code> 指向 <code>"stats.h"</code> 这几个字符。
+</p>
+
+<p>
+<b>最后三行</b>是 make 在往回传：<code>make[2]</code> 说这一步错了，
+<code>make[1]</code> 说这个目标错了，最外面那个 <code>make</code> 说
+<code>all</code> 错了。
+三个 <code>***</code> 是 make 自己表示出错的记号。
+</p>
+
+<p>
+<b>所以最后三行不是三个错，是一个错传了三层。</b>
+看报错永远看最里面那一句——<b>越靠下越笼统，越靠里越具体</b>。
+这个习惯从 1.5 起就应该有，到这儿是同一个形式。
+</p>
+
+<div class="aside warn">
+<b>为什么每次都要看那三个星号</b>
+<p>
+<code>make: *** [Makefile:91：all] 错误 2</code> 里的数字 91
+是那个<b>生成的</b> Makefile 的行号，不是你的
+<code>CMakeLists.txt</code> 的行号，也不是 <code>main.cpp</code> 的行号。
+用 91 去找是找不到的。
+真位置在上面 g++ 那一句里。
+</p>
+</div>
+
+<h3 id="s2-3-4">标准设错了</h3>
+
+<p>
+第三行 <code>set(CMAKE_CXX_STANDARD 17)</code> 设错了会怎样？
+把它改成 <code>98</code>——那是 C++ 最早那一版，
+连 <code>nullptr</code> 都还没有：
+</p>
+
+<pre class="diag" data-diag="2.3-老标准-err/main.cpp"><code>[ 50%] Building CXX object CMakeFiles/oldstd.dir/main.cpp.o
+main.cpp: In function ‘int main()’:
+main.cpp:4:14: error: ‘nullptr’ was not declared in this scope
+    4 |     int* p = nullptr;
+      |              ^~~~~~~
+make[2]: *** [CMakeFiles/oldstd.dir/build.make:79：CMakeFiles/oldstd.dir/main.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:87：CMakeFiles/oldstd.dir/all] 错误 2
+make: *** [Makefile:91：all] 错误 2</code></pre>
+
+<p>
+<code>‘nullptr’ was not declared in this scope</code>——
+「<code>nullptr</code> 这个词在这个作用域里没声明过」。
+说白一点：<b>它不认识这个词。</b>
+</p>
+
+<p>
+这一条报错值得单独讲，因为它<b>看上去不像版本问题</b>。
+同样一句「没声明过」，你要是把变量名打错了（<code>nuulptr</code>），
+报错看上去一模一样。区别在哪？
+</p>
+
+<p>
+<b>区别在于 <code>nullptr</code> 是语言自带的关键字，你不会把它打错成那样。</b>
+一句「我明明写对了呀」的「没声明过」，八成就是标准设低了——
+要么是 <code>CMAKE_CXX_STANDARD</code>，要么是别处传进来的
+<code>-std=</code>。这就是为什么这一课要专门跑一次：
+见过一次，下回才认得出。
+</p>
+
+<div class="aside">
+<b>报错里那个类似 ↘ 的符号</b>
+<p>
+<code>main.cpp: In function ‘int main()’:</code> 这一行是说
+「下面的话都是说 <code>main</code> 这个函数的」。
+它有时候会和第一条错印在同一行，看上去长；
+这一份是分行印的。
+</p>
+</div>
+
+<h3 id="s2-3-5">target 的名字只能是 ASCII</h3>
+
+<p>
+最后一件事。你 1.4 那个可执行文件现在叫 <code>report</code>，
+迁移过来直接就能用。可要是一不留神写成中文——例如：
+</p>
+
+<pre><code>add_executable(报表 main.cpp)</code></pre>
+
+<p>
+这么写，cmake 也是当场拦你——注意，它<b>停在第 4 行</b>，
+配置这一步就停了，一个源文件都没碰：
+</p>
+
+<pre class="diag" data-diag="2.3-中文目标名-err/CMakeLists.txt"><code>CMake Error at CMakeLists.txt:4 (add_executable):
+  The target name "报表" is reserved or not valid for certain CMake
+  features, such as generator expressions, and may result in undefined
+  behavior.</code></pre>
+
+<p>
+<code>The target name "报表" is reserved or not valid</code>——
+「这个名字被保留了，或者不合法」。
+</p>
+
+<p>
+为什么不行？因为 <b>target 的名字不只是个名字</b>：
+cmake 会拿它去拼文件名（<code>报表.o</code>、<code>报表</code>）、
+拼目录名、拼一串别的工具的输入。
+这些地方对「什么能用什么不能用」有硬规定，
+cmake 直接把允许的字符收在一个安全范围里：
+<b>字母、数字，加上 <code>.</code> <code>-</code> <code>_</code> <code>+</code>，
+别的都不行。</b>
+</p>
+
+<p>
+那中文就白学了？不是——看清楚了，<b>它拦的是 target 名</b>。
+换成工程名、换成字符串，中文都能待：
+</p>
+
+<pre><code>project(统计表 LANGUAGES CXX)
+add_executable(report main.cpp stats.cpp)</code></pre>
+
+<p>
+工程名叫 <code>统计表</code>（中文，可以），
+target 叫 <code>report</code>（ASCII，必须），
+而程序跑起来照旧打中文——那跟 cmake 没关系了。
+</p>
+
+<p>
+cmake 这一点上还有一个更细微的易错点：<b>它能阻止中文 target 名，
+可它拦不住中文变量名</b>——那个报出来的错比这一条难懂得多。
+2.4 最后一节拿它当场跑一次。
+</p>
+
+<h3 id="s2-3-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-5</div>
+  <p>
+    把 1.3、1.4 那份两文件工程迁移到 cmake 上。目录这样安排：
+    <code>main.cpp</code>、<code>stats.cpp</code> 在根目录，
+    <code>stats.h</code> 放进 <code>include/</code>，
+    再放一份 <code>main.in</code>（那十个分数，一行，空格隔开）。
+  </p>
+  <p>
+    <code>main.in</code> 里是这一行十个分数：
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <p>
+    <code>CMakeLists.txt</code> 照这一课那份写：四行加
+    <code>target_include_directories</code>。
+    <b>注意 <code>add_executable</code> 里只列两个 <code>.cpp</code>，
+    不要写 <code>stats.h</code>。</b>
+  </p>
+  <p>
+    然后 <code>mkdir -p build</code> → <code>cd build</code> →
+    <code>cmake ..</code> → <code>make</code> →
+    <code>./report &lt; ../main.in</code>。
+  </p>
+  <p>
+    第 ③ 步刚跑完的时候，看一眼
+    <code>CMakeFiles/report.dir/flags.make</code>：
+    <code>CXX_INCLUDES</code> 那行该不再空着了，
+    里面有一段 <code>-I</code> 指向 <code>include</code>。
+  </p>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-5/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        就是 2.3 那一课那份：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(report main.cpp stats.cpp)
+
+target_include_directories(report PRIVATE include)</code></pre>
+
+      <p>
+        目录结构如下：<code>main.cpp</code>、<code>stats.cpp</code>、
+        <code>main.in</code> 在根目录，<code>stats.h</code>
+        放进 <code>include/</code>。
+      </p>
+      <p>
+        三处值得对一下：
+      </p>
+      <p>
+        ① <b><code>add_executable</code> 里只有两个
+        <code>.cpp</code>，没有 <code>stats.h</code>。</b>
+        这一行回答的是「哪些 .cpp 需要编译」，头文件从不单独编译——
+        列进去反而会让 cmake 尝试将它当作源文件编译。
+      </p>
+      <p>
+        ② <code>report</code> 是 ASCII，<code>统计表</code> 是中文。
+        工程名可以是中文（它只是个标签），
+        <b>target 名不行</b>（它要变成文件名）。
+      </p>
+      <p>
+        ③ <code>target_include_directories(report PRIVATE include)</code>
+        那一行必须在 <code>add_executable</code> <b>后面</b>——
+        先有目标，才能给它添加内容。
+      </p>
+      <p>
+        执行完第 ③ 步，去查看
+        <code>CMakeFiles/report.dir/flags.make</code>：
+        <code>CXX_INCLUDES</code> 那行不再空着，
+        里面有一段 <code>-I</code> 指向 <code>include</code>。
+        <b>那一行就是编译器真正取得的内容</b>，
+        用它和 1.4 手动编写的 <code>-I</code> 对照，应当一致。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-6</div>
+  <p>
+    接练习 2-5。把 <code>target_include_directories</code> 那一行
+    <b>整行删掉</b>，然后：
+  </p>
+  <p>
+    <code>rm -rf build</code> → <code>mkdir -p build</code> →
+    <code>cd build</code> → <code>cmake ..</code>。
+  </p>
+  <p>
+    第 ④ 步<b>会成功</b>——配置这一步不看源文件，
+    它不知道你把头文件目录忘了。接着 <code>make</code>，错在这儿才出来：
+  </p>
+  <p>
+    读的时候按这一课讲的三层读：第一行是 make 说「我在编哪一步」，
+    中间几行是 g++ 说的真错，最后三行是一个错传了三层。
+    看完把那一行加回去，再 <code>make</code> 一次，恢复正常。
+  </p>
+  <pre class="diag" data-diag="2.3-找不到头文件-err/main.cpp"><code>[ 33%] Building CXX object CMakeFiles/report.dir/main.cpp.o
+main.cpp:1:10: fatal error: stats.h: 没有那个文件或目录
+    1 | #include "stats.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make[2]: *** [CMakeFiles/report.dir/build.make:79：CMakeFiles/report.dir/main.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:87：CMakeFiles/report.dir/all] 错误 2
+make: *** [Makefile:91：all] 错误 2</code></pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-6-err/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        删掉的是最后那一行，别的都不动：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(report main.cpp stats.cpp)</code></pre>
+
+      <p>
+        关键在于<b>错误在哪一步出现</b>：
+      </p>
+      <p>
+        <code>cmake ..</code> <b>会成功</b>。配置这一步不读源文件，
+        它不知道 <code>main.cpp</code> 里 <code>#include</code> 了什么，
+        自然不知道你少给了一个目录。
+      </p>
+      <p>
+        错到 <code>make</code> 才出，报的是
+        <code>main.cpp:1:10: fatal error: stats.h: 没有那个文件或目录</code>。
+      </p>
+      <pre class="diag"><code>[ 33%] Building CXX object CMakeFiles/report.dir/main.cpp.o
+main.cpp:1:10: fatal error: stats.h: 没有那个文件或目录
+    1 | #include "stats.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make[2]: *** [CMakeFiles/report.dir/build.make:79：CMakeFiles/report.dir/main.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:87：CMakeFiles/report.dir/all] 错误 2
+make: *** [Makefile:91：all] 错误 2</code></pre>
+      <p>
+        读那段报错按三层读：
+      </p>
+      <p>
+        第一行 <code>Building CXX object …main.cpp.o</code>
+        是 make 输出「正在编译哪一步」；
+        中间那几行（<code>fatal error</code> 加底下那行
+        <code>^~~~~~~~~</code>）是 g++ 给出的<b>实际错误</b>；
+        最后三行是 make 把同一个错误逐层向上报告了三层——
+        <b>不是三个错误，是同一个错误逐层向上报告了三次。</b>
+      </p>
+      <p>
+        那三行里的 <code>Makefile:91</code> 是<b>生成出来的</b>
+        Makefile 的行号，不是你编写的任何内容的行号，
+        照着它去找是找不到的。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>一个多文件的工程——几个 <code>.cpp</code> 列在一行里，
+  头文件目录用 <code>target_include_directories</code> 指出来，
+  标准用 <code>set</code> 定住。
+  <b>下一课把常用的十几条命令一次认全。</b>
+</p>
+
+</section>
+
+<!-- §2-4 -->
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>常用的那十几条命令</h2>
+
+<p>
+到这儿你已经会写四行，还会加头文件目录了。
+剩下的常用命令还有十来条——这一课把它们摆成一张「命令桌」，
+一条一条实际运行一遍。运行完你就有了自己的一份模板，
+以后开新工程照着改。
+</p>
+
+<p>
+先把桌子的样子摆出来。这是一份 <code>CMakeLists.txt</code>，
+编号是这一课的讲法，不是 cmake 的规矩：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+
+# ① project：工程名、版本号、用什么语言。版本号后面的 configure_file 要用
+project(命令桌 VERSION 1.2.0 LANGUAGES CXX)
+
+# ② set：定义一个名字并保存值，使用时写 ${名字}
+set(DESC_TEXT "命令桌")
+
+# ③ message：打印一句。STATUS 是「正常信息」那一档
+message(STATUS "开始配置：${DESC_TEXT}")
+
+# ④ option + if：一个开关，第二个位置是默认值
+option(EXTRA_LINE "打开的话程序多打一行" ON)
+if(EXTRA_LINE)
+  message(STATUS "要多打一行：开")
+else()
+  message(STATUS "要多打一行：关")
+endif()
+
+# ⑤ find_package：在本机查找「多线程库的位置」
+find_package(Threads REQUIRED)
+message(STATUS "线程找着了：${Threads_FOUND}")
+message(STATUS "还要额外链的线程库：${CMAKE_THREAD_LIBS_INIT}")
+
+# ⑥ add_subdirectory：把子目录那份 CMakeLists.txt 也拉进来一起配
+add_subdirectory(工具库)
+
+# ⑦ configure_file：拿一个模板生成一个头文件，@变量@ 会被换掉
+configure_file(include/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h @ONLY)
+
+# ⑧ add_compile_options：给这个目录底下所有编译命令都加一段参数
+add_compile_options(-Wall)
+
+# ⑨ add_executable 加两个 target_*：这才是「要编什么、去哪儿找头文件、链谁」
+add_executable(desk main.cpp)
+target_include_directories(desk PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/生成)
+target_link_libraries(desk PRIVATE tools Threads::Threads)
+
+# ⑩ install：说明「安装到其他目录」时复制哪些文件
+install(TARGETS desk DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h DESTINATION include)</code></pre>
+
+<p>
+一共二十来行，十件事。一条一条来。
+</p>
+
+<h3 id="s2-4-1">一张命令桌</h3>
+
+<p>
+先说清楚这份工程比 2.3 多出来的两个文件，否则下面几条讲不通。
+</p>
+
+<p>
+<b>一样是子目录。</b> <code>工具库/</code> 里有一对
+<code>util.h</code> / <code>util.cpp</code>，还有<b>它自己的一份
+<code>CMakeLists.txt</code></b>：
+</p>
+
+<pre><code>add_library(tools STATIC util.cpp)
+
+target_include_directories(tools PUBLIC .)</code></pre>
+
+<p>
+三行里只有两行有用：<code>add_library</code> 建一个<b>库</b>
+（<code>STATIC</code> 是「静态库」，就是 1.4 里那些 <code>.o</code>
+打成一个包，叫 <code>libtools.a</code>），
+<code>PUBLIC</code> 让「用这个库的人也能找到它的头文件」。
+</p>
+
+<p>
+<b>另一样是模板文件。</b> <code>include/version.h.in</code> 不是头文件，
+是一张<b>等着被填的表格</b>：
+</p>
+
+<pre><code>#define VERSION_TEXT "@PROJECT_VERSION@"
+#define DESC_TEXT "@DESC_TEXT@"
+
+#cmakedefine EXTRA_LINE</code></pre>
+
+<p>
+那些 <code>@…@</code> 是占位符，配置的时候会被填充。
+填充后得到的内容（后面 ⑦ 要讲）才是一份真正的头文件，
+摆在 <code>build/</code> 里——<b>不是源码目录</b>，
+所以 ⑨ 里还得专门告诉编译器去哪儿找它。
+</p>
+
+<p>
+这份工程一共六份文件，摆开是这样（两份
+<code>CMakeLists.txt</code> 和那份模板都贴在旁边了）：
+</p>
+
+<pre><code>命令桌/
+├── CMakeLists.txt
+├── main.cpp
+├── include/
+│   └── version.h.in
+└── 工具库/
+    ├── CMakeLists.txt
+    ├── util.h
+    └── util.cpp</code></pre>
+
+<p>
+剩下三份是普通程序，新建一个目录，照着输入：
+</p>
+
+<pre><code>// 工具库/util.h
+#ifndef TOOLS_H
+#define TOOLS_H
+
+int 双倍(int x);
+
+#endif</code></pre>
+
+<pre><code>// 工具库/util.cpp
+#include "util.h"
+
+int 双倍(int x) {
+    return x * 2;
+}</code></pre>
+
+<pre><code>// main.cpp
+#include &lt;iostream&gt;
+
+#include "version.h"
+#include "util.h"
+
+int main() {
+    std::cout &lt;&lt; "版本 " &lt;&lt; VERSION_TEXT &lt;&lt; " —— " &lt;&lt; DESC_TEXT &lt;&lt; std::endl;
+    std::cout &lt;&lt; "工具库说：双倍(21) = " &lt;&lt; 双倍(21) &lt;&lt; std::endl;
+#ifdef EXTRA_LINE
+    std::cout &lt;&lt; "这一行是那个开关打开的。" &lt;&lt; std::endl;
+#endif
+    return 0;
+}</code></pre>
+
+<p>
+三份里最值得看的是 <code>main.cpp</code>：它 <code>#include</code> 的两份
+头文件都不在源码目录里——<code>version.h</code> 是 ⑦ 生成到
+<code>build/</code> 里去的，<code>util.h</code> 在子目录
+<code>工具库/</code> 里。<b>两份都得靠 CMakeLists.txt 里那两行指路，
+编译器才找得着</b>，这正是 ⑨ 那两句在干的事。
+</p>
+
+<p>
+从 <code>cmake ..</code> 开始：
+</p>
+
+<pre><code>mkdir -p build
+cd build
+cmake ..</code></pre>
+
+<pre class="out" data-label="真实输出">-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- 开始配置：命令桌
+-- 要多打一行：开
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- 线程找着了：TRUE
+-- 还要额外链的线程库：
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: build</pre>
+
+<p>
+中间那几行 <code>--</code> 打头的，有几句就是你写的
+<code>message</code> 打出来的。底下按编号一条条对上。
+</p>
+
+<h3 id="s2-4-2">①–④ 名字、变量、打印、开关</h3>
+
+<p>
+<b>① <code>project(命令桌 VERSION 1.2.0 LANGUAGES CXX)</code></b>
+</p>
+
+<p>
+比 2.2 那份多了 <code>VERSION 1.2.0</code>——给工程编个版本号。
+这个数字不是摆设：<code>project</code> 会顺便把它存进几个变量里，
+最常用的是 <code>PROJECT_VERSION</code>（值是
+<code>1.2.0</code>）。⑦ 的模板里那个
+<code>@PROJECT_VERSION@</code> 填的就是它——
+程序里打出来的「版本 1.2.0」是这么来的。
+</p>
+
+<p>
+工程名还是中文，照旧没问题。
+</p>
+
+<p>
+<b>② <code>set(DESC_TEXT "命令桌")</code></b>
+</p>
+
+<p>
+<code>set</code> 是「定义一个名字并保存值」。
+<code>DESC_TEXT</code> 是<b>你自己定义的</b>名字（2.2 里
+<code>CMAKE_CXX_STANDARD</code> 是 cmake 本来就认的名字，
+这一条是你自己定义的）。
+取的时候写 <code>${DESC_TEXT}</code>——<code>${}</code> 是「把里面的名字
+换成它的值」。注意引号：值里有空格、有中文，
+一律拿引号包起来，不然它会把空格当分隔符切开。
+</p>
+
+<p>
+<b>③ <code>message(STATUS "开始配置：${DESC_TEXT}")</code></b>
+</p>
+
+<p>
+往屏幕上打一句。配置的时候打出来的是：
+</p>
+
+<pre class="out" data-label="真实输出">-- 开始配置：命令桌</pre>
+
+<p>
+前面那个 <code>--</code> 是 <code>STATUS</code> 加上的，
+不用自己写。这就是「在 cmake 里打印」的办法，
+往后调试配置脚本全靠它——**报错之前先把它打出来看看**。
+</p>
+
+<p>
+<b>④ <code>option</code> 加 <code>if</code></b>
+</p>
+
+<pre><code>option(EXTRA_LINE "打开的话程序多打一行" ON)
+if(EXTRA_LINE)
+  message(STATUS "要多打一行：开")
+else()
+  message(STATUS "要多打一行：关")
+endif()</code></pre>
+
+<p>
+<code>option</code> 是<b>一个开关</b>。
+三个位置：名字、一句给人看的说明、默认值。
+默认值决定它开还是关。
+</p>
+
+<p>
+<code>if</code> / <code>else</code> / <code>endif</code> 是 cmake
+自己的条件语句。写法上有个和 C++ 不一样的地方值得留意：
+<b>cmake 里判断一个开关，直接写名字，不写 <code>${}</code>。</b>
+写成 <code>if(${EXTRA_LINE})</code> 在某些情况下会读成
+<code>if(ON)</code>、某些情况下读成 <code>if()</code>——那就不对了。
+<b>判断条件写名字，取值才写 <code>${}</code>。</b>
+</p>
+
+<p>
+开的时候屏幕上是这一句（上面那份真实输出里的第二句）：
+</p>
+
+<pre class="out" data-label="真实输出">-- 要多打一行：开</pre>
+
+<p>
+<code>option</code> 真正的用处不在 <code>if</code>，在于<b>它可以在命令行上改</b>：
+</p>
+
+<pre><code>cmake .. -DEXTRA_LINE=OFF</code></pre>
+
+<p>
+<code>-D</code> 是「把哪个名字定成什么值」。
+这个开关还会往下传进程序里：⑦ 的模板里那行
+<code>#cmakedefine EXTRA_LINE</code>，开的时候生成
+<code>#define EXTRA_LINE</code>，关的时候变成一句注释——
+<code>main.cpp</code> 里 <code>#ifdef</code> 就判得出来。
+<b>配置时的开关和程序里的宏，就是这么连起来的。</b>
+练习 2-8 就要你关一次看看。
+</p>
+
+<h3 id="s2-4-3">⑤–⑥ 找库、拉子目录</h3>
+
+<p>
+<b>⑤ <code>find_package(Threads REQUIRED)</code></b>
+</p>
+
+<p>
+「在本机查找多线程库的位置」。
+<code>REQUIRED</code> 是「找不到就直接报错停下」，
+不写的话它只是找不到，后面链接的时候才会报错——
+那时候的报错难懂得多。<b>凡是你确定要用的，都写上 <code>REQUIRED</code>。</b>
+</p>
+
+<p>
+它做的事是把结果填进几个变量里，然后你就可以
+<code>message</code> 出来看：
+</p>
+
+<pre><code>message(STATUS "线程找着了：${Threads_FOUND}")
+message(STATUS "还要额外链的线程库：${CMAKE_THREAD_LIBS_INIT}")</code></pre>
+
+<pre class="out" data-label="真实输出">-- 线程找着了：TRUE
+-- 还要额外链的线程库：</pre>
+
+<p>
+第一句是 <code>TRUE</code>，找着了。
+</p>
+
+<p>
+第二句是<b>空的</b>——这一句值得停一下。早年用多线程，
+编译和链接都得显式加上 <code>-pthread</code>，那个变量里就是这个。
+现在的 C 库已经把线程相关功能并入，<b>不需要额外链接任何内容</b>，
+所以变量是空的。
+</p>
+
+<p>
+空的不是错。真要在别处（比如一份老一点的文档）看见
+<code>CMAKE_THREAD_LIBS_INIT</code>，知道它为什么可能是空的就行。
+</p>
+
+<p>
+<code>find_package</code> 找到的库怎么使用？过一会儿 ⑨ 的
+<code>target_link_libraries</code> 里会写 <code>Threads::Threads</code>——
+带两个冒号的那种写法，就是
+<code>find_package</code> 交给你的「结账方式」。
+</p>
+
+<p>
+屏幕上前头还有两行：
+</p>
+
+<pre class="out" data-label="真实输出">-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success</pre>
+
+<p>
+这就是上面那句「C 库已经把线程并进去了」——
+<code>find_package(Threads)</code> 不是去翻目录找文件，
+而是<b>真的编一个小程序试一下</b>，试出来能跑，
+才下结论。所以它多花一点时间，也所以它准。
+</p>
+
+<p>
+<b>⑥ <code>add_subdirectory(工具库)</code></b>
+</p>
+
+<p>
+「<code>工具库/</code> 那个目录里也有一份
+<code>CMakeLists.txt</code>，一并读进来」。
+子目录那份里建了个库 <code>tools</code>，
+建完之后<b>上层就能用了</b>——⑨ 里的
+<code>target_link_libraries(desk PRIVATE tools …)</code> 链的就是它。
+</p>
+
+<p>
+工程分成几个目录、每个目录一份
+<code>CMakeLists.txt</code>，是常规做法。
+这一课只有一层，第 2.5 课那份真实工程也是这个路子，
+只是目录更多。
+</p>
+
+<h3 id="s2-4-4">⑦–⑧ 生成头文件、加参数</h3>
+
+<p>
+<b>⑦ <code>configure_file(include/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h @ONLY)</code></b>
+</p>
+
+<p>
+拿模板生成一份真文件。三个位置：
+</p>
+
+<ul>
+  <li>模板在哪儿：<code>include/version.h.in</code>；</li>
+  <li>生成到哪儿：<code>${CMAKE_CURRENT_BINARY_DIR}/生成/version.h</code>；</li>
+  <li><code>@ONLY</code>：只换 <code>@…@</code> 那种写法。</li>
+</ul>
+
+<p>
+<code>CMAKE_CURRENT_BINARY_DIR</code> 是「我现在这个目录，
+对应的 build 里那一层」——在 <code>build/</code> 里就是
+<code>build/</code> 自己。所以生成出来的是
+<code>build/生成/version.h</code>。<b>它不在源码目录里</b>，
+这就是 ⑨ 里还得专门加一行告诉编译器去哪儿找的原因。
+</p>
+
+<p>
+生成出来的那份，正文长这样：
+</p>
+
+<pre class="out" data-label="真实输出">#define VERSION_TEXT "1.2.0"
+#define DESC_TEXT "命令桌"
+
+#define EXTRA_LINE</pre>
+
+<p>
+对一对：<code>@PROJECT_VERSION@</code> 变成了 <code>1.2.0</code>
+（① 那个版本号），<code>@DESC_TEXT@</code> 变成了
+<code>命令桌</code>（② 那个变量），
+<code>#cmakedefine EXTRA_LINE</code> 变成了
+<code>#define EXTRA_LINE</code>（④ 那个开关的开状态）。
+</p>
+
+<p>
+<code>@ONLY</code> 这个后缀先照着写。它的意思是「只识别 <code>@…@</code>，
+不认 <code>${…}</code>」——不写的话，
+模板里凡是 <code>${}</code> 形式的文本也会被替换，
+而你那份头文件里可能正好有不该被换的。
+</p>
+
+<p>
+<b>⑧ <code>add_compile_options(-Wall)</code></b>
+</p>
+
+<p>
+给编译命令加参数。<code>-Wall</code> 是 1.4 里你手动输入的那个——
+到这儿它终于有地方放了。
+</p>
+
+<p>
+加没加上，不用猜，去 <code>flags.make</code> 里看：
+</p>
+
+<pre><code>cat CMakeFiles/desk.dir/flags.make</code></pre>
+
+<pre class="out" data-label="真实输出">CXX_FLAGS = -Wall</pre>
+
+<p>
+这一行现在有内容了。回头对照 2.2 那份：
+那时它是 <code>-std=gnu++17</code>，
+现在多了一个 <code>-Wall</code>。
+</p>
+
+<p>
+<b>这里有个会出错的细节。</b> 子目录那个库的
+<code>flags.make</code> 里，<code>CXX_FLAGS</code> 是<b>空的</b>：
+</p>
+
+<pre><code>cat 工具库/CMakeFiles/tools.dir/flags.make</code></pre>
+
+<pre class="out" data-label="真实输出">CXX_FLAGS =</pre>
+
+<p>
+同一份 <code>CMakeLists.txt</code> 里的
+<code>add_compile_options(-Wall)</code>，为什么管不到子目录？
+</p>
+
+<p>
+<b>因为它写晚了。</b> ⑤ 那一行是「给<b>从现在起</b>这个目录底下
+所有编译命令都加一段参数」，而 ⑥ 的
+<code>add_subdirectory</code> 排在它<b>前面</b>——
+子目录在那一刻已经加入，这一行无法影响它。
+</p>
+
+<p>
+这不是猜的：把 <code>add_compile_options(-Wall)</code>
+那一行<b>挪到 <code>add_subdirectory</code> 上面</b>，
+再删掉 <code>build</code> 重新配一遍，那个
+<code>flags.make</code> 里的 <code>CXX_FLAGS</code>
+就变成 <code>-Wall</code> 了。
+</p>
+
+<p>
+记住这一条规则：<b>cmake 是一行一行读下来的，
+写在前面的管不到后面的，写在后面的也管不到前面的。</b>
+这条规律后面还会再遇到一次（⑩ 的 <code>install</code>
+也是「谁在前谁生效」）。
+</p>
+
+<h3 id="s2-4-5">⑨–⑩ 编译什么、安装到哪</h3>
+
+<p>
+<b>⑨ 三行连着写</b>
+</p>
+
+<pre><code>add_executable(desk main.cpp)
+target_include_directories(desk PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/生成)
+target_link_libraries(desk PRIVATE tools Threads::Threads)</code></pre>
+
+<p>
+这一组是三件事，都得有：
+</p>
+
+<ul>
+  <li><code>add_executable</code>：要编什么。这个 2.2 就会了。</li>
+  <li><code>target_include_directories</code>：头文件去哪儿找。
+    这儿指的是 ⑦ 生成的那个目录——不然
+    <code>main.cpp</code> 里的 <code>#include "version.h"</code> 找不到。</li>
+  <li><code>target_link_libraries</code>：链谁。
+    <code>tools</code> 是 ⑥ 那个子目录建的库，
+    <code>Threads::Threads</code> 是 ⑤ 找出来的。</li>
+</ul>
+
+<p>
+这三个命令都以 <code>target_</code> 开头，都以目标的<b>名字</b>
+作为第一个参数。这个形式是 cmake 当前的规范写法：
+<b>每个目标自己管自己的事</b>，
+而不是在一个全局的地方一次说清所有目标的事——
+后者（像第 2.5 课里那片
+<code>include_directories(...)</code>）是老写法，
+一份文件里目标多了会互相串。你现在起手就照新的写。
+</p>
+
+<p>
+再说 <code>PRIVATE</code>。2.3 里出现过一次，当时说「先照着写」，
+现在可以说了：
+</p>
+
+<div class="aside">
+<b>PUBLIC 和 PRIVATE，一句话分工</b>
+<p>
+<code>target_link_libraries(desk <b>PRIVATE</b> tools)</code> 的意思是
+「<b>我自己</b>要用 <code>tools</code>，但用我 <code>desk</code> 的人
+不需要知道这件事」。
+</p>
+<p>
+子目录那份里写的是
+<code>target_include_directories(tools <b>PUBLIC</b> .)</code>：
+「<b>用我这个库的人</b>也得能找到我的头文件」——
+因为 <code>main.cpp</code> 里要 <code>#include "util.h"</code>，
+而那个文件在 <code>工具库/</code> 里。
+写 <code>PRIVATE</code> 就找不到，编译当场报
+「util.h: 没有那个文件或目录」。
+</p>
+<p>
+记法：<b>给自己用的写 PRIVATE，给用你的人也留一份的写 PUBLIC。</b>
+</p>
+</div>
+
+<p>
+然后编译：
+</p>
+
+<pre><code>make</code></pre>
+
+<pre class="out" data-label="真实输出">[ 25%] Building CXX object 工具库/CMakeFiles/tools.dir/util.cpp.o
+[ 50%] Linking CXX static library libtools.a
+[ 50%] Built target tools
+[ 75%] Building CXX object CMakeFiles/desk.dir/main.cpp.o
+[100%] Linking CXX executable desk
+[100%] Built target desk</pre>
+
+<p>
+注意第一行和第三行：<b>子目录那个库先编</b>，
+<code>libtools.a</code> 打出来，然后才轮到 <code>desk</code>。
+顺序不用你操心——⑨ 里说了 <code>desk</code> 链
+<code>tools</code>，cmake 就知道谁在前。
+</p>
+
+<p>
+跑起来：
+</p>
+
+<pre><code>./desk</code></pre>
+
+<pre class="out" data-label="真实输出">版本 1.2.0 —— 命令桌
+工具库说：双倍(21) = 42
+这一行是那个开关打开的。</pre>
+
+<p>
+三行，三个来路：版本号来自 ①，工具库来自 ⑥，
+最后一行来自 ④ 那个开关（关掉它这行就没了）。
+</p>
+
+<p>
+<b>⑩ 两行 <code>install</code></b>
+</p>
+
+<pre><code>install(TARGETS desk DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h DESTINATION include)</code></pre>
+
+<p>
+第一行说明「安装的时候把 <code>desk</code> 复制到 <code>bin/</code>」，
+第二行说明「把生成的头文件复制到 <code>include/</code>」。
+</p>
+
+<p>
+<b><code>install</code> 不是「现在就复制」</b>——它只是<b>登记</b>，
+说明「将来安装的时候，哪些文件复制到哪里」。
+实际复制由另外一条命令完成：
+</p>
+
+<pre><code>cmake --install . --prefix 安装目录</code></pre>
+
+<pre class="out" data-label="真实输出">-- Install configuration: ""
+-- Installing: build/安装目录/bin/desk
+-- Installing: build/安装目录/include/version.h</pre>
+
+<p>
+<code>--prefix</code> 是「安装到哪个目录」。
+两行 <code>Installing</code> 就是 ⑩ 登记的那两个文件。
+</p>
+
+<p>
+为什么要分成「登记」和「实际安装」两步？因为安装到哪个目录、
+什么时候安装，是<b>使用的人</b>的事，不是写工程的人的事。
+你只负责说明「我这个工程有哪些文件需要安装」，
+接手的人想安装到 <code>/usr/local</code> 还是安装到自己的主目录，
+他自己定。
+</p>
+
+<div class="aside warn">
+<b>失败别慌</b>
+<p>
+这个开关默认是开的。真要让程序少打一行，
+<code>cmake .. -DEXTRA_LINE=OFF</code>
+（记得先把 <code>build</code> 删了，或者就着现在的
+<code>build</code> 重配一次也行——<code>-D</code> 是命令行给的，
+优先级比文件里写的默认值高）。
+</p>
+</div>
+
+<h3 id="s2-4-6">中文能待在哪儿</h3>
+
+<p>
+这一课那份文件里，中文到处都是：工程名叫 <code>命令桌</code>、
+变量是 <code>DESC_TEXT</code>（值才是中文）、
+message 打的是中文、连打印出来的头文件里都是中文。
+2.3 却说了「target 名字只能是 ASCII」。到底哪儿能、哪儿不能？
+</p>
+
+<p>
+补一个 2.3 没跑的：<b>变量名也不能用中文。</b>
+而且这个错比 target 名那个难懂得多。看：
+</p>
+
+<pre><code>set(说明文字 "统计表（第 2 版）")
+message(STATUS "这次建的是：${说明文字}")</code></pre>
+
+<pre class="diag" data-diag="2.4-中文名字-err/CMakeLists.txt"><code>CMake Error at CMakeLists.txt:6 (message):
+  Syntax error in cmake code at
+
+    CMakeLists.txt:6
+
+  when parsing string
+
+    这次建的是：${说明文字}
+
+  Invalid character ('�') in a variable name: ''</code></pre>
+
+<p>
+一层一层读这份报错，它是这么给的：
+</p>
+
+<ul>
+  <li><code>CMakeLists.txt:6 (message)</code>：出在第 6 行，
+    出在 <code>message</code> 这一句上；</li>
+  <li><code>Syntax error in cmake code at CMakeLists.txt:6</code>：
+    第 6 行有个语法错；</li>
+  <li><code>when parsing string 这次建的是：${说明文字}</code>：
+    <b>在解析这个字符串的时候</b>；</li>
+  <li><code>Invalid character ('�') in a variable name: ''</code>：
+    在一个变量名里读到了非法字符。</li>
+</ul>
+
+<p>
+最后那句才是真相：<b>它是在 <code>${}</code> 里面读变量名的时候
+报出来的。</b>
+所以那个 <code>'�'</code> 不是乱码——它就是它读不出来的那个中文字，
+cmake 连原样吐回来都做不到。
+</p>
+
+<p>
+还有一个后果值得注意。<code>set(说明文字 "…")</code> 那一句在<b>第 5 行</b>，
+可报错说的是<b>第 6 行</b>。因为 cmake 读一行是一行：
+第 5 行 <code>set</code> 的时候，<code>说明文字</code> 只是被当成
+「一串字」存下来，它不检查这串字合法不合法；
+到第 6 行真正要用 <code>${}</code> 去<b>查找</b>这个名字了，才会报错。
+</p>
+
+<p>
+<b>所以报错指的位置是「用它」的地方，不是「写它」的地方。</b>
+这句话在别的地方也成立——真实工程里一份文件几百行，
+报错指的那一行常常不是你刚写的那一行。
+</p>
+
+<p>
+把这一课的中文规矩收成一张表：
+</p>
+
+<ul>
+  <li><b>可以</b>：工程名（<code>project</code> 的第一个位置）、
+    字符串的值、<code>message</code> 打的话、注释；</li>
+  <li><b>不行</b>：target 的名字、变量的名字——<b>凡是 cmake
+    要拿去当名字用的，都得是 ASCII</b>；</li>
+  <li><b>还可以</b>：源文件名（<code>stats.cpp</code> 一直是中文，
+    从头到尾没事）。</li>
+</ul>
+
+<p>
+为什么 target 名和变量名要卡这么死？因为它们会流到 cmake
+<b>外面</b>去：拼文件名、拼命令行参数、拼给别家工具看的输入。
+字符串和注释只在 cmake 内部使用，
+不会传出，也就没有人检查它是什么字符。
+</p>
+
+<p>
+练习 2-7 就是把这个错改对：中文该留的留着，
+不该留的换掉。
+</p>
+
+<h3 id="s2-4-7">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-7</div>
+  <p>
+    下面这份是从 2.3 那份改出来的，一眼就能看出它编不过。
+    把该改的改掉，让它编过，而且配置的时候屏幕上要打出
+    <code>-- 这次建的是：统计表（第 2 版）</code>。
+  </p>
+  <pre><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+
+set(说明文字 "统计表（第 2 版）")
+message(STATUS "这次建的是：${说明文字}")
+
+add_executable(报表 main.cpp stats.cpp)
+target_include_directories(report PRIVATE include)</code></pre>
+  <p>
+    <b>要求：</b>那句 <code>message</code> 打出来的话一个字都不许变
+    （还是「这次建的是：统计表（第 2 版）」），
+    工程名也还是 <code>统计表</code>。
+    改完 <code>rm -rf build</code> 重新配置一遍，
+    确认那行真的打出来了。
+  </p>
+  <p>
+    文件就是 2.3 那份两文件工程：<code>main.cpp</code>、
+    <code>stats.cpp</code>、<code>include/stats.h</code>、
+    还有 <code>main.in</code>。
+  </p>
+  <p>
+    <code>main.in</code> 里是这一行十个分数：
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-7/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        改对之后是这样：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(统计表 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+
+set(DESC_TEXT "统计表（第 2 版）")
+message(STATUS "这次建的是：${DESC_TEXT}")
+
+add_executable(report main.cpp stats.cpp)
+target_include_directories(report PRIVATE include)</code></pre>
+
+      <p>
+        两处改动，分别对应两种错：
+      </p>
+      <p>
+        ① <b><code>说明文字</code> 换成 ASCII 的
+        <code>DESC_TEXT</code>。</b>变量名不能用中文。
+        注意<b>只换了名字，值没动</b>——
+        <code>"统计表（第 2 版）"</code> 还是中文，
+        所以那句 <code>message</code> 输出的文字一个字没有变化。
+      </p>
+      <p>
+        ② <b><code>报表</code> 换成 <code>report</code>。</b>
+        target 名不能用中文。
+      </p>
+      <p>
+        配置完成那一步，屏幕上应当有一行
+        <code>-- 这次建的是：统计表（第 2 版）</code>。
+        核对一下：<code>--</code> 是 <code>STATUS</code> 加的，
+        后面那一段是你编写的字符串，<code>${DESC_TEXT}</code> 被替换为它的值。
+      </p>
+      <p>
+        <b>这道题的正题是分清「名字」和「值」。</b>
+        cmake 卡的是名字（变量名、target 名），
+        中文可以出现在值里、字符串里、工程名里。
+        练习里那句「那句话一个字都不许变」就是指向这里：
+        值不变，名字换掉。
+      </p>
+      <p>
+        另外注意那个 <code>message</code> 的行号。原文里它出过错，
+        报的是<b>第 6 行</b>，而 <code>set</code> 在第 5 行——
+        因为 <code>set</code> 的时候只把它当作一段字符保存，
+        到 <code>${}</code> 去查这个名字时才报错。
+        <b>报错指的位置是「用它」的地方，不是「写它」的地方。</b>
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-8</div>
+  <p>
+    这一课的「命令桌」工程，把 ④ 那个开关的默认值从 <code>ON</code>
+    改成 <code>OFF</code>，然后重新配一遍
+    （<code>cd build</code> → <code>cmake ..</code> → <code>make</code>）。
+  </p>
+  <p>
+    改完看两处：
+  </p>
+  <p>
+    ① 配置的时候，<code>message</code> 打出来的那句应该从「开」变「关」。
+  </p>
+  <p>
+    ② <code>build/生成/version.h</code> 里，原来那行
+    <code>#define EXTRA_LINE</code> 应该不见了，
+    换成一句注释。
+  </p>
+  <p>
+    再 <code>./desk</code>，程序少打一行。
+  </p>
+  <pre class="out" data-label="预期输出">版本 1.2.0 —— 命令桌
+工具库说：双倍(21) = 42</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-8/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        就改 ④ 那一个词，<code>ON</code> 改成 <code>OFF</code>：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+
+# ① project：工程名、版本号、用什么语言。版本号后面的 configure_file 要用
+project(命令桌 VERSION 1.2.0 LANGUAGES CXX)
+
+# ② set：定义一个名字并保存值，使用时写 ${名字}
+set(DESC_TEXT "命令桌")
+
+# ③ message：打印一句。STATUS 是「正常信息」那一档
+message(STATUS "开始配置：${DESC_TEXT}")
+
+# ④ option + if：一个开关，第二个位置是默认值
+option(EXTRA_LINE "打开的话程序多打一行" OFF)
+if(EXTRA_LINE)
+  message(STATUS "要多打一行：开")
+else()
+  message(STATUS "要多打一行：关")
+endif()
+
+# ⑤ find_package：在本机查找「多线程库的位置」
+find_package(Threads REQUIRED)
+message(STATUS "线程找着了：${Threads_FOUND}")
+message(STATUS "还要额外链的线程库：${CMAKE_THREAD_LIBS_INIT}")
+
+# ⑥ add_subdirectory：把子目录那份 CMakeLists.txt 也拉进来一起配
+add_subdirectory(工具库)
+
+# ⑦ configure_file：拿一个模板生成一个头文件，@变量@ 会被换掉
+configure_file(include/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h @ONLY)
+
+# ⑧ add_compile_options：给这个目录底下所有编译命令都加一段参数
+add_compile_options(-Wall)
+
+# ⑨ add_executable 加两个 target_*：这才是「要编什么、去哪儿找头文件、链谁」
+add_executable(desk main.cpp)
+target_include_directories(desk PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/生成)
+target_link_libraries(desk PRIVATE tools Threads::Threads)
+
+# ⑩ install：说明「安装到其他目录」时复制哪些文件
+install(TARGETS desk DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/生成/version.h DESTINATION include)</code></pre>
+
+      <p>
+        然后 <code>cd build</code> → <code>cmake ..</code> → <code>make</code>。
+        这一次<b>不需要删除 build</b>——你修改的是文件里的默认值，
+        cmake 会重新读一遍这份 CMakeLists.txt。
+      </p>
+      <p>
+        （要是想不删除文件、直接修改，也可以由命令行给出：
+        <code>cmake .. -DEXTRA_LINE=OFF</code>。
+        <code>-D</code> 给的优先级比文件里写的默认值高。）
+      </p>
+      <p>
+        两处要看的：
+      </p>
+      <p>
+        ① 配置那一步，<code>message</code> 那句从
+        <code>-- 要多打一行：开</code> 变成
+        <code>-- 要多打一行：关</code>；
+      </p>
+      <p>
+        ② <code>build/生成/version.h</code> 里，
+        原来那行 <code>#define EXTRA_LINE</code> 没了，
+        换成一句注释（<code>/* #undef EXTRA_LINE */</code> 这样）。
+        <b>这就是 <code>#cmakedefine</code> 的作用</b>：
+        开的时候生成 <code>#define</code>，
+        关的时候生成注释——<code>main.cpp</code> 里那个
+        <code>#ifdef</code> 就判得出来。
+      </p>
+      <p>
+        再 <code>./desk</code>，程序少输出一行。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>一份二三十行的 <code>CMakeLists.txt</code>——
+  建库、拉子目录、找系统库、生成头文件、加编译参数、
+  说明如何安装。常用的都在这儿了。
+  <b>下一课不写新的：读一份真在跑的、一百七十多行的。</b>
+</p>
+
+</section>
+
+<!-- §2-5 -->
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>读一份真实的 CMakeLists</h2>
+
+<p>
+前面四课你写的是自己搭的小工程，一份 <code>CMakeLists.txt</code>
+二三十行。这一课换个方向：读一份真在跑的——
+<b>175 行</b>，一个装了好几个库、有三十个源文件、
+要编 CUDA 的工程。
+</p>
+
+<p>
+这一课不要求你能写出来。要求是：<b>拿到这么一份，能看懂它在干什么、
+能照着里面已有的写法改一处。</b>
+</p>
+
+<h3 id="s2-5-1">先说清楚这是哪一份</h3>
+
+<p>
+这是一份实际使用的文件，从一个开源项目中复制来的。
+工程名和几个目录名、文件名改过，别的一个字没动——
+为什么要改，和这一课没关系，你当它本来就叫这个名就行。
+</p>
+
+<p>
+它编不起来，在这台机器上。因为那份工程要 CUDA、要 ROS 那一套、
+要 TensorRT、要 OpenCV 和 PCL，这台机器上一样都没有。
+<b>所以这一课不运行它，只阅读它。</b>
+你手上没有那份工程也没关系，下面该列出的都列出来了。
+</p>
+
+<div class="aside">
+<b>为什么第 2 部分要用它收尾</b>
+<p>
+因为「会写四行」和「能读懂一份真的」中间隔着一大截，
+而这一部分迟早要跨过去：你进入一个长期维护的工程，
+面对的就是这类文件。
+</p>
+<p>
+这一课要教的是<b>读法</b>：先扫一张地图、
+再认出你会的那些、把不会的标上「先跳过」、
+最后照着它的写法改一处。
+</p>
+</div>
+
+<h3 id="s2-5-2">一张地图</h3>
+
+<p>
+175 行不是从头读到尾的。先看它分了哪几块，每块管什么。
+这是这份文件的分段：
+</p>
+
+<ul>
+  <li><b>1–3 行</b>：最小版本、构建类型、工程名——三行铺垫；</li>
+  <li><b>4–20 行</b>：一串 <code>find_package</code>，
+    七个库，一次全找出来；</li>
+  <li><b>21–22 行</b>：两句 <code>message</code>，
+    把 CUDA 的路径打到屏幕上；</li>
+  <li><b>23–28 行</b>：一串编译参数，
+    里面藏着这一课要讲的 <code>CUDA_GEN_CODE</code>；</li>
+  <li><b>30–51 行</b>：ROS 那一套（消息定义、包声明）——
+    <b>先跳过</b>；</li>
+  <li><b>52–75 行</b>：一大片 <code>include_directories</code> /
+    <code>link_directories</code>——老写法，分散在各处；</li>
+  <li><b>77–108 行</b>：源文件清单，三十个文件放在一个变量里；</li>
+  <li><b>110–112 行</b>：编主程序——<b>全文件的中心就是这里</b>；</li>
+  <li><b>114–118 行</b>：另外两个小程序，各一行写完；</li>
+  <li><b>120–150 行</b>：五条命令，全是在为主程序添加设置——
+    <code>target_*</code> 那一类，其中三条没见过；</li>
+  <li><b>152–167 行</b>：两段 <code>install</code>；</li>
+  <li><b>169–175 行</b>：一个 <code>macro</code>，加一次调用。</li>
+</ul>
+
+<p>
+<b>拿到一份长文件，第一遍就干这个。</b> 别一行一行抠——
+先把它切成块，标出「这块我认识」「这块先跳过」。
+切完你再看，175 行实际上分为七八个部分，
+其中三块一共只占十几行，而这三块是整份文件的骨架。
+</p>
+
+<h3 id="s2-5-3">你认识的那些</h3>
+
+<p>
+先看开头，1 到 28 行：
+</p>
+
+<pre><code>cmake_minimum_required(VERSION 3.9.0)
+SET(CMAKE_BUILD_TYPE "Release")
+project(vision2026 LANGUAGES CXX CUDA)
+find_package(OpenCV REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  roslib
+  std_msgs
+  sensor_msgs
+  cv_bridge
+  message_generation
+  message_runtime
+  image_transport
+)
+find_package(Eigen3 REQUIRED)
+find_package(PCL REQUIRED)
+find_package(CUDA 11 REQUIRED)
+find_package(fmt REQUIRED)
+find_package(spdlog REQUIRED)
+message("CUDA_LIBRARIES:${CUDA_LIBRARIES}")
+message("CUDA_INCLUDE_DIRS:${CUDA_INCLUDE_DIRS}")
+include_directories()
+add_compile_options(-std=c++17)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,stack-size=16000000")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -pthread -lpthread -O3  -Wall -fstack-protector-all")
+set(CUDA_GEN_CODE "-gencode=arch=compute_89,code=sm_89")
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}  -std=c++17 -O3 ⋯ -g -w ${CUDA_GEN_CODE}")</code></pre>
+
+<p>
+一段一段认。前三行你全会：
+<code>cmake_minimum_required</code>（2.2 第一行）、
+<code>project</code>（2.2 第二行，这儿多了一个语言
+<code>CUDA</code>）、<code>SET(CMAKE_BUILD_TYPE "Release")</code>
+（这是 <code>set</code>，写法照旧，只是大写了——
+<b>cmake 的命令名不区分大小写</b>，<code>SET</code> 和
+<code>set</code> 是一回事；这份文件里两种写法都有）。
+</p>
+
+<p>
+<code>CMAKE_BUILD_TYPE</code> 这个名字 cmake 本来就认，
+<code>Release</code> 是「要优化过的版本」（编出来跑得快、
+不好调试），相对的还有 <code>Debug</code>。
+</p>
+
+<p>
+<b>接着七行 <code>find_package</code>。这个 2.4 学过。</b>
+<code>catkin</code> 那一行跟了一串组件名，是
+「找这个包，顺便把它的九个组件也要上」的写法，
+和 2.4 里 <code>find_package(Threads REQUIRED)</code> 是同一件事，
+只是需要的库更多。这些包分别是什么，这一课不展开，
+你只要看出<b>形式</b>：<b>七行完全相同的内容，在查找七套依赖。</b>
+</p>
+
+<p>
+两句 <code>message</code> 也是老熟人：把
+<code>${CUDA_LIBRARIES}</code> 打出来给人看——
+调试配置的时候用的，和 2.4 那句
+<code>message(STATUS …)</code> 一个用法，
+只是它没写 <code>STATUS</code>，所以打出来不带 <code>--</code>。
+</p>
+
+<p>
+23 行 <code>include_directories()</code> 是<b>空的</b>——
+括号里什么都没有，等于没写。这是改来改去留下的痕迹，
+不影响使用。真实文件里这类内容很多，
+<b>看见了别慌，它不是给你出的题。</b>
+</p>
+
+<p>
+24 行 <code>add_compile_options(-std=c++17)</code> 是 2.4 那条命令，
+你写过 <code>add_compile_options(-Wall)</code>，
+这次加的是标准。注意——
+<b>它这儿是拿 <code>add_compile_options</code> 加标准，
+而不是像你 2.2 那样写 <code>set(CMAKE_CXX_STANDARD 17)</code>。</b>
+两种都能用，效果差不多；这一份是老写法。
+</p>
+
+<p>
+25、26 行是两个 <code>set</code>，往
+<code>CMAKE_EXE_LINKER_FLAGS</code>（链接器的参数）和
+<code>CMAKE_CXX_FLAGS</code>（编译器的参数）里<b>追加</b>内容。
+看那个 <code>${}</code>：它把原来的值取出来，
+接上新的，再存回去——不然就把原来的一把抹掉了。
+</p>
+
+<p>
+第二段里的 <code>-pthread -lpthread -O3 -Wall</code> 你认得，
+<code>-O3</code> 是「往死里优化」。
+<b>注意这儿和 2.4 的对照：</b>你那份是
+<code>add_compile_options(-Wall)</code> 一条命令，
+它是把一串参数塞进一个变量里。<b>两种写法干的是同一件事。</b>
+</p>
+
+<p>
+<b>27 行是这一课的重点之一：</b>
+</p>
+
+<pre><code>set(CUDA_GEN_CODE "-gencode=arch=compute_89,code=sm_89")</code></pre>
+
+<p>
+这一句 2.2 那一节说过「<code>set</code> 是定义一个名字并保存值」。
+这儿存的是一个编译参数，第二句
+<code>set(CUDA_NVCC_FLAGS …)</code> 把它拼进 CUDA 的编译参数里
+（那个 <code>${CUDA_GEN_CODE}</code>）。
+上面那行原样是 <b>97 个字符</b>，页面上把 <code>-O3</code> 和 <code>-g</code>
+中间那对 <code>-Xcompiler -fPIC</code> 拿 <code>⋯</code> 省了——
+<code>${CUDA_GEN_CODE}</code> 原样留着，因为下面要讲它。
+</p>
+
+<p>
+<code>-gencode=arch=compute_89,code=sm_89</code> 这句本身，
+是告诉 CUDA 编译器「给哪一代显卡编代码」——
+<code>89</code> 是显卡的算力代号。
+<b>换一块显卡，这个数字就得跟着换。</b>
+</p>
+
+<p>
+这正是「这一行要改」的位置。为什么是它，
+和 README 那份说明有关——先往下看。
+</p>
+
+<p>
+再看 77 到 112 行，这是全文件的心脏：
+</p>
+
+<pre><code>set(vision2026_source
+  main.cpp
+  Modules/TRTInference/TRTInfer/CUDA/preprocess.cu
+  Modules/TRTInference/TRTInfer/src/Inference.cpp
+  Modules/TRTGenerator/TRTGenerator/src/Generator.cpp
+  Modules/Camera/src/camera.cpp
+  Modules/Camera/src/VideoRecorder.cpp
+  Modules/Common/src/algorithm.cpp
+  Modules/Detectors/src/TargetDetector.cpp
+  ⋯（中间还有十九行，全是同一个形式）
+  Modules/DsTracker/src/DsTracker.cpp
+  Modules/Logger/src/ExpLog.cpp
+  ../ThirdParty/Json/jsoncpp.cpp
+  )
+
+cuda_add_executable(vision2026
+  ${vision2026_source}
+)</code></pre>
+
+<p>
+<b>这个形式你现在完全理解了。</b>
+<code>set</code> 起个名字 <code>vision2026_source</code>，
+把三十个源文件列进去（一行一个，这就是
+2.1 里你手写 Makefile 最烦的那件事，这儿也一样要一行一行列）；
+然后 <code>cuda_add_executable</code> 拿这个名字把程序编出来。
+</p>
+
+<p>
+<code>cuda_add_executable</code> 是 <code>add_executable</code>
+的 CUDA 版本——因为这份工程的源文件里有 <code>.cu</code>
+（CUDA 的源文件，清单里第二行那个
+<code>preprocess.cu</code>），普通的 <code>add_executable</code>
+不认。<b>认出来了吗：它就是 2.2 第四行那个命令，换了名字。</b>
+</p>
+
+<p>
+清单里还有两个细节值得扫一眼：最后一条引的是工程外头那个
+json 库，路径以 <code>../</code> 开头——
+源文件可以在工程目录之外，写相对路径就行；以及那些
+<code>Modules/某个模块/src/</code> 这样的层层目录——
+<b>一个模块一个目录</b>，三十个源文件就这么归置的。
+</p>
+
+<p>
+最后看 120 到 150 行：
+</p>
+
+<pre><code>target_sources(vision2026
+  PRIVATE
+  ${vision2026_source}
+)
+set_target_properties(vision2026 PROPERTIES
+  CUDA_SEPARABLE_COMPILATION ON)
+add_dependencies(vision2026 ${catkin_EXPORTED_TARGETS})
+target_include_directories(vision2026
+  PUBLIC
+  ${catkin_INCLUDE_DIRS}
+  logs)
+target_link_libraries(vision2026
+  ${catkin_LIBRARIES}
+  ${LIBS} ${CUDA_LIBRARIES}
+  ${CUDA_cudadevrt_LIBRARY}
+  ${OpenCV_LIBS}
+  ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES}
+  libmkl_rt.so
+  pthread
+  libm.so
+  libdl.so
+  MVSDK
+  Eigen3::Eigen
+  cuda
+  spdlog
+  fmt::fmt-header-only
+  cudart
+  nvonnxparser
+  libnvinfer.so
+  libnvinfer_plugin.so
+)</code></pre>
+
+<p>
+<b><code>target_include_directories</code> 和
+<code>target_link_libraries</code> 你 2.4 刚写过</b>——
+这一段就是它们，只是名单长得多：
+链接了二十一个库，从 ROS 到 OpenCV 到 PCL 到英特尔那个数学库。
+</p>
+
+<p>
+<code>PUBLIC</code> 和 <code>PRIVATE</code> 也在，
+2.4 那张表对得上。
+</p>
+
+<p>
+剩下三个是新面孔，一句话一个：
+</p>
+
+<ul>
+  <li><code>target_sources(… PRIVATE …)</code>——
+    「再给这个目标添点源文件」。110 行那个
+    <code>cuda_add_executable</code> 不已经列过了吗？<b>是列过了，
+    这儿又写一遍，重复了。</b>真文件里常有这种重复，
+    不报错，也不好删——先认出它是什么就行。</li>
+  <li><code>set_target_properties(… PROPERTIES CUDA_SEPARABLE_COMPILATION ON)</code>——
+    「给这个目标设个属性」。这一次开的是 CUDA 的一个编译方式，
+    和 C++ 没关系，<b>先跳过</b>。</li>
+  <li><code>add_dependencies(… ${catkin_EXPORTED_TARGETS})</code>——
+    「编译我之前，先把这几个目标构建好」。<b>先跳过</b>，
+    知道它管「顺序」就够了。</li>
+</ul>
+
+<p>
+<b>这一段读下来，你应该有个感觉：一多半是你认识的。</b>
+不认识的那几个，都是某个具体库带来的附加动作，
+换个工程就没有了。
+</p>
+
+<h3 id="s2-5-4">先跳过的那些</h3>
+
+<p>
+还有两块明说「先跳过」的。
+</p>
+
+<p>
+<b>第一块，52 到 75 行那一大片路径。</b>
+长这样（二十几行，一次贴全）：
+</p>
+
+<pre><code># cuda
+include_directories(/user/local/cuda/include)
+link_directories(/user/local/cuda/lib)
+# cudnn
+include_directories(/user/local/cuda/cudnn/v8.0.4/include)
+link_directories(/user/local/cuda/cudnn/v8.0.4/lib64)
+# Tensorrt
+include_directories(/usr/local/TensorRT/include)
+link_directories(/usr/local/TensorRT/lib)
+# mkl
+include_directories(${MKLROOT}/include)
+link_directories(${MKLROOT}/lib/intel64)
+# fmt
+include_directories(${FMT_INCLUDE_DIRS})
+
+include_directories(
+  # include
+  ${catkin_INCLUDE_DIRS}
+  ${CUDA_INCLUDE_DIRS}
+)
+include_directories(${EIGEN3_INCLUDE_DIRS})
+link_directories(
+  ${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})</code></pre>
+
+<p>
+<code>include_directories</code> 你 2.3 学过——只不过你写的是
+<code>target_include_directories</code>，前面多了个
+<code>target_</code>、后面跟了个目标名。
+</p>
+
+<p>
+<b>少了那个词，意思就变了：</b>
+<code>include_directories</code> 是「<b>这份文件里，从这儿往下
+所有的目标</b>都加上这个目录」，不说给谁。
+一份文件里目标一多，就会互相串——
+这就是 2.4 说的「老写法」。
+</p>
+
+<p>
+这一片连着一二十行，每隔两三行插一句 <code># cudnn</code>、
+<code># Tensorrt</code> <code># mkl</code> 这样的注释当小标题，
+说明底下那两行是给哪个库用的——
+<b>那是人加的，cmake 里 <code>#</code> 到行尾都是注释。</b>
+一块一块叠上来，也是改来改去留下的。
+</p>
+
+<p>
+这一片有个地方值得停一下。开头那几行
+<code>/user/local/cuda/…</code>——<b>写错了，
+应该是 <code>/usr</code>，少了个 <code>s</code>。</b>
+这台机器上压根没有 <code>/user</code> 这个目录。
+</p>
+
+<p>
+再往下看 <code># Tensorrt</code> 底下那两行：
+<code>/usr/local/TensorRT/…</code>，这个是<b>对的</b>。
+同一片里两种写法并排放着，正好比一比——
+<b>错的不是「手写路径」这件事，而是那个 <code>s</code> 漏写了。</b>
+</p>
+
+<p>
+可这份文件照样编得过。因为 cmake 写下一行
+<code>include_directories(某个不存在的路径)</code> 的时候，
+<b>它不会去检查那个目录在不在</b>——写下来就是写下来了，
+真的用不用得上，是后面编译器那一步的事。
+CUDA 的头文件另有来源（70 行那个
+<code>${CUDA_INCLUDE_DIRS}</code>，是
+<code>find_package(CUDA)</code> 问出来的），
+所以这几行错着也不影响。
+</p>
+
+<p>
+<b>这条规律记住：cmake 里路径写错了往往不报错。</b>
+少一个 <code>s</code>、多一个空格，它都不报错。
+所以头文件真找不到的时候，先别怀疑编译器——
+把你写的路径和真实路径对一遍。
+</p>
+
+<p>
+<b>第二块，30 到 51 行那段 ROS 的。</b>
+里面有 <code>add_message_files</code>、
+<code>generate_messages</code>、<code>catkin_package</code>——
+这三个词你一个都没见过，<b>因为它们不属于 cmake</b>，
+是 ROS 那套工程工具加进来的。
+</p>
+
+<p>
+<b>识别办法：看名字像不像你学过的那些。</b>
+你学过的命令一共就那么些：<code>project</code>、
+<code>set</code>、<code>message</code>、<code>option</code>、
+<code>if</code>、<code>find_package</code>、
+<code>add_subdirectory</code>、<code>configure_file</code>、
+<code>add_compile_options</code>、<code>add_executable</code>、
+<code>add_library</code>、<code>target_*</code>、
+<code>install</code>。不在这张名单里的，多半是某个库带来的，
+<b>先跳过，不影响你读懂骨架。</b>
+</p>
+
+<p>
+最后那二十几行也扫一眼（152 到 175 行）：
+</p>
+
+<pre><code>install(TARGETS vision2026
+	ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+	)
+
+install(DIRECTORY
+  Config
+  launch
+  logs
+  models
+  params
+  Record
+  ExpResultDir
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+	)
+
+macro(remove_warnings)
+  add_definitions(-Wno-deprecated-declarations
+    -Wno-unused-but-set-variable
+    -Wno-unused-variable)
+endmacro()
+
+remove_warnings()</code></pre>
+
+<p>
+第一段 <code>install(TARGETS …)</code> 你 2.4 写过，
+这儿是实际运行的版本：安装位置不是一个固定的目录，
+而是 ROS 给的那串变量。
+</p>
+
+<p>
+第二段 <code>install(DIRECTORY …)</code> 是「整个目录一起复制」：
+<code>Config</code>、<code>launch</code>、<code>models</code>
+这些是配置文件和模型文件，安装的时候一并复制。
+</p>
+
+<p>
+最后那个 <code>macro</code> 是个新写法（「定义一小段可以重复使用的内容」），
+<b>但你猜得出它干什么</b>：里面三行都是
+<code>-Wno-…</code>，<code>W</code> 是 warning，
+<code>no</code> 是不要——「这几种警告别报了」。
+名字叫 <code>remove_warnings</code>，也是这个意思。
+最后一行 <code>remove_warnings()</code> 是调用它。
+</p>
+
+<p>
+<b>这一课最想让你带走的就是这个能力：不认识的命令，
+靠名字和上下文猜出它大概干什么，然后决定「要不要现在看懂」。</b>
+175 行里真正要看懂的，比看上去少得多。
+</p>
+
+<h3 id="s2-5-5">README 让新人改的三处</h3>
+
+<p>
+一份工程除了代码，通常还有一份 README，告诉新人上手要改什么。
+这份工程的 README 里有一节「使用前准备」，其中一段长这样：
+</p>
+
+<pre>* 环境配置完成后，需根据运算平台及环境修改src下CMakeLists.txt
+
+  * 特别注意事项：
+  * 应根据设备显卡型号及其算力修改第20行 CUDA_GEN_CODE:
+  * 例：
+    * RTX 3060 : -gencode=arch=compute_86,code=sm_86 ;
+    * RTX 3070 : -gencode=arch=compute_86,code=sm_86 ;
+    * RTX 2080 : -gencode=arch=compute_75,code=sm_75 ;
+* 若不使用MKL，注释掉
+  * src/vision2026/CMakeLists.txt ->
+    * 34 include_directories(/opt/intel/oneapi/mkl/latest/include)、
+    * 35 link_directories(/opt/intel/oneapi/mkl/latest/lib/intel64)、
+    * 108 libmkl_rt.so</pre>
+
+<p>
+<b>它给了三个行号。三个都不对。</b>
+</p>
+
+<ul>
+  <li>说 <code>CUDA_GEN_CODE</code> 在<b>第 20 行</b>——
+    打开文件一看，是<b>第 27 行</b>；
+    第 20 行是另一句 <code>find_package</code>；</li>
+  <li>说 MKL 那两行在<b>第 34、35 行</b>——
+    实际在<b>第 62、63 行</b>；</li>
+  <li>说 <code>libmkl_rt.so</code> 在<b>第 108 行</b>——
+    实际在<b>第 137 行</b>。第 108 行是源文件清单收尾的那个
+    <code>)</code>，跟 MKL 一点关系都没有。</li>
+</ul>
+
+<p>
+不止行号。README 说那两行写的是
+<code>/opt/intel/oneapi/mkl/latest/include</code>，
+而文件里现在是
+<code>${MKLROOT}/include</code>——
+一个环境变量，连路径都不写了。
+拿 README 里那串路径去文件里搜，一个字都搜不着。
+</p>
+
+<div class="aside warn">
+<b>为什么会这样，怎么办</b>
+<p>
+<b>因为代码在动，README 不动。</b>
+上面增加了一行 <code>find_package</code>，
+底下所有内容就向下移动一行；这样移动了七八回，
+README 里那几个数字就全错位了。
+</p>
+<p>
+这不是这份工程特有的毛病，是<b>所有</b>
+写行号的文档都会遇到的事。
+</p>
+<p>
+所以：<b>README 说「第几行」的时候，别去数行，去搜名字。</b>
+</p>
+<p>
+用编辑器搜 <code>CUDA_GEN_CODE</code>，
+它落在哪一行就是哪一行；
+搜 <code>libmkl_rt.so</code>，同理。
+名字比行号稳——名字是内容，行号只是个位置。
+</p>
+</div>
+
+<p>
+<b>这就是练习 2-9 要你练的最后一件事。</b>
+改一处真文件，靠的是搜名字，不是数行。
+</p>
+
+<p>
+还有一句要说清楚：<b>上面那三个行号，是这份文件写这篇课文时的样子。</b>
+你自己手上那份工程，行号可能又变了。
+这不是课文写错了——<b>这正好是那一课的结论：行号靠不住。</b>
+</p>
+
+<h3 id="s2-5-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 2-9</div>
+  <p>
+    照着这份真实工程的骨架，搭一个小小的工程。
+    目录长这样：
+  </p>
+  <pre><code>小工程/
+├── CMakeLists.txt
+├── main.cpp
+├── main.in
+└── Modules/
+    └── 统计/
+        ├── include/
+        │   └── stats.h
+        └── src/
+            └── stats.cpp</code></pre>
+  <p>
+    <code>CMakeLists.txt</code> 要照真实工程那套写：
+    ① <code>project</code> 带上 <code>VERSION</code>；
+    ② 把源文件列表放进一个变量（像
+    <code>set(vision2026_source …)</code> 那样），
+    名字你自己起；③ <code>add_executable</code> 用那个变量；
+    ④ <code>target_include_directories</code> 指向
+    <code>Modules/统计/include</code>。
+  </p>
+  <p>
+    源文件就是 2.3 那份两文件的，挪到
+    <code>Modules/统计/</code> 底下。
+    可执行文件叫 <code>stats</code>（ASCII，别用中文）。
+  </p>
+  <p>
+    <code>main.in</code> 里是这一行十个分数：
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <p>
+    <b>跑之前先猜一下</b>：<code>make</code> 打出来的那几行里，
+    编译 <code>stats.cpp</code> 的那一行，
+    路径应该是什么形式？
+  </p>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-9/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        按照真实工程的结构编写：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+
+project(统计表 VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+add_compile_options(-Wall)
+
+# 源文件清单。一个 .cpp 一行，路径跟着文件走。
+set(stats_source
+    main.cpp
+    Modules/统计/src/stats.cpp)
+
+add_executable(stats ${stats_source})
+
+target_include_directories(stats PRIVATE Modules/统计/include)</code></pre>
+
+      <p>
+        四件事都照做了：<code>project</code> 带 <code>VERSION</code>、
+        源文件存入一个变量、<code>add_executable</code> 用那个变量、
+        <code>target_include_directories</code> 指向
+        <code>Modules/统计/include</code>。
+      </p>
+      <p>
+        运行之前那个问题的答案是：
+      </p>
+      <pre class="out" data-label="真实输出">[ 66%] Building CXX object CMakeFiles/stats.dir/Modules/统计/src/stats.cpp.o</pre>
+      <p>
+        <b>路径是整条相对路径</b>——上面那行里，
+        从 <code>Modules/</code> 一直到文件名都带着，不是光一个文件名。
+        因为对 <code>build/</code> 来说，源码在上一层再拐进
+        <code>Modules/</code>，它就是这样记录的。
+      </p>
+      <p>
+        这一条往后有用：编译报错里输出的路径，
+        是<b>从 build 那一层往上算的</b>。
+        看到一长串路径不必担心，从末尾向前阅读，
+        找到是哪个模块的哪个文件就行。
+      </p>
+      <p>
+        还有一处和 2.3 不同、但你可能没注意：
+        <code>target_include_directories</code> 里写的是
+        <code>Modules/统计/include</code>，
+        而 <code>main.cpp</code> 里还是
+        <code>#include "stats.h"</code>。
+        <b>写 <code>-I</code> 的时候给到「那一层目录」，
+        文件里就只写文件名。</b>
+        两者拼起来才是完整路径。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-10</div>
+  <p>
+    接练习 2-9。给它加上 <code>install</code>：
+    程序装到 <code>bin/</code>。
+  </p>
+  <p>
+    然后装一次，<b>并且跑那个装出来的程序</b>——
+    别跑 <code>build</code> 里原来那个，
+    要跑装到新地方的那一份：
+  </p>
+  <p>
+    <code>cmake --install . --prefix 装到这儿</code>，
+    然后 <code>./装到这儿/bin/stats &lt; ../main.in</code>。
+  </p>
+  <pre class="out" data-label="样例输入">92 85 77 60 58 100 73 88 95 64</pre>
+  <p>
+    两处要看：安装那一步打出来的
+    <code>-- Installing:</code> 后面跟的路径，
+    是不是你 <code>--prefix</code> 给的那个；
+    还有跑出来的结果，该和上一题一模一样。
+  </p>
+  <pre class="out" data-label="预期输出">分数      92  85  77  60  58 100  73  88  95  64
+总分     792
+平均    79.2
+最高     100
+最低      58
+优         3
+良         2
+中         2
+及格       2
+不及格     1</pre>
+  <details class="ans" data-dir="示例代码/答案/练习2-10/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        加上 <code>install</code> 那一行：
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+
+project(统计表 VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+add_compile_options(-Wall)
+
+# 源文件清单。一个 .cpp 一行，路径跟着文件走。
+set(stats_source
+    main.cpp
+    Modules/统计/src/stats.cpp)
+
+add_executable(stats ${stats_source})
+
+target_include_directories(stats PRIVATE Modules/统计/include)
+
+# 安装到其他目录时复制哪些文件：可执行文件进 bin
+install(TARGETS stats DESTINATION bin)</code></pre>
+
+      <p>
+        然后安装，再运行安装出来的那一份：
+      </p>
+      <pre><code>cmake --install . --prefix 安装位置
+./安装位置/bin/stats &lt; ../main.in</code></pre>
+      <p>
+        <b>注意最后运行的是 <code>./安装位置/bin/stats</code>，
+        不是 <code>./stats</code>。</b>
+        这是这道题的正题：<code>install</code> 登记的内容
+        真的被复制过去了，而且复制过去那一份是可以运行的——
+        它不依赖 <code>build</code> 里的任何内容。
+      </p>
+      <p>
+        安装那一步输出的 <code>-- Installing:</code> 后面，
+        路径应当从你为 <code>--prefix</code> 指定的内容开始。
+      </p>
+      <p>
+        <code>install</code> 那个 <code>DESTINATION bin</code>
+        是<b>相对</b>于 <code>--prefix</code> 的：
+        <code>bin</code> 是「安装到前缀下的 bin 目录里」。
+        这就是为什么同一份工程，换个 <code>--prefix</code>
+        就能安装到其他位置——工程里一个字符都不需要修改。
+      </p>
+      <p>
+        另外记录一句：真正安装到系统里的时候，
+        <code>bin/</code> 那份程序必须能够直接输入名字运行，
+        所以 <code>bin</code> 这个目录名是约定俗成的，
+        不要改成其他名称。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>一份二三十行的 <code>CMakeLists.txt</code>，
+  建库、拉子目录、找依赖、生成头文件、装到别处都行；
+  拿到一份一百七十多行的真文件，也能扫一遍就说出它在干什么、
+  该改的地方在哪儿。
+</p>
+
+<p class="can">
+  <b>第 2 部分到这儿。</b>下一部分回到代码本身：
+  容器——<code>vector</code> 再进一步、
+  <code>std::string</code>、<code>map</code>、<code>set</code>，
+  以及这么多种到底怎么挑。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="01-一个程序几个文件.html">← 第 1 部分 · 一个程序，几个文件</a>
+  <a class="next" href="03-容器.html">第 3 部分 · 容器 →</a>
+</nav>
+
+</main>
+
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

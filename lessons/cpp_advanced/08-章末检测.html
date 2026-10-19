@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 8 部分 · 章末检测 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a href="07-串口.html">第 7 部分</a>
+      <a class="active" href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html" aria-current="page">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 8 部分 · 章末检测</div>
+  <a class="toc-l" href="#l8-1"><span class="n">8.1</span>例题 · 训练日志汇总</a>
+  <a class="toc-sub" href="#s8-1-1">先拆题：一份日志派了九件事</a>
+  <a class="toc-sub" href="#s8-1-2">第一版：九件事都做了</a>
+  <a class="toc-sub" href="#e8-1">例题 · 它打的，和你要的</a>
+  <a class="toc-sub" href="#s8-1-3">病根：坏行被当成了结尾</a>
+  <a class="toc-sub" href="#s8-1-4">改法一：把读取单独拿出来</a>
+  <a class="toc-sub" href="#s8-1-5">改法二：拆成三个文件</a>
+  <a class="toc-sub" href="#s8-1-6">回头看一眼：这一遍用了什么</a>
+  <a class="toc-l" href="#l8-2"><span class="n">8.2</span>五道检测题</a>
+  <a class="toc-sub" href="#s8-2-1">练习 8-1 · 拆成三个文件</a>
+  <a class="toc-sub" href="#s8-2-2">练习 8-2 · 词频统计</a>
+  <a class="toc-sub" href="#s8-2-3">练习 8-3 · 只可移动的缓冲区</a>
+  <a class="toc-sub" href="#s8-2-4">练习 8-4 · 读配置</a>
+  <a class="toc-sub" href="#s8-2-5">练习 8-5 · 从字节流里取帧</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 8 部分</div>
+  <h1>章末检测</h1>
+  <p class="part-lead">
+    前七部分讲完了。这一部分<b>不教新语法</b>——一道例题，五道检测题。
+    例题把一份训练日志从单文件程序改造成多文件工程，每一步都标出它来自哪一部分；
+    五道题各盯住一个方向，最后一道回到串口。
+    考的不是记性，是<b>能不能把学过的东西按顺序排好</b>。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l8-1">
+<h2><span class="no">8.1</span>例题 · 训练日志汇总</h2>
+
+<p>
+这一课不给新语法。它把一道题从头做到尾，<b>每一步都告诉你这一步是从第几部分来的</b>。
+下面五道题照着这个走法做——它们只是换了个样子，底下的东西是一样的。
+</p>
+
+<div class="aside tip">
+  <b>题目</b>
+  <p>
+    输入文件 <code>records.txt</code>，每行三个字段：日期、编号、分数。
+  </p>
+  <p>
+    输出场次、总分、平均分（保留一位小数）、最高分（连同日期和编号），
+    再按编号汇总，把结果写进 <code>report.txt</code>。
+  </p>
+  <p>
+    文件打不开、某一行格式不对、文件为空时，打印固定的中文提示，
+    <b>不要继续算下去</b>。
+  </p>
+  <p>样例输入：</p>
+  <pre class="out" data-label="样例输入">2026-10-01 1 87
+2026-10-01 2 76
+2026-10-02 1 91
+2026-10-02 2 68
+2026-10-03 1 79
+2026-10-03 2 95</pre>
+</div>
+
+<h3 id="s8-1-1">先拆题：一份日志派了九件事</h3>
+
+<p>
+题目只有三句话，派下来的活是九件。先把它们一件一件摆出来：
+</p>
+
+<table>
+  <tr><th>要干的事</th><th>在哪一课学的</th></tr>
+  <tr>
+    <td>打开文件，逐行读入</td>
+    <td>6.1 的 <code>std::ifstream</code> 与 <code>&gt;&gt;</code></td>
+  </tr>
+  <tr>
+    <td>把多条记录存下来</td>
+    <td>3.1 的 <code>std::vector</code>、3.2 的 <code>std::string</code></td>
+  </tr>
+  <tr>
+    <td>按编号汇总</td>
+    <td>3.4 的 <code>std::map</code></td>
+  </tr>
+  <tr>
+    <td>找最高分</td>
+    <td>第 4 部分的遍历与比较</td>
+  </tr>
+  <tr>
+    <td>平均分保留一位小数</td>
+    <td>第 1 部分的整数运算；本课用「乘 10、四舍五入、再拆开」的办法</td>
+  </tr>
+  <tr>
+    <td>写报告文件</td>
+    <td>6.2 的 <code>std::ofstream</code></td>
+  </tr>
+  <tr>
+    <td>文件自动关闭，报告对象不可拷贝</td>
+    <td>5.3 的 RAII 与 <code>= delete</code></td>
+  </tr>
+  <tr>
+    <td>文件打不开、行格式不对、文件为空</td>
+    <td>6.3 的 <code>throw</code> / <code>try</code> / <code>catch</code>、6.4 的 <code>std::runtime_error</code></td>
+  </tr>
+  <tr>
+    <td>拆成多个文件，用 CMake 构建</td>
+    <td>第 1 部分的头文件与多文件、第 2 部分的 <code>CMakeLists.txt</code></td>
+  </tr>
+</table>
+
+<p>
+九件事，分散在第 1 到第 6 部分。第 7 部分的内容留给最后一道检测题。
+</p>
+
+<h3 id="s8-1-2">第一版：九件事都做了</h3>
+
+<p>
+第一版没有拆文件，所有事情都在 <code>main</code> 里。它先把功能做出来：
+</p>
+
+<pre><code>// 第一版：所有事情都写在 main 里，没有错误处理。只用于和最后的工程对照。
+// 它不参与 CMakeLists.txt 的构建。
+
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Record {
+    std::string date;
+    int id;
+    int score;
+};
+
+int main() {
+    std::ifstream in("records.txt");
+    std::vector&lt;Record&gt; records;
+    Record r;
+    while (in &gt;&gt; r.date &gt;&gt; r.id &gt;&gt; r.score) {
+        records.push_back(r);
+    }
+
+    int total = 0;
+    for (const Record&amp; x : records) {
+        total += x.score;
+    }
+    double average = total * 1.0 / records.size();
+
+    const Record* best = &amp;records[0];
+    for (const Record&amp; x : records) {
+        if (x.score &gt; best-&gt;score) {
+            best = &amp;x;
+        }
+    }
+
+    std::map&lt;int, int&gt; by_id;
+    for (const Record&amp; x : records) {
+        by_id[x.id] += x.score;
+    }
+
+    int tenths = static_cast&lt;int&gt;(average * 10.0 + 0.5);
+    std::cout &lt;&lt; "训练日志汇总\n";
+    std::cout &lt;&lt; "场次：" &lt;&lt; records.size() &lt;&lt; "\n";
+    std::cout &lt;&lt; "总分：" &lt;&lt; total &lt;&lt; "\n";
+    std::cout &lt;&lt; "平均：" &lt;&lt; tenths / 10 &lt;&lt; "." &lt;&lt; tenths % 10 &lt;&lt; "\n";
+    std::cout &lt;&lt; "最高：" &lt;&lt; best-&gt;score &lt;&lt; "（" &lt;&lt; best-&gt;date
+              &lt;&lt; "，编号 " &lt;&lt; best-&gt;id &lt;&lt; "）\n";
+    for (const auto&amp; item : by_id) {
+        std::cout &lt;&lt; "编号 " &lt;&lt; item.first &lt;&lt; "：" &lt;&lt; item.second &lt;&lt; " 分\n";
+    }
+
+    std::ofstream out("report.txt");
+    out &lt;&lt; "训练报告\n";
+    out &lt;&lt; "场次：" &lt;&lt; records.size() &lt;&lt; "\n";
+    out &lt;&lt; "总分：" &lt;&lt; total &lt;&lt; "\n";
+    out &lt;&lt; "平均：" &lt;&lt; tenths / 10 &lt;&lt; "." &lt;&lt; tenths % 10 &lt;&lt; "\n";
+    out &lt;&lt; "最高：" &lt;&lt; best-&gt;score &lt;&lt; "\n";
+    for (const auto&amp; item : by_id) {
+        out &lt;&lt; "编号 " &lt;&lt; item.first &lt;&lt; "：" &lt;&lt; item.second &lt;&lt; " 分\n";
+    }
+
+    std::cout &lt;&lt; "已写入 report.txt\n";
+    return 0;
+}</code></pre>
+
+<p>
+在正常的 <code>records.txt</code> 上，它打印：
+</p>
+
+<pre class="out" data-label="它打的（正常文件）">训练日志汇总
+场次：6
+总分：496
+平均：82.7
+最高：95（2026-10-03，编号 2）
+编号 1：257 分
+编号 2：239 分
+已写入 report.txt</pre>
+
+<p>
+这份输出和题目要求一致。问题出在文件不正常的时候。
+</p>
+
+<div class="eg" id="e8-1">
+  <div class="eg-h">例题 · 它打的，和你要的</div>
+  <p>
+    把 <code>records.txt</code> 的第二行改成一个坏行：
+  </p>
+  <pre class="out" data-label="坏掉的 records.txt">2026-10-01 1 87
+2026-10-02 2 坏</pre>
+  <p>
+    第一版打印的是：
+  </p>
+  <pre class="out" data-label="它打的">训练日志汇总
+场次：1
+总分：87
+平均：87.0
+最高：87（2026-10-01，编号 1）
+编号 1：87 分
+已写入 report.txt</pre>
+  <p>
+    而你要的是：
+  </p>
+  <pre class="out" data-label="你要的">处理失败：记录文件格式错误</pre>
+</div>
+
+<p>
+两边的差别不在数字算错，而在<b>第一版不知道文件已经坏了</b>。
+它读到第二行的 <code>坏</code> 时，<code>&gt;&gt;</code> 取分数失败，循环停下来；
+它把「停下来」理解成「读完了」，于是拿已经读到的第一条记录当成全部。
+</p>
+
+<h3 id="s8-1-3">病根：坏行被当成了结尾</h3>
+
+<p>
+根在循环的条件上：
+</p>
+
+<pre><code>while (in &gt;&gt; r.date &gt;&gt; r.id &gt;&gt; r.score) {
+    records.push_back(r);
+}</code></pre>
+
+<p>
+<code>&gt;&gt;</code> 返回的是流本身；放在条件里，流会被转成「成功还是失败」。
+失败时循环结束，但代码没有问一句「为什么结束」——是读到文件末尾，
+还是有一个字段没读进来。6.1 讲读取时说过：循环结束之后要检查流的状态。
+第一版省掉了这一步。
+</p>
+
+<p>
+同一个省法还有两处后果：文件打不开时，循环一次也不执行，
+<code>records</code> 是空的，后面 <code>&amp;records[0]</code> 会访问不存在的元素；
+文件为空时也一样。第一版在这两种情况下都不会给出提示。
+</p>
+
+<h3 id="s8-1-4">改法一：把读取单独拿出来</h3>
+
+<p>
+先只改读取。把「打开、逐行取三个字段、判断结束原因」写成一个函数：
+</p>
+
+<pre><code>std::vector&lt;Record&gt; read_records(const std::string&amp; path) {
+    std::ifstream in(path);
+    if (!in) {
+        throw std::runtime_error("打不开记录文件");
+    }
+
+    std::vector&lt;Record&gt; records;
+    while (true) {
+        Record r;
+        if (!(in &gt;&gt; r.date)) {
+            break;
+        }
+        if (!(in &gt;&gt; r.id &gt;&gt; r.score)) {
+            throw std::runtime_error("记录文件格式错误");
+        }
+        records.push_back(r);
+    }
+    if (!in.eof()) {
+        throw std::runtime_error("记录文件格式错误");
+    }
+    if (records.empty()) {
+        throw std::runtime_error("记录文件是空的");
+    }
+    return records;
+}</code></pre>
+
+<p>
+四处检查对应四种情况：
+</p>
+
+<ul>
+  <li>
+    <code>if (!in)</code>：文件没有打开。可能是路径写错，也可能是没有读权限。
+  </li>
+  <li>
+    读日期成功、读编号或分数失败：这一行不完整。这里不把已经读到的半边记录留下，
+    直接抛异常。若写成 <code>while (in &gt;&gt; ...)</code>，最后一行只写了两个字段时，
+    第三个字段读到文件末尾，循环同样会停，而且 <code>eof()</code> 为真，
+    事后检查不出来。所以这里把三个字段分开读。
+  </li>
+  <li>
+    循环结束后 <code>!in.eof()</code>：结束的原因不是文件末尾，而是别的流错误。
+  </li>
+  <li>
+    <code>records.empty()</code>：文件打开了，但一条记录也没有。
+    空文件无法算平均分，也无法找最高分。
+  </li>
+</ul>
+
+<p>
+这些情况都抛 <code>std::runtime_error</code>，构造时把固定的中文说明传进去。
+调用者只需要接住异常，打印 <code>e.what()</code>，不用在每个函数里各写一遍错误提示。
+</p>
+
+<h3 id="s8-1-5">改法二：拆成三个文件</h3>
+
+<p>
+读取单独拿出来之后，剩下的工作也各归各位。最后的工程有四个文件：
+<code>report.h</code> 放声明，<code>report.cpp</code> 放定义，
+<code>main.cpp</code> 只负责把流程串起来，<code>CMakeLists.txt</code> 负责构建。
+</p>
+
+<p><b>report.h</b></p>
+
+<pre><code>#pragma once
+
+#include &lt;fstream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Record {
+    std::string date;
+    int id;
+    int score;
+};
+
+// 管理报告文件：构造时打开，析构时关闭；不允许拷贝。
+// 两个对象同时写一份文件，写出来的行会交错，所以拷贝必须被禁止。
+class ReportWriter {
+public:
+    explicit ReportWriter(const std::string&amp; path);
+    ~ReportWriter();
+
+    ReportWriter(const ReportWriter&amp;) = delete;
+    ReportWriter&amp; operator=(const ReportWriter&amp;) = delete;
+
+    std::ofstream&amp; out();
+
+private:
+    std::ofstream out_;
+};
+
+std::vector&lt;Record&gt; read_records(const std::string&amp; path);
+const Record&amp; best_record(const std::vector&lt;Record&gt;&amp; records);
+std::map&lt;int, int&gt; group_totals(const std::vector&lt;Record&gt;&amp; records);
+
+void write_report(const std::string&amp; path, const std::vector&lt;Record&gt;&amp; records,
+                  int total, double average, const Record&amp; best,
+                  const std::map&lt;int, int&gt;&amp; by_id);</code></pre>
+
+<p>
+<code>#pragma once</code> 让同一个头文件在一次编译里只展开一次，
+作用与第 1 部分讲的包含卫士相同。<code>Record</code> 是三条字段的组合；
+<code>ReportWriter</code> 的声明里只写「有构造、有析构、拷贝被删除、能交出流」，
+函数体在 <code>report.cpp</code>。
+</p>
+
+<p><b>report.cpp</b></p>
+
+<pre><code>#include "report.h"
+
+#include &lt;stdexcept&gt;
+
+ReportWriter::ReportWriter(const std::string&amp; path) : out_(path) {
+    if (!out_) {
+        throw std::runtime_error("打不开报告文件");
+    }
+}
+
+ReportWriter::~ReportWriter() {
+    out_.close();
+}
+
+std::ofstream&amp; ReportWriter::out() {
+    return out_;
+}
+
+std::vector&lt;Record&gt; read_records(const std::string&amp; path) {
+    std::ifstream in(path);
+    if (!in) {
+        throw std::runtime_error("打不开记录文件");
+    }
+
+    std::vector&lt;Record&gt; records;
+    while (true) {
+        Record r;
+        if (!(in &gt;&gt; r.date)) {
+            break;
+        }
+        if (!(in &gt;&gt; r.id &gt;&gt; r.score)) {
+            throw std::runtime_error("记录文件格式错误");
+        }
+        records.push_back(r);
+    }
+    if (!in.eof()) {
+        throw std::runtime_error("记录文件格式错误");
+    }
+    if (records.empty()) {
+        throw std::runtime_error("记录文件是空的");
+    }
+    return records;
+}
+
+const Record&amp; best_record(const std::vector&lt;Record&gt;&amp; records) {
+    if (records.empty()) {
+        throw std::runtime_error("没有记录");
+    }
+    const Record* best = &amp;records[0];
+    for (const Record&amp; r : records) {
+        if (r.score &gt; best-&gt;score) {
+            best = &amp;r;
+        }
+    }
+    return *best;
+}
+
+std::map&lt;int, int&gt; group_totals(const std::vector&lt;Record&gt;&amp; records) {
+    std::map&lt;int, int&gt; totals;
+    for (const Record&amp; r : records) {
+        totals[r.id] += r.score;
+    }
+    return totals;
+}
+
+void write_report(const std::string&amp; path, const std::vector&lt;Record&gt;&amp; records,
+                  int total, double average, const Record&amp; best,
+                  const std::map&lt;int, int&gt;&amp; by_id) {
+    ReportWriter writer(path);
+    std::ofstream&amp; out = writer.out();
+
+    int tenths = static_cast&lt;int&gt;(average * 10.0 + 0.5);
+    out &lt;&lt; "训练报告\n";
+    out &lt;&lt; "场次：" &lt;&lt; records.size() &lt;&lt; "\n";
+    out &lt;&lt; "总分：" &lt;&lt; total &lt;&lt; "\n";
+    out &lt;&lt; "平均：" &lt;&lt; tenths / 10 &lt;&lt; "." &lt;&lt; tenths % 10 &lt;&lt; "\n";
+    out &lt;&lt; "最高：" &lt;&lt; best.score &lt;&lt; "\n";
+    for (const auto&amp; item : by_id) {
+        out &lt;&lt; "编号 " &lt;&lt; item.first &lt;&lt; "：" &lt;&lt; item.second &lt;&lt; " 分\n";
+    }
+}</code></pre>
+
+<p>
+文件开头三件事：
+</p>
+
+<ul>
+  <li>
+    <code>ReportWriter</code> 的构造函数打开文件，打开失败就抛
+    <code>std::runtime_error</code>；析构函数关闭文件。对象离开作用域时，
+    关闭自动发生——这就是 5.3 的 RAII。
+  </li>
+  <li>
+    拷贝构造和拷贝赋值都被 <code>= delete</code> 删除。两个
+    <code>ReportWriter</code> 同时写一份文件，输出会交错；禁止拷贝把这个可能
+    从类型上去掉。
+  </li>
+  <li>
+    <code>out()</code> 把内部的 <code>std::ofstream&amp;</code> 交出来，
+    写入仍然用 6.2 的 <code>&lt;&lt;</code>。类负责打开、关闭和禁止拷贝，
+    写什么由调用者决定。
+  </li>
+</ul>
+
+<p>
+<code>write_report</code> 里的平均分保留一位小数，用的是整数运算：
+先乘 10，加 0.5 后取整，再拆成整数部分和小数部分。
+这样不依赖 <code>printf</code> 的格式符，写屏幕和写文件可以用同一套算法。
+</p>
+
+<p><b>main.cpp</b></p>
+
+<pre><code>#include "report.h"
+
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main(int argc, char* argv[]) {
+    std::string path = "records.txt";
+    if (argc &gt; 1) {
+        path = argv[1];
+    }
+
+    try {
+        std::vector&lt;Record&gt; records = read_records(path);
+
+        int total = 0;
+        for (const Record&amp; r : records) {
+            total += r.score;
+        }
+        double average = total * 1.0 / records.size();
+        const Record&amp; best = best_record(records);
+        std::map&lt;int, int&gt; by_id = group_totals(records);
+
+        int tenths = static_cast&lt;int&gt;(average * 10.0 + 0.5);
+        std::cout &lt;&lt; "训练日志汇总\n";
+        std::cout &lt;&lt; "场次：" &lt;&lt; records.size() &lt;&lt; "\n";
+        std::cout &lt;&lt; "总分：" &lt;&lt; total &lt;&lt; "\n";
+        std::cout &lt;&lt; "平均：" &lt;&lt; tenths / 10 &lt;&lt; "." &lt;&lt; tenths % 10 &lt;&lt; "\n";
+        std::cout &lt;&lt; "最高：" &lt;&lt; best.score &lt;&lt; "（" &lt;&lt; best.date
+                  &lt;&lt; "，编号 " &lt;&lt; best.id &lt;&lt; "）\n";
+        for (const auto&amp; item : by_id) {
+            std::cout &lt;&lt; "编号 " &lt;&lt; item.first &lt;&lt; "：" &lt;&lt; item.second &lt;&lt; " 分\n";
+        }
+
+        write_report("report.txt", records, total, average, best, by_id);
+        std::cout &lt;&lt; "已写入 report.txt\n";
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "处理失败：" &lt;&lt; e.what() &lt;&lt; "\n";
+        return 1;
+    }
+    return 0;
+}</code></pre>
+
+<p>
+<code>main</code> 只做四件事：决定读哪个文件、调用 <code>read_records</code>、
+把统计结果打印出来、调用 <code>write_report</code>。读取和写入的具体做法都在别的文件里；
+<code>main</code> 不再出现 <code>ifstream</code>、循环和错误提示。
+</p>
+
+<p>
+<code>argc</code> 与 <code>argv</code> 在第 7 部分的联调程序里已经出现过：
+<code>argc</code> 是参数个数，<code>argv[1]</code> 是第一个参数。
+这里只用它换一个文件名，不展开其他用法。
+</p>
+
+<p><b>CMakeLists.txt</b></p>
+
+<pre><code>cmake_minimum_required(VERSION 3.16)
+project(训练日志汇总 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(demo main.cpp report.cpp)</code></pre>
+
+<p>
+<code>add_executable</code> 只列 <code>.cpp</code>；<code>report.h</code>
+不参与编译，它由 <code>#include "report.h"</code> 找到，和源文件在同一层。
+</p>
+
+<p><b>构建与运行</b></p>
+
+<pre><code>mkdir -p build
+cd build
+cmake ..
+make
+cd ..
+./build/demo</code></pre>
+
+<p>
+在工程目录下照着 <code>构建.txt</code> 敲。正常文件上的输出与第一版相同：
+</p>
+
+<pre class="out" data-label="正常文件">训练日志汇总
+场次：6
+总分：496
+平均：82.7
+最高：95（2026-10-03，编号 2）
+编号 1：257 分
+编号 2：239 分
+已写入 report.txt</pre>
+
+<p>
+<code>report.txt</code> 的内容：
+</p>
+
+<pre class="out" data-label="report.txt">训练报告
+场次：6
+总分：496
+平均：82.7
+最高：95
+编号 1：257 分
+编号 2：239 分</pre>
+
+<p>
+把文件名换成 <code>bad.txt</code> 再运行：
+</p>
+
+<pre class="out" data-label="坏文件">处理失败：记录文件格式错误</pre>
+
+<p>
+第一版与最后一版在正常文件上输出相同；差别在坏文件上，
+以及代码是否分得开、错误是否有固定的出口。
+</p>
+
+<h3 id="s8-1-6">回头看一眼：这一遍用了什么</h3>
+
+<p>
+把刚才那一遍拆开，每一步都标上它是从哪一课来的：
+</p>
+
+<table>
+  <tr><th>写下的部分</th><th>手艺</th><th>出处</th></tr>
+  <tr>
+    <td><code>#include</code>、<code>int main</code>、编译、运行</td>
+    <td>骨架</td><td>第 0 部分</td>
+  </tr>
+  <tr>
+    <td><code>report.h</code> 里的声明与 <code>#pragma once</code></td>
+    <td>头文件、多文件</td><td>第 1 部分</td>
+  </tr>
+  <tr>
+    <td><code>add_executable(demo main.cpp report.cpp)</code></td>
+    <td>CMake 构建</td><td>第 2 部分</td>
+  </tr>
+  <tr>
+    <td><code>std::vector&lt;Record&gt;</code>、<code>std::string</code></td>
+    <td>容器</td><td>3.1、3.2</td>
+  </tr>
+  <tr>
+    <td><code>std::map&lt;int, int&gt;</code></td>
+    <td>按编号汇总</td><td>3.4</td>
+  </tr>
+  <tr>
+    <td>逐个比较，保存当前最高分</td>
+    <td>遍历与比较</td><td>第 4 部分</td>
+  </tr>
+  <tr>
+    <td><code>ReportWriter</code>、析构关闭、<code>= delete</code></td>
+    <td>RAII 与所有权</td><td>5.3</td>
+  </tr>
+  <tr>
+    <td><code>std::ifstream</code>、<code>std::ofstream</code></td>
+    <td>文件读写</td><td>6.1、6.2</td>
+  </tr>
+  <tr>
+    <td><code>throw</code>、<code>try</code>、<code>catch</code>、<code>std::runtime_error</code></td>
+    <td>异常</td><td>6.3、6.4</td>
+  </tr>
+  <tr>
+    <td>乘 10、加 0.5、拆成整数与小数</td>
+    <td>整数运算与小数位</td><td>第 1 部分</td>
+  </tr>
+</table>
+
+<p>
+十行，跨了第 0 到第 6 部分。第 7 部分的内容在下面第 5 道检测题里。
+</p>
+
+<p class="can">
+  <b>还剩一件事：</b>这一遍没有一行新语法。难的是顺序：先让程序跑对，
+  再把读、算、写分开，最后让错误有地方可去。
+  <b>下面五道，照着这个来。</b>
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l8-2">
+<h2><span class="no">8.2</span>五道检测题</h2>
+
+<p>
+五道题，一道一道做。每题底下写着<b>「用到」</b>——那是给你卡住的时候用的：
+卡住了，照着那几个编号回去翻，翻完再回来。
+</p>
+
+<p>
+<b>这一部分不给提示。</b>卡住的时候，先拿实际输出和题面的「预期输出」逐行对，
+再回去翻「用到」里列的那几课。
+</p>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-1">练习 8-1（拆成三个文件）</div>
+  <p>
+    读入一个整数 <code>n</code>，再读入 <code>n</code> 个分数（<code>n</code> 至少为 1）。
+    打印三行：及格人数（分数不低于 60 的人数）、平均分（保留一位小数）、最高分。
+  </p>
+  <p>
+    程序要拆成三个文件：
+  </p>
+  <ul>
+    <li><code>stats.h</code> 放三个函数的声明；</li>
+    <li><code>stats.cpp</code> 放三个函数的定义；</li>
+    <li><code>main.cpp</code> 只负责读入、调用和打印。</li>
+  </ul>
+  <p>
+    三个函数的声明如下，名字与参数不能改：
+  </p>
+  <pre><code>int pass_count(const std::vector&lt;int&gt;&amp; scores, int pass);
+double average(const std::vector&lt;int&gt;&amp; scores);
+int max_score(const std::vector&lt;int&gt;&amp; scores);</code></pre>
+  <p>
+    再写一份 <code>CMakeLists.txt</code>，生成的可执行文件叫 <code>demo</code>。
+    输入从标准输入读，不经过文件。
+  </p>
+  <p>
+    <b>用到：</b>第 1 部分的函数声明与定义、第 2 部分的 CMake、
+    3.1 的 <code>std::vector</code>、第 1 部分的整数除法。
+  </p>
+  <pre class="out" data-label="样例输入">5
+55 72 88 96 61</pre>
+  <pre class="out" data-label="预期输出">及格人数：4
+平均分：74.4
+最高分：96</pre>
+  <p>
+    把四个文件放好之后，再展开答案对照。
+  </p>
+  <details class="ans" data-dir="示例代码/答案/练习8-1/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这道题交的是四个文件。先看它们各自负责什么，再看拼起来怎么运行。
+      </p>
+      <pre data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(分段统计 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(demo main.cpp stats.cpp)</code></pre>
+
+      <p>
+        <code>add_executable</code> 的第一个参数是程序名，后面只列
+        <code>.cpp</code>。<code>stats.h</code> 不列在这里，它由
+        <code>main.cpp</code> 与 <code>stats.cpp</code> 里的
+        <code>#include "stats.h"</code> 找到。
+      </p>
+      <pre data-name="stats.h"><code>#pragma once
+
+#include &lt;vector&gt;
+
+int pass_count(const std::vector&lt;int&gt;&amp; scores, int pass);
+double average(const std::vector&lt;int&gt;&amp; scores);
+int max_score(const std::vector&lt;int&gt;&amp; scores);</code></pre>
+
+      <p>
+        头文件里只放声明：函数叫什么、收什么、返回什么。三个函数都接收
+        <code>const std::vector&lt;int&gt;&amp;</code>，表示只读，不复制整个容器。
+        <code>#pragma once</code> 让这个头文件在一次编译里只展开一次。
+      </p>
+      <pre data-name="stats.cpp"><code>#include "stats.h"
+
+int pass_count(const std::vector&lt;int&gt;&amp; scores, int pass) {
+    int count = 0;
+    for (int s : scores) {
+        if (s &gt;= pass) {
+            count++;
+        }
+    }
+    return count;
+}
+
+double average(const std::vector&lt;int&gt;&amp; scores) {
+    int sum = 0;
+    for (int s : scores) {
+        sum += s;
+    }
+    return sum * 1.0 / scores.size();
+}
+
+int max_score(const std::vector&lt;int&gt;&amp; scores) {
+    int best = scores[0];
+    for (int s : scores) {
+        if (s &gt; best) {
+            best = s;
+        }
+    }
+    return best;
+}</code></pre>
+
+      <p>
+        定义放在这里。<code>pass_count</code> 逐个比较，达到
+        <code>pass</code> 就加一；<code>average</code> 先求和，再乘
+        <code>1.0</code> 转成小数除法；<code>max_score</code> 用第一个元素
+        作为当前最高分，逐个比较。题目保证 <code>n</code> 至少为 1，
+        所以 <code>scores[0]</code> 一定存在。
+      </p>
+      <pre data-name="main.cpp"><code>#include "stats.h"
+
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; scores(n);
+    for (int i = 0; i &lt; n; i++) {
+        std::cin &gt;&gt; scores[i];
+    }
+
+    int tenths = static_cast&lt;int&gt;(average(scores) * 10.0 + 0.5);
+    std::cout &lt;&lt; "及格人数：" &lt;&lt; pass_count(scores, 60) &lt;&lt; "\n";
+    std::cout &lt;&lt; "平均分：" &lt;&lt; tenths / 10 &lt;&lt; "." &lt;&lt; tenths % 10 &lt;&lt; "\n";
+    std::cout &lt;&lt; "最高分：" &lt;&lt; max_score(scores) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+
+      <p>
+        <code>main</code> 只做三件事：读入、调用、打印。平均分保留一位小数，
+        和 8.1 例题里的做法一样：先乘 10，加 0.5 取整，再拆成整数部分与
+        小数部分。
+      </p>
+      <pre data-name="input.txt"><code>5
+55 72 88 96 61</code></pre>
+
+      <pre data-name="构建.txt"><code>mkdir -p build
+cd build
+cmake ..
+make
+cd ..
+./build/demo &lt; input.txt</code></pre>
+
+      <p>
+        把四个文件放在同一个目录里，照着 <code>构建.txt</code> 一行一行敲。
+        <code>cmake ..</code> 读的是上一层的 <code>CMakeLists.txt</code>，
+        <code>make</code> 生成 <code>build/demo</code>；最后回到工程目录，
+        用输入文件喂给它。
+      </p>
+      <p>
+        这道题考的是第 1、2 部分：声明与定义分开，<code>main</code> 保持薄；
+        CMake 只列源文件，头文件靠 <code>#include</code> 找。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-2">练习 8-2（词频统计）</div>
+  <p>
+    从标准输入读入若干个单词，单词之间用空白分隔，读到文件末尾为止。
+    统计每个单词出现的次数，然后按次数从多到少打印；
+    <b>次数相同的，按单词的字典序从小到大打印</b>。
+  </p>
+  <p>
+    每个单词一行，格式是「单词 次数」，中间一个空格。
+  </p>
+  <p>
+    <b>用到：</b>3.4 的 <code>std::map</code>、4.4 的 <code>std::sort</code>、
+    4.5 的 lambda、3.1 的 <code>std::vector</code>、3.2 的 <code>std::string</code>。
+  </p>
+  <p>
+    样例故意把最后两个 <code>green</code> 换到第二行：换行和空格一样，都属于
+    空白；<code>std::cin &gt;&gt; word</code> 会一直读到输入结束，不会在行尾
+    停下，所以这几个词是当成一串词统计的，不按行分开处理。
+  </p>
+  <pre class="out" data-label="样例输入">red blue red green blue red
+green green</pre>
+  <pre class="out" data-label="预期输出">green 3
+red 3
+blue 2</pre>
+  <p>
+    排序规则写对之后，再展开答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/8-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先数词，再排序。<code>std::map</code> 负责计数，并且按单词的字典序
+        保存；<code>std::vector</code> 把键值对取出来，<code>std::sort</code>
+        再按次数重排。
+      </p>
+      <pre><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; counts;
+    std::string word;
+    while (std::cin &gt;&gt; word) {
+        counts[word]++;
+    }
+
+    std::vector&lt;std::pair&lt;std::string, int&gt;&gt; items(counts.begin(), counts.end());
+    std::sort(items.begin(), items.end(),
+              [](const std::pair&lt;std::string, int&gt;&amp; a,
+                 const std::pair&lt;std::string, int&gt;&amp; b) {
+                  if (a.second != b.second) {
+                      return a.second &gt; b.second;
+                  }
+                  return a.first &lt; b.first;
+              });
+
+    for (const auto&amp; item : items) {
+        std::cout &lt;&lt; item.first &lt;&lt; " " &lt;&lt; item.second &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <p>
+        <b>一、计数。</b><code>while (std::cin &gt;&gt; word)</code> 一直读到
+        文件末尾；<code>counts[word]++</code> 里，如果这个单词还没有出现过，
+        <code>operator[]</code> 会先插入一个值为 0 的项，再自增。
+      </p>
+      <p>
+        <b>二、为什么先搬到 vector。</b><code>std::map</code> 的顺序由键决定，
+        不能按值重排。把每个 <code>pair</code> 复制进
+        <code>std::vector</code>，排序规则就可以自己写。
+      </p>
+      <p>
+        <b>三、比较函数。</b>先比 <code>second</code>（次数），次数不同时，
+        次数大的排前面；次数相同时，再比 <code>first</code>（单词），
+        字典序小的排前面。两个分支都要有返回值，否则排序的行为不确定。
+      </p>
+      <p>
+        输入里 <code>green</code> 与 <code>red</code> 都是 3 次，
+        按字典序 <code>green</code> 在前；<code>blue</code> 是 2 次，排在最后。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-3">练习 8-3（只可移动的缓冲区）</div>
+  <p>
+    写一个 <code>Buffer</code> 类：
+  </p>
+  <ul>
+    <li>构造时用 <code>new[]</code> 申请 <code>n</code> 个 <code>int</code>，并全部置 0；</li>
+    <li>析构时用 <code>delete[]</code> 释放；</li>
+    <li>拷贝构造和拷贝赋值都用 <code>= delete</code> 删除；</li>
+    <li>写一个移动构造函数，把指针和长度接过来，再把源对象置空；</li>
+    <li>提供 <code>size()</code>、<code>empty()</code>、<code>at(i)</code>。</li>
+  </ul>
+  <p>
+    在 <code>main</code> 里创建 4 个元素的 <code>Buffer</code>，依次填入
+    10、20、30、40，用 <code>std::move</code> 移动给另一个 <code>Buffer</code>，
+    打印移动前后的长度、源对象是否为空、新对象的和。
+  </p>
+  <p>
+    本题不需要标准输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <p>
+    <b>用到：</b>5.1 的栈和堆、5.2 的 <code>new</code> / <code>delete</code>、
+    5.3 的 RAII 与 <code>= delete</code>、5.5 的 <code>std::move</code>。
+  </p>
+  <pre class="out" data-label="预期输出">移动前 a：4
+移动后 a：0
+移动后 a 为空：是
+移动后 b：4
+b 的和：100</pre>
+  <p>
+    移动前后的长度都打印出来，再展开答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/8-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这一题写一个只可移动的 <code>Buffer</code>：它自己申请一块内存，
+        析构时释放；拷贝被 <code>= delete</code> 关掉；移动构造函数把指针
+        接过来，再把源对象置空。
+      </p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;utility&gt;
+
+class Buffer {
+public:
+    explicit Buffer(int n) : size_(n), data_(new int[n]) {
+        for (int i = 0; i &lt; size_; i++) {
+            data_[i] = 0;
+        }
+    }
+
+    ~Buffer() {
+        delete[] data_;
+    }
+
+    Buffer(const Buffer&amp;) = delete;
+    Buffer&amp; operator=(const Buffer&amp;) = delete;
+
+    Buffer(Buffer&amp;&amp; other)
+        : size_(other.size_), data_(other.data_) {
+        other.size_ = 0;
+        other.data_ = nullptr;
+    }
+
+    int size() const {
+        return size_;
+    }
+
+    bool empty() const {
+        return data_ == nullptr;
+    }
+
+    int&amp; at(int i) {
+        return data_[i];
+    }
+
+    const int&amp; at(int i) const {
+        return data_[i];
+    }
+
+private:
+    int size_;
+    int* data_;
+};
+
+int main() {
+    Buffer a(4);
+    for (int i = 0; i &lt; a.size(); i++) {
+        a.at(i) = (i + 1) * 10;
+    }
+
+    std::cout &lt;&lt; "移动前 a：" &lt;&lt; a.size() &lt;&lt; "\n";
+
+    Buffer b(std::move(a));
+
+    std::cout &lt;&lt; "移动后 a：" &lt;&lt; a.size() &lt;&lt; "\n";
+    std::cout &lt;&lt; "移动后 a 为空：" &lt;&lt; (a.empty() ? "是" : "否") &lt;&lt; "\n";
+    std::cout &lt;&lt; "移动后 b：" &lt;&lt; b.size() &lt;&lt; "\n";
+
+    int sum = 0;
+    for (int i = 0; i &lt; b.size(); i++) {
+        sum += b.at(i);
+    }
+    std::cout &lt;&lt; "b 的和：" &lt;&lt; sum &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <p>
+        <b>一、构造与析构。</b>构造函数用 <code>new int[n]</code> 申请一块
+        连续内存，并把每个元素置 0；析构函数用 <code>delete[]</code> 释放。
+        申请与释放成对出现，而且都写在类里——5.3 的 RAII。
+      </p>
+      <p>
+        <b>二、拷贝被删除。</b>如果允许拷贝，两个 <code>Buffer</code> 会保存
+        同一个指针，析构时同一块内存被释放两次。删除拷贝构造和拷贝赋值，
+        这个错误在编译期就被挡住。
+      </p>
+      <p>
+        <b>三、移动构造函数。</b><code>Buffer(Buffer&amp;&amp; other)</code>
+        的参数是右值引用，<code>&amp;&amp;</code> 表示它接收一个准备交出去的
+        对象。函数体把 <code>other</code> 的指针和长度接过来，再把
+        <code>other.data_</code> 置为 <code>nullptr</code>、
+        <code>other.size_</code> 置为 0。源对象之后析构时，
+        <code>delete[] nullptr</code> 什么也不做。
+        <code>std::move(a)</code> 不移动任何字节，它只是把 <code>a</code>
+        转成右值，让编译器选中这个构造函数。
+      </p>
+      <p>
+        实际工程里常在移动构造函数后面加 <code>noexcept</code>，告诉标准库
+        这个函数不会抛异常，容器扩容时更愿意使用它。本课不展开，
+        需要时可以搜索「C++ noexcept 移动构造函数」。
+      </p>
+      <p>
+        移动之后 <code>a</code> 的长度是 0，指针为空；<code>b</code> 接管了
+        原来的四个元素，和是 10 + 20 + 30 + 40 = 100。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-4">练习 8-4（读配置）</div>
+  <p>
+    写一个程序读配置文件。每行是 <code>key=value</code> 的形式，读入后打印
+    <code>key = value</code>，等号两边各留一个空格。
+  </p>
+  <p>
+    如果某一行没有等号，抛出 <code>std::runtime_error</code>，
+    异常说明是 <code>配置行格式错误</code>；<code>main</code> 接住异常后打印
+    <code>配置读取失败：</code> 加上 <code>what()</code> 的内容，然后正常结束。
+  </p>
+  <p>
+    程序接收一个文件名参数，默认读 <code>config.txt</code>。
+    准备两份文件，样例输入如下：
+  </p>
+  <pre class="out" data-label="config.txt">port=8000
+baud=115200</pre>
+  <pre class="out" data-label="bad.txt">port=8000
+baud</pre>
+  <p>
+    先读 <code>config.txt</code>，再读 <code>bad.txt</code>。
+    下面是第二次运行的输出：
+  </p>
+  <p>
+    <b>用到：</b>3.2 的 <code>find</code> / <code>substr</code>、
+    6.1 的读文件、6.3 的 <code>throw</code> / <code>try</code> / <code>catch</code>、
+    6.4 的标准异常、7.9 的 <code>argc</code> / <code>argv</code>。
+  </p>
+  <pre class="out" data-label="预期输出">port = 8000
+配置读取失败：配置行格式错误</pre>
+  <p>
+    两个文件都跑一遍，再展开答案。
+  </p>
+  <details class="ans" data-dir="示例代码/答案/练习8-4/">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这一题把文件读取和异常接在一起：<code>read_config</code> 只负责读，
+        出错就抛；<code>main</code> 只负责接住并打印。
+      </p>
+      <pre data-name="main.cpp"><code>#include &lt;exception&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+void read_config(const std::string&amp; path) {
+    std::ifstream in(path);
+    if (!in) {
+        throw std::runtime_error("打不开配置文件");
+    }
+
+    std::string line;
+    while (std::getline(in, line)) {
+        auto pos = line.find('=');
+        if (pos == std::string::npos) {
+            throw std::runtime_error("配置行格式错误");
+        }
+        std::string key = line.substr(0, pos);
+        std::string value = line.substr(pos + 1);
+        std::cout &lt;&lt; key &lt;&lt; " = " &lt;&lt; value &lt;&lt; "\n";
+    }
+}
+
+int main(int argc, char* argv[]) {
+    std::string path = "config.txt";
+    if (argc &gt; 1) {
+        path = argv[1];
+    }
+
+    try {
+        read_config(path);
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "配置读取失败：" &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+
+      <p>
+        <b>一、打开文件。</b><code>std::ifstream in(path)</code> 之后立刻
+        检查 <code>if (!in)</code>；文件不存在或没有读权限时，抛
+        <code>std::runtime_error("打不开配置文件")</code>。
+      </p>
+      <p>
+        <b>二、逐行读。</b><code>std::getline(in, line)</code> 读到换行符为止，
+        行内的空格会保留。每一行用 <code>find('=')</code> 找等号；
+        找不到时返回 <code>std::string::npos</code>，这时抛
+        <code>std::runtime_error("配置行格式错误")</code>。
+      </p>
+      <p>
+        <b>三、拆开键和值。</b><code>substr(0, pos)</code> 取等号前的部分，
+        <code>substr(pos + 1)</code> 取等号后的部分。等号本身不进入任何一边。
+      </p>
+      <p>
+        <b>四、接住异常。</b><code>main</code> 里 <code>try</code> 包住
+        <code>read_config</code>，<code>catch (const std::exception&amp; e)</code>
+        接住所有标准异常，打印 <code>e.what()</code>。这里接住之后返回 0，
+        程序正常结束；如果这是一个要交给脚本调用的工具，也可以返回 1，
+        让调用者知道这次没有成功。
+      </p>
+      <p>
+        先读 <code>config.txt</code>，两行都正常，打印两行「键 = 值」；
+        再读 <code>bad.txt</code>，第二行没有等号，第一行已经打印出来，
+        第二行抛出异常，<code>main</code> 打印错误说明。
+      </p>
+      <pre data-name="构建.txt"><code>g++ -std=c++17 -Wall -o demo main.cpp
+./demo config.txt
+./demo bad.txt</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h" id="s8-2-5">练习 8-5（从字节流里取帧）</div>
+  <p>
+    从标准输入读入一串十六进制字节（每个字节写成两位十六进制，用空白分隔），
+    按第 7 部分的 <code>A5</code> 帧格式解析：先找帧头，验 CRC8，读长度，
+    等收齐，再验 CRC16。坏帧丢一个字节继续找。
+  </p>
+  <p>
+    为了模拟串口一次读到的字节数不固定，把输入按<b>每 3 个字节一块</b>
+    交给解析器。每取出一帧，打印它的序号、命令和数据；最后打印好帧数与坏帧数。
+  </p>
+  <p>
+    <b>用到：</b>7.1 的十六进制与字节、7.6 的帧格式、7.7 的 CRC8 与 CRC16、
+    7.8 的粘包与半包、7.9 的收包循环、3.1 的 <code>std::vector</code>。
+  </p>
+  <p>样例输入（开头有两个无效字节，末尾有一帧的 CRC16 被改坏）：</p>
+  <pre class="out" data-label="样例输入">00 FF A5 02 00 00 8C 01 00 12 34 D9 34
+A5 02 00 01 D2 02 00 56 78 8B A8
+A5 02 00 02 30 03 00 9A BC 01 66
+A5 02 00 00 8C 01 00 12 34 D9 35</pre>
+  <pre class="out" data-label="预期输出">取出第 1 帧：seq=0 命令=0x0001 数据=12 34
+取出第 2 帧：seq=1 命令=0x0002 数据=56 78
+取出第 3 帧：seq=2 命令=0x0003 数据=9A BC
+好帧：3
+坏帧：1</pre>
+  <p>
+    好帧和坏帧的数目都对上，再展开答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/8-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        这一题把第 7 部分的收包过程装进一个类：<code>feed</code> 接收一块
+        字节，内部循环取帧；<code>main</code> 每次只喂 3 个字节，模拟串口
+        一次读到的字节数不固定。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+std::uint8_t crc8(const std::vector&lt;unsigned char&gt;&amp; data, int count) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; count; i++) {
+        crc = static_cast&lt;unsigned char&gt;(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = static_cast&lt;unsigned char&gt;((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = static_cast&lt;unsigned char&gt;(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+std::uint16_t crc16(const std::vector&lt;unsigned char&gt;&amp; data, int count) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; count; i++) {
+        crc = static_cast&lt;std::uint16_t&gt;(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = static_cast&lt;std::uint16_t&gt;((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = static_cast&lt;std::uint16_t&gt;(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+struct Frame {
+    unsigned char seq;
+    std::uint16_t cmd;
+    std::vector&lt;unsigned char&gt; data;
+};
+
+class Parser {
+public:
+    int good = 0;
+    int bad = 0;
+
+    void feed(const std::vector&lt;unsigned char&gt;&amp; chunk) {
+        buf_.insert(buf_.end(), chunk.begin(), chunk.end());
+        while (take_one()) {
+        }
+    }
+
+private:
+    std::vector&lt;unsigned char&gt; buf_;
+
+    bool take_one() {
+        while (!buf_.empty()) {
+            if (buf_[0] != 0xA5) {
+                buf_.erase(buf_.begin());
+                continue;
+            }
+            if (buf_.size() &lt; 5) {
+                return false;
+            }
+            if (crc8(buf_, 4) != buf_[4]) {
+                bad++;
+                buf_.erase(buf_.begin());
+                continue;
+            }
+
+            int len = buf_[1] | (buf_[2] &lt;&lt; 8);
+            int total = len + 9;
+            if (total &gt; 100) {
+                bad++;
+                buf_.erase(buf_.begin());
+                continue;
+            }
+            if (static_cast&lt;int&gt;(buf_.size()) &lt; total) {
+                return false;
+            }
+
+            std::uint16_t check =
+                static_cast&lt;std::uint16_t&gt;(buf_[total - 2] |
+                                           (buf_[total - 1] &lt;&lt; 8));
+            if (crc16(buf_, total - 2) != check) {
+                bad++;
+                buf_.erase(buf_.begin());
+                continue;
+            }
+
+            Frame f;
+            f.seq = buf_[3];
+            f.cmd = static_cast&lt;std::uint16_t&gt;(buf_[5] | (buf_[6] &lt;&lt; 8));
+            f.data.assign(buf_.begin() + 7, buf_.begin() + 7 + len);
+            buf_.erase(buf_.begin(), buf_.begin() + total);
+            good++;
+            print_frame(f);
+            return true;
+        }
+        return false;
+    }
+
+    void print_frame(const Frame&amp; f) const {
+        printf("取出第 %d 帧：seq=%d 命令=0x%04X 数据=", good, f.seq,
+               static_cast&lt;unsigned int&gt;(f.cmd));
+        for (int i = 0; i &lt; static_cast&lt;int&gt;(f.data.size()); i++) {
+            if (i &gt; 0) {
+                printf(" ");
+            }
+            printf("%02X", f.data[i]);
+        }
+        printf("\n");
+    }
+};
+
+int main() {
+    std::vector&lt;unsigned char&gt; bytes;
+    unsigned int value;
+    std::cin &gt;&gt; std::hex;
+    while (std::cin &gt;&gt; value) {
+        bytes.push_back(static_cast&lt;unsigned char&gt;(value));
+    }
+
+    Parser parser;
+    for (int i = 0; i &lt; static_cast&lt;int&gt;(bytes.size()); i += 3) {
+        int end = i + 3;
+        if (end &gt; static_cast&lt;int&gt;(bytes.size())) {
+            end = static_cast&lt;int&gt;(bytes.size());
+        }
+        std::vector&lt;unsigned char&gt; chunk(bytes.begin() + i, bytes.begin() + end);
+        parser.feed(chunk);
+    }
+
+    printf("好帧：%d\n", parser.good);
+    printf("坏帧：%d\n", parser.bad);
+    return 0;
+}</code></pre>
+      <p>
+        <b>一、两段校验。</b><code>crc8</code> 校验前 4 个字节，
+        <code>crc16</code> 校验从帧头到数据末尾的全部字节。两个函数与 7.7
+        的逐位算法相同；<code>std::uint8_t</code> 与 <code>std::uint16_t</code>
+        来自 <code>&lt;cstdint&gt;</code>，分别保存 8 位和 16 位的无符号值。
+      </p>
+      <p>
+        <b>二、缓冲区。</b><code>feed</code> 把新字节接到 <code>buf_</code>
+        的尾部，然后反复调用 <code>take_one</code>。取不出完整帧时，
+        <code>take_one</code> 返回 <code>false</code>，已有字节留在缓冲区里，
+        等下一块数据。
+      </p>
+      <p>
+        <b>三、取帧的顺序。</b>先跳过不是 <code>0xA5</code> 的字节；
+        不足 5 个字节时等待；CRC8 不过就丢掉一个字节；读到长度后算出
+        整帧长度 <code>len + 9</code>，超过 100 字节按坏帧处理；字节不够时
+        继续等；CRC16 不过也丢掉一个字节。只有两段校验都通过，才取出一帧。
+      </p>
+      <p>
+        <b>四、为什么只丢一个字节。</b>坏帧的数据里也可能出现
+        <code>0xA5</code>。如果把整帧一起丢掉，后面真正的帧头可能被跳过；
+        每次只丢一个字节，再从头找帧头，最多多扫几个字节，不会漏掉后面的帧。
+      </p>
+      <p>
+        输入开头有两个无效字节，被逐个跳过；帧 A、B、C 依次通过校验；
+        最后一帧的 CRC16 被改坏，计为 1 个坏帧。按 3 个字节一块喂进去，
+        半包时 <code>take_one</code> 返回 <code>false</code>，下一块接上后
+        继续，所以最终仍然是 3 个好帧、1 个坏帧。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>这五道题要是自己能写出来，进阶课就上完了。
+  把一份文件读进来、把数据放进容器、按规则排序、让对象自己管理内存、
+  在出错时抛出并接住、最后从一串字节里取出完整的帧——
+  这些就是前面七部分的内容。真正写程序时，题目不会按部分分开；
+  能拆开，就能一件一件做下去。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="07-串口.html">← 第 7 部分 · 串口（uart）基础</a>
+  <span class="spacer"></span>
+  <a class="next" href="../../reference/附录-进阶.html">附录 · 卡住的时候查 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+
+</body>
+</html>

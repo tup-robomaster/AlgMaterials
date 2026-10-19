@@ -1,0 +1,3828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · 串口（uart）基础 — C++ 进阶课</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+  /* 7.10 的实现截图。终端窗口很宽，直接按原尺寸放会超出正文栏，限到栏宽以内。 */
+  .shot { margin: 1.6rem 0; padding: 1rem 1rem .8rem;
+          background: var(--eg-soft); border-left: 3px solid var(--eg); }
+  .shot img { display: block; max-width: 100%; height: auto;
+              border: 1px solid var(--rule-strong); border-radius: 6px; }
+  .shot figcaption { margin-top: .6rem; color: var(--ink-soft);
+                     font-size: .92em; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-一个程序几个文件.html">第 1 部分</a>
+      <a href="02-cmake-基础.html">第 2 部分</a>
+      <a href="03-容器.html">第 3 部分</a>
+      <a href="04-算法.html">第 4 部分</a>
+      <a href="05-内存与所有权.html">第 5 部分</a>
+      <a href="06-文件和异常.html">第 6 部分</a>
+      <a class="active" href="07-串口.html">第 7 部分</a>
+      <a href="08-章末检测.html">第 8 部分</a>
+      <a href="../../reference/附录-进阶.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a class="active" href="index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">九个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-一个程序几个文件.html">第 1 部分 · 一个程序，几个文件</a>
+  <a class="tree-l" href="02-cmake-基础.html">第 2 部分 · cmake 基础</a>
+  <a class="tree-l" href="03-容器.html">第 3 部分 · 容器</a>
+  <a class="tree-l" href="04-算法.html">第 4 部分 · 时间复杂度与算法</a>
+  <a class="tree-l" href="05-内存与所有权.html">第 5 部分 · 内存与所有权</a>
+  <a class="tree-l" href="06-文件和异常.html">第 6 部分 · 文件和异常</a>
+  <a class="tree-l" href="07-串口.html" aria-current="page">第 7 部分 · 串口（uart）基础</a>
+  <a class="tree-l" href="08-章末检测.html">第 8 部分 · 章末检测</a>
+  <a class="tree-l" href="../../reference/附录-进阶.html">附录 · 卡住的时候查</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · 串口（uart）基础</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>十六进制与字节</a>
+  <a class="toc-sub" href="#s7-1-1">字节与十六进制</a>
+  <a class="toc-sub" href="#s7-1-2"><code>printf</code> 的 <code>%02X</code></a>
+  <a class="toc-sub" href="#s7-1-3">有符号与无符号</a>
+  <a class="toc-sub" href="#e7-1">例题：同一批字节的两种写法</a>
+  <a class="toc-sub" href="#e7-2">例题：<code>char</code> 与 <code>unsigned char</code></a>
+  <a class="toc-sub" href="#s7-1-4">练习</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>位运算</a>
+  <a class="toc-sub" href="#s7-2-1">六个运算符</a>
+  <a class="toc-sub" href="#s7-2-2">掩码与四种操作</a>
+  <a class="toc-sub" href="#s7-2-3">协议里的标志位</a>
+  <a class="toc-sub" href="#e7-3">例题：对一个字节做四种操作</a>
+  <a class="toc-sub" href="#e7-4">例题：用一位表示一个状态</a>
+  <a class="toc-sub" href="#s7-2-4">练习</a>
+  <a class="toc-l" href="#l7-3"><span class="n">7.3</span>打开串口</a>
+  <a class="toc-sub" href="#s7-3-1">串口是设备文件</a>
+  <a class="toc-sub" href="#s7-3-2"><code>open</code> 与 <code>close</code></a>
+  <a class="toc-sub" href="#s7-3-3">没有硬件：伪终端</a>
+  <a class="toc-sub" href="#e7-5">例题：打开伪终端的从端</a>
+  <a class="toc-sub" href="#s7-3-4">练习</a>
+  <a class="toc-l" href="#l7-4"><span class="n">7.4</span>配置串口</a>
+  <a class="toc-sub" href="#s7-4-1"><code>termios</code> 与 8N1</a>
+  <a class="toc-sub" href="#s7-4-2">用 <code>cfmakeraw</code> 关掉终端处理</a>
+  <a class="toc-sub" href="#s7-4-3">波特率</a>
+  <a class="toc-sub" href="#s7-4-4"><code>VMIN</code> 与 <code>VTIME</code></a>
+  <a class="toc-sub" href="#e7-6">例题：设置前后的对照</a>
+  <a class="toc-sub" href="#e7-7">例题：改波特率再读回</a>
+  <a class="toc-sub" href="#s7-4-5">练习</a>
+  <a class="toc-l" href="#l7-5"><span class="n">7.5</span>读写字节流</a>
+  <a class="toc-sub" href="#s7-5-1"><code>write</code> 的返回值</a>
+  <a class="toc-sub" href="#s7-5-2"><code>read</code> 的返回值</a>
+  <a class="toc-sub" href="#s7-5-3">读写不保留消息边界</a>
+  <a class="toc-sub" href="#e7-8">例题：写 5 字节读回</a>
+  <a class="toc-sub" href="#e7-9">例题：分两次写、分两次读</a>
+  <a class="toc-sub" href="#s7-5-4">练习</a>
+  <a class="toc-l" href="#l7-6"><span class="n">7.6</span>一帧长什么样</a>
+  <a class="toc-sub" href="#s7-6-1">帧的字段</a>
+  <a class="toc-sub" href="#s7-6-2">长度只数 data</a>
+  <a class="toc-sub" href="#s7-6-3">小端</a>
+  <a class="toc-sub" href="#e7-10">例题：按字段造帧</a>
+  <a class="toc-sub" href="#e7-11">例题：把一帧拆成字段</a>
+  <a class="toc-sub" href="#s7-6-4">练习</a>
+  <a class="toc-l" href="#l7-7"><span class="n">7.7</span>CRC 校验</a>
+  <a class="toc-sub" href="#s7-7-1">为什么需要校验</a>
+  <a class="toc-sub" href="#s7-7-2">CRC8</a>
+  <a class="toc-sub" href="#e7-12">例题：逐位算 CRC8</a>
+  <a class="toc-sub" href="#s7-7-3">CRC16</a>
+  <a class="toc-sub" href="#e7-13">例题：逐位算 CRC16</a>
+  <a class="toc-sub" href="#s7-7-4">查表与算例</a>
+  <a class="toc-sub" href="#s7-7-5">练习</a>
+  <a class="toc-l" href="#l7-8"><span class="n">7.8</span>粘包与半包</a>
+  <a class="toc-sub" href="#s7-8-1">字节流没有消息边界</a>
+  <a class="toc-sub" href="#s7-8-2">接收缓冲区</a>
+  <a class="toc-sub" href="#s7-8-3">取帧的顺序</a>
+  <a class="toc-sub" href="#s7-8-4">动画：粘包与半包</a>
+  <a class="toc-sub" href="#e7-14">例题：两帧粘在一起</a>
+  <a class="toc-sub" href="#e7-15">例题：先到半帧</a>
+  <a class="toc-sub" href="#s7-8-5">练习</a>
+  <a class="toc-l" href="#l7-9"><span class="n">7.9</span>状态机收包</a>
+  <a class="toc-sub" href="#s7-9-1">五个状态</a>
+  <a class="toc-sub" href="#s7-9-2">失败时丢一个字节</a>
+  <a class="toc-sub" href="#s7-9-3">长度上限</a>
+  <a class="toc-sub" href="#e7-16">例题：带垃圾与坏帧的字节流</a>
+  <a class="toc-sub" href="#s7-9-4">没有硬件也能联调</a>
+  <a class="toc-sub" href="#e7-17">例题：一问一答</a>
+  <a class="toc-sub" href="#s7-9-5">练习</a>
+  <a class="toc-l" href="#l7-10"><span class="n">7.10</span>一个简易的裁判系统</a>
+  <a class="toc-sub" href="#s7-10-1">接收端做什么</a>
+  <a class="toc-sub" href="#s7-10-2">页面上的四块内容</a>
+  <a class="toc-sub" href="#s7-10-3">三条演示命令</a>
+  <a class="toc-sub" href="#s7-10-4">跑起来</a>
+  <a class="toc-sub" href="#s7-10-5">边界</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>串口（uart）基础</h1>
+  <p class="part-lead">
+    串口（serial port）是两块电路板之间最常用的一种连接方式：一根线发，一根线收，
+    数据按字节依次通过。机器人上的主控板、电源管理模块、图传、自定义控制器，
+    很多都通过串口交换信息。这一部分从最基本的字节表示讲起，
+    依次讲打开串口、配置串口、读写字节流、一帧数据的格式、校验、粘包与半包，
+    最后写出一个能持续收包的循环。
+  </p>
+  <p class="part-lead">
+    课上使用的帧格式来自 2026 赛季官方通信协议 V1.3.0：帧头为
+    <code>0xA5</code>，帧内包含长度、序号、命令码、数据与两段 CRC 校验。
+    本课按这份协议讲；其他赛季以当季官方协议为准。
+    页面上的命令码 <code>0x0001</code>、<code>0x0002</code>、<code>0x0003</code>
+    是课程自己编的练习用命令，不对应任何官方业务。
+  </p>
+  <p class="part-lead">
+    手边没有板子也可以练：Linux 提供了伪终端（pseudo terminal，pty），
+    程序可以用它造出一对互相连通的“软件串口”，再用一个 Python 小程序扮演对面那块板子。
+    字节收发、组帧、校验、粘包与半包都能在没有硬件的情况下跑通。
+    真实波特率、校验位与电气信号只有在真板子上才成立，页面上会逐处写清楚。
+  </p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>十六进制与字节</h2>
+
+<p>
+  串口一次传送一个字节（byte）。一个字节由 8 位（bit）组成，
+  每一位是 0 或 1，合起来可以表示 0 到 255 之间的一个整数。
+  协议里的帧头、长度、命令码、校验值，最终都是这样一个个字节。
+</p>
+
+<h3 id="s7-1-1">字节与十六进制</h3>
+
+<p>
+  直接写十进制数字，看不出字节内部的位是怎么排列的；写成十六进制就方便得多：
+  一个字节正好用两位十六进制数字表示，每一位十六进制数字对应 4 位二进制。
+  例如 <code>0xA5</code> 的二进制是 <code>1010 0101</code>，
+  <code>0x02</code> 的二进制是 <code>0000 0010</code>。
+</p>
+
+<p>
+  C++ 里用 <code>0x</code> 开头写十六进制常量。<code>0xA5</code> 和 <code>165</code>
+  是同一个数，写哪一个都可以，讲协议时通常写十六进制。
+  在 C++ 中表示一个字节，用 <code>unsigned char</code>：它占 1 个字节，范围是 0 到 255。
+  标准库的 <code>&lt;cstdint&gt;</code> 里还提供了
+  <code>std::uint8_t</code>，它是“无符号 8 位整数”的别名，范围与
+  <code>unsigned char</code> 相同，名字更直接。这个类型在本课后面会用到，
+  需要了解细节时可以自行搜索「C++ uint8_t」。
+</p>
+
+<h3 id="s7-1-2"><code>printf</code> 的 <code>%02X</code></h3>
+
+<p>
+  输出字节时，常用 <code>printf</code> 的 <code>%02X</code> 格式：
+  <code>X</code> 表示用大写十六进制输出，<code>2</code> 表示至少占两位，
+  <code>0</code> 表示不足两位时在前面补 0。这样 <code>0x0F</code> 会输出成
+  <code>0F</code>，而不是一位的 <code>F</code>，所有字节的宽度就一致了。
+  十六进制数字用大写还是小写都可以，本课统一用大写。
+</p>
+
+<h3 id="s7-1-3">有符号与无符号</h3>
+
+<p>
+  <code>char</code> 是否带符号由编译器决定：在常见的 x86 Linux 上，
+  <code>char</code> 是有符号的，范围是 -128 到 127；<code>unsigned char</code>
+  的范围是 0 到 255。同一个字节 <code>0xFF</code>，按有符号 <code>char</code>
+  读出来是 -1，按 <code>unsigned char</code> 读出来是 255。
+  传输和处理字节时一律使用 <code>unsigned char</code>；需要打印数值时，
+  先把 <code>char</code> 转成 <code>unsigned char</code>，才不会出现负数。
+</p>
+
+<div class="eg" id="e7-1">
+  <div class="eg-h">例题 · 同一批字节的两种写法</div>
+  <p>
+    下面这个程序把同一批字节分别按十进制和两位十六进制输出，
+    用来对照两种写法：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    unsigned char bytes[5] = {0x00, 0x0F, 0x7F, 0x80, 0xFF};
+
+    for (int i = 0; i &lt; 5; i++) {
+        printf("%3d  %02X\n", bytes[i], bytes[i]);
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">  0  00
+ 15  0F
+127  7F
+128  80
+255  FF</pre>
+  <p>
+    <code>%3d</code> 表示十进制至少占三位，不足三位时在前面补空格，
+    这样两列数字可以对齐。字节的内容没有变化，只是显示方式不同。
+  </p>
+</div>
+
+<div class="eg" id="e7-2">
+  <div class="eg-h">例题 · <code>char</code> 与 <code>unsigned char</code></div>
+  <p>
+    同一个值 <code>0xFF</code>，放进有符号的 <code>char</code> 和无符号的
+    <code>unsigned char</code>，打印出来不一样：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    char a = (char)0xFF;
+    unsigned char b = 0xFF;
+
+    printf("char: %d\n", a);
+    printf("unsigned char: %d\n", b);
+    printf("转成无符号之后: %d\n", (unsigned char)a);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">char: -1
+unsigned char: 255
+转成无符号之后: 255</pre>
+  <p>
+    最后一行先把 <code>a</code> 转成 <code>unsigned char</code> 再打印，
+    结果就与 <code>b</code> 相同。串口程序里的缓冲区、比较、校验都用
+    <code>unsigned char</code>，原因就在这里。
+  </p>
+</div>
+
+<h3 id="s7-1-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-1</div>
+  <p>
+    先读一个整数 <code>n</code>，再读 <code>n</code> 个 0 到 255 之间的整数。
+    把这些数当成字节，先输出一行「<code>n</code> 个字节」，
+    再输出一行两位十六进制，字节之间用一个空格隔开。
+    </p>
+  <pre class="out" data-label="样例输入">5
+0 15 127 128 255</pre>
+  <pre class="out" data-label="预期输出">5 个字节
+00 0F 7F 80 FF</pre>
+  <p>
+    第一个数表示后面有几个字节，不参与输出。写完后运行一遍，答案在下面。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        读入 <code>n</code> 之后循环 <code>n</code> 次，每次把数转成
+        <code>unsigned char</code> 存进 <code>std::vector</code>，
+        再用 <code>%02X</code> 输出。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    int n = 0;
+    if (!(std::cin &gt;&gt; n)) {
+        return 1;
+    }
+
+    unsigned char bytes[100] = {0};
+    for (int i = 0; i &lt; n; i++) {
+        int value = 0;
+        std::cin &gt;&gt; value;
+        bytes[i] = (unsigned char)value;
+    }
+
+    printf("%d 个字节\n", n);
+    for (int i = 0; i &lt; n; i++) {
+        printf(i == 0 ? "%02X" : " %02X", bytes[i]);
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+      <p>
+        输出时用 <code>i == 0 ? "%02X" : " %02X"</code>，保证第一个字节前面
+        没有多余空格。若每次都先输出一个空格，行首会多出一个空格。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-2</div>
+  <p>
+    读入一行十六进制字节，直到输入结束；输出一行「共 <code>n</code> 个字节」，
+    再把每个字节按十进制输出，字节之间用一个空格隔开。</p>
+  <pre class="out" data-label="样例输入">A5 02 00 00 8C</pre>
+  <pre class="out" data-label="预期输出">共 5 个字节
+165 2 0 0 140</pre>
+  <p>
+    读十六进制要用 <code>std::cin &gt;&gt; std::hex</code>。这个操纵符会让后面的
+    <code>&gt;&gt;</code> 按十六进制解释输入；它属于输入输出库的格式控制，
+    本课只用到这一种写法，需要了解细节时可以自行搜索「C++ std::hex」。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        用 <code>std::cin &gt;&gt; std::hex</code> 把输入按十六进制读入，
+        读到的整数逐个转成 <code>unsigned char</code> 保存。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;unsigned char&gt; bytes;
+    int value = 0;
+
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        bytes.push_back((unsigned char)value);
+    }
+
+    printf("共 %d 个字节\n", (int)bytes.size());
+    for (int i = 0; i &lt; (int)bytes.size(); i++) {
+        printf(i == 0 ? "%d" : " %d", bytes[i]);
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+      <p>
+        输入结束后输出个数，再按十进制打印每个字节。十六进制的
+        <code>A5</code> 读成 165，<code>8C</code> 读成 140。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>unsigned char</code> 保存一个字节；
+  用 <code>%02X</code> 输出两位十六进制；判断 <code>char</code> 与
+  <code>unsigned char</code> 打印结果不同的原因。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>位运算</h2>
+
+<p>
+  一个字节的 8 位可以分别使用。协议里经常把几个开关状态压进同一个字节，
+  每一位表示一个状态；也可能用某几位表示一个小范围的数。
+  要单独取出、设置或清除这些位，就要用位运算。
+</p>
+
+<h3 id="s7-2-1">六个运算符</h3>
+
+<p>
+  C++ 提供六个按位运算符：按位与 <code>&amp;</code>、按位或 <code>|</code>、
+  按位异或 <code>^</code>、按位取反 <code>~</code>、左移 <code>&lt;&lt;</code>、
+  右移 <code>&gt;&gt;</code>。前四个逐位运算，规则如下：
+</p>
+
+<ul>
+  <li><code>&amp;</code>：两位都是 1 时结果为 1，否则为 0；</li>
+  <li><code>|</code>：两位中有一个是 1 时结果为 1，否则为 0；</li>
+  <li><code>^</code>：两位不同时结果为 1，相同时为 0；</li>
+  <li><code>~</code>：把每一位取反，0 变 1，1 变 0。</li>
+</ul>
+
+<p>
+  左移 <code>x &lt;&lt; n</code> 把 <code>x</code> 的每一位向左移动
+  <code>n</code> 位，右边补 0，相当于乘以 2 的 <code>n</code> 次方；
+  右移 <code>x &gt;&gt; n</code> 把每一位向右移动 <code>n</code> 位。
+  对于无符号数，右移时左边补 0。
+</p>
+
+<h3 id="s7-2-2">掩码与四种操作</h3>
+
+<p>
+  只关心某一位时，先造一个“只有这一位是 1”的数，称为掩码（mask）。
+  第 <code>k</code> 位的掩码是 <code>1 &lt;&lt; k</code>，位从 0 开始编号，
+  最低位是第 0 位。有了掩码，四种常用操作可以这样写：
+</p>
+
+<ul>
+  <li>置位：<code>x = x | mask;</code>，把这一位设为 1；</li>
+  <li>清位：<code>x = x &amp; ~mask;</code>，把这一位设为 0；</li>
+  <li>翻转：<code>x = x ^ mask;</code>，这一位由 0 变 1、由 1 变 0；</li>
+  <li>取位：<code>(x &amp; mask) != 0</code>，判断这一位是不是 1。</li>
+</ul>
+
+<p>
+  取位时外面那对括号不能省。在 C++ 里，<code>==</code> 和 <code>!=</code>
+  的优先级高于 <code>&amp;</code>，写成 <code>x &amp; mask != 0</code>
+  会先算 <code>mask != 0</code>，再算按位与，结果不是想要的意思。
+  位运算与比较、逻辑运算混用时，一律加括号。
+</p>
+
+<h3 id="s7-2-3">协议里的标志位</h3>
+
+<p>
+  真实协议里常见这样的写法：一个字节的每一位代表一个状态，
+  用常量给每一位起名字，读代码时就不必记数字。例如：
+</p>
+
+<pre><code>const unsigned char FLAG_READY = 0x01;
+const unsigned char FLAG_ARMED = 0x02;
+const unsigned char FLAG_ERROR = 0x04;</code></pre>
+
+<p>
+  用 <code>|</code> 把几个标志合起来，用 <code>&amp;</code> 检查其中一个，
+  用 <code>&amp;= ~</code> 清除其中一个。这样写出的条件判断比数字直接可读。
+</p>
+
+<div class="eg" id="e7-3">
+  <div class="eg-h">例题 · 对一个字节做四种操作</div>
+  <p>
+    下面的程序从 <code>0x00</code> 开始，依次置位、清位、翻转、取位：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    unsigned char x = 0x00;
+
+    x = x | 0x01;
+    x = x | 0x08;
+    printf("置位后: %02X\n", x);
+
+    x = x &amp; (unsigned char)~0x01;
+    printf("清位后: %02X\n", x);
+
+    x = x ^ 0x08;
+    printf("翻转后: %02X\n", x);
+
+    unsigned char m = x &amp; 0x04;
+    printf("第 2 位: %d\n", m != 0 ? 1 : 0);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">置位后: 09
+清位后: 08
+翻转后: 00
+第 2 位: 0</pre>
+  <p>
+    清位时写成 <code>(unsigned char)~0x01</code>：<code>~0x01</code> 在
+    <code>int</code> 里会得到很多高位为 1 的数，转回 <code>unsigned char</code>
+    后只保留低 8 位，才是想要的 <code>0xFE</code>。
+  </p>
+</div>
+
+<div class="eg" id="e7-4">
+  <div class="eg-h">例题 · 用一位表示一个状态</div>
+  <p>
+    三个标志位分别表示就绪、武装、错误，组合之后逐项检查，再清除其中一项：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    const unsigned char FLAG_READY = 0x01;
+    const unsigned char FLAG_ARMED = 0x02;
+    const unsigned char FLAG_ERROR = 0x04;
+
+    unsigned char status = 0;
+    status = status | FLAG_READY;
+    status = status | FLAG_ERROR;
+    printf("状态: %02X\n", status);
+
+    if ((status &amp; FLAG_READY) != 0) printf("已就绪\n");
+    if ((status &amp; FLAG_ARMED) != 0) printf("已武装\n");
+    if ((status &amp; FLAG_ERROR) != 0) printf("有错误\n");
+
+    status = status &amp; (unsigned char)~FLAG_ERROR;
+    printf("清除错误后: %02X\n", status);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">状态: 05
+已就绪
+有错误
+清除错误后: 01</pre>
+  <p>
+    状态值是 <code>0x05</code>，二进制是 <code>0000 0101</code>：
+    第 0 位和第 2 位是 1，所以「已就绪」和「有错误」成立，
+    「已武装」不成立。
+  </p>
+</div>
+
+<h3 id="s7-2-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-3</div>
+  <p>
+    读一个非负整数，数出它的二进制表示里有几个 1，输出一行。
+    </p>
+  <pre class="out" data-label="样例输入">13</pre>
+  <pre class="out" data-label="预期输出">13 的二进制里有 3 个 1</pre>
+  <p>
+    每次取最低位判断，再把数右移一位，直到这个数变成 0。写完后核对答案。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每次用 <code>value &amp; 1</code> 判断最低位，再把 <code>value</code>
+        右移一位，直到它变成 0。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    unsigned int x = 0;
+    if (scanf("%u", &amp;x) != 1) {
+        return 1;
+    }
+
+    int count = 0;
+    unsigned int t = x;
+    while (t != 0) {
+        if ((t &amp; 1u) != 0) {
+            count++;
+        }
+        t = t &gt;&gt; 1;
+    }
+
+    printf("%u 的二进制里有 %d 个 1\n", x, count);
+
+    return 0;
+}</code></pre>
+      <p>
+        循环次数等于二进制位数。13 的二进制是 <code>1101</code>，
+        其中有 3 个 1。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-4</div>
+  <p>
+    读两个 0 到 15 之间的整数，前一个作为高 4 位，后一个作为低 4 位，
+    拼成一个字节；再把拼好的字节拆回两个 4 位数。
+    </p>
+  <pre class="out" data-label="样例输入">10 5</pre>
+  <pre class="out" data-label="预期输出">拼成 0xA5
+拆开 10 5</pre>
+  <p>
+    拼接用左移与按位或，拆分用右移与掩码 <code>0x0F</code>。
+    写完后分别核对拼和拆的结果。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        高 4 位移到低 4 位左边：<code>high &lt;&lt; 4</code>；
+        再与低 4 位按位或，得到完整字节。拆分时右移 4 位取高半，
+        与 <code>0x0F</code> 按位与取低半。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    int high = 0;
+    int low = 0;
+    if (scanf("%d %d", &amp;high, &amp;low) != 2) {
+        return 1;
+    }
+
+    unsigned char b = (unsigned char)((high &lt;&lt; 4) | low);
+
+    printf("拼成 0x%02X\n", b);
+    printf("拆开 %d %d\n", (b &gt;&gt; 4) &amp; 0x0F, b &amp; 0x0F);
+
+    return 0;
+}</code></pre>
+      <p>
+        高半是 10（<code>0xA</code>），低半是 5，拼成 <code>0xA5</code>；
+        拆开仍然是 10 和 5。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>&amp;</code>、<code>|</code>、<code>^</code>、
+  <code>~</code>、<code>&lt;&lt;</code>、<code>&gt;&gt;</code> 处理一个字节的各个位；
+  用掩码置位、清位、翻转、取位；用常量给标志位命名。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-3">
+<h2><span class="no">7.3</span>打开串口</h2>
+
+<p>
+  在 Linux 上，串口不是一种特殊的函数库对象，而是一个设备文件。
+  打开这个文件、向它写入字节、从它读出字节，就是使用串口。
+</p>
+
+<h3 id="s7-3-1">串口是设备文件</h3>
+
+<p>
+  常见的串口设备名有两种：主板自带的串口通常是
+  <code>/dev/ttyS0</code>、<code>/dev/ttyS1</code> 这一类；
+  USB 转 TTL 模块插上后，通常出现为 <code>/dev/ttyUSB0</code>。
+  同一个模块插在不同的 USB 口上，编号可能变化，所以实际工程里会先确认设备名，
+  或者用固定别名指向它。
+</p>
+
+<p>
+  设备文件需要读权限和写权限。普通用户没有权限时，
+  <code>open</code> 会失败；把用户加入 <code>dialout</code> 组是常见的解决办法。
+  这一课不展开权限配置，先按能打开的情况讲。
+</p>
+
+<h3 id="s7-3-2"><code>open</code> 与 <code>close</code></h3>
+
+<p>
+  打开设备文件用 <code>open</code>，它在 <code>&lt;fcntl.h&gt;</code> 里声明：
+</p>
+
+<pre><code>int fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY);
+if (fd == -1) {
+    // 打开失败
+}</code></pre>
+
+<p>
+  <code>O_RDWR</code> 表示同时要读和写的权限。<code>O_NOCTTY</code>
+  表示不要把打开的设备当成这个进程的控制终端：串口设备有可能被系统当成终端，
+  不加这个标志时，某些终端控制信号会作用到程序上，收发数据时会受到干扰。
+  返回值是一个文件描述符（file descriptor），是一个非负整数；
+  失败时返回 -1。后面所有的读写都用这个描述符，不再用设备名。
+</p>
+
+<p>
+  用完以后调用 <code>close(fd)</code> 关闭。程序退出时系统也会回收，
+  但长期运行的工程应当在结束处显式关闭，避免描述符越积越多。
+</p>
+
+<h3 id="s7-3-3">没有硬件：伪终端</h3>
+
+<p>
+  手边没有板子时，可以用伪终端（pseudo terminal，pty）练习。
+  伪终端是一对互相连通的设备：主端（master）和从端（slave）。
+  向主端写入的字节可以从从端读出，向从端写入的字节也可以从主端读出。
+  从端有一个像 <code>/dev/pts/7</code> 这样的设备名，可以像串口一样
+  <code>open</code>、配置、读写。
+</p>
+
+<p>
+  创建伪终端用 <code>posix_openpt</code>，再用 <code>grantpt</code>、
+  <code>unlockpt</code> 做准备，用 <code>ptsname</code> 取得从端的路径。
+  这一组函数是 Linux 提供的，属于本课“没有硬件怎么练”的辅助手段；
+  正课要学的 <code>open</code>、<code>read</code>、<code>write</code>、
+  <code>termios</code> 与它无关。需要了解细节时可以自行搜索
+  「Linux 伪终端 posix_openpt」。
+</p>
+
+<p>
+  伪终端只模拟字节的传递，不模拟真实串口的波特率、校验位和电气信号。
+  用它可以把收发的程序逻辑完整跑通，但“这段程序在 115200 的板子上是否来得及”
+  这类问题，仍然要插上板子才能回答。
+</p>
+
+<div class="eg" id="e7-5">
+  <div class="eg-h">例题 · 打开伪终端的从端</div>
+  <p>
+    下面的程序创建一对伪终端，打开从端，然后关闭：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    const char* slave_path = ptsname(master);
+    if (slave_path == nullptr) {
+        printf("取得从端路径失败\n");
+        close(master);
+        return 1;
+    }
+
+    int slave = open(slave_path, O_RDWR | O_NOCTTY);
+    if (slave == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    printf("伪终端创建成功，从端已打开\n");
+
+    close(slave);
+    close(master);
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">伪终端创建成功，从端已打开</pre>
+  <p>
+    程序不打印从端的路径，也不打印文件描述符的具体数值：
+    这两样在不同机器、不同时刻会变化，打印出来对学习没有帮助。
+    真正的串口程序也是同样的结构，只是把 <code>posix_openpt</code> 那一套
+    换成 <code>open("/dev/ttyUSB0", ...)</code>。
+  </p>
+</div>
+
+<h3 id="s7-3-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-5</div>
+  <p>
+    从标准输入读两行设备路径，逐个用 <code>open</code> 尝试打开：
+    成功就输出「打开成功」和路径，失败就输出「打开失败」和路径。
+    </p>
+  <pre class="out" data-label="样例输入">/dev/null
+/dev/tup-no-such-device</pre>
+  <pre class="out" data-label="预期输出">打开成功 /dev/null
+打开失败 /dev/tup-no-such-device</pre>
+  <p>
+    <code>/dev/null</code> 是系统里一定存在的设备，用来确认成功分支；
+    第二个路径故意不存在，用来确认失败分支。
+    <code>open</code> 需要 C 风格字符串，<code>std::string</code> 要用
+    <code>c_str()</code> 交出内部的字符指针；这个函数本课只用到这一种写法，
+    需要了解细节时可以自行搜索「C++ string c_str」。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两行各读一个路径，用 <code>path.c_str()</code> 交给 <code>open</code>。
+        成功时关闭描述符，失败时不需要关闭。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    for (int i = 0; i &lt; 2; i++) {
+        std::string path;
+        if (!std::getline(std::cin, path)) {
+            return 1;
+        }
+
+        int fd = open(path.c_str(), O_RDWR | O_NOCTTY);
+        if (fd == -1) {
+            printf("打开失败 %s\n", path.c_str());
+        } else {
+            printf("打开成功 %s\n", path.c_str());
+            close(fd);
+        }
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        <code>/dev/null</code> 一定存在，所以第一行是「打开成功」；
+        第二个路径不存在，<code>open</code> 返回 -1，走失败分支。
+        程序不打印 <code>strerror</code> 的文字，避免不同系统上的提示不同。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-6</div>
+  <p>
+    创建一对伪终端，打开从端，再按打开的顺序关闭。
+    程序不需要输入，输出三步都成功：
+  </p>
+  <pre class="out" data-label="预期输出">创建伪终端成功
+打开从端成功
+关闭成功</pre>
+  <p>
+    关闭时先关从端，再关主端。写完后运行一遍，核对顺序与输出。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        创建伪终端、打开从端、关闭，三步各自检查返回值；
+        任一步失败就打印固定提示并返回 1。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+    printf("创建伪终端成功\n");
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+    printf("打开从端成功\n");
+
+    close(fd);
+    close(master);
+    printf("关闭成功\n");
+
+    return 0;
+}</code></pre>
+      <p>
+        关闭顺序与打开顺序相反：先关从端，再关主端。
+        程序不打印从端路径，因为每台机器、每次运行都可能不同。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>把串口当作设备文件用 <code>open</code> 打开、
+  用 <code>close</code> 关闭；检查 <code>open</code> 的返回值；
+  用 <code>posix_openpt</code> 造一对伪终端，在没有硬件时练习收发。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-4">
+<h2><span class="no">7.4</span>配置串口</h2>
+
+<p>
+  打开设备之后、收发数据之前，还要告诉系统这个串口的工作方式：
+  每秒传多少位、数据位有几位、有没有校验位、停止位有几位。
+  这些参数由 <code>termios</code> 结构保存，通过
+  <code>tcgetattr</code> 和 <code>tcsetattr</code> 读取与设置。
+</p>
+
+<h3 id="s7-4-1"><code>termios</code> 与 8N1</h3>
+
+<p>
+  <code>termios</code> 结构定义在 <code>&lt;termios.h&gt;</code> 里，
+  包含输入、输出、控制、本地四个标志字段，以及一个控制字符数组。
+  最常用的配置是 8N1：8 位数据位、无校验位（None）、1 位停止位。
+  2026 赛季 V1.3.0 协议规定的串口参数就是 8 位数据位、1 位停止位、
+  无校验位、无硬件流控。
+</p>
+
+<p>
+  对应的设置是：把 <code>CSIZE</code> 掩掉之后置 <code>CS8</code>；
+  清除 <code>PARENB</code> 表示无校验；清除 <code>CSTOPB</code> 表示 1 位停止位；
+  清除 <code>CRTSCTS</code> 表示不使用硬件流控；
+  置 <code>CLOCAL</code> 和 <code>CREAD</code> 表示忽略调制解调器控制线并允许接收。
+</p>
+
+<h3 id="s7-4-2">用 <code>cfmakeraw</code> 关掉终端处理</h3>
+
+<p>
+  串口设备默认按终端的方式工作：输入的字节先放进行缓冲区，等到换行才交给程序；
+  收到的字节会自动回显；输出的换行会被改写。这些处理对文本终端有用，
+  对二进制帧则是干扰。协议帧里任何一个字节都可能等于换行符或控制字符，
+  被终端处理之后内容就变了。
+</p>
+
+<p>
+  <code>cfmakeraw</code> 把结构设置成原始模式：关闭规范模式
+  <code>ICANON</code>、回显 <code>ECHO</code>、信号字符 <code>ISIG</code>、
+  输出处理 <code>OPOST</code> 等，并把 <code>VMIN</code> 设为 1、
+  <code>VTIME</code> 设为 0。配置二进制串口时，先调用它，再按需要改波特率
+  和 <code>VMIN</code> / <code>VTIME</code>，是常见做法。
+</p>
+
+<h3 id="s7-4-3">波特率</h3>
+
+<p>
+  波特率（baud rate）表示每秒传送多少位。8N1 每传一个字节要 10 位
+  （1 位起始位、8 位数据位、1 位停止位），所以 115200 波特率下每秒最多传
+  约 11520 个字节。2026 赛季 V1.3.0 协议的表 1-1 里，
+  电源管理模块与机器人之间、自定义控制器与选手端之间使用 115200，
+  图传发送端与机器人之间使用 921600。
+</p>
+
+<p>
+  设置波特率用 <code>cfsetispeed</code> 和 <code>cfsetospeed</code>，
+  参数是常量 <code>B9600</code>、<code>B115200</code> 这一类；
+  <code>B921600</code> 是否可用取决于系统的头文件与驱动。
+  设置之后可以用 <code>cfgetispeed</code>、<code>cfgetospeed</code>
+  读回来核对。也可以在终端里用
+  <code>stty -F /dev/ttyUSB0 -a</code> 查看当前设置；
+  这条命令读的是真实设备，伪终端上的输出与真串口不完全相同。
+</p>
+
+<p>
+  伪终端会接受波特率设置并原样读回，但字节的传递速度由程序决定，
+  不会真的按 115200 或 921600 来。用伪终端练习时，能验证的只是
+  “设置项写对没有”，不能验证真实速率。
+</p>
+
+<h3 id="s7-4-4"><code>VMIN</code> 与 <code>VTIME</code></h3>
+
+<p>
+  <code>VMIN</code> 和 <code>VTIME</code> 决定 <code>read</code> 什么时候返回。
+  常用的组合有三种：
+</p>
+
+<ul>
+  <li><code>VMIN = 1</code>、<code>VTIME = 0</code>：一直等到至少读到 1 个字节；</li>
+  <li><code>VMIN = 0</code>、<code>VTIME = 10</code>：最多等 1 秒
+      （<code>VTIME</code> 的单位是 0.1 秒），有数据就返回，没有数据也返回 0；</li>
+  <li><code>VMIN = n</code>、<code>VTIME = 0</code>：一直等到读满 <code>n</code> 个字节。</li>
+</ul>
+
+<p>
+  普通例题用第一种，读到数据就返回；联调程序用第二种，等不到应答时
+  <code>read</code> 会返回 0，程序据此判断超时，不会一直停在那里。
+</p>
+
+<div class="eg" id="e7-6">
+  <div class="eg-h">例题 · 设置前后的对照</div>
+  <p>
+    下面的程序先读一次默认设置，调用 <code>cfmakeraw</code> 之后再读一次，
+    对照三项终端处理是否已经关闭：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    printf("设置前 ICANON=%d ECHO=%d OPOST=%d\n",
+           (t.c_lflag &amp; ICANON) != 0,
+           (t.c_lflag &amp; ECHO) != 0,
+           (t.c_oflag &amp; OPOST) != 0);
+
+    cfmakeraw(&amp;t);
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    tcgetattr(fd, &amp;t);
+    printf("设置后 ICANON=%d ECHO=%d OPOST=%d\n",
+           (t.c_lflag &amp; ICANON) != 0,
+           (t.c_lflag &amp; ECHO) != 0,
+           (t.c_oflag &amp; OPOST) != 0);
+    printf("VMIN=%d VTIME=%d\n", t.c_cc[VMIN], t.c_cc[VTIME]);
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">设置前 ICANON=1 ECHO=1 OPOST=1
+设置后 ICANON=0 ECHO=0 OPOST=0
+VMIN=1 VTIME=0</pre>
+  <p>
+    三个布尔表达式的结果用 <code>%d</code> 打印，1 表示这一项开着，
+    0 表示已经关闭。伪终端刚创建时也是终端模式，所以设置前三项都是 1。
+  </p>
+</div>
+
+<div class="eg" id="e7-7">
+  <div class="eg-h">例题 · 改波特率再读回</div>
+  <p>
+    下面的程序把输入、输出的速度设为 9600，读回核对之后改成 115200，
+    再读回核对：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+
+    cfsetispeed(&amp;t, B9600);
+    cfsetospeed(&amp;t, B9600);
+    tcsetattr(fd, TCSANOW, &amp;t);
+    tcgetattr(fd, &amp;t);
+    printf("输入速度是 9600: %s\n", cfgetispeed(&amp;t) == B9600 ? "是" : "否");
+    printf("输出速度是 9600: %s\n", cfgetospeed(&amp;t) == B9600 ? "是" : "否");
+
+    cfsetispeed(&amp;t, B115200);
+    cfsetospeed(&amp;t, B115200);
+    tcsetattr(fd, TCSANOW, &amp;t);
+    tcgetattr(fd, &amp;t);
+    printf("输入速度是 115200: %s\n", cfgetispeed(&amp;t) == B115200 ? "是" : "否");
+    printf("输出速度是 115200: %s\n", cfgetospeed(&amp;t) == B115200 ? "是" : "否");
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">输入速度是 9600: 是
+输出速度是 9600: 是
+输入速度是 115200: 是
+输出速度是 115200: 是</pre>
+  <p>
+    设置之后先 <code>tcsetattr</code> 再 <code>tcgetattr</code>，
+    读到的才是真正生效的设置。只设置结构体而不调用 <code>tcsetattr</code>，
+    改动不会交给设备。
+  </p>
+</div>
+
+<h3 id="s7-4-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-7</div>
+  <p>
+    创建一对伪终端，把从端配置成 9600 8N1，然后读回设置，逐项输出是否成立。
+    程序不需要输入，输出是：
+  </p>
+  <pre class="out" data-label="预期输出">输入速度 9600: 是
+输出速度 9600: 是
+数据位 8: 是
+无校验: 是
+停止位 1: 是</pre>
+  <p>
+    检查数据位要先用 <code>CSIZE</code> 掩掉其他位，再与 <code>CS8</code> 比较；
+    检查停止位时，<code>CSTOPB</code> 为 0 表示 1 位停止位。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先 <code>cfmakeraw</code>，再设置 9600 与 8N1：
+        清除 <code>CSIZE</code> 后置 <code>CS8</code>，
+        清除 <code>PARENB</code> 与 <code>CSTOPB</code>，
+        置 <code>CLOCAL | CREAD</code>。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    cfmakeraw(&amp;t);
+    cfsetispeed(&amp;t, B9600);
+    cfsetospeed(&amp;t, B9600);
+    t.c_cflag |= (CLOCAL | CREAD);
+    t.c_cflag &amp;= ~PARENB;
+    t.c_cflag &amp;= ~CSTOPB;
+    t.c_cflag &amp;= ~CSIZE;
+    t.c_cflag |= CS8;
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    tcgetattr(fd, &amp;t);
+
+    printf("输入速度 9600: %s\n", cfgetispeed(&amp;t) == B9600 ? "是" : "否");
+    printf("输出速度 9600: %s\n", cfgetospeed(&amp;t) == B9600 ? "是" : "否");
+    printf("数据位 8: %s\n", (t.c_cflag &amp; CSIZE) == CS8 ? "是" : "否");
+    printf("无校验: %s\n", (t.c_cflag &amp; PARENB) == 0 ? "是" : "否");
+    printf("停止位 1: %s\n", (t.c_cflag &amp; CSTOPB) == 0 ? "是" : "否");
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+      <p>
+        <code>tcsetattr</code> 之后重新 <code>tcgetattr</code>，读回的值才是
+        真正生效的设置。检查数据位时先用 <code>CSIZE</code> 掩掉其他位，
+        再与 <code>CS8</code> 比较。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-8</div>
+  <p>
+    创建一对伪终端，把从端的 <code>VMIN</code> 设为 0、<code>VTIME</code> 设为 10，
+    再读回并输出这两个值。程序不需要输入，输出是：
+  </p>
+  <pre class="out" data-label="预期输出">VMIN=0
+VTIME=10</pre>
+  <p>
+    先调用 <code>cfmakeraw</code>，再把 <code>c_cc</code> 数组里的两项改掉，
+    最后调用 <code>tcsetattr</code> 使设置生效。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        在 <code>cfmakeraw</code> 之后改 <code>c_cc</code> 数组里的
+        <code>VMIN</code> 与 <code>VTIME</code>，再调用
+        <code>tcsetattr</code>。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    cfmakeraw(&amp;t);
+    t.c_cc[VMIN] = 0;
+    t.c_cc[VTIME] = 10;
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    tcgetattr(fd, &amp;t);
+    printf("VMIN=%d\n", t.c_cc[VMIN]);
+    printf("VTIME=%d\n", t.c_cc[VTIME]);
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+      <p>
+        读回时 <code>VMIN</code> 是 0、<code>VTIME</code> 是 10。
+        <code>VTIME</code> 的单位是 0.1 秒，10 表示最多等 1 秒。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>tcgetattr</code> 读出串口设置；
+  用 <code>cfmakeraw</code> 关掉终端处理；用 <code>cfsetispeed</code>、
+  <code>cfsetospeed</code> 设置波特率并用 <code>tcsetattr</code> 生效；
+  用 <code>VMIN</code> 与 <code>VTIME</code> 控制读的等待方式。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-5">
+<h2><span class="no">7.5</span>读写字节流</h2>
+
+<p>
+  配置完成之后就可以收发了。读用 <code>read</code>，写用 <code>write</code>，
+  两者都在 <code>&lt;unistd.h&gt;</code> 里声明，参数都是文件描述符、
+  缓冲区指针和字节数。
+</p>
+
+<h3 id="s7-5-1"><code>write</code> 的返回值</h3>
+
+<p>
+  <code>write(fd, buf, n)</code> 尝试写入 <code>n</code> 个字节，
+  返回实际写入的字节数。返回值类型是 <code>ssize_t</code>：这是一个带符号的
+  整数类型，用来表示“字节数或 -1”。失败时返回 -1。
+  返回的数目可能小于 <code>n</code>，称为短写（short write）；
+  少量字节的写入通常一次完成，但工程代码应当检查返回值，
+  没有写完时把剩下的部分接着写。
+</p>
+
+<h3 id="s7-5-2"><code>read</code> 的返回值</h3>
+
+<p>
+  <code>read(fd, buf, n)</code> 最多读 <code>n</code> 个字节，返回实际读到的字节数。
+  返回值同样是 <code>ssize_t</code>。三种情况要分开处理：
+</p>
+
+<ul>
+  <li>大于 0：读到了这么多字节；</li>
+  <li>等于 0：在 <code>VMIN = 0</code>、<code>VTIME &gt; 0</code> 的设置下表示等待超时；
+      在阻塞设置下通常表示设备已经断开；</li>
+  <li>等于 -1：读取出错。若错误是信号中断（<code>EINTR</code>），可以重新读一次。</li>
+</ul>
+
+<p>
+  缓冲区用 <code>unsigned char</code> 数组。读到的字节数由返回值决定，
+  不能假设一定读满 <code>n</code> 个；缓冲区里超过返回值的位置没有意义。
+</p>
+
+<h3 id="s7-5-3">读写不保留消息边界</h3>
+
+<p>
+  串口是字节流（byte stream）：系统只保证字节的先后顺序，
+  不保证一次 <code>write</code> 对应一次 <code>read</code>。
+  发送方分三次写出的字节，接收方可能一次读到；发送方一次写出的字节，
+  接收方也可能分几次读到。程序不能把“一次读写”当成“一条消息”。
+  怎样从字节流里切出一条完整的消息，是 7.6 到 7.9 的内容。
+</p>
+
+<div class="eg" id="e7-8">
+  <div class="eg-h">例题 · 写 5 字节读回</div>
+  <p>
+    下面的程序创建伪终端，从主端写入 5 个字节，再从从端读回：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    cfmakeraw(&amp;t);
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    unsigned char out[5] = {0xA5, 0x02, 0x00, 0x00, 0x8C};
+    ssize_t written = write(master, out, 5);
+    printf("写入 %ld 字节\n", (long)written);
+
+    unsigned char in[5] = {0};
+    ssize_t n = read(fd, in, 5);
+    printf("读回 %ld 字节\n", (long)n);
+    for (ssize_t i = 0; i &lt; n; i++) {
+        printf(i == 0 ? "%02X" : " %02X", in[i]);
+    }
+    printf("\n");
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">写入 5 字节
+读回 5 字节
+A5 02 00 00 8C</pre>
+  <p>
+    <code>ssize_t</code> 在打印时转成 <code>long</code>，用 <code>%ld</code>；
+    不直接假定它与 <code>int</code> 一样宽。先写、后读，是因为主端写出的字节
+    在从端可读之前就已经进入缓冲区，读的时候不会等不到。
+  </p>
+</div>
+
+<div class="eg" id="e7-9">
+  <div class="eg-h">例题 · 分两次写、分两次读</div>
+  <p>
+    下面的程序先写 3 个字节、读一次，再写 5 个字节、读一次：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int master = posix_openpt(O_RDWR | O_NOCTTY);
+    if (master == -1) {
+        printf("创建伪终端失败\n");
+        return 1;
+    }
+    if (grantpt(master) != 0 || unlockpt(master) != 0) {
+        printf("准备伪终端失败\n");
+        close(master);
+        return 1;
+    }
+
+    int fd = open(ptsname(master), O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开从端失败\n");
+        close(master);
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    cfmakeraw(&amp;t);
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    unsigned char first[3] = {0xA5, 0x02, 0x00};
+    write(master, first, 3);
+
+    unsigned char buf[8] = {0};
+    ssize_t n = read(fd, buf, 8);
+    printf("第一次读到 %ld 字节: ", (long)n);
+    for (ssize_t i = 0; i &lt; n; i++) {
+        printf(i == 0 ? "%02X" : " %02X", buf[i]);
+    }
+    printf("\n");
+
+    unsigned char second[5] = {0x00, 0x8C, 0x01, 0x00, 0x12};
+    write(master, second, 5);
+
+    n = read(fd, buf, 8);
+    printf("第二次读到 %ld 字节: ", (long)n);
+    for (ssize_t i = 0; i &lt; n; i++) {
+        printf(i == 0 ? "%02X" : " %02X", buf[i]);
+    }
+    printf("\n");
+
+    close(fd);
+    close(master);
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">第一次读到 3 字节: A5 02 00
+第二次读到 5 字节: 00 8C 01 00 12</pre>
+  <p>
+    这个结果说明读写次数在当前程序里恰好对上了，但不能据此认为串口会保留
+    写入的次数：读的缓冲区有 8 个字节，第二次读时如果前一次的字节还在，
+    可能一次读到 8 个。下一课开始处理“一次读到多少不确定”的情况。
+  </p>
+</div>
+
+<h3 id="s7-5-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-9</div>
+  <p>
+    从标准输入读入一串十六进制字节，每 3 个分为一组，
+    按组输出组号、这一组的字节数和每个字节的两位十六进制。
+    最后一组可以不足 3 个。</p>
+  <pre class="out" data-label="样例输入">A5 02 00 00 8C 01 00 12 34 D9 34</pre>
+  <pre class="out" data-label="预期输出">第 1 组 3 字节: A5 02 00
+第 2 组 3 字节: 00 8C 01
+第 3 组 3 字节: 00 12 34
+第 4 组 2 字节: D9 34</pre>
+  <p>
+    分组时每次从起点加 3，最后一组用剩余字节数判断长度。
+    写完后核对四行的组号与字节数。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先把全部十六进制字节读进 <code>std::vector</code>，再按每 3 个一组
+        处理；最后一组取剩余的全部字节。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;unsigned char&gt; bytes;
+    int value = 0;
+
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        bytes.push_back((unsigned char)value);
+    }
+
+    int group = 1;
+    for (int start = 0; start &lt; (int)bytes.size(); start += 3) {
+        int count = (int)bytes.size() - start;
+        if (count &gt; 3) {
+            count = 3;
+        }
+
+        printf("第 %d 组 %d 字节:", group, count);
+        for (int i = 0; i &lt; count; i++) {
+            printf(" %02X", bytes[start + i]);
+        }
+        printf("\n");
+        group++;
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        组号从 1 开始，每组的长度由剩余字节数与 3 的较小值决定。
+        最后一组只有 2 个字节，长度按实际剩余输出。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-10</div>
+  <p>
+    从标准输入读入全部字节，一个不落地用 <code>write</code> 写到标准输出，
+    再输出一行「写入 <code>n</code> 字节」。输入是一行：
+  </p>
+  <pre class="out" data-label="样例输入">Hello</pre>
+  <pre class="out" data-label="预期输出">Hello
+写入 6 字节</pre>
+  <p>
+    输入的一行包含末尾的换行符，一共 6 个字节。
+    用 <code>std::cin.get</code> 逐个读字符，才能把空格和换行也保留下来；
+    写到标准输出用 <code>STDOUT_FILENO</code>，它的值是 1。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        用 <code>std::cin.get</code> 逐个读取字符，空格与换行都会保留；
+        读到输入结束为止，把全部字节存进向量。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;unsigned char&gt; data;
+    char ch = 0;
+    while (std::cin.get(ch)) {
+        data.push_back((unsigned char)ch);
+    }
+
+    ssize_t written = 0;
+    if (!data.empty()) {
+        written = write(STDOUT_FILENO, &amp;data[0], data.size());
+    }
+    printf("写入 %ld 字节\n", (long)written);
+
+    return 0;
+}</code></pre>
+      <p>
+        写完以后输出写入的字节数。输入行末尾的换行符也算一个字节，
+        所以 <code>Hello</code> 一共 6 个字节。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>read</code>、<code>write</code> 收发字节；
+  检查返回值并区分大于 0、等于 0、等于 -1 三种情况；
+  用 <code>unsigned char</code> 缓冲区保存读到的内容。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-6">
+<h2><span class="no">7.6</span>一帧长什么样</h2>
+
+<p>
+  串口只负责把字节按顺序送到对面，字节本身没有含义。
+  通信双方要交换一条消息，就得事先约定这条消息由哪些字段组成、
+  每个字段占几个字节、按什么顺序排列。这样一组按约定排好的字节称为一帧
+  （frame）。本课按 2026 赛季 V1.3.0 协议的帧格式讲；
+  其他赛季以当季官方协议为准。
+</p>
+
+<h3 id="s7-6-1">帧的字段</h3>
+
+<p>
+  这一版协议的帧由七个部分组成，依次是帧头、长度、序号、CRC8、
+  命令码、数据和 CRC16：
+</p>
+
+<table>
+  <tr>
+    <th>偏移</th>
+    <th>字节数</th>
+    <th>字段</th>
+    <th>内容</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>1</td>
+    <td><code>SOF</code></td>
+    <td>帧的起点，固定为 <code>0xA5</code></td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>2</td>
+    <td><code>data_length</code></td>
+    <td>data 段的字节数，低字节在前</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>1</td>
+    <td><code>seq</code></td>
+    <td>序号，每发一帧加一，到 255 之后回到 0</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>1</td>
+    <td><code>CRC8</code></td>
+    <td>前 4 个字节的校验</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>2</td>
+    <td><code>cmd_id</code></td>
+    <td>命令码，低字节在前</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td><code>data_length</code></td>
+    <td><code>data</code></td>
+    <td>数据本身</td>
+  </tr>
+  <tr>
+    <td>7 + <code>data_length</code></td>
+    <td>2</td>
+    <td><code>CRC16</code></td>
+    <td>从帧头到 data 末尾的校验，低字节在前</td>
+  </tr>
+</table>
+
+<p>
+  表中的偏移从 0 开始数，单位是字节。以帧 A 为例：
+</p>
+
+<pre><code>A5 02 00 00 8C 01 00 12 34 D9 34</code></pre>
+
+<p>
+  开头 <code>A5</code> 是帧头；接下来两个字节 <code>02 00</code> 是长度，
+  按低字节在前读作 2；<code>00</code> 是序号；<code>8C</code> 是 CRC8；
+  <code>01 00</code> 是命令码 <code>0x0001</code>；长度为 2，
+  所以 data 是 <code>12 34</code> 两个字节；最后 <code>D9 34</code> 是 CRC16。
+</p>
+
+<h3 id="s7-6-2">长度只数 data</h3>
+
+<p>
+  <code>data_length</code> 数的是 data 段的字节数，不包括命令码，
+  也不包括帧头和帧尾的其他字段。整帧长度等于
+</p>
+
+<pre><code>总长度 = data_length + 9</code></pre>
+
+<p>
+  这里的 9 是帧头 1 字节、长度 2 字节、序号 1 字节、CRC8 1 字节、
+  命令码 2 字节、CRC16 2 字节之和。帧 A 的 <code>data_length</code> 是 2，
+  整帧就是 11 个字节。收包时先读出长度，再据此算出还差多少字节，
+  不能把长度字段的值当成整帧长度。
+</p>
+
+<h3 id="s7-6-3">小端</h3>
+
+<p>
+  一个字段占两个字节时，就有先后顺序的问题。本课的帧统一采用小端
+  （little-endian）：低字节在前，高字节在后。数 <code>0x0001</code>
+  写成两个字节是 <code>01 00</code>，<code>0x0102</code> 写成
+  <code>02 01</code>，<code>0x34D9</code> 写成 <code>D9 34</code>。
+</p>
+
+<p>
+  V1.3.0 协议没有用文字逐条规定这两个字段的字节序；本课按协议的
+  结构体示例与常见实现的做法，统一按小端处理。对接其他设备时，
+  以对端协议或双方约定为准。把两个字节拼成一个数，写成：
+</p>
+
+<pre><code>int value = low | (high &lt;&lt; 8);</code></pre>
+
+<p>
+  反过来，把一个数拆成两个字节，写成：
+</p>
+
+<pre><code>unsigned char low = (unsigned char)(value &amp; 0xFF);
+unsigned char high = (unsigned char)((value &gt;&gt; 8) &amp; 0xFF);</code></pre>
+
+<div class="eg" id="e7-10">
+  <div class="eg-h">例题 · 按字段造帧</div>
+  <p>
+    下面的程序按上一节的字段顺序摆出帧 A。两个校验值已经算好，直接填在
+    数组里；校验怎么算，是下一课的内容。
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    unsigned char frame[11];
+
+    frame[0] = 0xA5;
+    frame[1] = 0x02;
+    frame[2] = 0x00;
+    frame[3] = 0x00;
+    frame[4] = 0x8C;
+    frame[5] = 0x01;
+    frame[6] = 0x00;
+    frame[7] = 0x12;
+    frame[8] = 0x34;
+    frame[9] = 0xD9;
+    frame[10] = 0x34;
+
+    for (int i = 0; i &lt; 11; i++) {
+        printf(i == 0 ? "%02X" : " %02X", frame[i]);
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">A5 02 00 00 8C 01 00 12 34 D9 34</pre>
+  <p>
+    数组中每个位置对应表里的一个字段。第 1、2 个元素是长度
+    <code>02 00</code>，也就是 2；第 5、6 个元素是命令码
+    <code>01 00</code>，也就是 <code>0x0001</code>。
+  </p>
+</div>
+
+<div class="eg" id="e7-11">
+  <div class="eg-h">例题 · 把一帧拆成字段</div>
+  <p>
+    下面的程序把帧 A 拆开，逐项打印长度、序号、命令、数据和两个校验值：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+int main() {
+    const unsigned char frame[11] = {
+        0xA5, 0x02, 0x00, 0x00, 0x8C, 0x01, 0x00, 0x12, 0x34, 0xD9, 0x34
+    };
+
+    int data_length = frame[1] | (frame[2] &lt;&lt; 8);
+    int total = data_length + 9;
+    int seq = frame[3];
+    int cmd = frame[5] | (frame[6] &lt;&lt; 8);
+
+    printf("总长度 %d\n", total);
+    printf("data_length %d\n", data_length);
+    printf("seq %d\n", seq);
+    printf("命令 0x%04X\n", cmd);
+    printf("数据");
+    for (int i = 0; i &lt; data_length; i++) {
+        printf(" %02X", frame[7 + i]);
+    }
+    printf("\n");
+    printf("CRC8 %02X\n", frame[4]);
+    printf("CRC16 %02X %02X\n", frame[total - 2], frame[total - 1]);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">总长度 11
+data_length 2
+seq 0
+命令 0x0001
+数据 12 34
+CRC8 8C
+CRC16 D9 34</pre>
+  <p>
+    命令码用 <code>%04X</code> 打印，补足四位，与协议文档里的写法一致。
+    数据从下标 7 开始，长度由 <code>data_length</code> 决定；
+    CRC16 在整帧的最后两个字节，位置是 <code>total - 2</code> 与
+    <code>total - 1</code>。
+  </p>
+</div>
+
+<h3 id="s7-6-4">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-11</div>
+  <p>
+    读一行数据：前三个数是序号、命令码和 data 的字节数，都用十进制；
+    接下来是 data 的十六进制字节；最后两个是 CRC8（两位十六进制）和
+    CRC16（四位十六进制，按数值给出）。按本课的格式造出整帧并打印。
+    </p>
+  <pre class="out" data-label="样例输入">0 1 2 12 34 8C 34D9</pre>
+  <pre class="out" data-label="预期输出">A5 02 00 00 8C 01 00 12 34 D9 34</pre>
+  <p>
+    两个校验值在输入里已经给出，这一题只练字段的排列与字节序；
+    最后一个数 <code>34D9</code> 写进帧尾时低字节在前，成为
+    <code>D9 34</code>。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先读序号、命令码与 data 长度，再按长度读 data 的十六进制字节，
+        最后读两个校验值。造帧时把长度与命令码拆成低字节在前，
+        CRC16 也按低字节在前写入帧尾。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int seq = 0;
+    int cmd = 0;
+    int len = 0;
+    if (!(std::cin &gt;&gt; seq &gt;&gt; cmd &gt;&gt; len)) {
+        return 1;
+    }
+
+    std::vector&lt;unsigned char&gt; data;
+    std::cin &gt;&gt; std::hex;
+    for (int i = 0; i &lt; len; i++) {
+        int value = 0;
+        std::cin &gt;&gt; value;
+        data.push_back((unsigned char)value);
+    }
+
+    int crc8 = 0;
+    int crc16 = 0;
+    std::cin &gt;&gt; std::hex &gt;&gt; crc8 &gt;&gt; crc16;
+
+    std::vector&lt;unsigned char&gt; frame;
+    frame.push_back(0xA5);
+    frame.push_back((unsigned char)(len &amp; 0xFF));
+    frame.push_back((unsigned char)((len &gt;&gt; 8) &amp; 0xFF));
+    frame.push_back((unsigned char)seq);
+    frame.push_back((unsigned char)crc8);
+    frame.push_back((unsigned char)(cmd &amp; 0xFF));
+    frame.push_back((unsigned char)((cmd &gt;&gt; 8) &amp; 0xFF));
+    for (unsigned char b : data) {
+        frame.push_back(b);
+    }
+    frame.push_back((unsigned char)(crc16 &amp; 0xFF));
+    frame.push_back((unsigned char)((crc16 &gt;&gt; 8) &amp; 0xFF));
+
+    for (int i = 0; i &lt; (int)frame.size(); i++) {
+        printf(i == 0 ? "%02X" : " %02X", frame[i]);
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+      <p>
+        输入里的 <code>34D9</code> 是 CRC16 的数值，写进帧尾的两个字节是
+        <code>D9 34</code>。帧头、长度、序号写完之后才轮到 CRC8，
+        因为 CRC8 只覆盖前 4 个字节。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-12</div>
+  <p>
+    读入一帧十六进制字节，按字段打印总长度、<code>data_length</code>、
+    序号、命令、数据、CRC8 和 CRC16。输入是帧 A：
+  </p>
+  <pre class="out" data-label="样例输入">A5 02 00 00 8C 01 00 12 34 D9 34</pre>
+  <pre class="out" data-label="预期输出">总长度 11
+data_length 2
+seq 0
+命令 0x0001
+数据 12 34
+CRC8 8C
+CRC16 D9 34</pre>
+  <p>
+    数据的字节数由 <code>data_length</code> 决定，不要按输入的总字节数
+    循环。写完后与例题的输出逐行对照。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把输入的字节全部读进向量，按固定偏移取字段：
+        长度在 1、2，序号在 3，CRC8 在 4，命令在 5、6，数据从 7 开始。
+      </p>
+      <pre><code>#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;unsigned char&gt; frame;
+    int value = 0;
+
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        frame.push_back((unsigned char)value);
+    }
+    if ((int)frame.size() &lt; 9) {
+        return 1;
+    }
+
+    int data_length = frame[1] | (frame[2] &lt;&lt; 8);
+    int total = data_length + 9;
+    int seq = frame[3];
+    int cmd = frame[5] | (frame[6] &lt;&lt; 8);
+
+    printf("总长度 %d\n", total);
+    printf("data_length %d\n", data_length);
+    printf("seq %d\n", seq);
+    printf("命令 0x%04X\n", cmd);
+    printf("数据");
+    for (int i = 0; i &lt; data_length; i++) {
+        printf(" %02X", frame[7 + i]);
+    }
+    printf("\n");
+    printf("CRC8 %02X\n", frame[4]);
+    printf("CRC16 %02X %02X\n", frame[total - 2], frame[total - 1]);
+
+    return 0;
+}</code></pre>
+      <p>
+        整帧长度由 <code>data_length + 9</code> 算出，CRC16 的位置是
+        <code>total - 2</code> 与 <code>total - 1</code>。
+        这道题不做校验，只按字段拆开。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>认出本课帧的七个字段与各自的偏移；
+  由 <code>data_length</code> 算出整帧长度；按小端读写两字节字段；
+  把一帧拆成字段，或按字段拼出一帧。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-7">
+<h2><span class="no">7.7</span>CRC 校验</h2>
+
+<p>
+  串口线上可能出现干扰：某个字节的某一位翻转，或者收发的字节数对不上。
+  接收方需要一个办法判断“这一帧是不是完整、正确的”。
+  本课的帧用两段 CRC 校验：帧头后面一个字节的 CRC8，帧尾两个字节的 CRC16。
+  CRC 是 cyclic redundancy check（循环冗余校验）的缩写。
+</p>
+
+<h3 id="s7-7-1">为什么需要校验</h3>
+
+<p>
+  长度字段能告诉接收方一帧有多长，但长度本身也可能被干扰改掉。
+  如果接收方无条件相信长度，一个被改大的长度会让它一直等下去，
+  一个被改小的长度会让它把后面帧的字节当成这一帧的内容。
+  校验值的作用是：收齐之后先算一遍，与帧里携带的校验值比较，
+  不相等就说明这一帧在传输中出了问题，应当丢掉。
+</p>
+
+<p>
+  本课把校验放在两个位置。CRC8 只覆盖前 4 个字节，接收方在读到长度之后、
+  相信这个长度之前就能先验一次；CRC16 覆盖从帧头到 data 末尾的全部内容，
+  在整帧收齐之后验证数据与命令是否完好。
+</p>
+
+<h3 id="s7-7-2">CRC8</h3>
+
+<p>
+  CRC8 的结果是一个字节。V1.3.0 协议规定的参数是：多项式
+  <code>x^8 + x^5 + x^4 + 1</code>，反射写法为 <code>0x8C</code>，
+  初值 <code>0xFF</code>，校验范围是帧的前 4 个字节。逐位计算的写法是：
+</p>
+
+<ul>
+  <li>把校验值设为 <code>0xFF</code>；</li>
+  <li>对每个字节，先把它异或进校验值；</li>
+  <li>再重复 8 次：若最低位是 1，右移一位后异或 <code>0x8C</code>；
+      否则只右移一位；</li>
+  <li>所有字节处理完，校验值就是一个字节的结果。</li>
+</ul>
+
+<p>
+  “反射”是指运算从最低位开始处理，代码里表现为右移而不是左移。
+  这个算法的每一步都只依赖当前校验值和当前字节，适合用循环写。
+</p>
+
+<div class="eg" id="e7-12">
+  <div class="eg-h">例题 · 逐位算 CRC8</div>
+  <p>
+    下面的程序先算标准算例 <code>"123456789"</code> 的 CRC8，
+    再算帧 A 前 4 个字节的 CRC8：
+  </p>
+  <pre><code>#include &lt;cstdio&gt;
+
+unsigned char crc8(const unsigned char* data, int len) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; len; i++) {
+        crc = (unsigned char)(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+int main() {
+    const unsigned char check[9] = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    };
+    printf("算例 %02X\n", crc8(check, 9));
+
+    const unsigned char head[4] = {0xA5, 0x02, 0x00, 0x00};
+    printf("帧 A 的 CRC8 %02X\n", crc8(head, 4));
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">算例 0B
+帧 A 的 CRC8 8C</pre>
+  <p>
+    <code>"123456789"</code> 是校验算法常用的标准算例，很多资料都给出
+    它的结果，可以用来确认自己写的参数没有弄错。帧 A 的前 4 个字节是
+    <code>A5 02 00 00</code>，算出的 <code>8C</code> 正好是帧里的第 5 个字节。
+  </p>
+</div>
+
+<h3 id="s7-7-3">CRC16</h3>
+
+<p>
+  CRC16 的结果是两个字节。V1.3.0 协议规定的参数是：反射多项式
+  <code>0x8408</code>，初值 <code>0xFFFF</code>，校验范围从帧头
+  <code>SOF</code> 一直到 data 的最后一个字节，不包括帧尾的两个校验字节。
+  算法与 CRC8 相同，只是校验值有 16 位，移位与异或的对象不同。
+</p>
+
+<p>
+  结果用 <code>std::uint16_t</code> 保存。它是 16 位无符号整数，
+  范围是 0 到 65535，定义在 <code>&lt;cstdint&gt;</code> 里，
+  与 <code>unsigned short</code> 同为 16 位无符号整数，名字更直接。
+  写进帧尾时低字节在前：结果 <code>0x34D9</code> 写成
+  <code>D9 34</code>。
+</p>
+
+<div class="eg" id="e7-13">
+  <div class="eg-h">例题 · 逐位算 CRC16</div>
+  <p>
+    下面的程序算标准算例与帧 A 的 CRC16，并按低字节在前的顺序打印帧尾：
+  </p>
+  <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+
+std::uint16_t crc16(const unsigned char* data, int len) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; len; i++) {
+        crc = (std::uint16_t)(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+int main() {
+    const unsigned char check[9] = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    };
+    printf("算例 %04X\n", crc16(check, 9));
+
+    const unsigned char body[9] = {
+        0xA5, 0x02, 0x00, 0x00, 0x8C, 0x01, 0x00, 0x12, 0x34
+    };
+    std::uint16_t value = crc16(body, 9);
+    printf("帧 A 的 CRC16 %04X\n", value);
+    printf("低字节在前 %02X %02X\n", value &amp; 0xFF, (value &gt;&gt; 8) &amp; 0xFF);
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">算例 6F91
+帧 A 的 CRC16 34D9
+低字节在前 D9 34</pre>
+  <p>
+    帧 A 参与 CRC16 计算的是前 9 个字节：从 <code>A5</code> 到 data 的
+    <code>34</code>，不含最后两个字节 <code>D9 34</code>。
+    算出的数值是 <code>0x34D9</code>，按低字节在前写出来正好与帧尾一致。
+  </p>
+</div>
+
+<h3 id="s7-7-4">查表与算例</h3>
+
+<p>
+  逐位算法每处理一个字节要做 8 次循环。真实工程常用查表法：
+  把一个字节的 256 种取值对应的结果提前算好，运行时每字节查一次表。
+  表可以由逐位算法生成，也可以直接写在源文件里；两种做法的结果相同。
+  本课用逐位算法，因为它把每一步都写在代码里，便于核对参数；
+  课程中的帧只有十几个字节，逐位计算的时间可以忽略。
+</p>
+
+<p>
+  两段校验的分工可以用帧 B 的坏版本来验证。帧 B 是
+  <code>A5 02 00 01 D2 02 00 56 78 8B A8</code>，把 data 的第一个字节
+  <code>78</code> 改成 <code>79</code>，得到
+  <code>A5 02 00 01 D2 02 00 56 79 8B A8</code>。
+  帧头四个字节没有变化，CRC8 仍然是 <code>D2</code>，所以 CRC8 通过；
+  参与 CRC16 的字节变了，CRC16 就不再等于帧尾的 <code>8B A8</code>。
+  接收方据此丢掉这一帧。
+</p>
+
+<h3 id="s7-7-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-13</div>
+  <p>
+    实现 CRC8 与 CRC16 两个函数，分别核对标准算例
+    <code>"123456789"</code> 和帧 A。程序不需要输入，输出四行：
+  </p>
+  <pre class="out" data-label="预期输出">CRC8 算例 0B
+CRC16 算例 6F91
+帧 A 的 CRC8 8C
+帧 A 的 CRC16 34D9</pre>
+  <p>
+    CRC8 的校验范围是帧 A 的前 4 个字节，CRC16 的校验范围是前 9 个字节。
+    四个结果都与例题一致，说明参数与范围都写对了。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个函数的结构相同：初值分别取 <code>0xFF</code> 与
+        <code>0xFFFF</code>，每字节异或之后重复 8 次移位，
+        移位时按最低位决定是否异或多项式。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+
+unsigned char crc8(const unsigned char* data, int len) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; len; i++) {
+        crc = (unsigned char)(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+std::uint16_t crc16(const unsigned char* data, int len) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; len; i++) {
+        crc = (std::uint16_t)(crc ^ data[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+int main() {
+    const unsigned char check[9] = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    };
+    printf("CRC8 算例 %02X\n", crc8(check, 9));
+    printf("CRC16 算例 %04X\n", crc16(check, 9));
+
+    const unsigned char frame_a[11] = {
+        0xA5, 0x02, 0x00, 0x00, 0x8C, 0x01, 0x00, 0x12, 0x34, 0xD9, 0x34
+    };
+    printf("帧 A 的 CRC8 %02X\n", crc8(frame_a, 4));
+    printf("帧 A 的 CRC16 %04X\n", crc16(frame_a, 9));
+
+    return 0;
+}</code></pre>
+      <p>
+        CRC8 的多项式写作 <code>0x8C</code>，CRC16 写作 <code>0x8408</code>。
+        四个结果与例题一致，说明初值、多项式和校验范围都正确。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-14</div>
+  <p>
+    读入序号、命令码，以及后面全部的 data 字节。先造出帧头和命令部分，
+    再算 CRC8 与 CRC16，补全整帧并打印。</p>
+  <pre class="out" data-label="样例输入">1 2 56 78</pre>
+  <pre class="out" data-label="预期输出">A5 02 00 01 D2 02 00 56 78 8B A8</pre>
+  <p>
+    前两个数是序号与命令码，用十进制读；后面的 <code>56 78</code>
+    是 data 的十六进制字节。CRC8 在长度与序号写完之后计算，
+    因为它只覆盖前 4 个字节；CRC16 在 data 全部写入之后计算。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先读序号与命令码，再把剩下的十六进制数全部读成 data。
+        data 的个数就是长度，不需要另外输入。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+unsigned char crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+std::uint16_t crc16(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; (int)buf.size(); i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc;
+}
+
+int main() {
+    int seq = 0;
+    int cmd = 0;
+    if (!(std::cin &gt;&gt; seq &gt;&gt; cmd)) {
+        return 1;
+    }
+
+    std::vector&lt;unsigned char&gt; data;
+    int value = 0;
+    std::cin &gt;&gt; std::hex;
+    while (std::cin &gt;&gt; value) {
+        data.push_back((unsigned char)value);
+    }
+
+    int len = (int)data.size();
+    std::vector&lt;unsigned char&gt; frame;
+    frame.push_back(0xA5);
+    frame.push_back((unsigned char)(len &amp; 0xFF));
+    frame.push_back((unsigned char)((len &gt;&gt; 8) &amp; 0xFF));
+    frame.push_back((unsigned char)seq);
+    frame.push_back(crc8(frame));
+    frame.push_back((unsigned char)(cmd &amp; 0xFF));
+    frame.push_back((unsigned char)((cmd &gt;&gt; 8) &amp; 0xFF));
+    for (unsigned char b : data) {
+        frame.push_back(b);
+    }
+
+    std::uint16_t check = crc16(frame);
+    frame.push_back((unsigned char)(check &amp; 0xFF));
+    frame.push_back((unsigned char)((check &gt;&gt; 8) &amp; 0xFF));
+
+    for (int i = 0; i &lt; (int)frame.size(); i++) {
+        printf(i == 0 ? "%02X" : " %02X", frame[i]);
+    }
+    printf("\n");
+
+    return 0;
+}</code></pre>
+      <p>
+        帧头部分写完后先算 CRC8，填入第 5 个字节；data 全部写入后再算
+        CRC16，按低字节在前补两个字节。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用逐位算法计算 CRC8 与 CRC16；
+  说清两段校验各自的多项式、初值和覆盖范围；
+  按低字节在前的顺序把 CRC16 写进帧尾，并用标准算例核对实现。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-8">
+<h2><span class="no">7.8</span>粘包与半包</h2>
+
+<p>
+  前面的例题都是“写一次、读一次”，读写次数恰好对上。
+  真实串口不会这样配合：发送方连续发几帧，接收方可能一次读到两帧；
+  发送方发了一帧，接收方也可能先读到半帧，过一会儿才读到剩下的一半。
+  这两种情况分别称为粘包与半包。
+</p>
+
+<h3 id="s7-8-1">字节流没有消息边界</h3>
+
+<p>
+  <code>read</code> 返回多少字节，取决于内核缓冲区里当时有多少数据，
+  与发送方调用了几次 <code>write</code> 没有对应关系。发送方分两次写出的
+  11 个字节，接收方可能一次读全；发送方一次写出的 22 个字节，
+  接收方也可能分两次读到。串口只保证字节的先后顺序，
+  不保留“哪几个字节属于同一次写”的信息。
+</p>
+
+<p>
+  所以接收程序不能把一次 <code>read</code> 当成一条消息。正确的做法是
+  准备一个接收缓冲区，把每次读到的字节接在尾部，再反复检查缓冲区里
+  有没有完整的一帧；有就取走，没有就继续等下一批字节。
+</p>
+
+<h3 id="s7-8-2">接收缓冲区</h3>
+
+<p>
+  缓冲区用 <code>std::vector&lt;unsigned char&gt;</code>。每读到一批字节，
+  就全部追加到缓冲区尾部，一个也不丢：
+</p>
+
+<pre><code>std::vector&lt;unsigned char&gt; buf;
+// 读到 n 个字节之后
+buf.insert(buf.end(), chunk, chunk + n);</code></pre>
+
+<p>
+  处理过的字节才从缓冲区头部删除。取出一帧时，删除的是整帧的
+  <code>total</code> 个字节；丢弃一个无效字节时，只删除头部的 1 个字节。
+  缓冲区里尚未处理的字节必须保留，下一次读到的字节接在它们后面。
+</p>
+
+<h3 id="s7-8-3">取帧的顺序</h3>
+
+<p>
+  从缓冲区取一帧，按下面的顺序检查：
+</p>
+
+<ol>
+  <li>缓冲区首字节不是 <code>0xA5</code>：丢掉这 1 个字节，继续检查；</li>
+  <li>缓冲区不足 5 个字节：还无法验证 CRC8，返回等待；</li>
+  <li>用前 4 个字节算 CRC8，与第 5 个字节比较：不相等就丢掉首字节，继续检查；</li>
+  <li>CRC8 通过后，才读 <code>data_length</code>，算出整帧长度
+      <code>data_length + 9</code>；</li>
+  <li>缓冲区不足整帧长度：返回等待；</li>
+  <li>收齐后算 CRC16，与帧尾两个字节比较：不相等就丢掉首字节，继续检查；</li>
+  <li>两项校验都通过：记下命令与数据，从缓冲区删除整帧，返回“取到一帧”。</li>
+</ol>
+
+<p>
+  第 3 步必须在第 4 步之前。CRC8 覆盖的正好是帧头和长度字段；
+  先验 CRC8，才能确认这个 <code>0xA5</code> 与后面的长度不是干扰产生的。
+  如果先信长度，一个假的帧头配上很大的长度，会让接收方一直等下去。
+  校验失败时丢 1 个字节而不是整帧，也是同样的考虑：在确认这是一帧之前，
+  “整帧长度”并不可信；丢 1 个字节后重新找帧头，才能从错位中恢复。
+</p>
+
+<h3 id="s7-8-4">动画：粘包与半包</h3>
+
+<p>
+  下面的动画把同一段接收循环执行一遍。左边是接收缓冲区，
+  中间一栏是这一次读到的字节，右边是取出的帧与已经打印的输出。
+  先出现的是半包：帧 A 分两批到达；接着是粘包：帧 B 与帧 C 连成一批；
+  最后一批开头有两个无效字节，丢弃之后又收到一帧。
+</p>
+
+<div class="viz" data-viz="sticky"></div>
+
+<div class="eg" id="e7-14">
+  <div class="eg-h">例题 · 两帧粘在一起</div>
+  <p>
+    下面的程序把帧 B 与帧 C 的 22 个字节放进缓冲区，循环取帧：
+  </p>
+  <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+// 从缓冲区取出一帧，取出时把命令写到 cmd。
+// 返回 true 表示取到了一帧，false 表示字节还不够。
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    const unsigned char data[22] = {
+        0xA5, 0x02, 0x00, 0x01, 0xD2, 0x02, 0x00, 0x56, 0x78, 0x8B, 0xA8,
+        0xA5, 0x02, 0x00, 0x02, 0x30, 0x03, 0x00, 0x9A, 0xBC, 0x01, 0x66
+    };
+    std::vector&lt;unsigned char&gt; buf(data, data + 22);
+
+    int cmd = 0;
+    while (take_frame(buf, cmd)) {
+        printf("命令 0x%04X\n", cmd);
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">命令 0x0002
+命令 0x0003</pre>
+  <p>
+    两次 <code>take_frame</code> 分别取走 11 个字节，缓冲区最后为空。
+    <code>while</code> 循环的作用是：一次读到的数据里可能不止一帧，
+    要一直取到取不出为止。
+  </p>
+</div>
+
+<div class="eg" id="e7-15">
+  <div class="eg-h">例题 · 先到半帧</div>
+  <p>
+    下面的程序先放入帧 A 的前 3 个字节，取帧失败；再放入剩下的 8 个字节，
+    第二次取帧成功：
+  </p>
+  <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    std::vector&lt;unsigned char&gt; buf;
+
+    const unsigned char head[3] = {0xA5, 0x02, 0x00};
+    buf.insert(buf.end(), head, head + 3);
+
+    int cmd = 0;
+    if (!take_frame(buf, cmd)) {
+        printf("已有 %d 字节，还差 %d 字节\n",
+               (int)buf.size(), 11 - (int)buf.size());
+    }
+
+    const unsigned char rest[8] = {
+        0x00, 0x8C, 0x01, 0x00, 0x12, 0x34, 0xD9, 0x34
+    };
+    buf.insert(buf.end(), rest, rest + 8);
+
+    if (take_frame(buf, cmd)) {
+        printf("凑齐一帧，命令 0x%04X\n", cmd);
+    }
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">已有 3 字节，还差 8 字节
+凑齐一帧，命令 0x0001</pre>
+  <p>
+    第一次调用时缓冲区只有 3 个字节，连 CRC8 都算不了，直接返回
+    <code>false</code>；那 3 个字节原样留在缓冲区里。第二次追加 8 个字节后，
+    缓冲区凑满 11 个字节，两项校验都通过，取出帧 A。
+  </p>
+</div>
+
+<h3 id="s7-8-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-15</div>
+  <p>
+    读入一段十六进制字节，其中两帧粘在一起。用接收缓冲区把它拆开，
+    取出每帧的命令，最后输出缓冲区剩余的字节数。输入是帧 B 与帧 C：
+  </p>
+  <pre class="out" data-label="样例输入">A5 02 00 01 D2 02 00 56 78 8B A8 A5 02 00 02 30 03 00 9A BC 01 66</pre>
+  <pre class="out" data-label="预期输出">命令 0x0002
+命令 0x0003
+剩余 0 字节</pre>
+  <p>
+    取帧要放在循环里，直到 <code>take_frame</code> 返回 <code>false</code>。
+    循环结束后再打印缓冲区的大小。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把输入字节全部放进缓冲区，再循环调用取帧函数。每取到一帧就打印
+        命令，取不到就结束循环。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    std::vector&lt;unsigned char&gt; buf;
+    int value = 0;
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        buf.push_back((unsigned char)value);
+    }
+
+    int cmd = 0;
+    while (take_frame(buf, cmd)) {
+        printf("命令 0x%04X\n", cmd);
+    }
+    printf("剩余 %d 字节\n", (int)buf.size());
+
+    return 0;
+}</code></pre>
+      <p>
+        两帧各 11 个字节，循环执行两次；结束后缓冲区里没有剩余字节，
+        所以最后一行是「剩余 0 字节」。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-16</div>
+  <p>
+    读入一段十六进制字节，直接交给取帧函数。取不到整帧时，
+    按帧 A 的长度输出已有字节数与还差字节数。输入只有帧 A 的前 3 个字节：
+  </p>
+  <pre class="out" data-label="样例输入">A5 02 00</pre>
+  <pre class="out" data-label="预期输出">已有 3 字节，还差 8 字节</pre>
+  <p>
+    帧 A 的整帧长度是 11。不足 5 个字节时连长度字段都读不出来，
+    所以这里的差值按整帧长度 11 计算，而不是从 <code>data_length</code> 算。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        读入字节后直接调用取帧函数。取不到时，按帧 A 的整帧长度 11
+        计算差值。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    std::vector&lt;unsigned char&gt; buf;
+    int value = 0;
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        buf.push_back((unsigned char)value);
+    }
+
+    const int total = 11;
+    int cmd = 0;
+    if (!take_frame(buf, cmd) &amp;&amp; (int)buf.size() &lt; total) {
+        printf("已有 %d 字节，还差 %d 字节\n",
+               (int)buf.size(), total - (int)buf.size());
+    }
+
+    return 0;
+}</code></pre>
+      <p>
+        只有 3 个字节，缓冲区不足 5 个字节，连 CRC8 都无法计算；
+        取帧函数返回 <code>false</code>，原有字节全部保留。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>说明粘包与半包产生的原因；用接收缓冲区保存
+  尚未处理的字节；一次读到多帧时循环取出；不足一帧时保留字节并等待；
+  校验失败时丢 1 个字节重新找帧头。
+</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<section class="lesson" id="l7-9">
+<h2><span class="no">7.9</span>状态机收包</h2>
+
+<p>
+  上一课的取帧函数已经把收包过程写成了一个循环。把循环内部看作几个
+  依次推进的阶段，就是收包状态机（state machine）：每收到一批字节，
+  状态向前推进；某个检查不通过，就退回找帧头的状态。
+  这一课把各阶段整理清楚，并写出一个持续收包的程序。
+</p>
+
+<h3 id="s7-9-1">五个状态</h3>
+
+<p>
+  接收方的处理可以分为五个状态：
+</p>
+
+<ol>
+  <li><b>找帧头。</b>缓冲区首字节不是 <code>0xA5</code> 时，丢掉这一个字节，
+      继续找；</li>
+  <li><b>验 CRC8。</b>缓冲区至少有 5 个字节时，用前 4 个字节算 CRC8，
+      与第 5 个字节比较；失败就丢掉首字节，回到找帧头；</li>
+  <li><b>读长度。</b>CRC8 通过后，读出 <code>data_length</code>，
+      算出整帧长度；</li>
+  <li><b>等收齐。</b>缓冲区不足整帧长度时，保留全部字节，等待下一次读；</li>
+  <li><b>验 CRC16。</b>收齐后计算 CRC16，与帧尾比较；通过就交出这一帧，
+      并从缓冲区删除整帧。</li>
+</ol>
+
+<p>
+  代码里不必为每个状态写一个 <code>switch</code> 分支。上一课的
+  <code>take_frame</code> 用一个 <code>while</code> 循环加几个
+  <code>if</code> 就完成了同样的顺序：循环负责“找帧头”和“失败后重试”，
+  几个 <code>if</code> 依次对应 CRC8、长度、收齐与 CRC16。
+</p>
+
+<h3 id="s7-9-2">失败时丢一个字节</h3>
+
+<p>
+  校验失败时只丢 1 个字节，而不是丢掉“整帧”。原因是：在 CRC8 通过之前，
+  这个 <code>0xA5</code> 和它后面的长度都还没有被确认，按这个长度丢字节
+  可能把下一帧的开头一起丢掉；在 CRC16 失败时，帧内的长度虽然通过了
+  CRC8，但内容已经损坏，按损坏的长度删除也可能误删后面的好帧。
+  丢 1 个字节后重新扫描，最坏情况也只是多扫描几个字节，不会漏掉后面的帧。
+</p>
+
+<h3 id="s7-9-3">长度上限</h3>
+
+<p>
+  还要给整帧长度设一个上限。如果干扰恰好造出一个 <code>0xA5</code>，
+  而它后面的两个字节又恰好通过了 CRC8，读出的长度可能很大；
+  接收方会一直等这么多字节，正常的数据都排在后面处理不了。
+  本课练习里的帧最长 11 个字节，把上限定为 100 字节：
+  超过上限就按坏帧处理，丢 1 个字节重新找帧头。
+  真实工程按协议规定的最大数据长度确定这个上限。
+</p>
+
+<div class="eg" id="e7-16">
+  <div class="eg-h">例题 · 带垃圾与坏帧的字节流</div>
+  <p>
+    下面的程序把一段字节逐个送入缓冲区：开头两个字节是无效字节，
+    然后是帧 A、一个校验被破坏的帧 B、帧 C。每送入一个字节就尝试取帧：
+  </p>
+  <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+// 从缓冲区取出一帧。校验不过时记一次坏帧，丢掉一个字节继续找。
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd, int&amp; bad) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if (total &gt; 100) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    const std::vector&lt;unsigned char&gt; stream = {
+        0x00, 0xFF,
+        0xA5, 0x02, 0x00, 0x00, 0x8C, 0x01, 0x00, 0x12, 0x34, 0xD9, 0x34,
+        0xA5, 0x02, 0x00, 0x01, 0xD2, 0x02, 0x00, 0x56, 0x79, 0x8B, 0xA8,
+        0xA5, 0x02, 0x00, 0x02, 0x30, 0x03, 0x00, 0x9A, 0xBC, 0x01, 0x66
+    };
+
+    std::vector&lt;unsigned char&gt; buf;
+    int cmd = 0;
+    int bad = 0;
+
+    for (unsigned char b : stream) {
+        buf.push_back(b);
+        while (take_frame(buf, cmd, bad)) {
+            printf("命令 0x%04X\n", cmd);
+        }
+    }
+
+    printf("坏帧 %d 个，剩余 %d 字节\n", bad, (int)buf.size());
+
+    return 0;
+}</code></pre>
+  <pre class="out" data-label="预期输出">命令 0x0001
+命令 0x0003
+坏帧 1 个，剩余 0 字节</pre>
+  <p>
+    开头的 <code>00 FF</code> 在找帧头时被丢掉，不计为坏帧。
+    坏帧 B 的 CRC8 通过、CRC16 失败，计为 1 个坏帧；
+    之后逐字节丢到帧 C 的 <code>0xA5</code>，帧 C 正常取出。
+    流结束时缓冲区为空。
+  </p>
+</div>
+
+<h3 id="s7-9-4">没有硬件也能联调</h3>
+
+<p>
+  收包逻辑可以用字节数组测试，发送与等待应答的部分还需要一个“对面”。
+  没有板子时，可以用伪终端加一个 Python 模拟板把整条链路跑通。
+  模拟板创建一对伪终端，扮演串口的另一端：读 C++ 程序发来的请求帧，
+  验两段 CRC，然后回一帧应答，并且故意分两批写出（先 3 个字节，
+  隔 0.05 秒再写 8 个字节），让接收方真的遇到半包。
+</p>
+
+<p>
+  联调程序用 <code>main</code> 的两个参数接收设备路径：<code>argc</code>
+  是参数的个数，<code>argv[0]</code> 是程序名，<code>argv[1]</code> 是第一个参数。
+  本课只用 <code>argv[1]</code> 取得模拟板给出的从端路径；
+  需要了解细节时可以自行搜索「C++ main 参数 argc argv」。
+  程序用 <code>VMIN = 0</code>、<code>VTIME = 50</code>：一次
+  <code>read</code> 最多等 5 秒（<code>VTIME</code> 的单位是 0.1 秒），
+  等不到数据就返回 0，程序据此打印超时并退出，不会一直停在那里。
+</p>
+
+<div class="eg" id="e7-17">
+  <div class="eg-h">例题 · 一问一答</div>
+  <p>
+    下面的程序把帧 A 作为请求发出，等待命令 <code>0x0002</code> 的应答，
+    收到后打印命令与数据：
+  </p>
+  <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd,
+                std::vector&lt;unsigned char&gt;&amp; data) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if (total &gt; 100) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        data.clear();
+        for (int i = 0; i &lt; data_length; i++) {
+            data.push_back(buf[7 + i]);
+        }
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc &lt; 2) {
+        printf("用法: ./demo 设备路径\n");
+        return 1;
+    }
+
+    int fd = open(argv[1], O_RDWR | O_NOCTTY);
+    if (fd == -1) {
+        printf("打开设备失败\n");
+        return 1;
+    }
+
+    struct termios t;
+    tcgetattr(fd, &amp;t);
+    cfmakeraw(&amp;t);
+    t.c_cc[VMIN] = 0;
+    t.c_cc[VTIME] = 50;
+    tcsetattr(fd, TCSANOW, &amp;t);
+
+    const unsigned char request[11] = {
+        0xA5, 0x02, 0x00, 0x00, 0x8C, 0x01, 0x00, 0x12, 0x34, 0xD9, 0x34
+    };
+    ssize_t written = write(fd, request, 11);
+    if (written != 11) {
+        printf("发送请求失败\n");
+        close(fd);
+        return 1;
+    }
+
+    std::vector&lt;unsigned char&gt; buf;
+    int cmd = 0;
+    int idle = 0;
+
+    while (true) {
+        unsigned char chunk[32];
+        ssize_t n = read(fd, chunk, 32);
+
+        if (n &gt; 0) {
+            idle = 0;
+            for (ssize_t i = 0; i &lt; n; i++) {
+                buf.push_back(chunk[i]);
+            }
+
+            std::vector&lt;unsigned char&gt; data;
+            while (take_frame(buf, cmd, data)) {
+                if (cmd == 0x0002) {
+                    printf("收到应答 0x%04X\n", cmd);
+                    printf("数据");
+                    for (unsigned char b : data) {
+                        printf(" %02X", b);
+                    }
+                    printf("\n");
+                    close(fd);
+                    return 0;
+                }
+            }
+        } else if (n == 0) {
+            idle++;
+            if (idle &gt;= 1) {
+                printf("等待应答超时\n");
+                close(fd);
+                return 1;
+            }
+        } else {
+            printf("读取失败\n");
+            close(fd);
+            return 1;
+        }
+    }
+}</code></pre>
+  <pre class="out" data-label="预期输出">收到应答 0x0002
+数据 56 78</pre>
+  <p>
+    程序把收到的每个字节追加到缓冲区，再循环取帧。应答帧 B 被模拟板分成
+    3 个字节与 8 个字节两批写出，实际的 <code>read</code> 可能一次拿到全部
+    11 个字节，也可能先拿到 3 个、再拿到 8 个；两种情况都由同一个收包循环
+    处理。收到命令 <code>0x0002</code> 后打印两行并结束。
+  </p>
+</div>
+
+<p>
+  这份程序与模拟板放在同一个目录里，目录中还有一份 <code>构建.txt</code>，
+  里面是编译与运行两条命令：
+</p>
+
+<pre><code>g++ -std=c++17 -Wall -o demo main.cpp
+python3 fake_board.py --run ./demo</code></pre>
+
+<p>
+  第二条命令让模拟板创建伪终端，启动 <code>./demo</code> 并把从端路径
+  作为参数传给它；模拟板验证请求的两段 CRC，回一帧应答，
+  再确认程序以退出码 0 结束。模拟板成功时自己不打印任何内容，
+  屏幕上的两行就是 C++ 程序的输出。
+</p>
+
+<p>
+  也可以手动运行：先执行 <code>python3 fake_board.py</code>，
+  它会打印一个从端路径并等待最多 60 秒；在另一个终端里执行
+  <code>./demo</code> 加上那个路径。手动模式会把设备路径打印出来，
+  自动模式则不打印，避免把每次不同的路径写进程序的输出。
+</p>
+
+<p>
+  设备路径要用模拟板打印的那一个，不要把自己终端所在的
+  <code>/dev/pts/N</code> 传进去：程序会把它设成原始模式，
+  <code>Ctrl+C</code> 不再产生中断。若终端已经进入原始模式，
+  在该终端执行 <code>stty sane</code> 恢复。
+</p>
+
+<p>
+  伪终端只传递字节。它接受波特率设置，但不会按 115200 或 921600 的速度
+  限制发送；它也不模拟校验位与电气信号。这一节能验证的是收发流程、
+  组帧、校验、半包处理与超时分支；真实波特率下的时序、
+  电气层的连接质量，仍然要插上板子才能确认。
+  Windows 上的串口是 COM 口，打开与配置用另一套 API，本课的代码按 Linux 写。
+</p>
+
+<h3 id="s7-9-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 7-17</div>
+  <p>
+    这一题的输入与上一课的例题相同，要求合上书自己写一遍收包循环。
+    输入是无效字节、帧 A、校验被破坏的帧 B 与帧 C：
+  </p>
+  <pre class="out" data-label="样例输入">00 FF A5 02 00 00 8C 01 00 12 34 D9 34
+A5 02 00 01 D2 02 00 56 79 8B A8
+A5 02 00 02 30 03 00 9A BC 01 66</pre>
+  <pre class="out" data-label="预期输出">命令 0x0001
+命令 0x0003
+坏帧 1 个，剩余 0 字节</pre>
+  <p>
+    逐字节送入缓冲区，每送入一个就循环取帧；取出的帧打印命令，
+    校验失败的帧计数，最后打印坏帧数与剩余字节数。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        逐个字节追加到缓冲区，每追加一个就循环取帧，直到取不出为止。
+        这样写与真实接收循环的结构一致。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd, int&amp; bad) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if (total &gt; 100) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    std::vector&lt;unsigned char&gt; buf;
+    int value = 0;
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        buf.push_back((unsigned char)value);
+    }
+
+    int cmd = 0;
+    int bad = 0;
+    while (take_frame(buf, cmd, bad)) {
+        printf("命令 0x%04X\n", cmd);
+    }
+    printf("坏帧 %d 个，剩余 %d 字节\n", bad, (int)buf.size());
+
+    return 0;
+}</code></pre>
+      <p>
+        开头的两个无效字节在找帧头时被丢掉；坏帧 B 的 CRC16 失败，
+        计为 1 个坏帧；帧 C 正常取出。结束时缓冲区为空。
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-18</div>
+  <p>
+    综合练习：读入一段十六进制字节，用收包循环取出全部好帧，
+    统计好帧与坏帧的数量。输入是帧 A、校验被破坏的帧 B 与帧 C：
+  </p>
+  <pre class="out" data-label="样例输入">A5 02 00 00 8C 01 00 12 34 D9 34
+A5 02 00 01 D2 02 00 56 79 8B A8
+A5 02 00 02 30 03 00 9A BC 01 66</pre>
+  <pre class="out" data-label="预期输出">好帧 2 个
+坏帧 1 个</pre>
+  <p>
+    这一题只统计数量，不打印每帧的命令。坏帧 B 在丢掉首字节后，
+    剩余字节要继续扫描，不能因为一次校验失败就清空整个缓冲区。
+  </p>
+  <details class="ans" data-run="示例代码/答案/7-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        在取帧函数里用两个计数器分别记录好帧与坏帧。取出好帧时
+        好帧计数加一，两段校验任一失败时坏帧计数加一。
+      </p>
+      <pre><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+bool check_crc8(const std::vector&lt;unsigned char&gt;&amp; buf) {
+    unsigned char crc = 0xFF;
+    for (int i = 0; i &lt; 4; i++) {
+        crc = (unsigned char)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x01) != 0) {
+                crc = (unsigned char)((crc &gt;&gt; 1) ^ 0x8C);
+            } else {
+                crc = (unsigned char)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return crc == buf[4];
+}
+
+bool check_crc16(const std::vector&lt;unsigned char&gt;&amp; buf, int total) {
+    std::uint16_t crc = 0xFFFF;
+    for (int i = 0; i &lt; total - 2; i++) {
+        crc = (std::uint16_t)(crc ^ buf[i]);
+        for (int bit = 0; bit &lt; 8; bit++) {
+            if ((crc &amp; 0x0001) != 0) {
+                crc = (std::uint16_t)((crc &gt;&gt; 1) ^ 0x8408);
+            } else {
+                crc = (std::uint16_t)(crc &gt;&gt; 1);
+            }
+        }
+    }
+    return (crc &amp; 0xFF) == buf[total - 2] &amp;&amp; (crc &gt;&gt; 8) == buf[total - 1];
+}
+
+bool take_frame(std::vector&lt;unsigned char&gt;&amp; buf, int&amp; cmd, int&amp; bad) {
+    while (!buf.empty()) {
+        if (buf[0] != 0xA5) {
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; 5) {
+            return false;
+        }
+        if (!check_crc8(buf)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        int data_length = buf[1] | (buf[2] &lt;&lt; 8);
+        int total = data_length + 9;
+        if (total &gt; 100) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+        if ((int)buf.size() &lt; total) {
+            return false;
+        }
+        if (!check_crc16(buf, total)) {
+            bad++;
+            buf.erase(buf.begin());
+            continue;
+        }
+
+        cmd = buf[5] | (buf[6] &lt;&lt; 8);
+        buf.erase(buf.begin(), buf.begin() + total);
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    std::vector&lt;unsigned char&gt; buf;
+    int value = 0;
+    while (std::cin &gt;&gt; std::hex &gt;&gt; value) {
+        buf.push_back((unsigned char)value);
+    }
+
+    int cmd = 0;
+    int bad = 0;
+    int good = 0;
+    while (take_frame(buf, cmd, bad)) {
+        good++;
+    }
+
+    printf("好帧 %d 个\n", good);
+    printf("坏帧 %d 个\n", bad);
+
+    return 0;
+}</code></pre>
+      <p>
+        这段输入里有帧 A 与帧 C 两个好帧，坏帧 B 一个。
+        坏帧之后剩下的字节继续扫描，所以帧 C 仍然能被取出。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>按五个状态说明收包过程；用一个缓冲区加取帧函数
+  持续收包；在 CRC8、长度上限与 CRC16 失败时丢 1 个字节重新同步；
+  用伪终端与模拟板在没有硬件的情况下完成一次一问一答。
+</p>
+
+</section>
+
+<section class="lesson" id="l7-10">
+<h2><span class="no">7.10</span>一个简易的裁判系统</h2>
+
+<p>
+  前面几节的程序把收到的字节打印成十六进制。真实的串口对面不是终端，
+  而是另一块板子：它收到帧，先验 CRC，再把 data 段按字段拆开，
+  显示成坐标、血量、弹量这样的数值。机器人比赛里，承担这个角色的是
+  裁判系统（referee system）。这一节给出一个简易的接收端，
+  把前面写的帧真正显示出来，便于观察发送的字节与字段之间的对应关系。
+</p>
+
+<h3 id="s7-10-1">接收端做什么</h3>
+
+<p>
+  接收端的工作可以分成四步：从字节流里取出完整的帧；验 CRC8 与 CRC16；
+  按命令码解释 data 段；把结果写到界面上。前两步与上一节的收包循环相同，
+  后两步由每条命令的数据格式决定。
+</p>
+
+<p>
+  这一节的工具是一个 Python 程序。它用伪终端或真实串口接收数据，
+  在本机启动一个网页，把收到的内容显示出来。网页每 0.25 秒向本地服务
+  取一次状态（轮询，polling），数据用 JSON（一种文本数据格式）传递。
+  Python、HTTP 与页面脚本都不是本课的内容，这里只说明它们的作用；
+  需要了解时可以自行搜索「Python http.server」「JavaScript fetch」。
+  工具只在本机监听，不连接外部网络。
+</p>
+
+<h3 id="s7-10-2">页面上的四块内容</h3>
+
+<p>
+  页面从上到下分四块：
+</p>
+
+<ul>
+  <li><b>接收信息总览</b>：已收帧数、坏帧数、已收字节数与最后收帧时间，
+      以及当前使用的设备。坏帧数包括 CRC8 错误、CRC16 错误与长度异常。</li>
+  <li><b>机器人状态</b>：每个机器人一行，显示 X、Y、HP、弹量与最近更新时间。
+      还没有收到过数据的机器人显示“等待数据”。</li>
+  <li><b>接收数据包</b>：每条命令一张卡片。卡片上方是按字段着色的字节，
+      颜色与字段的对应关系写在图例里；下方是长度、seq、命令、数据与
+      两段 CRC 的数值。多字节字段已经按小端拼好，直接显示十进制结果。</li>
+  <li><b>日志（log）</b>：最近 10 条记录，包含时间、命令、seq、长度、
+      校验结果与原始字节。校验失败的帧也记在这里，便于对照。</li>
+</ul>
+
+<h3 id="s7-10-3">三条演示命令</h3>
+
+<p>
+  为了让页面上的数值有意义，这一节给三条命令规定了简单的数据格式。
+  它们和前面的例题一样，是课程自己编的，不对应任何官方业务命令；
+  帧格式与两段 CRC 仍按 2026 赛季 V1.3.0 协议。
+</p>
+
+<table>
+  <thead>
+    <tr><th>命令</th><th>含义</th><th>data 段</th><th>长度</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0x0001</code></td>
+      <td>机器人位置</td>
+      <td><code>id</code>（1 字节）+ <code>x</code>（2 字节，小端）+ <code>y</code>（2 字节，小端）</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td><code>0x0002</code></td>
+      <td>机器人血量</td>
+      <td><code>id</code>（1 字节）+ <code>hp</code>（2 字节，小端）</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td><code>0x0003</code></td>
+      <td>剩余发弹量</td>
+      <td><code>id</code>（1 字节）+ <code>ammo</code>（2 字节，小端）</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  <code>id</code> 取 1、2、3、4、7，分别对应英雄、工程、步兵 3、
+  步兵 4 与哨兵。编号只是演示用的，真实比赛以当季协议为准。
+</p>
+
+<h3 id="s7-10-4">跑起来</h3>
+
+<p>
+  工具与一份发送端程序放在这一节的示例目录里。不需要另外启动模拟板：
+  接收端会在启动时自己创建一对伪终端，并把从端路径打印出来，那个路径就是
+  要交给发送端的设备。先进入目录，启动接收端：
+</p>
+
+<pre data-lang="终端"><code>python3 referee_system.py</code></pre>
+
+<p>
+  程序会打印接收设备路径与页面地址，设备路径每次不同，例如：
+</p>
+
+<pre class="out" data-label="启动信息（设备路径每次不同）">接收设备：/dev/pts/7
+页面地址：http://127.0.0.1:8000</pre>
+
+<figure class="shot">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="图片/7.10-启动接收端.png" alt="终端打印接收设备路径与页面地址" width="810" height="240">
+  <figcaption>启动接收端后，终端打印接收设备与页面地址</figcaption>
+</figure>
+
+<p>图片可以双击放大，滚轮继续缩放；再次双击或按 <code>Esc</code> 还原。</p>
+
+
+<p>
+  在浏览器里打开页面地址。刚打开时还没有收到数据，页面显示“等待数据”：
+</p>
+
+<figure class="shot">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="图片/7.10-等待数据.png" alt="刚打开页面时的等待数据状态" width="2024" height="1152">
+  <figcaption>刚打开页面：五台机器人都显示“等待数据”</figcaption>
+</figure>
+
+<p>
+  然后在另一个终端里编译并运行发送端，把上面打印的设备路径作为参数：
+</p>
+
+<div class="aside warn">
+  <b>设备路径要用接收端打印的那一个</b>
+  <p>
+    下面的 <code>/dev/pts/7</code> 只是示例，每次运行都会不同。
+    不要把自己终端所在的 <code>/dev/pts/N</code> 传进去：那会把终端
+    设成原始模式，<code>Ctrl+C</code> 不再产生中断。发送端会拒绝这种
+    路径；若终端已经进入原始模式，在该终端执行 <code>stty sane</code>
+    恢复。
+  </p>
+</div>
+
+<pre><code>g++ -std=c++17 -Wall -o sender sender.cpp
+./sender /dev/pts/7</code></pre>
+
+<figure class="shot">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="图片/7.10-发送端.png" alt="发送端终端输出，每 0.2 秒发送一帧" width="810" height="295">
+  <figcaption>发送端运行后，每 0.2 秒发一帧</figcaption>
+</figure>
+
+
+<p>
+  也可以让接收端自己启动发送端：
+</p>
+
+<pre data-lang="终端"><code>python3 referee_system.py --run ./sender</code></pre>
+
+<p>
+  发送端每 0.2 秒发一帧。机器人在英雄、工程、步兵 3、步兵 4、哨兵之间
+  轮流出现，X、Y、HP 与弹量每次都取随机值；发送端会一直发送，直到按
+  <code>Ctrl+C</code> 结束。输出类似下面这样，命令、机器人和数值每次都
+  不同：
+</p>
+
+<pre class="out" data-label="输出示例（每次不同）">开始发送，每 0.2 秒一帧，按 Ctrl+C 停止。
+发送 0x0001 机器人 1
+发送 0x0002 机器人 2
+发送 0x0003 机器人 3（CRC8 错误）
+发送 0x0002 机器人 4
+发送 0x0001 机器人 7
+发送 0x0003 机器人 1（CRC16 错误）
+发送 0x0002 机器人 2
+发送 0x0001 机器人 3
+发送 0x0002 机器人 4（长度异常）
+发送 0x0003 机器人 7</pre>
+
+<p>
+  为了演示坏帧，发送端每 3 帧故意发一个错误帧，三种错误轮流出现：
+  CRC8 错误、CRC16 错误、长度异常。
+</p>
+
+<p>
+  接收端运行期间，终端一直停在程序里、不返回命令提示符，这是正常的。
+  发送端会一直发送，按 <code>Ctrl+C</code> 结束发送端后，接收端不会退出，
+  页面仍显示最后收到的数据；按 <code>Ctrl+C</code> 结束接收端。
+  打开页面后应当看到：已收帧数不断增加，五台机器人都会出现 X、Y、HP
+  与弹量；每 3 帧里有 1 帧是故意发坏的，日志（最近 10 条）里能看到
+  “CRC 通过”和“CRC8 错误”“CRC16 错误”“长度异常”，坏帧计数随之增加。
+  数据包卡片显示最新一帧的 seq、字段与原始字节。
+</p>
+
+<figure class="shot">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="图片/7.10-接收页面.png" alt="收到数据后的接收页面" width="2017" height="1155">
+  <figcaption>收到数据后：接收总览、机器人状态与数据包</figcaption>
+</figure>
+
+
+<p>
+  有板子时，可以用 <code>--device</code> 指定真实串口，用
+  <code>--baud</code> 指定波特率：
+</p>
+
+<pre data-lang="终端"><code>python3 referee_system.py --device /dev/ttyUSB0 --baud 115200</code></pre>
+
+<p>
+  这时发送端要在另一块板子上运行。两个程序不能打开同一个串口设备。
+</p>
+
+<h3 id="s7-10-5">边界</h3>
+
+<ul>
+  <li>这一节的命令码与数据格式是课程自编的；真实裁判系统的命令与字段
+      以当季官方协议为准。</li>
+  <li>伪终端不按真实波特率走，也不模拟校验位与电气信号；它验证的是
+      收包、校验与显示。真实波特率下的时序与连接质量要插上板子才能确认。</li>
+  <li>这个接收端只接收，不发送。真实裁判系统还会向机器人发送比赛状态、
+      易伤标志、飞镖目标等数据。</li>
+  <li>页面只监听 <code>127.0.0.1</code>，其他机器访问不到，也不联网。</li>
+</ul>
+
+<p class="can">
+  <b>你现在能写什么：</b>把收包循环接到一个显示端；按命令码解释 data 段；
+  用字段宽度、字节序与 CRC 校验一帧数据；在没有硬件时用伪终端观察
+  从发送到显示的完整过程。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a class="prev" href="06-文件和异常.html">← 第 6 部分 · 文件和异常</a>
+  <span class="spacer"></span>
+  <a class="next" href="08-章末检测.html">第 8 部分 · 章末检测 →</a>
+</nav>
+
+</main>
+
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/viz.js"></script>
+<script src="../../assets/zoom.js"></script>
+<script>
+/* ---------------------------------------------------------------
+   这一课的动画：粘包与半包。
+
+   演示的是 7.8 的接收循环：每次读到的字节接在缓冲区尾部，
+   再从缓冲区里循环取帧。九步依次是：
+   半包（帧 A 分 3 + 8 两批到达）、取走帧 A、
+   粘包（帧 B 与帧 C 连成一批）、连续取走两帧、
+   开头带无效字节的一批、帧 D 凑齐。
+
+   每一步的缓冲区字节数、取出的命令与屏幕上的行，
+   都实际运行对过，对得上。
+   帧 D 与帧 A 相同，所以第 4 行的命令又是 0x0001。
+   --------------------------------------------------------------- */
+VIZ.sticky = {
+  code: [
+    "ssize_t n = read(fd, chunk, 32);",
+    "buf.insert(buf.end(), chunk, chunk + n);",
+    "while (take_frame(buf, cmd)) {",
+    "    handle(cmd);",
+    "}"
+  ],
+
+  steps: [
+    {
+      line: null,
+      note: "左边是<b>接收缓冲区</b>。串口把收到的字节一块一块交过来，" +
+            "一块可能只有几个字节，也可能一次包含两帧。先看第一块。",
+      mem: [
+        { name: "缓冲", value: "0 字节", state: "" },
+        { name: "本块", value: "—", state: "" },
+        { name: "帧", value: "—", state: "" },
+        { name: "状态", value: "等数据", state: "new" }
+      ],
+      screen: []
+    },
+    {
+      line: 1,
+      note: "本块只有 3 个字节 <code>A5 02 00</code>，是帧 A 的开头。" +
+            "把它们追加到缓冲区。现在只有帧头与长度低字节，" +
+            "还判断不出整帧有多长，继续等。",
+      mem: [
+        { name: "缓冲", value: "3 字节", state: "write" },
+        { name: "本块", value: "3 字节", state: "read" },
+        { name: "帧", value: "—", state: "" },
+        { name: "状态", value: "等数据", state: "" }
+      ],
+      screen: [],
+      flows: [{ from: "本块", to: "缓冲" }]
+    },
+    {
+      line: 1,
+      note: "第二块 8 个字节接上，缓冲区凑够 11 个字节：" +
+            "<code>A5 02 00 00 8C 01 00 12 34 D9 34</code>。" +
+            "这是一整帧 A。",
+      mem: [
+        { name: "缓冲", value: "11 字节", state: "write" },
+        { name: "本块", value: "8 字节", state: "read" },
+        { name: "帧", value: "—", state: "" },
+        { name: "状态", value: "等数据", state: "" }
+      ],
+      screen: [],
+      flows: [{ from: "本块", to: "缓冲" }]
+    },
+    {
+      line: 2,
+      note: "取帧函数依次检查：帧头是 <code>0xA5</code>；前 4 个字节的 CRC8 " +
+            "等于 <code>8C</code>；长度是 2，整帧 11 字节；收齐；CRC16 等于" +
+            "帧尾的 <code>D9 34</code>。命令是 <code>0x0001</code>，" +
+            "交出一帧，缓冲区清空。",
+      mem: [
+        { name: "缓冲", value: "0 字节", state: "read" },
+        { name: "本块", value: "—", state: "" },
+        { name: "帧", value: "0x0001", state: "new" },
+        { name: "状态", value: "已收 1 帧", state: "write" }
+      ],
+      screen: ["第1帧 0x0001"],
+      flows: [{ from: "缓冲", to: "帧" }, { from: "帧", to: ":screen" }]
+    },
+    {
+      line: 1,
+      note: "下一块 22 个字节，两帧粘在一起：帧 B 紧跟帧 C。" +
+            "全部追加到缓冲区尾部。",
+      mem: [
+        { name: "缓冲", value: "22 字节", state: "write" },
+        { name: "本块", value: "22 字节", state: "read" },
+        { name: "帧", value: "0x0001", state: "" },
+        { name: "状态", value: "已收 1 帧", state: "" }
+      ],
+      screen: ["第1帧 0x0001"],
+      flows: [{ from: "本块", to: "缓冲" }]
+    },
+    {
+      line: 2,
+      note: "取出帧 B，命令 <code>0x0002</code>。缓冲区从头部删除 11 个字节，" +
+            "剩下帧 C 的 11 个字节。",
+      mem: [
+        { name: "缓冲", value: "11 字节", state: "read" },
+        { name: "本块", value: "—", state: "" },
+        { name: "帧", value: "0x0002", state: "write" },
+        { name: "状态", value: "已收 2 帧", state: "write" }
+      ],
+      screen: ["第1帧 0x0001", "第2帧 0x0002"],
+      flows: [{ from: "缓冲", to: "帧" }, { from: "帧", to: ":screen" }]
+    },
+    {
+      line: 2,
+      note: "循环继续，接着取出帧 C，命令 <code>0x0003</code>。" +
+            "缓冲区清空，这一次读到的字节全部处理完。",
+      mem: [
+        { name: "缓冲", value: "0 字节", state: "read" },
+        { name: "本块", value: "—", state: "" },
+        { name: "帧", value: "0x0003", state: "write" },
+        { name: "状态", value: "已收 3 帧", state: "write" }
+      ],
+      screen: ["第1帧 0x0001", "第2帧 0x0002", "第3帧 0x0003"],
+      flows: [{ from: "缓冲", to: "帧" }, { from: "帧", to: ":screen" }]
+    },
+    {
+      line: 1,
+      note: "新的一块有 5 个字节 <code>00 FF A5 02 00</code>。" +
+            "前两个字节不是帧头，找帧头时被逐个丢掉；" +
+            "剩下 <code>A5 02 00</code> 留在缓冲区。这又是一帧的开头，" +
+            "内容与帧 A 相同，下面称它为帧 D。",
+      mem: [
+        { name: "缓冲", value: "3 字节", state: "write" },
+        { name: "本块", value: "5 字节", state: "read" },
+        { name: "帧", value: "0x0003", state: "" },
+        { name: "状态", value: "已收 3 帧", state: "" }
+      ],
+      screen: ["第1帧 0x0001", "第2帧 0x0002", "第3帧 0x0003"],
+      flows: [{ from: "本块", to: "缓冲" }]
+    },
+    {
+      line: 2,
+      note: "后 8 个字节接上，缓冲区凑齐 11 个字节，两段校验都通过，" +
+            "取出第 4 帧，命令 <code>0x0001</code>。缓冲区为空，" +
+            "四帧都处理完了。",
+      mem: [
+        { name: "缓冲", value: "0 字节", state: "read" },
+        { name: "本块", value: "8 字节", state: "read" },
+        { name: "帧", value: "0x0001", state: "write" },
+        { name: "状态", value: "已收 4 帧", state: "write" }
+      ],
+      screen: ["第1帧 0x0001", "第2帧 0x0002", "第3帧 0x0003", "第4帧 0x0001"],
+      flows: [{ from: "缓冲", to: "帧" }, { from: "帧", to: ":screen" }]
+    }
+  ]
+};
+</script>
+
+</body>
+</html>

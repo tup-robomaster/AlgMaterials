@@ -1,0 +1,6 @@
+mkdir -p build
+cd build
+cmake ..
+make
+cmake --install . --prefix 装到这儿
+./装到这儿/bin/stats < ../main.in
