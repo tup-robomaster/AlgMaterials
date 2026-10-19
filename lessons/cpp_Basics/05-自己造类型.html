@@ -426,7 +426,7 @@ int main() {
     接着读进来 <code>n</code> 个人的姓名、学号、成绩；
     最后按读进来的顺序，一行一个，原样打出去。
   </p>
-  <p>输入 <code>3 小明 101 90 小红 102 85 小刚 103 95</code>。</p>
+  <pre class="out" data-label="样例输入">3 小明 101 90 小红 102 85 小刚 103 95</pre>
   <pre class="out" data-label="预期输出">小明 101 90
 小红 102 85
 小刚 103 95</pre>
@@ -3722,8 +3722,7 @@ main 里有几句           一长串              四句</code></pre>
     里面有一个 <code>fun</code>，管「找最小值 + 和末尾交换」。
     数组和个数放 <code>main</code> 里（版本一那种装法）。
   </p>
-  <p>输入（题目给的那组）</p>
-  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="样例输入">5 34 1 2 56 4</pre>
   <pre class="out" data-label="预期输出">34 1 2 56 4
 34 4 2 56 1</pre>
   <p>
@@ -3808,8 +3807,7 @@ int main() {
     接着上一题，给盒子加一个动作 <code>sum(int a[], int n)</code>，
     交回这串数的总和。在「交换后」那一行底下再打一行总和。
   </p>
-  <p>输入（题目给的那组）</p>
-  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="样例输入">5 34 1 2 56 4</pre>
   <pre class="out" data-label="预期输出">34 1 2 56 4
 34 4 2 56 1
 97</pre>
@@ -3902,8 +3900,7 @@ int main() {
     把 <code>fun</code> 里那个「找最小」改成「找<b>最大</b>」，
     其它的一个字都别动（包括函数名）。
   </p>
-  <p>输入（还是题目那组）</p>
-  <pre><code>5 34 1 2 56 4</code></pre>
+  <pre class="out" data-label="样例输入">5 34 1 2 56 4</pre>
   <pre class="out" data-label="预期输出">34 1 2 56 4
 34 1 2 4 56</pre>
   <p>
@@ -3998,7 +3995,8 @@ int main() {
         a[minIdx] = a[n - 1];
         a[n - 1] = t;
     }</code></pre>
-  <p>输入 <code>5 1 9 3 7 4</code>，改对之后的输出应该是：</p>
+  <p>样例输入如下，改对之后的输出应该是：</p>
+  <pre class="out" data-label="样例输入">5 1 9 3 7 4</pre>
   <pre class="out" data-label="预期输出">1 9 3 7 4
 4 9 3 7 1</pre>
   <p>

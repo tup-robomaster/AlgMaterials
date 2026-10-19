@@ -1862,15 +1862,16 @@ int main() {
 </p>
 
 <div class="aside tip">
-  <b>从这一课起，预期输出要分两半看</b>
+  <b>从这一课起，输入和输出分开看</b>
   <p>
-    课里凡是带下划线的行，都是<b>你敲进去的</b>。
-    终端会把你敲的字回显在屏幕上，但那是终端干的，<b>不是程序打的</b>。
-    程序自己打出来的，只有不带下划线的那几行。
+    课里的例题有时会把整段会话贴出来：带下划线的行是<b>你敲进去的</b>，
+    终端把它回显在屏幕上，<b>不是程序打的</b>；程序自己打出来的，
+    只有不带下划线的那几行。
   </p>
   <p>
-    所以后面每道练习给的「预期输出」，我把整段会话都贴出来（这样好对照），
-    <b>你只要盯住不带下划线的部分对不对就行。</b>
+    练习题从这一课起把两样东西分开写：输入单独放一个「样例输入」块，
+    程序打出来的放一个「预期输出」块。对照时只看「预期输出」块，
+    不必再分下划线。
   </p>
 </div>
 
@@ -2145,11 +2146,8 @@ int main() {
   <p>
     写一个程序：读两个整数，把它们<b>乘起来</b>打出来。
   </p>
-  <p>
-    输入 <code>6 7</code> 时，程序跑起来是这样（下划线是你敲的）：
-  </p>
-  <pre class="out" data-label="预期输出"><span class="typed">6 7</span>
-42</pre>
+  <pre class="out" data-label="样例输入">6 7</pre>
+  <pre class="out" data-label="预期输出">42</pre>
   <p>
     提示：这一课标题说的是「读进来的是什么」——
     <b>先想清楚你读进来的这两个盒子是什么类型。</b>
@@ -2193,11 +2191,8 @@ int main() {
     写一个程序：读两个<b>词</b>，然后按 <code>第一个|第二个</code> 的格式打出来——
     中间那个竖线是你自己打的。
   </p>
-  <p>
-    输入 <code>hello world</code> 时：
-  </p>
-  <pre class="out" data-label="预期输出"><span class="typed">hello world</span>
-hello|world</pre>
+  <pre class="out" data-label="样例输入">hello world</pre>
+  <pre class="out" data-label="预期输出">hello|world</pre>
   <p>
     提示：装词用 <code>std::string</code>。
     这题的考点在 <code>&gt;&gt;</code> <b>怎么切块</b>——想一下它遇到空格会干什么。
@@ -2240,11 +2235,8 @@ int main() {
   <p>
     读一个秒数，把它换算成「几分几秒」打出来。
   </p>
-  <p>
-    输入 <code>250</code> 时：
-  </p>
-  <pre class="out" data-label="预期输出"><span class="typed">250</span>
-250 秒 = 4 分 10 秒</pre>
+  <pre class="out" data-label="样例输入">250</pre>
+  <pre class="out" data-label="预期输出">250 秒 = 4 分 10 秒</pre>
   <p>
     提示：换算是 1.3 那道 250 分钟的题，一模一样的算法，只是那个 250 现在要从键盘读。
     注意打在最后一行里的那个 <code>250</code> 是<b>读进来那个数</b>，不是你写死的。
@@ -2287,11 +2279,8 @@ int main() {
   <p>
     读三个整数，打出它们的<b>平均数</b>。
   </p>
-  <p>
-    输入 <code>1 2 4</code> 时：
-  </p>
-  <pre class="out" data-label="预期输出"><span class="typed">1 2 4</span>
-2.33333</pre>
+  <pre class="out" data-label="样例输入">1 2 4</pre>
+  <pre class="out" data-label="预期输出">2.33333</pre>
   <p>
     提示：三个数的和是 7。<b>7 除以 3 该得多少？</b>
     再想一下 1.3 那个整数除法的坑——这一题会踩进去的人不少。
