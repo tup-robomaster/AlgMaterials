@@ -5,26 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>其他基础 — TUP 算法组</title>
 <link rel="stylesheet" href="../../assets/style.css">
-<style>
-/* 占位页的版式：一栏字、没有目录栏，跟 TUP.html 首页是一套。
-   样式写在本页里，不动 style.css，别的页不受影响。 */
-.stub {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 5rem 1.5rem 4rem;
-}
-.stub-slot {
-  margin: 2rem 0 0;
-  padding: 1.1rem 1.3rem;
-  background: var(--code-bg);
-  border-left: 3px solid var(--rule-strong);
-  border-radius: 0 4px 4px 0;
-  color: var(--ink-soft);
-  font-size: 0.94rem;
-}
-.stub-slot > b { color: var(--ink-mid); }
-.stub-slot p:last-child { margin-bottom: 0; }
-</style>
 <script src="../../assets/theme.js"></script>
 </head>
 <body>
@@ -36,6 +16,16 @@
   </a>
   <span class="sep" aria-hidden="true"></span>
   <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
     <nav class="nav-courses" aria-label="课程">
       <a href="../cpp_Basics/index.html">C++ 基础课</a>
       <a href="../cpp_advanced/index.html">C++ 进阶课</a>
@@ -50,20 +40,383 @@
   <button class="theme-btn" type="button"></button>
 </header>
 
-<main class="stub">
+<div class="wrap">
 
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么用这份材料</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="toc-l" href="#p2">第 2 部分 · Git 基础命令及规范</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 常见文件</a>
+  <a class="toc-l" href="#p4">第 4 部分 · 线性代数基础</a>
+  <a class="toc-l" href="#p5">第 5 部分 · 相机配置</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 网络服务</a>
+  <a class="toc-l" href="#p7">第 7 部分 · 综合操作</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
   <h1>其他基础</h1>
+  <p class="part-lead">
+    这门课教的是程序之外、每天都要用到的基础：
+    在 Linux 里找文件、用 Git 记录改动、读懂项目里的配置文件、
+    用线性代数描述坐标与变换、配置相机、把数据接到网络服务上。
+  </p>
+</header>
 
-  <div class="stub-slot">
-    <p><b>作者很懒，还没写....</b></p>
-    <p>已经写好的是 <a href="../cpp_Basics/index.html">C++ 基础课</a>和 <a href="../cpp_advanced/index.html">C++ 进阶课</a>。</p>
+<section id="how">
+  <h2 class="sec-plain">怎么用这份材料</h2>
+
+  <p>
+    <b>这门课不要求按顺序阅读。</b>八个部分按主题分开，每一部分尽量自成一页。
+    可以按当前任务跳读：今天要配相机，就先读相机那一部分；
+    今天要提交代码，就先读 Git 那一部分。第 0 部分只需要读一遍，
+    知道每一部分讲什么、哪些内容只要看懂即可。
+  </p>
+
+  <p>
+    第一次接触这些内容时，建议按 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 的顺序走一遍；
+    已经会用 Linux 和 Git 的读者，可以直接跳到需要的部分。
+    第 7 部分放在最后，是把前面几部分串起来的综合操作。
+  </p>
+
+  <h3>要求分层</h3>
+
+  <p>
+    不是每一部分都要背下来。每一部分开头都会写明要求，按下面四档理解：
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>要求</th><th>部分</th><th>读到什么程度</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>会用</b></td>
+        <td>第 1、2 部分</td>
+        <td>跟着做一遍，知道命令和流程怎么用；不要求背参数表</td>
+      </tr>
+      <tr>
+        <td><b>看懂</b></td>
+        <td>第 3、5 部分</td>
+        <td>能读懂项目里的文件、能判断相机参数的含义；不要求在没有硬件时动手配置</td>
+      </tr>
+      <tr>
+        <td><b>了解</b></td>
+        <td>第 6 部分、模型文件</td>
+        <td>知道它是什么、由哪些部分组成、通常怎么用；给最小示例，跑通并读懂即可</td>
+      </tr>
+      <tr>
+        <td><b>掌握 + 练习</b></td>
+        <td>第 4 部分</td>
+        <td>会算、会用；每课 3 道练习，这是全课唯一安排成体系练习的部分</td>
+      </tr>
+      <tr>
+        <td><b>跟做</b></td>
+        <td>第 7 部分</td>
+        <td>按步骤完成两组小任务；不设答案</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="aside">
+    <b>关于「了解」</b>
+    <p>
+      标为「了解」的内容不是不重要，而是不要求独立搭建或深入实现。
+      例如网络服务部分，读者需要能跑通一个最小示例、读懂它由哪几段组成，
+      但不要求从零写出一个完整的服务端。等实际任务需要时，再按那时的文档深入。
+    </p>
   </div>
 
-  <footer class="site-footer">
-    TUP 战队算法组 · 其他基础
-  </footer>
+  <h3>每页怎么读</h3>
+
+  <p>
+    第 1、2 部分用「跟着做」的方式写：先给一组命令，再给这台机器上运行出来的真实输出；
+    第 3 部分起以读懂为主，例子仍然可以运行，但不要求逐条输入。
+    练习目录的准备、终端输出的对照方法与示例代码的位置，见
+    <a href="00-开始.html#l0-2">0.2 环境与用法</a>。
+  </p>
+
+  <h3>拓展内容</h3>
+
+  <p>
+    下面这些内容与算法组的日常工作有关，但不在这门课的范围里。
+    需要时自行搜索学习，课里不放外部链接：
+  </p>
+
+  <ul>
+    <li><b>多线程与并发</b>——一个程序同时做几件事，以及共享数据的保护。</li>
+    <li><b>互斥锁</b>——多个线程共享数据时，保证同一时刻只有一个线程修改它，避免结果互相覆盖。</li>
+    <li><b>gdb 调试</b>——让程序停下来，逐行查看变量与调用栈。</li>
+    <li><b>正则表达式</b>——用模式匹配文本，写日志过滤与批量替换时常用。</li>
+    <li><b>Docker</b>——把程序和它的运行环境一起打包，换一台机器也能运行。</li>
+    <li><b>计算机组成原理</b>——指令、寄存器、缓存与内存层次，理解程序为什么快或慢。</li>
+  </ul>
+
+  <p>
+    这些内容不影响阅读本课。读到相关句子时知道有这件事、需要时能搜索到入口即可。
+  </p>
+</section>
+
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">不教具体命令。说清楚这门课讲什么、怎么读，以及练习环境怎么准备。</p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">这门课讲什么</a>
+      <span class="d">六类基础各自的用途、本课用的语言、与学校课程的关系</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">环境与用法</a>
+      <span class="d">检查 <code>python3</code>、<code>git</code>、<code>g++</code>；准备练习目录；第一次运行自检脚本</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a></h2>
+  <p class="part-note">七个部分里最先要用到的一门。目标是用会，不是背命令。</p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-1">Linux 的目录结构</a>
+      <span class="d">从根目录开始，认清 <code>/home</code>、<code>/etc</code>、<code>/dev</code> 这些目录各放什么；绝对路径与相对路径</span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-2">路径与文件操作</a>
+      <span class="d"><code>pwd</code>、<code>ls</code>、<code>cd</code>、<code>mkdir</code>、<code>cp</code>、<code>mv</code>、<code>rm</code>、<code>ln</code>；隐藏文件、通配符、带空格的文件名</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-3">查看、搜索与统计</a>
+      <span class="d"><code>cat</code>、<code>less</code>、<code>head</code>、<code>tail</code>、<code>grep</code>、<code>find</code>、<code>which</code>、<code>file</code>、<code>wc</code>、<code>sort</code>、<code>uniq</code></span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-4">权限、用户与 sudo</a>
+      <span class="d"><code>ls -l</code> 每一列的含义；读、写、执行权限；<code>chmod</code> 的两种写法；脚本为什么需要执行权限</span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-5">进程、前后台与信号</a>
+      <span class="d"><code>ps</code>、<code>top</code>、<code>kill</code>；<code>Ctrl+C</code>、<code>Ctrl+Z</code>、<code>jobs</code>、<code>bg</code>、<code>fg</code>、<code>&amp;</code>、<code>nohup</code></span>
+    </span></li>
+    <li><span class="n">1.6</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-6">管道、重定向与环境变量</a>
+      <span class="d"><code>|</code>、<code>&gt;</code>、<code>&gt;&gt;</code>、<code>&lt;</code>、<code>2&gt;</code>、<code>2&gt;&amp;1</code>、<code>tee</code>；<code>PATH</code> 与退出码</span>
+    </span></li>
+    <li><span class="n">1.7</span><span class="body">
+      <a class="t" href="01-Linux.html#l1-7">软件安装、压缩包与远程连接</a>
+      <span class="d"><code>apt</code>、<code>tar</code>、<code>zip</code>、<code>ssh</code>、<code>scp</code>、<code>rsync</code> 的常见用法</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-Git.html">第 2 部分 · Git 基础命令及规范</a></h2>
+  <p class="part-note">从仓库与提交讲到分支、远端和冲突处理，最后落到团队规范。要求是会用。</p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-Git.html#l2-1">仓库、暂存区与提交</a>
+      <span class="d"><code>git init</code>、<code>status</code>、<code>add</code>、<code>commit</code>、<code>log</code>、<code>diff</code>、<code>show</code>；工作区、暂存区与本地仓库</span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-Git.html#l2-2">分支与合并</a>
+      <span class="d"><code>branch</code>、<code>switch</code>、<code>merge</code>；快进与三方合并；删除分支；<code>log --graph</code></span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-Git.html#l2-3">远程仓库与 SSH</a>
+      <span class="d"><code>remote</code>、<code>clone</code>、<code>fetch</code>、<code>pull</code>、<code>push</code>；<code>origin</code>；SSH 密钥生成与登记</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-Git.html#l2-4">冲突、回退与撤销</a>
+      <span class="d">冲突标记与解决；<code>restore</code>、<code>reset --soft/--mixed/--hard</code>、<code>revert</code>、<code>stash</code>；哪些操作会丢内容</span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-Git.html#l2-5">提交信息规范</a>
+      <span class="d">一次提交只做一件事；标题写做什么、正文写为什么；常见类型前缀；提交前自查</span>
+    </span></li>
+    <li><span class="n">2.6</span><span class="body">
+      <a class="t" href="02-Git.html#l2-6">分支规范与 <code>.gitignore</code></a>
+      <span class="d">主分支、功能分支、修复分支；合并请求与代码评审；忽略构建产物、日志、模型权重与密钥；误提交后的处理</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-常见文件.html">第 3 部分 · 常见文件</a></h2>
+  <p class="part-note">项目里每天读写的几种文件。要求是看懂：知道格式、能查错、出问题时先看哪里。</p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-1">文本与编码</a>
+      <span class="d">字节与字符；ASCII、UTF-8、GBK；BOM、CRLF；<code>file</code>、<code>od</code>、<code>iconv</code></span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-2">JSON</a>
+      <span class="d">对象、数组、字符串、数字、布尔值与 <code>null</code>；嵌套配置；<code>json.load</code>；<code>json.tool</code> 查错</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-3">YAML</a>
+      <span class="d">用缩进表示层级；映射、列表、注释、字面块；与 JSON 的对应关系；常见解析差异</span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-4">Markdown</a>
+      <span class="d">标题、段落、列表、强调、链接、代码块与表格；README 的常见结构</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-5">Shell 脚本</a>
+      <span class="d">shebang 与执行权限；变量、位置参数、引号；条件、循环与退出码；写脚本的习惯</span>
+    </span></li>
+    <li><span class="n">3.6</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-6">模型文件</a>
+      <span class="d"><code>.pt</code>、<code>.onnx</code>、<code>.engine</code> 的用途与转换链；engine 的环境绑定；反序列化的风险</span>
+    </span></li>
+    <li><span class="n">3.7</span><span class="body">
+      <a class="t" href="03-常见文件.html#l3-7">日志</a>
+      <span class="d">一行日志的组成；级别；<code>tail</code>、<code>grep</code>、<code>sed</code>、<code>awk</code> 定位问题；轮转与长期保存</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p4">
+  <h2><a href="04-线性代数.html">第 4 部分 · 线性代数基础</a></h2>
+  <p class="part-note">算法组日常用到的线性代数。八课，每课 3 道练习，共 24 道；例题与答案都用 C++ 写成，另附 Python 版代码。</p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-1">向量与矩阵<span class="star">★ 有动画</span></a>
+      <span class="d">向量与分量、加法与数乘、内积与长度、矩阵乘法、单位矩阵、乘法顺序</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-2">行列式<span class="star">★ 有动画</span></a>
+      <span class="d">2×2 与 3×3 的算法、面积与体积的几何意义、行列式为 0 与不可逆、三角形面积</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-3">秩</a>
+      <span class="d">线性组合与张成、线性相关与无关、高斯消元与主元、秩与方程组的解</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-4">转置与逆</a>
+      <span class="d">转置的性质、逆矩阵、2×2 逆公式、高斯—约当求逆、正交矩阵与旋转</span>
+    </span></li>
+    <li><span class="n">4.5</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-5">坐标变换<span class="star">★ 有动画</span></a>
+      <span class="d">坐标系与基、旋转、平移与齐次坐标、变换的复合顺序与逆变换</span>
+    </span></li>
+    <li><span class="n">4.6</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-6">特征值与特征向量<span class="star">★ 有动画</span></a>
+      <span class="d">定义、2×2 的求法、特征向量、对称矩阵的对角化、幂迭代</span>
+    </span></li>
+    <li><span class="n">4.7</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-7">最小二乘<span class="star">★ 有动画</span></a>
+      <span class="d">超定方程组与残差、正规方程、直线拟合、过原点拟合与预测、数值注意</span>
+    </span></li>
+    <li><span class="n">4.8</span><span class="body">
+      <a class="t" href="04-线性代数.html#l4-8">奇异值分解（选学）<span class="star">★ 有动画</span></a>
+      <span class="d">定义与几何意义、与 <code>AᵀA</code> 的关系、2×2 的算法、低秩近似、伪逆与条件数</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p5">
+  <h2><a href="05-相机.html">第 5 部分 · 相机配置</a></h2>
+  <p class="part-note">以看懂为主。没有相机也可以读：七课各有一个用 Python 标准库写的算例，不连接设备，不要求安装 SDK。</p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-相机.html#l5-1">成像原理<span class="star">★ 有动画</span></a>
+      <span class="d">工业相机与单反相机的区别、针孔模型、四个坐标系、投影公式与内参、视场角、单张图的尺度不确定</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-相机.html#l5-2">传感器</a>
+      <span class="d">光到电、分辨率与像元尺寸、靶面、全局与卷帘快门、彩色与位深</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-相机.html#l5-3">镜头</a>
+      <span class="d">焦距与视场、C 口与 CS 口、光圈、景深、选镜头的步骤</span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-相机.html#l5-4">曝光</a>
+      <span class="d">曝光三要素、档与等价曝光、运动模糊、过曝与欠曝、光源频闪</span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-相机.html#l5-5">接口</a>
+      <span class="d">像素格式、常见接口与自行查阅、带宽计算、触发与同步、丢帧原因</span>
+    </span></li>
+    <li><span class="n">5.6</span><span class="body">
+      <a class="t" href="05-相机.html#l5-6">采集流程</a>
+      <span class="d">打开到关闭、缓冲区与丢帧、帧号与时间戳、保存命名、异常与日志</span>
+    </span></li>
+    <li><span class="n">5.7</span><span class="body">
+      <a class="t" href="05-相机.html#l5-7">标定<span class="star">★ 有动画</span></a>
+      <span class="d">常见标定方案、内参标定与外参标定、内参标定流程、重投影误差、标定结果的使用</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p6">
+  <h2><a href="06-网络服务.html">第 6 部分 · 网络服务</a></h2>
+  <p class="part-note">以了解为主。六课各有一个只用 Python 标准库的示例，只绑定回环地址，不连接外部网络，不打开真实串口。要求是跑通并读懂 6.4 与 6.5 的两个本地服务，其余例子能对照输出理解。</p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-1">IP 与端口</a>
+      <span class="d">回环地址、端口与监听、连接由四元组确定、一次本机连接</span>
+    </span></li>
+    <li><span class="n">6.2</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-2">TCP 与 UDP</a>
+      <span class="d">TCP 的字节流、消息边界、UDP 数据报、协议选择、两个例子</span>
+    </span></li>
+    <li><span class="n">6.3</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-3">HTTP 与 JSON</a>
+      <span class="d">请求与响应、方法与状态码、首部、JSON、服务端检查、GET 与 POST</span>
+    </span></li>
+    <li><span class="n">6.4</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-4">本地服务</a>
+      <span class="d">常驻服务、并发上限与超时、错误处理与安全首部、运行与查看</span>
+    </span></li>
+    <li><span class="n">6.5</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-5">串口到网页</a>
+      <span class="d">串口与伪终端、按行读取、校验与网页显示、停止时的清理</span>
+    </span></li>
+    <li><span class="n">6.6</span><span class="body">
+      <a class="t" href="06-网络服务.html#l6-6">排错</a>
+      <span class="d">连接被拒绝、端口占用、接收超时、HTTP 状态与 JSON 错误、五种错误</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p7">
+  <h2><a href="07-综合操作.html">第 7 部分 · 综合操作</a></h2>
+  <p class="part-note">两课都只使用本机文件、Python 标准库与 Git，不联网，不连接相机，不需要管理员权限。只给步骤、命令与预期结果，不设答案。</p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-综合操作.html#l7-1">从空目录到小工程</a>
+      <span class="d">目录结构、参数文件、计算脚本、启动脚本与说明、运行与检查、第一次提交</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-综合操作.html#l7-2">从功能分支到 V1.1</a>
+      <span class="d">开发分支、功能分支、发布分支与 V1.0、紧急修复与 V1.1、最终状态</span>
+    </span></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · 其他基础
+</footer>
 
 </main>
+</div>
 
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
 </body>
 </html>

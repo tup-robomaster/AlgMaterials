@@ -1,0 +1,15 @@
+{
+  "camera": {
+    "name": "cam0",
+    "resolution": [1280, 1024],
+    "fps": 30,
+    "exposure_us": 8000,
+    "trigger": "software"
+  },
+  "save": {
+    "enabled": true,
+    "directory": "data/images",
+    "format": "png"
+  },
+  "calibration": null
+}

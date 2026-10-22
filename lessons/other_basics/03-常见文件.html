@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 部分 · 常见文件 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a class="active" href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html" aria-current="page">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 3 部分 · 常见文件</div>
+  <a class="toc-l" href="#l3-1"><span class="n">3.1</span>文本与编码</a>
+  <a class="toc-sub" href="#s3-1-1">文件里存的是字节</a>
+  <a class="toc-sub" href="#s3-1-2">ASCII 与 UTF-8</a>
+  <a class="toc-sub" href="#s3-1-3">BOM 与 CRLF</a>
+  <a class="toc-sub" href="#s3-1-4">用 iconv 转编码</a>
+  <a class="toc-l" href="#l3-2"><span class="n">3.2</span>JSON</a>
+  <a class="toc-sub" href="#s3-2-1">一份 JSON 的结构</a>
+  <a class="toc-sub" href="#s3-2-2">从程序里读</a>
+  <a class="toc-sub" href="#s3-2-3">格式化与查错</a>
+  <a class="toc-sub" href="#s3-2-4">常见语法错误</a>
+  <a class="toc-l" href="#l3-3"><span class="n">3.3</span>YAML</a>
+  <a class="toc-sub" href="#s3-3-1">缩进表示层级</a>
+  <a class="toc-sub" href="#s3-3-2">列表、注释与多行文本</a>
+  <a class="toc-sub" href="#s3-3-3">与 JSON 的对应关系</a>
+  <a class="toc-sub" href="#s3-3-4">读 YAML 时注意什么</a>
+  <a class="toc-l" href="#l3-4"><span class="n">3.4</span>Markdown</a>
+  <a class="toc-sub" href="#s3-4-1">标题与段落</a>
+  <a class="toc-sub" href="#s3-4-2">列表、强调与链接</a>
+  <a class="toc-sub" href="#s3-4-3">代码块与表格</a>
+  <a class="toc-sub" href="#s3-4-4">README 的常见结构</a>
+  <a class="toc-l" href="#l3-5"><span class="n">3.5</span>Shell 脚本</a>
+  <a class="toc-sub" href="#s3-5-1">shebang 与执行权限</a>
+  <a class="toc-sub" href="#s3-5-2">变量、参数与引号</a>
+  <a class="toc-sub" href="#s3-5-3">条件、循环与退出码</a>
+  <a class="toc-sub" href="#s3-5-4">完整例子与运行结果</a>
+  <a class="toc-sub" href="#s3-5-5">写脚本的习惯</a>
+  <a class="toc-l" href="#l3-6"><span class="n">3.6</span>模型文件</a>
+  <a class="toc-sub" href="#s3-6-1">模型文件里有什么</a>
+  <a class="toc-sub" href="#s3-6-2">三种常见格式</a>
+  <a class="toc-sub" href="#s3-6-3">转换链：pt 到 onnx 到 engine</a>
+  <a class="toc-sub" href="#s3-6-4">engine 为什么不能随便打开</a>
+  <a class="toc-sub" href="#s3-6-5">拿到模型文件先确认什么</a>
+  <a class="toc-l" href="#l3-7"><span class="n">3.7</span>日志</a>
+  <a class="toc-sub" href="#s3-7-1">一行日志的组成</a>
+  <a class="toc-sub" href="#s3-7-2">日志级别</a>
+  <a class="toc-sub" href="#s3-7-3">看最近的、找错误的</a>
+  <a class="toc-sub" href="#s3-7-4">统计与定位</a>
+  <a class="toc-sub" href="#s3-7-5">轮转与长期保存</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 3 部分</div>
+  <h1>常见文件</h1>
+  <p class="part-lead">
+    这一部分处理项目里最常见的几种文件：纯文本、JSON、YAML、Markdown、
+    Shell 脚本、模型文件与日志。要求是看懂：知道每种文件长什么样、
+    每一部分表示什么、出问题时先看哪里。例子仍然可以运行，
+    但不要求逐条输入；模型文件只要求了解格式与转换关系，不要求实际转换。
+  </p>
+</header>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    这一部分的命令都在 <code>/tmp/other-basics/示例代码</code> 下执行。
+    如果没有准备过练习目录，或者准备之后重启过电脑，
+    先在课程文件夹里重新执行下面几行：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/other-basics
+mkdir -p /tmp/other-basics
+cp -r 示例代码 /tmp/other-basics/
+cd /tmp/other-basics/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。
+    复制完成后，用 <code>pwd</code> 确认当前目录是
+    <code>/tmp/other-basics/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l3-1">
+<h2><span class="no">3.1</span>文本与编码</h2>
+
+<p>
+  文本文件在编辑器里显示为字符，在磁盘上保存为字节。字符与字节之间的对应规则
+  叫编码（encoding）。同一段中文，用 UTF-8 保存和用 GBK 保存，字节不同；
+  用错编码打开，就会看到乱码。这一课从字节看起，认清 <code>file</code>、
+  <code>od</code>、<code>iconv</code> 三个工具的输出。
+</p>
+
+<h3 id="s3-1-1">文件里存的是字节</h3>
+
+<p>
+  练习目录 <code>3.1-文本与编码</code> 里有几份内容相近的文本。
+  先看 <code>utf8.txt</code> 的前六个字节：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/3.1-文本与编码
+od -An -tx1 -N 6 utf8.txt</code></pre>
+
+<pre class="out" data-label="真实输出"> e7 9b b8 e6 9c ba</pre>
+
+<p>
+  <code>od</code> 是查看文件字节的工具，名字来自 octal dump（八进制转储）。
+  这里用了三个选项：<code>-An</code> 不显示每行开头的偏移地址，
+  <code>-tx1</code> 把每个字节显示成两位十六进制数，<code>-N 6</code>
+  只读前六个字节。需要查看其他格式时，可以搜索「od 命令 十六进制」。
+</p>
+
+<p>
+  这六个字节对应两个汉字：「相」的 UTF-8 编码是 <code>e7 9b b8</code>，
+  「机」是 <code>e6 9c ba</code>。一个汉字在 UTF-8 里通常占三个字节。
+  英文字母在 ASCII 范围内只占一个字节，例如 <code>c</code> 是 <code>63</code>，
+  <code>a</code> 是 <code>61</code>。编辑器把字节按编码翻译成字符显示；
+  文件本身没有「字符」，只有字节。
+</p>
+
+<h3 id="s3-1-2">ASCII 与 UTF-8</h3>
+
+<p>
+  目录里有五份文本，用 <code>file</code> 看它们的类型：
+</p>
+
+<pre data-lang="终端"><code>file *.txt</code></pre>
+
+<pre class="out" data-label="真实输出">ascii.txt: ASCII text
+bom.txt:   Unicode text, UTF-8 (with BOM) text
+crlf.txt:  Unicode text, UTF-8 text, with CRLF line terminators
+gbk.txt:   ISO-8859 text
+utf8.txt:  Unicode text, UTF-8 text</pre>
+
+<p>
+  <code>file</code> 根据文件开头的字节判断类型，不看扩展名。
+  <code>ascii.txt</code> 只有英文字母、数字和空格，属于 ASCII；
+  <code>utf8.txt</code> 含中文，是 UTF-8。输出里文件名后面补了空格对齐，
+  所以冒号不在同一列。
+</p>
+
+<p>
+  <code>gbk.txt</code> 显示为 <code>ISO-8859 text</code>，这不是说它真是
+  ISO-8859 编码。GBK 的字节范围与 ISO-8859 有重叠，<code>file</code>
+  只能确定它不是合法的 UTF-8，无法仅凭字节区分 GBK 和其他单字节编码。
+  要确认中文文件的编码，需要知道它的来源，或者用编辑器、转换工具试读。
+</p>
+
+<p>
+  ASCII 是最早的字符编码，只定义 0–127，包含英文字母、数字、标点和控制字符。
+  UTF-8 是 Unicode 的一种变长编码：ASCII 字符仍占一个字节，其他字符占两到四个字节。
+  GBK 是中文的旧编码，一个汉字通常占两个字节。新建文件应优先用 UTF-8；
+  只有在必须与旧程序交换数据时，才使用 GBK。
+</p>
+
+<p>
+  如果一份 UTF-8 文件被按 GBK 打开，中文会显示成乱码；反过来也一样。
+  字节没有损坏，只是翻译规则用错了。遇到乱码先确认文件本来的编码，
+  不要直接改内容。
+</p>
+
+<h3 id="s3-1-3">BOM 与 CRLF</h3>
+
+<p>
+  <code>bom.txt</code> 与 <code>utf8.txt</code> 的内容相同，字节数却多三个：
+</p>
+
+<pre data-lang="终端"><code>wc -c bom.txt utf8.txt</code></pre>
+
+<pre class="out" data-label="真实输出">30 bom.txt
+27 utf8.txt
+57 总计</pre>
+
+<p>
+  <code>wc -c</code> 统计字节数。最后一行是合计，文字随终端语言变化：
+  中文环境是「总计」，英文环境是 <code>total</code>。多出来的三个字节在文件开头：
+</p>
+
+<pre data-lang="终端"><code>od -An -tx1 -N 6 bom.txt</code></pre>
+
+<pre class="out" data-label="真实输出"> ef bb bf e7 9b b8</pre>
+
+<p>
+  <code>ef bb bf</code> 是 UTF-8 的字节顺序标记（Byte Order Mark，BOM）。
+  它对应 Unicode 字符 U+FEFF，放在文件开头表示「这是 UTF-8」。
+  有些 Windows 编辑器保存 UTF-8 时会自动加上 BOM。BOM 对文本编辑器通常无害，
+  但对编译器、Shell 脚本和某些配置解析器可能是多余内容：脚本第一行前多了三个字节，
+  <code>#!</code> 就不在文件开头，执行时可能报错。写代码、脚本和配置文件时，
+  保存为「UTF-8 无 BOM」。
+</p>
+
+<p>
+  <code>crlf.txt</code> 的问题是换行符。Linux 与 macOS 用 LF（换行，字节
+  <code>0a</code>）表示一行结束；Windows 用 CRLF（回车加换行，字节
+  <code>0d 0a</code>）。<code>file</code> 的输出里写着
+  <code>with CRLF line terminators</code>，就是提醒这一点。CRLF 在普通文本里
+  通常只多一个字节，但在 Shell 脚本里会带来实际问题：解释器会把 <code>\r</code>
+  当成命令的一部分，出现 <code>bad interpreter</code> 或奇怪的参数。
+  跨平台传递脚本后，如果运行时报这类错误，先检查换行符。
+</p>
+
+<p>
+  这两种情况都可以在编辑器里转换：保存时选择「UTF-8 无 BOM」与「LF」。
+  课里不要求安装转换工具；需要批量处理时，可以搜索「BOM 去除」「CRLF 转 LF」。
+</p>
+
+<h3 id="s3-1-4">用 iconv 转编码</h3>
+
+<p>
+  如果手里有一份 GBK 文件，需要转成 UTF-8，可以用 <code>iconv</code>。
+  它按指定的源编码读取，再按目标编码写出：
+</p>
+
+<pre data-lang="终端"><code>iconv -f GBK -t UTF-8 gbk.txt</code></pre>
+
+<pre class="out" data-label="真实输出">相机
+分辨率 1280x1024</pre>
+
+<p>
+  <code>-f</code> 是源编码（from），<code>-t</code> 是目标编码（to）。
+  不指定输出文件时，结果写到标准输出，屏幕上看到的就是转换后的文字。
+  要写成文件，加 <code>-o</code>：
+</p>
+
+<pre data-lang="终端"><code>iconv -f GBK -t UTF-8 gbk.txt -o utf8-new.txt</code></pre>
+
+<p>
+  转换方向不能猜。把已经是 UTF-8 的文件按 GBK 读取，<code>iconv</code>
+  可能在中途报「非法输入序列」，也可能转出一串错误字符。先用 <code>file</code>
+  和来源信息确认编码，再转换。<code>iconv -c</code> 会丢弃无法转换的字节，
+  看起来能跑完，但内容已经缺失，排查问题时不要用。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>file</code> 判断文本的大致编码，
+  用 <code>od</code> 查看开头字节，认出 BOM 与 CRLF，用 <code>iconv</code>
+  在 GBK 与 UTF-8 之间转换，并知道乱码多半是编码用错而不是内容损坏。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-2">
+<h2><span class="no">3.2</span>JSON</h2>
+
+<p>
+  JSON（JavaScript Object Notation）是一种用文本表示结构化数据的格式。
+  配置文件、网络接口、日志里都能见到。它的语法比 YAML 严格，适合程序读写，
+  也适合人直接检查。这一课看一份相机配置，读它、格式化它，
+  并处理一处语法错误。
+</p>
+
+<h3 id="s3-2-1">一份 JSON 的结构</h3>
+
+<p>
+  <code>config.json</code> 的内容如下：
+</p>
+
+<pre data-lang="JSON"><code>{
+  "camera": {
+    "name": "cam0",
+    "resolution": [1280, 1024],
+    "fps": 30,
+    "exposure_us": 8000,
+    "trigger": "software"
+  },
+  "save": {
+    "enabled": true,
+    "directory": "data/images",
+    "format": "png"
+  },
+  "calibration": null
+}</code></pre>
+
+<p>
+  JSON 只有几种基本结构：对象（object）用花括号表示，里面是「键: 值」对；
+  数组（array）用方括号表示，里面是一串值；值可以是字符串、数字、布尔值
+  <code>true</code>/<code>false</code>、<code>null</code>，也可以是另一个对象或数组。
+  上面这份配置的顶层是一个对象，有两个键：<code>camera</code> 和 <code>save</code>，
+  它们的值又是对象；<code>calibration</code> 的值是 <code>null</code>，
+  表示暂时没有标定参数。
+</p>
+
+<p>
+  键必须用双引号括起来，字符串也必须用双引号。数字不加引号。
+  对象和数组的最后一个元素后面不能有逗号。JSON 不支持注释。
+  这几点与 Python 的字面量、JavaScript 的对象写法不同，手写时最容易在这里出错。
+</p>
+
+<h3 id="s3-2-2">从程序里读</h3>
+
+<p>
+  Python 标准库自带 <code>json</code> 模块，不需要另装软件。
+  下面这段程序读取 <code>config.json</code>，打印相机参数：
+</p>
+
+<pre data-lang="Python"><code>import json
+
+with open("config.json", encoding="utf-8") as f:
+    config = json.load(f)
+
+camera = config["camera"]
+print("相机:", camera["name"])
+print("分辨率:", camera["resolution"][0], "x", camera["resolution"][1])
+print("帧率:", camera["fps"])
+print("曝光:", camera["exposure_us"], "us")
+print("触发:", camera["trigger"])</code></pre>
+
+<p>
+  <code>with open(...) as f</code> 打开文件，并在代码块结束时自动关闭；
+  <code>encoding="utf-8"</code> 明确按 UTF-8 读取。<code>json.load(f)</code>
+  把文件内容解析成 Python 对象：JSON 对象变成字典（dict），数组变成列表（list），
+  字符串、数字、布尔值和 <code>null</code> 分别变成 <code>str</code>、
+  <code>int</code>/<code>float</code>、<code>bool</code> 和 <code>None</code>。
+</p>
+
+<p>
+  读取时用键取字典的值，用下标取列表的元素：<code>config["camera"]</code>
+  得到相机对象，<code>camera["resolution"][0]</code> 得到宽度。运行结果：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/3.2-JSON
+python3 read_config.py</code></pre>
+
+<pre class="out" data-label="真实输出">相机: cam0
+分辨率: 1280 x 1024
+帧率: 30
+曝光: 8000 us
+触发: software</pre>
+
+<p>
+  <code>print</code> 用逗号分隔多个参数时，会在参数之间加一个空格，
+  所以「分辨率」那一行显示为 <code>1280 x 1024</code>。如果键名写错，
+  程序会抛出 <code>KeyError</code>；不确定某个键是否存在时，
+  可以用 <code>config.get("calibration")</code>，键不存在时返回
+  <code>None</code>，不会中断。
+</p>
+
+<h3 id="s3-2-3">格式化与查错</h3>
+
+<p>
+  JSON 文件被压缩成一行时，人很难读。Python 的 <code>json.tool</code> 模块
+  可以检查语法并按缩进重新输出：
+</p>
+
+<pre data-lang="终端"><code>python3 -m json.tool config.json</code></pre>
+
+<pre class="out" data-label="真实输出">{
+    "camera": {
+        "name": "cam0",
+        "resolution": [
+            1280,
+            1024
+        ],
+        "fps": 30,
+        "exposure_us": 8000,
+        "trigger": "software"
+    },
+    "save": {
+        "enabled": true,
+        "directory": "data/images",
+        "format": "png"
+    },
+    "calibration": null
+}</pre>
+
+<p>
+  <code>json.tool</code> 默认用四个空格缩进，把数组的每个元素单独放一行。
+  它只把结果写到屏幕，不修改原文件；要保存格式化后的版本，
+  用重定向写入另一个文件。这个命令同时起到校验作用：语法不对时，
+  它会报错并指出位置。
+</p>
+
+<p>
+  下面这份 <code>broken.json</code> 少了一个键，末尾还多了一个逗号：
+</p>
+
+<pre data-lang="JSON"><code>{
+  "name": "cam0",
+  "fps": 30,
+}</code></pre>
+
+<p>
+  运行同样的命令：
+</p>
+
+<pre data-lang="终端"><code>python3 -m json.tool broken.json</code></pre>
+
+<pre class="out" data-label="真实输出">Expecting property name enclosed in double quotes: line 4 column 1 (char 33)</pre>
+
+<p>
+  错误信息说，第 4 行第 1 列期望一个用双引号括起来的键名，却遇到了别的内容。
+  第 4 行是右花括号，问题实际出在第 3 行末尾的逗号：对象最后一个成员后面
+  不能再有逗号。报错位置有时落在错误的下一个字符上，看到「期望键名」时，
+  先检查前一行末尾。不同 Python 版本的错误文字可能略有差异，
+  行号与列号是定位依据。
+</p>
+
+<p>
+  命令失败时退出码不为 0，可以用 <code>echo $?</code> 查看。
+  脚本里可以用这一点判断配置文件是否合法：退出码为 0 才继续。
+</p>
+
+<h3 id="s3-2-4">常见语法错误</h3>
+
+<ul>
+  <li>最后一个成员后面多写逗号：<code>{"a": 1,}</code>、<code>[1, 2,]</code>
+    都不合法。</li>
+  <li>用单引号：JSON 只接受双引号，<code>{'a': 1}</code> 不合法。</li>
+  <li>把注释写进去：JSON 不支持 <code>//</code> 或 <code>#</code> 注释。
+    需要说明时，可以加一个约定好的键，例如 <code>"_comment"</code>，
+    并在程序里忽略它。</li>
+  <li>键没有引号：<code>{a: 1}</code> 不合法，键必须写成 <code>"a"</code>。</li>
+  <li>重复的键：很多解析器保留最后一个值，也有解析器直接报错；这类问题很难发现，
+    合并配置时尤其要注意。</li>
+  <li>特殊数字：<code>NaN</code>、<code>Infinity</code> 不是 JSON 标准的一部分。
+    Python 的 <code>json</code> 默认能读，但其他语言的解析器可能拒绝；
+    需要交换数据时不要使用。</li>
+  <li>数字前导零：<code>01</code> 不合法，应写成 <code>1</code>。</li>
+</ul>
+
+<p>
+  手改配置后，至少运行一次 <code>python3 -m json.tool</code>。
+  编辑器的高亮只能提示一部分问题，语法检查以解析器的结果为准。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>读懂嵌套的 JSON 配置，用 Python 的 <code>json</code>
+  模块取出需要的字段，用 <code>json.tool</code> 格式化并检查语法，
+  认出逗号、引号、注释这几类常见错误。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-3">
+<h2><span class="no">3.3</span>YAML</h2>
+
+<p>
+  YAML（YAML Ain't Markup Language）是一种以缩进表示层级的配置格式。
+  它比 JSON 更接近人写笔记的方式，适合手改；ROS 2 的参数、Docker Compose、
+  持续集成配置都常用 YAML。这一课只要求读懂，不要求安装解析库。
+</p>
+
+<h3 id="s3-3-1">缩进表示层级</h3>
+
+<p>
+  下面是一份相机配置 <code>camera.yaml</code>：
+</p>
+
+<pre data-lang="YAML"><code># 相机配置
+camera:
+  name: cam0
+  resolution: [1280, 1024]
+  fps: 30
+  exposure_us: 8000
+  trigger: software
+  save:
+    enabled: true
+    directory: data/images
+    format: png
+
+# 标定参数先留空
+calibration: null
+
+# 启动时依次执行的步骤
+steps:
+  - 打开相机
+  - 设置曝光
+  - 开始采集
+
+notes: |
+  第一次运行时先检查设备连接。
+  如果画面过暗，增大 exposure_us。</code></pre>
+
+<p>
+  每一行「键: 值」表示一个成员。<code>camera:</code> 后面没有值，
+  说明它的值是一个嵌套的映射，下面缩进两行的内容都属于它。
+  <code>save:</code> 又嵌套在 <code>camera</code> 里面，所以它的成员缩进四行。
+  同一层的键必须对齐；缩进只能用空格，不能用制表符（Tab）。
+</p>
+
+<p>
+  冒号后面要有一个空格，写成 <code>name: cam0</code>，不能写成
+  <code>name:cam0</code>。<code>#</code> 开始的是注释，可以单独一行，
+  也可以写在值后面；解析器会忽略注释。<code>null</code> 表示空值，
+  <code>true</code>/<code>false</code> 表示布尔值。
+</p>
+
+<h3 id="s3-3-2">列表、注释与多行文本</h3>
+
+<p>
+  列表的每一项以 <code>-</code> 开头。<code>steps</code> 下面的三项就是列表，
+  缩进与上一层的键对齐。列表也可以写成方括号形式，
+  <code>resolution: [1280, 1024]</code> 与逐项写两行等价；
+  短列表写成一行更紧凑。
+</p>
+
+<p>
+  <code>notes: |</code> 表示后面的缩进文本按原样保留换行，叫做字面块
+  （literal block）。写多行说明时常用它。另一种写法是 <code>notes: &gt;</code>，
+  它把相邻的行合并成一段，只在空行处保留换行，叫做折叠块（folded block）。
+  这两种写法在配置文件里很常见，读到时要看清用的是哪一个。
+</p>
+
+<p>
+  YAML 的字符串通常不加引号。值里包含冒号加空格、井号、方括号等特殊字符时，
+  要加引号，例如 <code>title: "相机: cam0"</code>。看起来像数字或布尔值的字符串
+  也要加引号，避免被解析成别的类型。
+</p>
+
+<div class="aside tip">
+  <b>yes 与 no 不一定是字符串</b>
+  <p>
+    YAML 1.1 把 <code>yes</code>、<code>no</code>、<code>on</code>、<code>off</code>
+    也当作布尔值；YAML 1.2 只把 <code>true</code>、<code>false</code> 当作布尔值。
+    不同解析器遵循的版本不同。如果某个值确实要表示字符串 <code>yes</code>，
+    写成 <code>"yes"</code> 最稳妥。需要了解细节时，搜索「YAML 1.1 1.2 布尔值」。
+  </p>
+</div>
+
+<h3 id="s3-3-3">与 JSON 的对应关系</h3>
+
+<p>
+  同样一份配置可以写成 JSON。下面是 <code>camera.yaml</code> 对应的
+  <code>same.json</code>：
+</p>
+
+<pre data-lang="JSON"><code>{
+  "camera": {
+    "name": "cam0",
+    "resolution": [1280, 1024],
+    "fps": 30,
+    "exposure_us": 8000,
+    "trigger": "software",
+    "save": {
+      "enabled": true,
+      "directory": "data/images",
+      "format": "png"
+    }
+  },
+  "calibration": null,
+  "steps": [
+    "打开相机",
+    "设置曝光",
+    "开始采集"
+  ],
+  "notes": "第一次运行时先检查设备连接。\n如果画面过暗，增大 exposure_us。\n"
+}</code></pre>
+
+<p>
+  两种写法表示同一棵树：YAML 的映射对应 JSON 的对象，YAML 的列表对应 JSON 的数组，
+  标量对应字符串、数字、布尔值或 <code>null</code>。<code>notes</code> 的字面块
+  在 JSON 里变成一个带 <code>\n</code> 的字符串。YAML 1.2 把 JSON 当作自己的子集，
+  所以大多数 JSON 文件也可以被 YAML 解析器读取；反过来不一定，
+  因为 YAML 有注释、锚点等 JSON 没有的写法。
+</p>
+
+<p>
+  选择哪一种，取决于用途：需要程序之间交换数据、要求严格且工具链统一时，用 JSON；
+  需要人经常手改、希望写注释时，用 YAML。两者都是文本，都应当用 UTF-8 保存。
+</p>
+
+<h3 id="s3-3-4">读 YAML 时注意什么</h3>
+
+<ul>
+  <li><b>缩进必须一致。</b>同一层用同样多的空格；混用空格和 Tab 会直接报错。
+    编辑器可以设置「Tab 转空格」。</li>
+  <li><b>重复的键。</b>有些解析器保留最后一个值，有些直接报错。
+    合并两份配置时，先确认有没有同名键。</li>
+  <li><b>锚点与别名。</b>真实配置里可能出现 <code>&amp;name</code> 定义一段内容、
+    <code>*name</code> 引用它，以及 <code>&lt;&lt;</code> 合并映射。
+    这些写法用于减少重复；第一次见到时，搜索「YAML 锚点 别名」了解语法即可。</li>
+  <li><b>多份文档。</b>一个文件里可以用 <code>---</code> 分隔多份 YAML 文档，
+    例如 Kubernetes 配置。读到 <code>---</code> 时，把它当作另一份配置的开头。</li>
+  <li><b>解析器差异。</b>不同语言、不同版本的 YAML 库对布尔值、日期、数字的
+    处理不完全一样。程序读取配置时，尽量把关键值写成明确的字符串或数字，
+    避免依赖隐式转换。</li>
+</ul>
+
+<p>
+  Python 标准库不带 YAML 解析器。本课只要求按结构读懂配置文件，
+  不要求写程序解析；项目里需要读取 YAML 时，再按项目已有的依赖选择库，
+  并搜索该库的用法。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>按缩进读出 YAML 的层级，认出映射、列表、注释、
+  字面块与空值，看懂它与 JSON 的对应关系，并知道缩进、重复键和解析器差异
+  是常见问题。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-4">
+<h2><span class="no">3.4</span>Markdown</h2>
+
+<p>
+  Markdown 是一种用纯文本写文档的轻量标记语言。文件名通常以 <code>.md</code>
+  结尾，项目根目录的 <code>README.md</code> 是最常见的一份。平台会把 Markdown
+  渲染成网页；不渲染时，原文仍然可读。这一课看一份 README，认全常用的几种写法。
+</p>
+
+<div class="aside tip">
+  <b>这也是组内规范，之后要遵守</b>
+  <p>
+    这一课不只是通用介绍，也是本组的文档格式规范。从读到这里之后开始，
+    组内的笔记与项目说明都写成 <code>.md</code> 文件，并按这一课的写法组织：
+    标题分级，命令放进标注了语言的代码块，文件名与变量用行内代码标出，
+    链接写相对路径。已有的文档不要求回改。
+  </p>
+</div>
+
+<h3 id="s3-4-1">标题与段落</h3>
+
+<p>
+  <code>README.md</code> 的完整内容如下：
+</p>
+
+<pre data-lang="Markdown"><code># 计分工具
+
+读取比赛记录，输出每支队伍的总分。
+
+## 用法
+
+```bash
+python3 score.py scores.csv
+```
+
+## 输入格式
+
+| 列名 | 含义 |
+|---|---|
+| team | 队伍编号 |
+| score | 本轮得分 |
+
+## 说明
+
+详细规则见 [使用说明](docs/usage.md)。
+
+&gt; 注意：分数按整数计算。
+
+- 每行一条记录
+- 队伍编号不重复</code></pre>
+
+<p>
+  行首一个 <code>#</code> 是一级标题，两个 <code>##</code> 是二级标题，
+  依此类推，最多六级。<code>#</code> 后面要有一个空格。一份文档通常只有一个
+  一级标题，用作标题；各节用二级标题。标题之间用空行隔开，段落之间也用一个空行
+  分隔；连续的多行文字会被合并成同一段。
+</p>
+
+<p>
+  <code>&gt;</code> 开头的是引用块，用来放提示或摘录。引用块可以有多行，
+  每行都以 <code>&gt;</code> 开头。
+</p>
+
+<h3 id="s3-4-2">列表、强调与链接</h3>
+
+<p>
+  无序列表用 <code>-</code>、<code>*</code> 或 <code>+</code> 开头，
+  选一种并保持一致；有序列表用 <code>1.</code>、<code>2.</code> 开头。
+  渲染时，有序列表的编号会自动排列，源文件里都写 <code>1.</code> 也可以，
+  但按顺序写更便于阅读原文。
+</p>
+
+<p>
+  强调用星号或下划线：<code>**粗体**</code>、<code>*斜体*</code>。
+  行内代码用反引号包起来，例如 <code>`scores.csv`</code>，适合写文件名、
+  命令和变量名。链接写成 <code>[显示文字](目标)</code>；目标是相对路径时，
+  指向仓库里的另一份文件，例如 <code>[使用说明](docs/usage.md)</code>。
+  图片写成 <code>![替代文字](图片路径)</code>，替代文字在图片加载失败时显示。
+</p>
+
+<p>
+  这些标记只有在特定位置才生效：<code>#</code> 要在行首，列表符号要在行首
+  或缩进后，链接的方括号和圆括号要紧挨着。写在句子中间的星号通常只是普通字符。
+</p>
+
+<h3 id="s3-4-3">代码块与表格</h3>
+
+<p>
+  代码块用三个反引号包起来，开头的那一行可以写语言名，渲染时会按该语言着色：
+</p>
+
+<pre data-lang="Markdown"><code>```bash
+python3 score.py scores.csv
+```</code></pre>
+
+<p>
+  不写语言名也可以，渲染器会当作普通代码。代码块里的内容按原样显示，
+  缩进和换行都保留；不要在代码块里再写 Markdown 标记，它们不会被解释。
+</p>
+
+<p>
+  表格用竖线分隔单元格，第二行是分隔行，用 <code>---</code> 表示每一列，
+  冒号控制对齐：<code>---:</code> 右对齐，<code>:---</code> 左对齐，
+  <code>:---:</code> 居中。表头写第一行，下面逐行写数据。
+  单元格里的竖线如果属于内容，需要转义；简单的表格通常不会遇到。
+</p>
+
+<p>
+  表格、任务列表、删除线等写法属于扩展语法，不同平台的支持程度不同。
+  GitHub 使用的方言叫 GitHub Flavored Markdown（GFM），支持表格和任务列表；
+  有些简单的渲染器只支持基础语法。写文档时，尽量使用通用写法；
+  需要确认效果时，在目标平台上预览。
+</p>
+
+<h3 id="s3-4-4">README 的常见结构</h3>
+
+<p>
+  先看这份 README 有多少行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/3.4-Markdown
+wc -l README.md</code></pre>
+
+<pre class="out" data-label="真实输出">25 README.md</pre>
+
+<p>
+  再看它有哪些标题：
+</p>
+
+<pre data-lang="终端"><code>grep -n '^#' README.md</code></pre>
+
+<pre class="out" data-label="真实输出">1:# 计分工具
+5:## 用法
+11:## 输入格式
+18:## 说明</pre>
+
+<p>
+  <code>wc -l</code> 统计行数。<code>grep -n '^#'</code> 找出以 <code>#</code>
+  开头的行，并显示行号；<code>^</code> 表示行首，单引号防止 Shell 解释特殊字符。
+  四个标题把文档分成四节：标题、用法、输入格式、说明。
+</p>
+
+<p>
+  一个项目的 README 通常回答几个问题：这个项目做什么；怎么安装或准备环境；
+  怎么运行；输入输出是什么；有哪些限制和注意事项。不是每份 README 都要有
+  全部小节，但读者应当能在前几行找到「这是什么」和「怎么运行」。
+  这份 README 先说明用途，再给命令、输入格式和规则，顺序清楚。
+</p>
+
+<p>
+  写 README 时，命令放在代码块里，文件名和变量用行内代码标出，步骤用有序列表。
+  这样即使渲染器不支持某些扩展，原文也容易读。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>读懂 README 的标题层级、列表、链接、代码块与表格，
+  按结构快速找到用法和输入说明，并按组内规范写出格式正确的 Markdown
+  笔记与项目说明。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-5">
+<h2><span class="no">3.5</span>Shell 脚本</h2>
+
+<p>
+  Shell 脚本是把一串终端命令写进文本文件，交给 Shell 一次执行。
+  重复的启动步骤、批量处理文件、定时任务都常用脚本。这一课读懂一个
+  统计分数的小脚本，知道它怎么取参数、怎么读文件、怎么报告错误；
+  不要求写复杂脚本。
+</p>
+
+<h3 id="s3-5-1">shebang 与执行权限</h3>
+
+<p>
+  脚本的第一行通常是：
+</p>
+
+<pre data-lang="Bash"><code>#!/bin/bash</code></pre>
+
+<p>
+  这一行叫 shebang。<code>#!</code> 后面的路径告诉系统用哪个解释器执行这个文件；
+  这里指定 bash。用 <code>./summary.sh</code> 直接运行时，系统读取这一行并启动
+  <code>/bin/bash</code>；用 <code>bash summary.sh</code> 运行时，bash 被显式启动，
+  这一行只作为注释，但保留它可以让两种方式都可用。shebang 必须在文件第一行，
+  前面不能有空行或 BOM。
+</p>
+
+<p>
+  直接运行还需要执行权限。先看脚本当前的权限：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/3.5-Shell脚本
+stat -c '%A %a %n' summary.sh check_args.sh</code></pre>
+
+<pre class="out" data-label="真实输出">-rw-rw-r-- 664 summary.sh
+-rw-rw-r-- 664 check_args.sh</pre>
+
+<p>
+  <code>stat</code> 的 <code>-c</code> 指定输出格式：<code>%A</code> 是符号形式的权限，
+  <code>%a</code> 是八进制形式，<code>%n</code> 是文件名。<code>664</code>
+  表示属主和属组可读写，其他用户只读，没有任何执行位。这是这份练习目录里的状态；
+  从课程文件夹复制时，实际权限还会受 umask 影响。加执行权限：
+</p>
+
+<pre data-lang="终端"><code>chmod +x summary.sh
+stat -c '%A %a %n' summary.sh</code></pre>
+
+<pre class="out" data-label="真实输出">-rwxrwxr-x 775 summary.sh</pre>
+
+<p>
+  <code>chmod +x</code> 给属主、属组和其他用户都加上执行位；从 664 出发，
+  结果是 775。如果复制后的文件权限不同，结果也会不同。之后可以这样运行：
+</p>
+
+<pre data-lang="终端"><code>./summary.sh</code></pre>
+
+<p>
+  <code>./</code> 表示当前目录。直接用 <code>summary.sh</code> 不行，
+  因为当前目录通常不在 <code>PATH</code> 里；<code>PATH</code> 是系统查找命令的
+  目录列表，前面 Linux 那一部分讲过。用 <code>bash summary.sh</code> 不需要
+  执行权限，适合在调试时使用；<code>./summary.sh</code> 更接近脚本最终被调用的方式。
+</p>
+
+<h3 id="s3-5-2">变量、参数与引号</h3>
+
+<p>
+  下面这个脚本演示位置参数和默认值：
+</p>
+
+<pre data-lang="Bash"><code>#!/bin/bash
+set -eu
+
+name=${1:-world}
+count=${2:-1}
+
+echo "name: $name"
+echo "count: $count"</code></pre>
+
+<p>
+  <code>$1</code> 是第一个位置参数，<code>$2</code> 是第二个；<code>$0</code>
+  是脚本名，<code>$#</code> 是参数个数，<code>$@</code> 是全部参数。
+  <code>${1:-world}</code> 的意思是：如果 <code>$1</code> 没有设置或者为空，
+  就用 <code>world</code>；否则用 <code>$1</code> 的值。<code>${2:-1}</code>
+  同理。赋值时等号两边不能有空格，变量名左边不写 <code>$</code>，
+  使用时才写 <code>$name</code>。
+</p>
+
+<p>
+  运行时不带参数，两个变量都取默认值；带参数时按顺序填入：
+</p>
+
+<pre data-lang="终端"><code>bash check_args.sh</code></pre>
+
+<pre class="out" data-label="真实输出">name: world
+count: 1</pre>
+
+<pre data-lang="终端"><code>bash check_args.sh alice 3</code></pre>
+
+<pre class="out" data-label="真实输出">name: alice
+count: 3</pre>
+
+<p>
+  双引号里的变量会被展开，同时保留空格；不加引号的变量在展开后会按空白拆成
+  多个词。路径和用户输入都可能含空格，所以引用变量时养成加双引号的习惯，
+  写成 <code>"$name"</code>。单引号里的内容完全不展开，适合写固定字符串。
+</p>
+
+<p>
+  <code>set -eu</code> 是两个选项：<code>-e</code> 让脚本在某个命令失败时立即退出，
+  <code>-u</code> 让脚本在使用未定义变量时报错退出。它们能防止错误被后续命令掩盖。
+  代价是某些本来允许失败的命令也要显式处理；读别人的脚本时，
+  先看有没有这一行。
+</p>
+
+<h3 id="s3-5-3">条件、循环与退出码</h3>
+
+<p>
+  完整的统计脚本如下：
+</p>
+
+<pre data-lang="Bash"><code>#!/bin/bash
+set -eu
+
+file=${1:-scores.txt}
+
+if [ ! -f "$file" ]; then
+    echo "找不到文件: $file" &gt;&amp;2
+    exit 1
+fi
+
+count=0
+sum=0
+while IFS= read -r line; do
+    if [ -z "$line" ]; then
+        continue
+    fi
+    count=$((count + 1))
+    sum=$((sum + line))
+done &lt; "$file"
+
+echo "条数: $count"
+echo "总分: $sum"
+echo "平均分: $((sum / count))"</code></pre>
+
+<p>
+  逐段看：
+</p>
+
+<ul>
+  <li><code>file=${1:-...}</code>：把第一个参数赋给 <code>file</code>；
+    没有参数时用默认的 <code>scores.txt</code>。</li>
+  <li><code>if [ ! -f "$file" ]; then</code>：<code>[</code> 是测试命令，
+    <code>-f</code> 判断是不是普通文件，<code>!</code> 取反。方括号内侧要有空格。
+    文件不存在时，执行下一行。</li>
+  <li><code>echo ... &gt;&amp;2</code>：把错误信息写到标准错误。标准输出是
+    文件描述符 1，标准错误是 2；正常结果和错误信息分开，调用者可以只收集正常输出。</li>
+  <li><code>exit 1</code>：以非零状态退出，表示失败。成功结束时退出码是 0。</li>
+  <li><code>while IFS= read -r line; do ... done &lt; "$file"</code>：
+    从文件逐行读取。<code>IFS=</code> 让 <code>read</code> 不修剪行首行尾的空白，
+    <code>-r</code> 让反斜杠按普通字符处理，<code>line</code> 是读到的这一行。
+    <code>done &lt; "$file"</code> 把文件接到整个循环的标准输入。</li>
+  <li><code>if [ -z "$line" ]; then continue; fi</code>：<code>-z</code>
+    判断字符串是否为空；空行跳过，不计数。</li>
+  <li><code>count=$((count + 1))</code>、<code>sum=$((sum + line))</code>：
+    算术展开，按整数计算。<code>line</code> 在这里被当作整数；脚本假定每行都是数字，
+    实际使用时应先检查格式。</li>
+  <li><code>$((sum / count))</code>：整数除法，小数部分直接舍去。
+    259 除以 3 得 86，而不是 86.33。全部为空时 <code>count</code> 为 0，
+    除法会出错；健壮的脚本应先判断 <code>count</code> 是否大于 0。</li>
+</ul>
+
+<p>
+  命令的退出码保存在 <code>$?</code> 里，0 表示成功，非 0 表示失败。
+  <code>&amp;&amp;</code> 和 <code>||</code> 也根据退出码决定是否执行后一条命令；
+  管道默认只看最后一条命令的退出码。需要逐个检查管道中每条命令的结果时，
+  可以搜索「bash pipefail」。
+</p>
+
+<h3 id="s3-5-4">完整例子与运行结果</h3>
+
+<p>
+  练习目录里的 <code>scores.txt</code> 有三行：
+</p>
+
+<pre data-lang="文本"><code>88
+92
+79</code></pre>
+
+<p>
+  运行脚本：
+</p>
+
+<pre data-lang="终端"><code>bash summary.sh</code></pre>
+
+<pre class="out" data-label="真实输出">条数: 3
+总分: 259
+平均分: 86</pre>
+
+<p>
+  换一个不存在的文件名：
+</p>
+
+<pre data-lang="终端"><code>bash summary.sh missing.txt</code></pre>
+
+<pre class="out" data-label="真实输出">找不到文件: missing.txt</pre>
+
+<p>
+  脚本在这里以退出码 1 结束。错误信息写到标准错误，所以它不会混进正常输出；
+  在终端里两者都显示在屏幕上，看起来没有区别。要在脚本里判断上一条命令是否成功，
+  检查 <code>$?</code> 或使用 <code>if</code>。
+</p>
+
+<p>
+  加上执行权限后，也可以直接运行：
+</p>
+
+<pre data-lang="终端"><code>chmod +x summary.sh
+./summary.sh</code></pre>
+
+<pre class="out" data-label="真实输出">条数: 3
+总分: 259
+平均分: 86</pre>
+
+<p>
+  如果 <code>./summary.sh</code> 报 <code>bad interpreter</code>，
+  先检查 3.1 讲过的 CRLF；如果报 <code>Permission denied</code>，检查执行位。
+  用 <code>bash summary.sh</code> 能运行而 <code>./summary.sh</code> 不能，
+  通常就是这两类原因。
+</p>
+
+<h3 id="s3-5-5">写脚本的习惯</h3>
+
+<ul>
+  <li>开头写 shebang，紧跟 <code>set -eu</code>；需要处理管道中任意一段失败时，
+    再考虑 <code>set -o pipefail</code>。</li>
+  <li>变量用双引号包起来，尤其是路径和用户输入。</li>
+  <li>先检查输入文件是否存在、参数个数是否足够，再开始处理。</li>
+  <li>错误信息写到标准错误，并用非零退出码表示失败；成功时返回 0。</li>
+  <li>删除、覆盖、移动文件之前，先打印将要操作的路径，确认变量不为空。
+    不要在脚本里对未检查的变量执行 <code>rm -rf</code>。</li>
+  <li>用 <code>bash -n summary.sh</code> 检查语法；它只解析，不执行。
+    更细的检查可以搜索「shellcheck」。</li>
+  <li>脚本要提交进 Git 时，保持 LF 换行，并确认可执行位被记录。</li>
+  <li>运行来路不明的脚本之前先读一遍。脚本能执行当前用户的所有操作，
+    风险与直接运行程序相同。</li>
+</ul>
+
+<p class="can">
+  <b>你现在能做什么：</b>读懂带 shebang、默认参数、条件、循环和退出码的
+  Shell 脚本，知道 <code>set -eu</code> 与引号的作用，能运行、加执行权限
+  并定位常见的换行与权限问题。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-6">
+<h2><span class="no">3.6</span>模型文件</h2>
+
+<p>
+  模型文件保存训练得到的权重和网络结构。它不是文本，不能用编辑器读懂；
+  文件通常很大，格式由训练框架或推理引擎决定。这一课只要求了解三种常见格式、
+  它们之间的转换关系，以及加载模型时的安全边界。
+</p>
+
+<h3 id="s3-6-1">模型文件里有什么</h3>
+
+<p>
+  一个训练好的模型至少包含两部分：结构（有哪些层、层与层怎么连接）和权重
+  （每一层的参数，通常是大量浮点数）。有的格式还保存优化器状态、训练轮数、
+  类别名称等元数据。权重没有可读的语义，单独看某个数字没有意义；
+  它们必须和对应的结构一起使用。
+</p>
+
+<p>
+  模型文件通常是二进制。用文本编辑器打开会看到乱码，不要试图修改其中的字节。
+  <code>file</code> 有时能识别出容器类型，例如较新的 PyTorch 保存文件可能是
+  ZIP 容器，<code>file</code> 会显示 <code>Zip archive data</code>；
+  但扩展名与内部格式没有严格对应关系，判断格式应当看它由什么工具产生。
+</p>
+
+<h3 id="s3-6-2">三种常见格式</h3>
+
+<table>
+  <thead>
+    <tr><th>格式</th><th>常见来源</th><th>特点与用途</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>.pt</code> / <code>.pth</code></td>
+      <td>PyTorch 的 <code>torch.save</code></td>
+      <td>保存张量、模型参数，也可能包含 Python 对象；用 <code>torch.load</code>
+        读取；适合训练与继续开发，不适合跨框架交换</td>
+    </tr>
+    <tr>
+      <td><code>.onnx</code></td>
+      <td>PyTorch、TensorFlow 等导出</td>
+      <td>开放神经网络交换格式（Open Neural Network Exchange）；用 protobuf
+        描述计算图和权重；可被 ONNX Runtime、TensorRT 等读取；适合跨框架部署</td>
+    </tr>
+    <tr>
+      <td><code>.engine</code></td>
+      <td>NVIDIA TensorRT 构建</td>
+      <td>针对特定 GPU、软件版本和输入尺寸编译出的执行计划；在同一环境中
+        推理速度快；不可移植，换环境要重新构建</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  几个名词先说明：pickle 是 Python 的对象序列化格式，<code>torch.save</code>
+  常用它保存模型；protobuf（Protocol Buffers）是一种二进制的结构化数据格式，
+  ONNX 用它描述计算图；TensorRT 是 NVIDIA 的推理优化库，把模型编译成显卡上的
+  执行计划。需要细节时，分别搜索「PyTorch 保存加载模型」「ONNX 格式」
+  「TensorRT engine」。
+</p>
+
+<p>
+  扩展名只是惯例。<code>.pth</code> 既可能保存整个模型，也可能只保存参数字典
+  （state_dict）；<code>.pt</code> 也可能是 TorchScript 或 ZIP 包。
+  拿到文件后，先问清楚它是怎么产生的、用什么代码加载，不要仅凭后缀判断。
+</p>
+
+<h3 id="s3-6-3">转换链：pt 到 onnx 到 engine</h3>
+
+<p>
+  常见的部署流程是：在 PyTorch 里训练，导出 ONNX，再在目标机器上构建
+  TensorRT engine。三步的关系可以画成：
+</p>
+
+<pre data-lang="文本"><code>PyTorch 训练
+  └─ model.pt
+       │  torch.onnx.export
+       ▼
+     model.onnx
+       │  TensorRT 构建（trtexec 或 API）
+       ▼
+     model.engine</code></pre>
+
+<p>
+  下面是一段导出 ONNX 的示意代码。它需要安装 PyTorch，本课不要求运行：
+</p>
+
+<pre data-lang="Python"><code># 仅示意：运行需要安装 PyTorch。
+import torch
+
+model = torch.nn.Linear(4, 2)
+example = torch.randn(1, 4)
+
+torch.onnx.export(
+    model,
+    example,
+    "model.onnx",
+    input_names=["input"],
+    output_names=["output"],
+    opset_version=17,
+)</code></pre>
+
+<p>
+  <code>example</code> 是一份形状和数据类型都正确的示例输入，导出器沿着这次计算
+  记录网络结构；输入形状不固定时，还要指定动态维度。<code>input_names</code>
+  和 <code>output_names</code> 给输入输出起名字，部署时按这些名字传数据。
+  <code>opset_version</code> 是 ONNX 算子集版本，导出端和运行端都要支持这个版本；
+  版本过高可能没有运行时支持，过低可能缺少需要的算子。具体对应关系需要查
+  导出工具与推理框架的文档。
+</p>
+
+<p>
+  转换不保证完全等价。自定义算子、动态控制流、训练专用的层都可能导出失败，
+  或者导出后结果不一致。转换完成后，应当用同一批输入分别跑原模型和转换后的模型，
+  比较输出的最大误差；不能只看文件是否生成成功。
+</p>
+
+<p>
+  构建 engine 通常用 TensorRT 自带的 <code>trtexec</code>，也可以在程序里调用
+  TensorRT 的 API。示意命令如下，需要安装 TensorRT；本课不要求运行：
+</p>
+
+<pre data-lang="终端"><code>trtexec --onnx=model.onnx --saveEngine=model.engine</code></pre>
+
+<p>
+  构建时要指定精度（FP32、FP16、INT8）、最大批量、输入尺寸范围等参数。
+  这些参数会影响速度和显存占用，也会影响结果精度。engine 与构建时的 GPU 型号、
+  TensorRT 版本、CUDA 版本、驱动版本绑定，所以通常在实际部署的机器上构建。
+</p>
+
+<h3 id="s3-6-4">engine 为什么不能随便打开</h3>
+
+<div class="aside warn">
+  <b>不要随意反序列化来路不明的模型文件</b>
+  <p>
+    <code>torch.load</code> 读取 <code>.pt</code> 时可能使用 pickle。pickle 在
+    反序列化时可以构造任意 Python 对象，恶意文件因此有机会执行代码。
+    TensorRT engine 的加载同样会调用本地库和插件，文件损坏或来源不可信时
+    可能导致崩溃，甚至执行非预期操作。把字节重新变成程序里的对象，
+    这个过程叫反序列化（deserialize）；反序列化不是「只读数据」，
+    它可能触发代码。
+  </p>
+  <p>
+    只加载自己构建、或者来源可信并且校验过完整性的模型。不要双击打开陌生的
+    <code>.pt</code>、<code>.engine</code>，不要把用户上传的模型直接交给生产服务
+    加载，也不要在没有隔离的机器上试跑。较新的 PyTorch 提供
+    <code>weights_only=True</code> 选项，限制反序列化时允许的对象类型；
+    它降低风险，但不能替代对来源的检查。具体行为随版本变化，
+    使用前查对应版本的文档。
+  </p>
+</div>
+
+<p>
+  <code>.engine</code> 还有一层限制：它是为特定环境编译的，不是通用模型文件。
+  把一台机器上的 engine 复制到另一台机器，即使文件名相同，也可能加载失败
+  或结果错误。需要迁移时，应当带上 ONNX 或原始权重，在目标机器上重新构建。
+  不要把它当作可以随意分发的模型。
+</p>
+
+<p>
+  模型文件属于二进制资产，通常不提交进 Git 仓库。前面 Git 那一部分讲过
+  忽略权重目录；需要共享时，用专门的文件存储或制品库，并记录版本与校验和。
+  常见做法是计算 SHA-256 校验和，接收方核对后再使用；<code>sha256sum</code>
+  的用法可以自行搜索。
+</p>
+
+<h3 id="s3-6-5">拿到模型文件先确认什么</h3>
+
+<ul>
+  <li><b>来源与许可：</b>谁训练的、基于什么数据、允许什么用途。来源不明的权重
+    不要用于正式任务。</li>
+  <li><b>输入输出：</b>输入的形状、数据类型、颜色顺序、归一化方式；输出的含义、
+    类别顺序、是否包含后处理。这些信息通常写在 README 或单独的配置里。</li>
+  <li><b>版本：</b>训练框架版本、ONNX opset、TensorRT 与 CUDA 版本、GPU 型号。
+    版本不匹配是转换和加载失败的主要原因之一。</li>
+  <li><b>完整性：</b>文件大小与校验和是否与提供方一致。传输中断产生的半个文件，
+    加载时可能报出难以理解的错误。</li>
+  <li><b>数值：</b>用一份已知输入跑一遍，和提供方的结果比较。只看程序不报错不够，
+    结果正确才算可用。</li>
+</ul>
+
+<p class="can">
+  <b>你现在能做什么：</b>分清 <code>.pt</code>、<code>.onnx</code>、
+  <code>.engine</code> 三种格式的用途与来源，读懂导出 ONNX 的关键参数，
+  知道 engine 与运行环境绑定，并明白来路不明的模型文件不能随意反序列化。
+</p>
+
+</section>
+
+<section class="lesson" id="l3-7">
+<h2><span class="no">3.7</span>日志</h2>
+
+<p>
+  日志是程序运行时写下的文本记录。程序出错、结果不对、服务起不来，
+  第一手线索通常都在日志里。这一课看一份相机程序的日志，
+  学会按时间、级别和模块定位问题。
+</p>
+
+<h3 id="s3-7-1">一行日志的组成</h3>
+
+<p>
+  先看日志的前三行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/3.7-日志
+head -n 3 app.log</code></pre>
+
+<pre class="out" data-label="真实输出">2026-03-14 09:00:01 INFO  camera: 打开设备 cam0
+2026-03-14 09:00:01 INFO  camera: 分辨率 1280x1024, 帧率 30
+2026-03-14 09:00:02 WARN  camera: 曝光时间 8000 us 偏大</pre>
+
+<p>
+  每一行由几部分组成：日期、时间、级别、模块名和消息。前两列是时间戳；
+  第三列是级别；<code>camera:</code> 是写日志的模块；后面是具体内容。
+  这不是所有日志的统一格式，而是这份程序采用的格式。有的程序写成 JSON，
+  一行一个对象；有的把级别放在方括号里；有的把时间放在行尾。
+  读一份新日志时，先看前几行，找出各列的含义。
+</p>
+
+<p>
+  看文件规模：
+</p>
+
+<pre data-lang="终端"><code>wc -l app.log</code></pre>
+
+<pre class="out" data-label="真实输出">11 app.log</pre>
+
+<pre data-lang="终端"><code>wc -c app.log</code></pre>
+
+<pre class="out" data-label="真实输出">584 app.log</pre>
+
+<p>
+  11 行，584 字节。行数少不代表内容少：一行里可能包含很长的错误信息；
+  字节数还会因为中文而增大，一个汉字在 UTF-8 里占三个字节。
+  排查问题时，两个数字都只能作为规模参考。
+</p>
+
+<h3 id="s3-7-2">日志级别</h3>
+
+<p>
+  常见的级别从低到高是：
+</p>
+
+<table>
+  <thead>
+    <tr><th>级别</th><th>含义</th><th>通常怎么处理</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>DEBUG</code></td><td>调试细节，例如每一步的中间值</td>
+      <td>开发时打开，正式运行时通常关闭，避免日志过多</td></tr>
+    <tr><td><code>INFO</code></td><td>正常事件，例如启动、连接成功、保存完成</td>
+      <td>保留，用来还原程序做过什么</td></tr>
+    <tr><td><code>WARN</code></td><td>异常但程序还能继续，例如参数偏大、磁盘将满</td>
+      <td>查看是否需要调整配置或提前处理</td></tr>
+    <tr><td><code>ERROR</code></td><td>某个操作失败，例如写入失败、请求超时</td>
+      <td>优先排查；程序可能继续运行，也可能退出</td></tr>
+    <tr><td><code>FATAL</code></td><td>严重错误，程序无法继续</td>
+      <td>立即处理，通常伴随进程退出</td></tr>
+  </tbody>
+</table>
+
+<p>
+  级别是约定，不是语法。不同程序可能使用 <code>CRITICAL</code>、
+  <code>WARNING</code> 等等价名称，也可能只有 INFO 和 ERROR 两档。
+  日志级别通常有一个阈值：设为 INFO 时，DEBUG 不输出；设为 WARN 时，
+  INFO 也不输出。日志太多时，先调整阈值，而不是删除已有的日志。
+</p>
+
+<p>
+  看到 ERROR 不要立刻下结论。这份日志里，第 5 行报告丢帧，第 6 行就恢复了采集；
+  第 9 行写入失败，第 10 行重试成功。单看一行会误判，必须看它前后的几行。
+</p>
+
+<h3 id="s3-7-3">看最近的、找错误的</h3>
+
+<p>
+  程序正在运行时，最常看的是文件末尾：
+</p>
+
+<pre data-lang="终端"><code>tail -n 3 app.log</code></pre>
+
+<pre class="out" data-label="真实输出">2026-03-14 09:02:00 ERROR save: 写入失败: 权限不足
+2026-03-14 09:02:01 INFO  save: 重试成功
+2026-03-14 09:03:00 INFO  camera: 关闭设备 cam0</pre>
+
+<p>
+  <code>tail -n 3</code> 显示最后三行。<code>tail -f app.log</code>
+  会持续输出新追加的内容，适合盯着正在运行的程序；按 <code>Ctrl+C</code> 结束。
+  如果日志会被轮转，<code>tail -F app.log</code> 会在文件改名后按名字重新打开，
+  比 <code>-f</code> 更适合长期观察。
+</p>
+
+<p>
+  要找所有错误行：
+</p>
+
+<pre data-lang="终端"><code>grep ERROR app.log</code></pre>
+
+<pre class="out" data-label="真实输出">2026-03-14 09:00:10 ERROR capture: 丢帧 3 帧
+2026-03-14 09:02:00 ERROR save: 写入失败: 权限不足</pre>
+
+<p>
+  <code>grep</code> 默认区分大小写，匹配 <code>ERROR</code> 不会匹配
+  <code>error</code>。加上 <code>-n</code> 显示行号，便于回到原文件查看上下文：
+</p>
+
+<pre data-lang="终端"><code>grep -n ERROR app.log</code></pre>
+
+<pre class="out" data-label="真实输出">5:2026-03-14 09:00:10 ERROR capture: 丢帧 3 帧
+9:2026-03-14 09:02:00 ERROR save: 写入失败: 权限不足</pre>
+
+<p>
+  统计某个级别出现多少次，可以用 <code>grep -c</code>：
+</p>
+
+<pre data-lang="终端"><code>grep -c WARN app.log</code></pre>
+
+<pre class="out" data-label="真实输出">2</pre>
+
+<p>
+  <code>-c</code> 统计的是匹配的行数，不是匹配次数。一行里出现两次
+  <code>WARN</code>，也只算一行。<code>grep</code> 在没有匹配时退出码是 1，
+  在脚本里配合 <code>set -e</code> 使用时要注意这一点。
+</p>
+
+<p>
+  要看某一行前后的内容，可以用 <code>sed</code> 按行号打印。
+  例如查看第 5 行前后：
+</p>
+
+<pre data-lang="终端"><code>sed -n '4,6p' app.log</code></pre>
+
+<pre class="out" data-label="真实输出">2026-03-14 09:00:03 INFO  capture: 开始采集
+2026-03-14 09:00:10 ERROR capture: 丢帧 3 帧
+2026-03-14 09:00:11 INFO  capture: 恢复采集</pre>
+
+<p>
+  <code>sed -n</code> 默认不打印，<code>'4,6p'</code> 表示打印第 4 到第 6 行。
+  <code>sed</code> 的完整用法超出本课范围，需要时搜索「sed 按行号打印」。
+</p>
+
+<h3 id="s3-7-4">统计与定位</h3>
+
+<p>
+  如果想知道每个级别各有多少行，可以按第三列分组统计：
+</p>
+
+<pre data-lang="终端"><code>awk '{print $3}' app.log | sort | uniq -c</code></pre>
+
+<pre class="out" data-label="真实输出">      2 ERROR
+      7 INFO
+      2 WARN</pre>
+
+<p>
+  <code>awk</code> 按行读入，默认以空白分隔字段；<code>$1</code> 是日期，
+  <code>$2</code> 是时间，<code>$3</code> 是级别，<code>$4</code> 是模块名。
+  <code>{print $3}</code> 只输出第三列。管道把结果交给 <code>sort</code> 排序，
+  再交给 <code>uniq -c</code> 统计相邻的重复行。<code>uniq</code> 只合并相邻的
+  相同行，所以必须先排序；不排序时，同一种级别分散在文件各处，
+  会被统计成多行。
+</p>
+
+<p>
+  输出里的数字在左边，级别在右边，数字前的空格是 <code>uniq -c</code>
+  的对齐格式。把命令里的 <code>$3</code> 换成 <code>$4</code>，就能按模块统计；
+  换成 <code>$1</code>，可以按日期统计。字段编号从 1 开始，<code>$0</code>
+  表示整行。
+</p>
+
+<p>
+  定位问题时，常用的顺序是：先用 <code>grep -n ERROR</code> 找到错误行号，
+  再用 <code>sed -n</code> 看前后几行，最后用 <code>grep</code> 搜同一个模块
+  或同一段时间的其他记录。不要只看错误行本身；上下文通常说明了错误发生前
+  发生了什么。
+</p>
+
+<h3 id="s3-7-5">轮转与长期保存</h3>
+
+<p>
+  日志会不断增长，不能一直写进同一个文件。常见的做法是轮转（rotation）：
+  当前文件写满一天或一定大小后，改名为 <code>app.log.1</code>，新建一个空的
+  <code>app.log</code>；旧的 <code>app.log.1</code> 再改名为
+  <code>app.log.2</code>，依此类推，超过保留数量的文件被删除或压缩。
+  练习目录里有一份旧的 <code>app.log.1</code>：
+</p>
+
+<pre data-lang="文本"><code>2026-03-13 18:20:00 INFO  camera: 打开设备 cam0
+2026-03-13 18:20:01 INFO  capture: 开始采集
+2026-03-13 18:30:00 WARN  disk: 剩余空间 3.4 GB
+2026-03-13 18:40:00 INFO  camera: 关闭设备 cam0</code></pre>
+
+<p>
+  它的时间比 <code>app.log</code> 早，说明是前一天留下的。Linux 上常用的
+  轮转工具叫 logrotate，它按配置定期执行改名、压缩和删除；配置通常放在
+  <code>/etc/logrotate.d</code> 下。压缩后的日志以 <code>.gz</code> 结尾，
+  可以用 <code>zcat</code> 直接查看，用 <code>zgrep</code> 直接搜索，
+  不需要先解压。需要自己配置时，搜索「logrotate 配置」。
+</p>
+
+<p>
+  轮转也带来一个细节：<code>tail -f app.log</code> 跟着的是打开时的那个文件，
+  文件改名后它可能继续读旧文件；<code>tail -F app.log</code> 会按文件名重新打开，
+  适合跨轮转观察。长时间盯日志时用 <code>-F</code>。
+</p>
+
+<p>
+  日志里可能包含路径、用户名、IP 地址、设备编号，甚至令牌。把日志发给别人
+  或贴到公开页面之前，先删除或替换这些内容；只保留复现问题所需的部分。
+  日志的保留时间也要有规定：留得太短，出了问题查不到；留得太久，
+  占用磁盘并增加泄露风险。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>按时间与级别读取日志，用 <code>tail</code>、
+  <code>grep</code>、<code>sed</code>、<code>awk</code> 找到错误和上下文，
+  统计各级别数量，理解轮转文件的命名与 <code>tail -F</code> 的用途，
+  并在分享日志前清理敏感内容。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="02-Git.html">← 第 2 部分 · Git 基础命令及规范</a>
+  <span class="spacer"></span>
+  <a href="04-线性代数.html">第 4 部分 · 线性代数基础 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

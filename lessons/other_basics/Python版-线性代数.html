@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>线性代数 · Python 版代码 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="Python版-线性代数.html" aria-current="page">　└ Python 版代码</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">线性代数 · Python 版代码</div>
+  <a class="toc-l" href="#py4-1"><span class="n">4.1</span>向量与矩阵</a>
+  <a class="toc-l" href="#py4-2"><span class="n">4.2</span>行列式</a>
+  <a class="toc-l" href="#py4-3"><span class="n">4.3</span>秩</a>
+  <a class="toc-l" href="#py4-4"><span class="n">4.4</span>转置与逆</a>
+  <a class="toc-l" href="#py4-5"><span class="n">4.5</span>坐标变换</a>
+  <a class="toc-l" href="#py4-6"><span class="n">4.6</span>特征值与特征向量</a>
+  <a class="toc-l" href="#py4-7"><span class="n">4.7</span>最小二乘</a>
+  <a class="toc-l" href="#py4-8"><span class="n">4.8</span>奇异值分解（选学）</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 4 部分 · 附页</div>
+  <h1>线性代数 · Python 版代码</h1>
+  <p class="part-lead">
+    这一页是第 4 部分线性代数基础的 Python 版代码，保留 8 个例子与 24 道练习
+    答案的实现。题目、样例输入与预期输出与 C++ 版正文一致，可以互相对照。
+    所有程序只使用 Python 3 标准库，不需要安装其他软件。
+  </p>
+</header>
+
+<p>
+  <a href="04-线性代数.html">← 回到 C++ 版正文</a>
+</p>
+
+<div class="aside tip">
+  <b>怎么运行</b>
+  <p>
+    下面的命令假定练习目录已经按第 0 部分准备好；没有准备过时，先执行
+    第 0 部分「准备练习目录」里的几行。
+  </p>
+  <p>
+    例子不读输入，进入第 4 部分对应的课目录后运行。八课的完整命令如下：
+  </p>
+  <pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.1-向量与矩阵
+python3 vectors.py
+
+cd /tmp/other-basics/示例代码/4.2-行列式
+python3 determinant.py
+
+cd /tmp/other-basics/示例代码/4.3-秩
+python3 rank.py
+
+cd /tmp/other-basics/示例代码/4.4-转置与逆
+python3 inverse.py
+
+cd /tmp/other-basics/示例代码/4.5-坐标变换
+python3 transform.py
+
+cd /tmp/other-basics/示例代码/4.6-特征值
+python3 eigen.py
+
+cd /tmp/other-basics/示例代码/4.7-最小二乘
+python3 least_squares.py
+
+cd /tmp/other-basics/示例代码/4.8-奇异值分解
+python3 svd.py</code></pre>
+  <p>
+    输出与 C++ 版正文的「真实输出」一致。练习答案从标准输入读数据；
+    下面的命令进入答案目录，用题目对应的输入文件运行，把 4-1 换成
+    要看的题号：
+  </p>
+  <pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/答案
+python3 4-1.py &lt; 4-1.in</code></pre>
+  <p>
+    也可以按题面自己写输入文件，结果相同。
+  </p>
+</div>
+
+<section class="lesson" id="py4-1">
+<h2><span class="no">4.1</span>向量与矩阵</h2>
+<h3>例子</h3>
+<p>
+  点积、长度、矩阵乘向量与矩阵乘法，并对照 A B 与 B A。
+</p>
+<pre data-lang="Python" data-name="vectors.py"><code>import math
+
+
+def dot(u, v):
+    return sum(x * y for x, y in zip(u, v))
+
+
+def length(u):
+    return math.sqrt(dot(u, u))
+
+
+def mat_vec(M, x):
+    return [dot(row, x) for row in M]
+
+
+def mat_mul(X, Y):
+    cols = list(zip(*Y))
+    return [[dot(row, col) for col in cols] for row in X]
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def show_vec(v):
+    return '[' + ', '.join(f(x) for x in v) + ']'
+
+
+def show_mat(M):
+    return '[' + ', '.join(show_vec(row) for row in M) + ']'
+
+
+a = [1.0, 2.0]
+b = [3.0, 4.0]
+A = [[1.0, 2.0], [3.0, 4.0]]
+B = [[2.0, 1.0], [0.0, 3.0]]
+
+print('点积 = ' + f(dot(a, b)))
+print('a 的长度 = ' + f(length(a)))
+print('A b = ' + show_vec(mat_vec(A, b)))
+print('A B = ' + show_mat(mat_mul(A, B)))
+print('B A = ' + show_mat(mat_mul(B, A)))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-1 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-1.py"><code># 4-1 向量加法与数乘
+# 读入维数、两个向量和一个标量，输出 a+b 与 k*a。
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def show(v):
+    return '[' + ', '.join(f(x) for x in v) + ']'
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+n = int(next(it))
+a = [float(next(it)) for _ in range(n)]
+b = [float(next(it)) for _ in range(n)]
+k = float(next(it))
+
+print(show([x + y for x, y in zip(a, b)]))
+print(show([k * x for x in a]))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-2 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-2.py"><code># 4-2 点积、长度与夹角
+# 夹角余弦 = 点积 / (两个长度之积)。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+n = int(next(it))
+a = [float(next(it)) for _ in range(n)]
+b = [float(next(it)) for _ in range(n)]
+
+dot = sum(x * y for x, y in zip(a, b))
+la = math.sqrt(sum(x * x for x in a))
+lb = math.sqrt(sum(x * x for x in b))
+cos = dot / (la * lb) if la != 0 and lb != 0 else 0.0
+
+print('点积 = ' + f(dot))
+print('|a| = ' + f(la))
+print('|b| = ' + f(lb))
+print('cos = ' + f(cos))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-3 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-3.py"><code># 4-3 矩阵乘向量
+# 结果的第 i 个分量是 A 的第 i 行与 x 的内积。
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def show(v):
+    return '[' + ', '.join(f(x) for x in v) + ']'
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+m = int(next(it))
+n = int(next(it))
+A = [[float(next(it)) for _ in range(n)] for _ in range(m)]
+x = [float(next(it)) for _ in range(n)]
+
+y = [sum(A[i][j] * x[j] for j in range(n)) for i in range(m)]
+print(show(y))</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-2">
+<h2><span class="no">4.2</span>行列式</h2>
+<h3>例子</h3>
+<p>
+  2×2 与 3×3 行列式，以及行列式的面积意义。
+</p>
+<pre data-lang="Python" data-name="determinant.py"><code>def det2(M):
+    return M[0][0] * M[1][1] - M[0][1] * M[1][0]
+
+
+def det3(M):
+    a, b, c = M[0]
+    m1 = [[M[1][1], M[1][2]], [M[2][1], M[2][2]]]
+    m2 = [[M[1][0], M[1][2]], [M[2][0], M[2][2]]]
+    m3 = [[M[1][0], M[1][1]], [M[2][0], M[2][1]]]
+    return a * det2(m1) - b * det2(m2) + c * det2(m3)
+
+
+def num(x):
+    if abs(x - round(x)) &lt; 1e-9:
+        return str(int(round(x)))
+    return '%.3f' % x
+
+
+A2 = [[2.0, 1.0], [1.0, 3.0]]
+A3 = [[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 2.0]]
+p, q, r = (0.0, 0.0), (4.0, 0.0), (0.0, 3.0)
+area = abs((q[0] - p[0]) * (r[1] - p[1]) -
+           (q[1] - p[1]) * (r[0] - p[0])) / 2
+
+print('2×2 行列式 = ' + num(det2(A2)))
+print('3×3 行列式 = ' + num(det3(A3)))
+print('三角形面积 = %.3f' % area)</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-4 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-4.py"><code># 4-4 2×2 行列式与可逆判断
+# 行列式不为 0 就可逆。用 Fraction 保证小数输入也算得准。
+import sys
+from fractions import Fraction
+
+
+def f(x):
+    s = '%.3f' % float(x)
+    return '0.000' if s == '-0.000' else s
+
+
+def num(q):
+    if q.denominator == 1:
+        return str(q.numerator)
+    return f(q)
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = Fraction(next(it))
+b = Fraction(next(it))
+c = Fraction(next(it))
+d = Fraction(next(it))
+det = a * d - b * c
+
+print('行列式 = ' + num(det))
+print('可逆' if det != 0 else '不可逆')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-5 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-5.py"><code># 4-5 3×3 行列式
+# 按第一行展开，三个 2×2 行列式用对角线法则。
+import sys
+from fractions import Fraction
+
+
+def f(x):
+    s = '%.3f' % float(x)
+    return '0.000' if s == '-0.000' else s
+
+
+def num(q):
+    if q.denominator == 1:
+        return str(q.numerator)
+    return f(q)
+
+
+def det2(m):
+    return m[0][0] * m[1][1] - m[0][1] * m[1][0]
+
+
+def det3(M):
+    return (M[0][0] * det2([[M[1][1], M[1][2]], [M[2][1], M[2][2]]])
+            - M[0][1] * det2([[M[1][0], M[1][2]], [M[2][0], M[2][2]]])
+            + M[0][2] * det2([[M[1][0], M[1][1]], [M[2][0], M[2][1]]]))
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+M = [[Fraction(next(it)) for _ in range(3)] for _ in range(3)]
+
+print('行列式 = ' + num(det3(M)))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-6 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-6.py"><code># 4-6 三点求三角形面积
+# 面积 = |(P2-P1) × (P3-P1)| / 2，二维叉积就是那两项之差。
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+x1 = float(next(it))
+y1 = float(next(it))
+x2 = float(next(it))
+y2 = float(next(it))
+x3 = float(next(it))
+y3 = float(next(it))
+
+area = abs((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) / 2
+print('面积 = %.3f' % area)</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-3">
+<h2><span class="no">4.3</span>秩</h2>
+<h3>例子</h3>
+<p>
+  高斯—约当消元、矩阵的秩，以及方程组解的情况。
+</p>
+<pre data-lang="Python" data-name="rank.py"><code>from fractions import Fraction
+
+
+def rref(M):
+    A = [[Fraction(x) for x in row] for row in M]
+    rows, cols = len(A), len(A[0])
+    pivots = []
+    r = 0
+    for c in range(cols):
+        p = None
+        for i in range(r, rows):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            continue
+        A[r], A[p] = A[p], A[r]
+        v = A[r][c]
+        A[r] = [x / v for x in A[r]]
+        for i in range(rows):
+            if i != r and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[r])]
+        pivots.append(c)
+        r += 1
+        if r == rows:
+            break
+    return A, pivots
+
+
+def show(M):
+    return '\n'.join('[' + ', '.join(str(x) for x in row) + ']'
+                     for row in M)
+
+
+def kind(M):
+    R, pivots = rref(M)
+    n = len(M[0]) - 1
+    for row in R:
+        if all(x == 0 for x in row[:n]) and row[n] != 0:
+            return '无解'
+    if len(pivots) &lt; n:
+        return '无穷多解'
+    return '唯一解'
+
+
+M = [[1, 2, 0], [2, 4, 1], [0, 0, 1]]
+R, pivots = rref(M)
+print('行简化：')
+print(show(R))
+print('秩 = %d' % len(pivots))
+print('增广矩阵的解：' + kind([[1, 1, 3], [2, -1, 0]]))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-7 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-7.py"><code># 4-7 求矩阵的秩
+# 用 Fraction 做高斯消元，主元的个数就是秩。
+import sys
+from fractions import Fraction
+
+
+def rref(M):
+    A = [[Fraction(x) for x in row] for row in M]
+    rows, cols = len(A), len(A[0])
+    pivots = []
+    r = 0
+    for c in range(cols):
+        p = None
+        for i in range(r, rows):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            continue
+        A[r], A[p] = A[p], A[r]
+        v = A[r][c]
+        A[r] = [x / v for x in A[r]]
+        for i in range(rows):
+            if i != r and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[r])]
+        pivots.append(c)
+        r += 1
+        if r == rows:
+            break
+    return A, pivots
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+m = int(next(it))
+n = int(next(it))
+M = [[Fraction(next(it)) for _ in range(n)] for _ in range(m)]
+
+_, pivots = rref(M)
+print('秩 = %d' % len(pivots))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-8 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-8.py"><code># 4-8 判断方程组解的情况
+# 增广矩阵每行最后一个是等号右边的常数。
+import sys
+from fractions import Fraction
+
+
+def rref(M):
+    A = [[Fraction(x) for x in row] for row in M]
+    rows, cols = len(A), len(A[0])
+    pivots = []
+    r = 0
+    for c in range(cols):
+        p = None
+        for i in range(r, rows):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            continue
+        A[r], A[p] = A[p], A[r]
+        v = A[r][c]
+        A[r] = [x / v for x in A[r]]
+        for i in range(rows):
+            if i != r and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[r])]
+        pivots.append(c)
+        r += 1
+        if r == rows:
+            break
+    return A, pivots
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+m = int(next(it))
+n = int(next(it))
+M = [[Fraction(next(it)) for _ in range(n + 1)] for _ in range(m)]
+
+R, pivots = rref(M)
+bad = False
+for row in R:
+    if all(x == 0 for x in row[:n]) and row[n] != 0:
+        bad = True
+if bad:
+    print('无解')
+elif len(pivots) &lt; n:
+    print('无穷多解')
+else:
+    print('唯一解')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-9 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-9.py"><code># 4-9 判断向量组是否线性无关
+# 把向量按行排成矩阵，秩等于向量个数就线性无关，否则线性相关。
+import sys
+from fractions import Fraction
+
+
+def rref(M):
+    A = [[Fraction(x) for x in row] for row in M]
+    rows, cols = len(A), len(A[0])
+    pivots = []
+    r = 0
+    for c in range(cols):
+        p = None
+        for i in range(r, rows):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            continue
+        A[r], A[p] = A[p], A[r]
+        v = A[r][c]
+        A[r] = [x / v for x in A[r]]
+        for i in range(rows):
+            if i != r and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[r])]
+        pivots.append(c)
+        r += 1
+        if r == rows:
+            break
+    return A, pivots
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+k = int(next(it))
+n = int(next(it))
+M = [[Fraction(next(it)) for _ in range(n)] for _ in range(k)]
+
+_, pivots = rref(M)
+r = len(pivots)
+print('秩 = %d' % r)
+print('线性无关' if r == k else '线性相关')</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-4">
+<h2><span class="no">4.4</span>转置与逆</h2>
+<h3>例子</h3>
+<p>
+  转置、2×2 与 3×3 求逆，并验证旋转矩阵满足 RᵀR = I。
+</p>
+<pre data-lang="Python" data-name="inverse.py"><code>from fractions import Fraction
+
+
+def transpose(M):
+    return [[M[j][i] for j in range(len(M))] for i in range(len(M[0]))]
+
+
+def inverse(M):
+    n = len(M)
+    A = []
+    for i in range(n):
+        A.append([Fraction(M[i][j]) for j in range(n)] +
+                 [Fraction(1 if i == j else 0) for j in range(n)])
+    for c in range(n):
+        p = None
+        for i in range(c, n):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            return None
+        A[c], A[p] = A[p], A[c]
+        v = A[c][c]
+        A[c] = [x / v for x in A[c]]
+        for i in range(n):
+            if i != c and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[c])]
+    return [row[n:] for row in A]
+
+
+def f(x):
+    s = '%.3f' % float(x)
+    return '0.000' if s == '-0.000' else s
+
+
+def show(M):
+    return '[' + ', '.join(
+        '[' + ', '.join(f(x) for x in row) + ']' for row in M) + ']'
+
+
+A2 = [[2, 1], [1, 3]]
+A3 = [[2, 1, 0], [1, 2, 1], [0, 1, 2]]
+R = [[0, -1], [1, 0]]
+RtR = [[sum(R[k][i] * R[k][j] for k in range(2)) for j in range(2)]
+       for i in range(2)]
+
+print('A2 的逆：')
+print(show(inverse(A2)))
+print('A3 的逆：')
+print(show(inverse(A3)))
+print('RᵀR = ' + show(RtR))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-10 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-10.py"><code># 4-10 求转置
+# 转置把第 i 行第 j 列换到第 j 行第 i 列。
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def show_mat(M):
+    return '[' + ', '.join(
+        '[' + ', '.join(f(x) for x in row) + ']' for row in M) + ']'
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+m = int(next(it))
+n = int(next(it))
+M = [[float(next(it)) for _ in range(n)] for _ in range(m)]
+
+T = [[M[i][j] for i in range(m)] for j in range(n)]
+print(show_mat(T))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-11 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-11.py"><code># 4-11 2×2 求逆
+# 行列式为 0 时没有逆矩阵；否则用 [[d,-b],[-c,a]] 除以行列式。
+import sys
+from fractions import Fraction
+
+
+def f(x):
+    s = '%.3f' % float(x)
+    return '0.000' if s == '-0.000' else s
+
+
+def show_mat(M):
+    return '[' + ', '.join(
+        '[' + ', '.join(f(x) for x in row) + ']' for row in M) + ']'
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = Fraction(next(it))
+b = Fraction(next(it))
+c = Fraction(next(it))
+d = Fraction(next(it))
+det = a * d - b * c
+
+if det == 0:
+    print('不可逆')
+else:
+    print(show_mat([[d / det, -b / det], [-c / det, a / det]]))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-12 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-12.py"><code># 4-12 3×3 求逆
+# 把 A 和单位矩阵并排，做高斯—约当消元；左半边变成单位矩阵时，右半边就是逆。
+import sys
+from fractions import Fraction
+
+
+def f(x):
+    s = '%.3f' % float(x)
+    return '0.000' if s == '-0.000' else s
+
+
+def show_mat(M):
+    return '[' + ', '.join(
+        '[' + ', '.join(f(x) for x in row) + ']' for row in M) + ']'
+
+
+def inverse(M):
+    n = len(M)
+    A = []
+    for i in range(n):
+        A.append([Fraction(M[i][j]) for j in range(n)] +
+                 [Fraction(1 if i == j else 0) for j in range(n)])
+    for c in range(n):
+        p = None
+        for i in range(c, n):
+            if A[i][c] != 0:
+                p = i
+                break
+        if p is None:
+            return None
+        A[c], A[p] = A[p], A[c]
+        v = A[c][c]
+        A[c] = [x / v for x in A[c]]
+        for i in range(n):
+            if i != c and A[i][c] != 0:
+                k = A[i][c]
+                A[i] = [x - k * y for x, y in zip(A[i], A[c])]
+    return [row[n:] for row in A]
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+M = [[Fraction(next(it)) for _ in range(3)] for _ in range(3)]
+
+inv = inverse(M)
+if inv is None:
+    print('不可逆')
+else:
+    print(show_mat(inv))</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-5">
+<h2><span class="no">4.5</span>坐标变换</h2>
+<h3>例子</h3>
+<p>
+  旋转、平移、复合变换与逆变换。
+</p>
+<pre data-lang="Python" data-name="transform.py"><code>import math
+
+
+def trans(deg, tx, ty):
+    t = math.radians(deg)
+    c, s = math.cos(t), math.sin(t)
+    return [[c, -s, tx], [s, c, ty], [0.0, 0.0, 1.0]]
+
+
+def mul(A, B):
+    return [[sum(A[i][k] * B[k][j] for k in range(3)) for j in range(3)]
+            for i in range(3)]
+
+
+def apply(T, p):
+    return [T[0][0] * p[0] + T[0][1] * p[1] + T[0][2],
+            T[1][0] * p[0] + T[1][1] * p[1] + T[1][2]]
+
+
+def inverse(T):
+    R = [[T[0][0], T[0][1]], [T[1][0], T[1][1]]]
+    t = [T[0][2], T[1][2]]
+    Rt = [[R[0][0], R[1][0]], [R[0][1], R[1][1]]]
+    ti = [-(Rt[0][0] * t[0] + Rt[0][1] * t[1]),
+          -(Rt[1][0] * t[0] + Rt[1][1] * t[1])]
+    return [[Rt[0][0], Rt[0][1], ti[0]],
+            [Rt[1][0], Rt[1][1], ti[1]],
+            [0.0, 0.0, 1.0]]
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def show_vec(v):
+    return '[' + ', '.join(f(x) for x in v) + ']'
+
+
+p = [1.0, 0.0]
+R90 = trans(90, 0, 0)
+Tt = trans(0, 2, 1)
+T1 = mul(Tt, R90)
+T2 = trans(180, 1, 0)
+
+print('旋转 90° = ' + show_vec(apply(R90, p)))
+print('旋转后平移 = ' + show_vec(apply(T1, p)))
+print('复合矩阵作用于同一点 = ' + show_vec(apply(mul(Tt, R90), p)))
+print('逆变换送回 = ' + show_vec(apply(inverse(T1), apply(T1, p))))
+print('先 T1 再 T2 = ' + show_vec(apply(mul(T2, T1), p)))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-13 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-13.py"><code># 4-13 旋转一个点
+# 逆时针旋转 θ 的矩阵是 [[cosθ,-sinθ],[sinθ,cosθ]]。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+deg = float(next(it))
+x = float(next(it))
+y = float(next(it))
+
+t = math.radians(deg)
+c, s = math.cos(t), math.sin(t)
+rx = c * x - s * y
+ry = s * x + c * y
+print('[' + f(rx) + ', ' + f(ry) + ']')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-14 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-14.py"><code># 4-14 旋转后平移
+# 先算 R p，再加上平移量 (tx, ty)。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+deg = float(next(it))
+tx = float(next(it))
+ty = float(next(it))
+x = float(next(it))
+y = float(next(it))
+
+t = math.radians(deg)
+c, s = math.cos(t), math.sin(t)
+rx = c * x - s * y + tx
+ry = s * x + c * y + ty
+print('[' + f(rx) + ', ' + f(ry) + ']')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-15 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-15.py"><code># 4-15 复合两个变换
+# 每个变换用齐次矩阵表示；先做 T1 再做 T2，合起来是 T2·T1。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+def trans(deg, tx, ty):
+    t = math.radians(deg)
+    c, s = math.cos(t), math.sin(t)
+    return [[c, -s, tx], [s, c, ty], [0.0, 0.0, 1.0]]
+
+
+def mul(A, B):
+    return [[sum(A[i][k] * B[k][j] for k in range(3)) for j in range(3)]
+            for i in range(3)]
+
+
+def apply(T, p):
+    return [T[0][0] * p[0] + T[0][1] * p[1] + T[0][2],
+            T[1][0] * p[0] + T[1][1] * p[1] + T[1][2]]
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+d1 = float(next(it))
+tx1 = float(next(it))
+ty1 = float(next(it))
+d2 = float(next(it))
+tx2 = float(next(it))
+ty2 = float(next(it))
+x = float(next(it))
+y = float(next(it))
+
+T1 = trans(d1, tx1, ty1)
+T2 = trans(d2, tx2, ty2)
+q = apply(mul(T2, T1), [x, y])
+print('[' + f(q[0]) + ', ' + f(q[1]) + ']')</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-6">
+<h2><span class="no">4.6</span>特征值与特征向量</h2>
+<h3>例子</h3>
+<p>
+  2×2 特征值与特征向量、对角化验证，以及幂迭代。
+</p>
+<pre data-lang="Python" data-name="eigen.py"><code>import math
+
+
+def eig2(M):
+    a, b = M[0]
+    c, d = M[1]
+    t = a + d
+    det = a * d - b * c
+    s = math.sqrt(max(t * t - 4 * det, 0.0))
+    return [(t + s) / 2, (t - s) / 2]
+
+
+def eigvec2(M, lam):
+    a, b = M[0]
+    c, d = M[1]
+    if abs(b) &gt; 1e-12:
+        v = [b, lam - a]
+    elif abs(c) &gt; 1e-12:
+        v = [lam - d, c]
+    elif abs(a - lam) &lt; 1e-12:
+        v = [1.0, 0.0]
+    else:
+        v = [0.0, 1.0]
+    n = math.sqrt(v[0] * v[0] + v[1] * v[1])
+    v = [v[0] / n, v[1] / n]
+    for x in v:
+        if abs(x) &gt; 1e-12:
+            if x &lt; 0:
+                v = [-v[0], -v[1]]
+            break
+    return v
+
+
+def power(A, v0, steps=100):
+    v = list(v0)
+    lam = 0.0
+    for _ in range(steps):
+        w = [sum(A[i][j] * v[j] for j in range(len(v)))
+             for i in range(len(v))]
+        lam = sum(v[i] * w[i] for i in range(len(v))) / \
+            sum(x * x for x in v)
+        n = math.sqrt(sum(x * x for x in w))
+        v = [x / n for x in w]
+    return lam
+
+
+A = [[2.0, 1.0], [1.0, 2.0]]
+lams = eig2(A)
+v1 = eigvec2(A, lams[0])
+v2 = eigvec2(A, lams[1])
+Q = [[v1[0], v2[0]], [v1[1], v2[1]]]
+QlQ = [[sum(Q[i][k] * lams[k] * Q[j][k] for k in range(2))
+        for j in range(2)] for i in range(2)]
+B = [[4.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 2.0]]
+
+print('特征值 = %.3f, %.3f' % (lams[0], lams[1]))
+print('较大特征值的单位特征向量 = [%.3f, %.3f]' % (v1[0], v1[1]))
+print('Q Λ Qᵀ = [[%.3f, %.3f], [%.3f, %.3f]]' %
+      (QlQ[0][0], QlQ[0][1], QlQ[1][0], QlQ[1][1]))
+print('幂迭代的主特征值 = %.3f' % power(B, [1.0, 1.0, 1.0]))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-16 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-16.py"><code># 4-16 求 2×2 实特征值
+# 特征方程 λ² - (a+d)λ + (ad-bc) = 0，判别式小于 0 时没有实特征值。
+import math
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = float(next(it))
+b = float(next(it))
+c = float(next(it))
+d = float(next(it))
+
+t = a + d
+det = a * d - b * c
+disc = t * t - 4 * det
+if disc &lt; -1e-9:
+    print('无实特征值')
+else:
+    s = math.sqrt(max(disc, 0.0))
+    l1 = (t + s) / 2
+    l2 = (t - s) / 2
+    if l1 &lt; l2:
+        l1, l2 = l2, l1
+    print('特征值 = %.3f, %.3f' % (l1, l2))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-17 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-17.py"><code># 4-17 求较大特征值与单位特征向量
+# 对称矩阵的两个特征值都是实数；特征向量取第一个非零分量为正。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = float(next(it))
+b = float(next(it))
+c = float(next(it))
+d = float(next(it))
+
+t = a + d
+det = a * d - b * c
+s = math.sqrt(max(t * t - 4 * det, 0.0))
+lam = (t + s) / 2
+
+if abs(b) &gt; 1e-12:
+    v = [b, lam - a]
+elif abs(c) &gt; 1e-12:
+    v = [lam - d, c]
+elif abs(a - lam) &lt; 1e-12:
+    v = [1.0, 0.0]
+else:
+    v = [0.0, 1.0]
+n = math.sqrt(v[0] * v[0] + v[1] * v[1])
+v = [v[0] / n, v[1] / n]
+for x in v:
+    if abs(x) &gt; 1e-12:
+        if x &lt; 0:
+            v = [-v[0], -v[1]]
+        break
+
+print('较大特征值 = ' + f(lam))
+print('单位特征向量 = [' + f(v[0]) + ', ' + f(v[1]) + ']')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-18 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-18.py"><code># 4-18 幂迭代求主特征值
+# 每步乘一次 A 并归一化，用瑞利商估计特征值；100 步足够收敛。
+import math
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+A = [[float(next(it)) for _ in range(3)] for _ in range(3)]
+v = [float(next(it)) for _ in range(3)]
+
+lam = 0.0
+for _ in range(100):
+    w = [sum(A[i][j] * v[j] for j in range(3)) for i in range(3)]
+    lam = sum(v[i] * w[i] for i in range(3)) / sum(x * x for x in v)
+    n = math.sqrt(sum(x * x for x in w))
+    v = [x / n for x in w]
+
+print('主特征值 = %.3f' % lam)</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-7">
+<h2><span class="no">4.7</span>最小二乘</h2>
+<h3>例子</h3>
+<p>
+  四点直线拟合、残差平方和，以及用拟合结果预测。
+</p>
+<pre data-lang="Python" data-name="least_squares.py"><code>def fit(points, through_origin=False):
+    n = len(points)
+    sx = sum(x for x, _ in points)
+    sy = sum(y for _, y in points)
+    sxx = sum(x * x for x, _ in points)
+    sxy = sum(x * y for x, y in points)
+    if through_origin:
+        a = sxy / sxx
+        b = 0.0
+    else:
+        det = n * sxx - sx * sx
+        a = (n * sxy - sx * sy) / det
+        b = (sy - a * sx) / n
+    sse = sum((y - (a * x + b)) ** 2 for x, y in points)
+    return a, b, sse
+
+
+points = [(1.0, 2.0), (2.0, 3.0), (3.0, 5.0), (4.0, 7.0)]
+a, b, sse = fit(points)
+
+print('a = %.3f, b = %.3f' % (a, b))
+print('残差平方和 = %.3f' % sse)
+print('x = 5 时的预测值 = %.3f' % (a * 5 + b))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-19 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-19.py"><code># 4-19 直线拟合
+# 拟合 y = a x + b，正规方程是 [n Σx; Σx Σx²] [b; a] = [Σy; Σxy]。
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+n = int(next(it))
+pts = [(float(next(it)), float(next(it))) for _ in range(n)]
+
+sx = sum(x for x, _ in pts)
+sy = sum(y for _, y in pts)
+sxx = sum(x * x for x, _ in pts)
+sxy = sum(x * y for x, y in pts)
+
+a = (n * sxy - sx * sy) / (n * sxx - sx * sx)
+b = (sy - a * sx) / n
+sse = sum((y - (a * x + b)) ** 2 for x, y in pts)
+
+print('a = %.3f' % a)
+print('b = %.3f' % b)
+print('残差平方和 = %.3f' % sse)</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-20 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-20.py"><code># 4-20 过原点拟合
+# 直线过原点时 b = 0，只有一个未知量 a = Σxy / Σx²。
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+n = int(next(it))
+pts = [(float(next(it)), float(next(it))) for _ in range(n)]
+
+sxx = sum(x * x for x, _ in pts)
+sxy = sum(x * y for x, y in pts)
+a = sxy / sxx
+
+print('a = %.3f' % a)</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-21 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-21.py"><code># 4-21 用拟合结果预测
+# 先按正规方程求出 a、b，再把 x0 代入 y = a x + b。
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+n = int(next(it))
+pts = [(float(next(it)), float(next(it))) for _ in range(n)]
+x0 = float(next(it))
+
+sx = sum(x for x, _ in pts)
+sy = sum(y for _, y in pts)
+sxx = sum(x * x for x, _ in pts)
+sxy = sum(x * y for x, y in pts)
+a = (n * sxy - sx * sy) / (n * sxx - sx * sx)
+b = (sy - a * sx) / n
+
+print('预测值 = %.3f' % (a * x0 + b))</code></pre>
+  </div>
+</details>
+</section>
+
+<section class="lesson" id="py4-8">
+<h2><span class="no">4.8</span>奇异值分解（选学）</h2>
+<h3>例子</h3>
+<p>
+  2×2 奇异值、秩 1 近似与条件数。
+</p>
+<pre data-lang="Python" data-name="svd.py"><code>import math
+
+
+def svd2(M):
+    a, b = M[0]
+    c, d = M[1]
+    p = a * a + c * c
+    q = a * b + c * d
+    r = b * b + d * d
+    t = p + r
+    det = p * r - q * q
+    disc = math.sqrt(max(t * t - 4 * det, 0.0))
+    l1 = (t + disc) / 2
+    l2 = (t - disc) / 2
+    return math.sqrt(max(l1, 0.0)), math.sqrt(max(l2, 0.0))
+
+
+def rank1(M):
+    a, b = M[0]
+    c, d = M[1]
+    p = a * a + c * c
+    q = a * b + c * d
+    r = b * b + d * d
+    t = p + r
+    det = p * r - q * q
+    disc = math.sqrt(max(t * t - 4 * det, 0.0))
+    l1 = (t + disc) / 2
+    s1 = math.sqrt(max(l1, 0.0))
+    if s1 == 0:
+        return [[0.0, 0.0], [0.0, 0.0]]
+    if abs(q) &gt; 1e-12:
+        v = [q, l1 - p]
+    elif p &gt;= r:
+        v = [1.0, 0.0]
+    else:
+        v = [0.0, 1.0]
+    n = math.sqrt(v[0] * v[0] + v[1] * v[1])
+    v = [v[0] / n, v[1] / n]
+    w = [a * v[0] + b * v[1], c * v[0] + d * v[1]]
+    u = [w[0] / s1, w[1] / s1]
+    return [[s1 * u[i] * v[j] for j in range(2)] for i in range(2)]
+
+
+A = [[4.0, 0.0], [3.0, 5.0]]
+s1, s2 = svd2(A)
+R = rank1(A)
+
+print('奇异值 = %.3f, %.3f' % (s1, s2))
+print('秩 1 近似 = [[%.3f, %.3f], [%.3f, %.3f]]' %
+      (R[0][0], R[0][1], R[1][0], R[1][1]))
+print('条件数 = %.3f' % (s1 / s2))</code></pre>
+<h3>练习答案</h3>
+<details class="ans">
+  <summary>练习 4-22 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-22.py"><code># 4-22 求两个奇异值
+# 奇异值是 AᵀA 的两个特征值开平方，降序输出。
+import math
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = float(next(it))
+b = float(next(it))
+c = float(next(it))
+d = float(next(it))
+
+p = a * a + c * c
+q = a * b + c * d
+r = b * b + d * d
+t = p + r
+det = p * r - q * q
+disc = math.sqrt(max(t * t - 4 * det, 0.0))
+s1 = math.sqrt(max((t + disc) / 2, 0.0))
+s2 = math.sqrt(max((t - disc) / 2, 0.0))
+
+print('奇异值 = %.3f, %.3f' % (s1, s2))</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-23 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-23.py"><code># 4-23 最佳秩 1 近似
+# 取最大奇异值 σ1 和对应的单位向量 u1、v1，近似矩阵是 σ1·u1·v1ᵀ。
+import math
+import sys
+
+
+def f(x):
+    s = '%.3f' % x
+    return '0.000' if s == '-0.000' else s
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = float(next(it))
+b = float(next(it))
+c = float(next(it))
+d = float(next(it))
+
+p = a * a + c * c
+q = a * b + c * d
+r = b * b + d * d
+t = p + r
+det = p * r - q * q
+disc = math.sqrt(max(t * t - 4 * det, 0.0))
+l1 = (t + disc) / 2
+s1 = math.sqrt(max(l1, 0.0))
+
+if s1 == 0:
+    R = [[0.0, 0.0], [0.0, 0.0]]
+else:
+    if abs(q) &gt; 1e-12:
+        v = [q, l1 - p]
+    elif p &gt;= r:
+        v = [1.0, 0.0]
+    else:
+        v = [0.0, 1.0]
+    n = math.sqrt(v[0] * v[0] + v[1] * v[1])
+    v = [v[0] / n, v[1] / n]
+    w = [a * v[0] + b * v[1], c * v[0] + d * v[1]]
+    u = [w[0] / s1, w[1] / s1]
+    R = [[s1 * u[i] * v[j] for j in range(2)] for i in range(2)]
+
+print('[' + ', '.join('[' + ', '.join(f(x) for x in row) + ']'
+                      for row in R) + ']')</code></pre>
+  </div>
+</details>
+<details class="ans">
+  <summary>练习 4-24 的答案</summary>
+  <div class="ans-b">
+<pre data-lang="Python" data-name="4-24.py"><code># 4-24 求条件数
+# 条件数 = σ1 / σ2；较小的奇异值为 0 时，矩阵不可逆，条件数记为无穷。
+import math
+import sys
+
+
+data = sys.stdin.read().split()
+it = iter(data)
+a = float(next(it))
+b = float(next(it))
+c = float(next(it))
+d = float(next(it))
+
+p = a * a + c * c
+q = a * b + c * d
+r = b * b + d * d
+t = p + r
+det = p * r - q * q
+disc = math.sqrt(max(t * t - 4 * det, 0.0))
+s1 = math.sqrt(max((t + disc) / 2, 0.0))
+s2 = math.sqrt(max((t - disc) / 2, 0.0))
+
+if s2 &lt; 1e-12:
+    print('条件数 = 无穷')
+else:
+    print('条件数 = %.3f' % (s1 / s2))</code></pre>
+  </div>
+</details>
+</section>
+
+<nav class="pager">
+  <a href="04-线性代数.html">← 第 4 部分 · 线性代数基础</a>
+  <span class="spacer"></span>
+  <a href="index.html">回课程目录 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

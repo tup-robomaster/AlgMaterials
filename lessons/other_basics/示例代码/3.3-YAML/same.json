@@ -1,0 +1,21 @@
+{
+  "camera": {
+    "name": "cam0",
+    "resolution": [1280, 1024],
+    "fps": 30,
+    "exposure_us": 8000,
+    "trigger": "software",
+    "save": {
+      "enabled": true,
+      "directory": "data/images",
+      "format": "png"
+    }
+  },
+  "calibration": null,
+  "steps": [
+    "打开相机",
+    "设置曝光",
+    "开始采集"
+  ],
+  "notes": "第一次运行时先检查设备连接。\n如果画面过暗，增大 exposure_us。\n"
+}

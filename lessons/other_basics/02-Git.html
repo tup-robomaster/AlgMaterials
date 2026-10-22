@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · Git 基础命令及规范 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a class="active" href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html" aria-current="page">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · Git 基础命令及规范</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>仓库、暂存区与提交</a>
+  <a class="toc-sub" href="#s2-1-1">建仓库与身份</a>
+  <a class="toc-sub" href="#s2-1-2">三个区域</a>
+  <a class="toc-sub" href="#s2-1-3">第一次提交</a>
+  <a class="toc-sub" href="#s2-1-4">改动、暂存与差异</a>
+  <a class="toc-sub" href="#s2-1-5">查看历史</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>分支与合并</a>
+  <a class="toc-sub" href="#s2-2-1">分支是什么</a>
+  <a class="toc-sub" href="#s2-2-2">建分支并提交</a>
+  <a class="toc-sub" href="#s2-2-3">快进合并</a>
+  <a class="toc-sub" href="#s2-2-4">三方合并</a>
+  <a class="toc-sub" href="#s2-2-5">删除分支与查看图</a>
+  <a class="toc-sub" href="#s2-2-6">switch 与 checkout</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>远程仓库与 SSH</a>
+  <a class="toc-sub" href="#s2-3-1">远程仓库与 origin</a>
+  <a class="toc-sub" href="#s2-3-2">建一个本地远端</a>
+  <a class="toc-sub" href="#s2-3-3">克隆、提交、推送</a>
+  <a class="toc-sub" href="#s2-3-4">拉取别人的改动</a>
+  <a class="toc-sub" href="#s2-3-5">SSH 密钥与登记</a>
+  <a class="toc-sub" href="#s2-3-6">远程地址的两种写法</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>冲突、回退与撤销</a>
+  <a class="toc-sub" href="#s2-4-1">冲突是怎么产生的</a>
+  <a class="toc-sub" href="#s2-4-2">看懂并解决冲突</a>
+  <a class="toc-sub" href="#s2-4-3">撤销工作区改动</a>
+  <a class="toc-sub" href="#s2-4-4">取消暂存</a>
+  <a class="toc-sub" href="#s2-4-5">撤销提交：soft、mixed、hard</a>
+  <a class="toc-sub" href="#s2-4-6">用 revert 抵消提交</a>
+  <a class="toc-sub" href="#s2-4-7">临时保存：stash</a>
+  <a class="toc-sub" href="#s2-4-8">哪些操作会丢东西</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>提交信息规范</a>
+  <a class="toc-sub" href="#s2-5-1">一次提交只做一件事</a>
+  <a class="toc-sub" href="#s2-5-2">标题与正文</a>
+  <a class="toc-sub" href="#s2-5-3">常见类型前缀</a>
+  <a class="toc-sub" href="#s2-5-4">提交前自查</a>
+  <a class="toc-sub" href="#s2-5-5">修改最近一次提交</a>
+  <a class="toc-l" href="#l2-6"><span class="n">2.6</span>分支规范与 .gitignore</a>
+  <a class="toc-sub" href="#s2-6-1">分支怎么命名</a>
+  <a class="toc-sub" href="#s2-6-2">功能分支与合并请求</a>
+  <a class="toc-sub" href="#s2-6-3">.gitignore 忽略什么</a>
+  <a class="toc-sub" href="#s2-6-4">检查忽略规则</a>
+  <a class="toc-sub" href="#s2-6-5">误提交之后</a>
+  <a class="toc-sub" href="#s2-6-6">团队约定小结</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>Git 基础命令及规范</h1>
+  <p class="part-lead">
+    Git 记录每一次改动，让多人可以在同一份代码上工作。
+    这一部分从建仓库、提交开始，讲到分支、远程仓库、冲突处理与回退，
+    最后落到提交信息和分支命名的规范。要求是会用：跟着做一遍，
+    知道每一步在做什么，不要求背参数。
+  </p>
+</header>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令都在 <code>/tmp/other-basics/示例代码</code> 下执行。
+    如果没有按第 0 部分准备过练习目录，或者准备之后重启过电脑，
+    先在课程文件夹里重新执行下面几行：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/other-basics
+mkdir -p /tmp/other-basics
+cp -r 示例代码 /tmp/other-basics/
+cd /tmp/other-basics/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。
+    复制完成后，用 <code>pwd</code> 确认当前目录是
+    <code>/tmp/other-basics/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>仓库、暂存区与提交</h2>
+
+<p>
+  Git 把项目的历史保存在仓库里。一个仓库就是一个目录，里面除了项目文件，
+  还有一个隐藏的 <code>.git</code> 目录，提交、分支和仓库配置都放在那里。
+  这一课从一个空仓库开始，走一遍「改文件、暂存、提交」的流程。
+</p>
+
+<h3 id="s2-1-1">建仓库与身份</h3>
+
+<p>
+  进入练习目录 <code>2.1-第一次提交</code>。目录里有两个文件：
+  一个说明文件和一个计算平均分的 Python 脚本。先把它变成一个 Git 仓库：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.1-第一次提交
+git init -b main</code></pre>
+
+<pre class="out" data-label="真实输出">Initialized empty Git repository in /tmp/other-basics/示例代码/2.1-第一次提交/.git/</pre>
+
+<p>
+  <code>git init</code> 在当前目录建立仓库，也就是创建 <code>.git</code> 目录；
+  <code>-b main</code> 把初始分支命名为 <code>main</code>。
+  这两步没有改动项目文件，只是在目录里多了一个隐藏目录。
+  <code>-b</code> 选项需要 Git 2.28 及以上；更老的版本可以先执行
+  <code>git init</code>，再执行 <code>git branch -m main</code>。
+</p>
+
+<p>
+  Git 会在每次提交里记录作者的名字和邮箱。第一次使用某个仓库时，
+  先设置这两项：
+</p>
+
+<pre data-lang="终端"><code>git config user.name "alice"
+git config user.email "alice@example.com"</code></pre>
+
+<p>
+  课里用示例身份 <code>alice</code> 与 <code>alice@example.com</code>；
+  读者练习时换成自己的名字和邮箱即可。这两条命令不加 <code>--global</code>，
+  只写入当前仓库的 <code>.git/config</code>，不会影响这台机器上的其他仓库。
+  加上 <code>--global</code> 会写入用户主目录下的全局配置，对之后新建的仓库都生效；
+  本课不要求改全局配置。想看当前生效的值，可以执行：
+</p>
+
+<pre data-lang="终端"><code>git config user.name
+git config user.email</code></pre>
+
+<pre class="out" data-label="真实输出（示例身份）">alice
+alice@example.com</pre>
+
+<p>
+  如果后面的提交提示 <code>Please tell me who you are</code>，
+  说明这两项还没有设置，回到这里补上即可。
+</p>
+
+<h3 id="s2-1-2">三个区域</h3>
+
+<p>
+  Git 把一次提交分成三步，对应三个区域：
+</p>
+
+<ul>
+  <li>
+    <b>工作区</b>（working tree）：目录里能直接看到、直接编辑的文件。
+  </li>
+  <li>
+    <b>暂存区</b>（staging area，也叫索引 index）：下一次提交的草稿。
+    <code>git add</code> 把工作区的改动放进这里。
+  </li>
+  <li>
+    <b>本地仓库</b>：已经提交的历史，保存在 <code>.git</code> 目录里。
+    <code>git commit</code> 把暂存区的内容写成一次提交。
+  </li>
+</ul>
+
+<p>
+  <code>git status</code> 用来说明每个文件处在哪个状态。刚建好的仓库里执行：
+</p>
+
+<pre data-lang="终端"><code>git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+        README.md
+        average.py
+
+nothing added to commit but untracked files present (use "git add" to track)</pre>
+
+<p>
+  输出里的 <code>On branch main</code> 表示当前在 <code>main</code> 分支；
+  <code>No commits yet</code> 表示仓库里还没有提交；
+  <code>Untracked files</code> 下面是 Git 从未记录过的文件。
+  未跟踪的文件不会自动进入提交，必须先用 <code>git add</code> 放进暂存区。
+</p>
+
+<h3 id="s2-1-3">第一次提交</h3>
+
+<p>
+  先把说明文件放进暂存区，再看一次状态：
+</p>
+
+<pre data-lang="终端"><code>git add README.md
+git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached &lt;file&gt;..." to unstage)
+        new file:   README.md
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+        average.py</pre>
+
+<p>
+  <code>README.md</code> 这时出现在 <code>Changes to be committed</code> 下面，
+  表示它已经进入暂存区；<code>average.py</code> 仍是未跟踪状态。
+  确认暂存的内容之后，执行提交：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "添加 README"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main (root-commit) c63254f] 添加 README
+ 1 file changed, 3 insertions(+)
+ create mode 100644 README.md</pre>
+
+<p>
+  方括号里是本次提交的信息：分支名 <code>main</code>、
+  <code>root-commit</code> 表示这是第一个提交、<code>c63254f</code> 是提交号的缩写。
+  提交号由内容、作者、时间等一起算出来，每次都会不同；
+  读者屏幕上不会是这一串，后面看到别的提交号也按同样方式理解。
+  <code>-m</code> 后面是提交信息，用引号括起来。
+</p>
+
+<p>
+  再把脚本提交进去：
+</p>
+
+<pre data-lang="终端"><code>git add average.py
+git commit -m "添加平均分计算脚本"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 2afe688] 添加平均分计算脚本
+ 1 file changed, 2 insertions(+)
+ create mode 100644 average.py</pre>
+
+<p>
+  两次提交之后，工作区、暂存区和最后一次提交的内容一致，状态应当是干净的：
+</p>
+
+<pre data-lang="终端"><code>git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+nothing to commit, working tree clean</pre>
+
+<h3 id="s2-1-4">改动、暂存与差异</h3>
+
+<p>
+  在脚本末尾追加一行输出，再查看状态：
+</p>
+
+<pre data-lang="终端"><code>echo 'print("计算完成")' &gt;&gt; average.py
+git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+        modified:   average.py
+
+no changes added to commit (use "git add" and/or "git commit -a")</pre>
+
+<p>
+  <code>Changes not staged for commit</code> 表示文件改过了，但改动还在工作区，
+  没有放进暂存区。看具体改了哪几行，用 <code>git diff</code>：
+</p>
+
+<pre data-lang="终端"><code>git diff</code></pre>
+
+<pre class="out" data-label="真实输出">diff --git a/average.py b/average.py
+index 72c7723..9cdc461 100644
+--- a/average.py
++++ b/average.py
+@@ -1,2 +1,3 @@
+ scores = [88, 92, 79]
+ print(sum(scores) / len(scores))
++print("计算完成")</pre>
+
+<p>
+  以 <code>-</code> 开头的行是改动前的内容，以 <code>+</code> 开头的是改动后的内容；
+  <code>@@ -1,2 +1,3 @@</code> 说明这一段从第 1 行开始，原来有 2 行，现在有 3 行。
+  <code>git diff</code> 比较的是工作区和暂存区。
+  把改动放进暂存区之后，再比较暂存区和最后一次提交：
+</p>
+
+<pre data-lang="终端"><code>git add average.py
+git diff --staged</code></pre>
+
+<pre class="out" data-label="真实输出">diff --git a/average.py b/average.py
+index 72c7723..9cdc461 100644
+--- a/average.py
++++ b/average.py
+@@ -1,2 +1,3 @@
+ scores = [88, 92, 79]
+ print(sum(scores) / len(scores))
++print("计算完成")</pre>
+
+<p>
+  这时的 <code>git diff</code> 不会再显示这段差异，因为工作区和暂存区已经一致；
+  <code>git diff --staged</code> 比较的是暂存区和最后一次提交，仍然能看到准备提交的内容。
+  最后提交：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "脚本结束时打印提示"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 02611e6] 脚本结束时打印提示
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  <code>git commit</code> 只会把暂存区里的内容写进提交。修改了文件却忘了
+  <code>git add</code>，这次提交不会包含那部分改动；暂存区为空时，
+  Git 会提示 <code>nothing to commit</code>。
+</p>
+
+<h3 id="s2-1-5">查看历史</h3>
+
+<p>
+  提交完成后，用 <code>git log</code> 查看历史。下面两条命令分别看简表和最近一次提交的摘要：
+</p>
+
+<pre data-lang="终端"><code>git log --oneline --decorate</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">02611e6 (HEAD -&gt; main) 脚本结束时打印提示
+2afe688 添加平均分计算脚本
+c63254f 添加 README</pre>
+
+<p>
+  <code>--oneline</code> 让每条历史只占一行，依次是提交号缩写和提交信息；
+  最新的提交排在最上面。<code>--decorate</code> 显示分支和标签的名字，
+  <code>(HEAD -&gt; main)</code> 表示当前检出的是 <code>main</code> 分支。
+  不加 <code>--decorate</code> 时，有些终端会显示这些名字，有些不会，
+  所以课里显式写上，保证输出一致。
+</p>
+
+<p>
+  只看最近一次提交的摘要和改动的文件，用 <code>git show</code>：
+</p>
+
+<pre data-lang="终端"><code>git show --stat --oneline HEAD</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">02611e6 脚本结束时打印提示
+ average.py | 1 +
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  <code>HEAD</code> 指向当前提交；<code>HEAD~1</code> 表示它的上一个提交，
+  <code>HEAD~2</code> 表示再往前一个，后面讲回退时会用到。
+  把 <code>--stat</code> 去掉，<code>git show</code> 会连同具体差异一起显示。
+</p>
+
+<div class="aside tip">
+  <b><code>.git</code> 目录不要手动改</b>
+  <p>
+    仓库的全部历史都在 <code>.git</code> 里。手动修改或删除里面的文件，
+    轻则让 Git 认不出状态，重则丢掉历史。要放弃一个仓库，
+    应当删除整个项目目录；只删 <code>.git</code> 会把目录变回普通文件夹，
+    历史也随之消失。这两种操作都不要在含有重要内容的目录上随手执行。
+  </p>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>在空目录里建立仓库、设置提交身份、
+  把文件放进暂存区并提交，用 <code>git status</code>、<code>git diff</code>
+  和 <code>git log</code> 查看当前状态与历史。
+</p>
+
+</section>
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>分支与合并</h2>
+
+<p>
+  分支让一条工作线可以暂时独立出来：在分支上提交，不会影响主分支；
+  做完之后再合并回去。这一课在同一个练习仓库里建两条分支，
+  分别走一遍快进合并和三方合并。
+</p>
+
+<h3 id="s2-2-1">分支是什么</h3>
+
+<p>
+  分支本质上是一个指向某次提交的指针。仓库里有一个特殊的指针
+  <code>HEAD</code>，指向当前所在的分支；每次提交，当前分支的指针向前移动一步。
+  新建分支只是多了一个指针，不会复制文件，所以创建和切换都很快。
+</p>
+
+<p>
+  进入练习目录，先建立一个仓库并提交初始版本：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.2-分支与合并
+git init -b main
+git config user.name "alice"
+git config user.email "alice@example.com"
+git add README.md report.py
+git commit -m "初始版本：输出报告标题"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Initialized empty Git repository in /tmp/other-basics/示例代码/2.2-分支与合并/.git/
+[main (root-commit) 2133d74] 初始版本：输出报告标题
+ 2 files changed, 4 insertions(+)
+ create mode 100644 README.md
+ create mode 100644 report.py</pre>
+
+<p>
+  列出本地分支：
+</p>
+
+<pre data-lang="终端"><code>git branch</code></pre>
+
+<pre class="out" data-label="真实输出">* main</pre>
+
+<p>
+  前面的星号表示当前所在的分支。现在只有一个 <code>main</code>。
+</p>
+
+<h3 id="s2-2-2">建分支并提交</h3>
+
+<p>
+  新建一条功能分支并切过去，在报告脚本末尾加一行：
+</p>
+
+<pre data-lang="终端"><code>git switch -c feature-title
+echo 'print("2026 春季学期")' &gt;&gt; report.py
+git add report.py
+git commit -m "在标题后加上学期"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Switched to a new branch 'feature-title'
+[feature-title 2908f88] 在标题后加上学期
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  <code>git switch -c</code> 创建分支并立即切换过去；提交之后，
+  <code>feature-title</code> 指针向前移动，<code>main</code> 仍停在原来的提交。
+  切回主分支：
+</p>
+
+<pre data-lang="终端"><code>git switch main</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to branch 'main'</pre>
+
+<p>
+  切回之后，工作区里的文件恢复成 <code>main</code> 指向的那次提交的内容。
+  刚才在分支上追加的那一行看不见了，但它仍然保存在
+  <code>feature-title</code> 分支的提交里。
+</p>
+
+<h3 id="s2-2-3">快进合并</h3>
+
+<p>
+  把功能分支合并回主分支：
+</p>
+
+<pre data-lang="终端"><code>git merge feature-title</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Updating 2133d74..2908f88
+Fast-forward
+ report.py | 1 +
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  这次合并是<b>快进</b>（fast-forward）：<code>main</code> 在分叉之后没有新的提交，
+  Git 只要把 <code>main</code> 指针直接移到 <code>feature-title</code> 的位置，
+  不需要生成新的合并提交。<code>Updating 2133d74..2908f88</code>
+  表示指针从前者移到了后者。
+</p>
+
+<p>
+  如果希望即使能快进也保留一条单独的合并记录，可以加
+  <code>--no-ff</code>，让 Git 仍然生成一个合并提交。是否这样做取决于团队习惯；
+  默认行为是能快进就快进。
+</p>
+
+<h3 id="s2-2-4">三方合并</h3>
+
+<p>
+  再建一条分支，这次让两条分支都有新的提交。先在 <code>feature-note</code>
+  上补充说明：
+</p>
+
+<pre data-lang="终端"><code>git switch -c feature-note
+cat &gt;&gt; README.md &lt;&lt;'EOF'
+
+说明：分数为百分制。
+EOF
+git add README.md
+git commit -m "补充分数说明"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Switched to a new branch 'feature-note'
+[feature-note 40663e5] 补充分数说明
+ 1 file changed, 2 insertions(+)</pre>
+
+<p>
+  切回主分支，在主分支上也提交一次改动：
+</p>
+
+<pre data-lang="终端"><code>git switch main
+echo 'print("共 3 名学生")' &gt;&gt; report.py
+git add report.py
+git commit -m "输出学生人数"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Switched to branch 'main'
+[main e830aef] 输出学生人数
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  现在两条分支各自前进了一步。合并：
+</p>
+
+<pre data-lang="终端"><code>git merge feature-note -m "合并：补充分数说明"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Merge made by the 'ort' strategy.
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)</pre>
+
+<p>
+  这次不是快进，因为 <code>main</code> 自己也有新提交。Git 找到两条分支的共同祖先，
+  把两边的改动合在一起，生成一个新的<b>合并提交</b>。这个提交有两个父提交：
+  一个是 <code>main</code> 原来的位置，一个是 <code>feature-note</code>。
+  两边的改动分别落在不同文件上，所以自动合并成功，没有冲突。
+</p>
+
+<p>
+  <code>-m</code> 用来指定合并提交的信息。不写 <code>-m</code> 时，
+  Git 会打开编辑器，让用户填写合并信息；课里统一用 <code>-m</code>，
+  避免依赖编辑器配置。合并策略名 <code>ort</code> 是 Git 当前使用的默认策略，
+  Git 版本不同时，这一行文字可能略有差异。
+</p>
+
+<h3 id="s2-2-5">删除分支与查看图</h3>
+
+<p>
+  分支合并之后，功能分支的提交已经包含在主分支里，可以删掉指针：
+</p>
+
+<pre data-lang="终端"><code>git branch -d feature-note
+git branch</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Deleted branch feature-note (was 40663e5).
+* main</pre>
+
+<p>
+  <code>-d</code> 只删除已经合并的分支；如果分支还有未合并的提交，Git 会拒绝删除。
+  确实要丢弃未合并的内容时才会用到 <code>-D</code>，那会失去分支上的提交，
+  不要在没有确认时使用。
+</p>
+
+<p>
+  用图形方式查看分支与提交的关系：
+</p>
+
+<pre data-lang="终端"><code>git log --graph --oneline --decorate --all</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">*   437e117 (HEAD -&gt; main) 合并：补充分数说明
+|\
+| * 40663e5 补充分数说明
+* | e830aef 输出学生人数
+|/
+* 2908f88 在标题后加上学期
+* 2133d74 初始版本：输出报告标题</pre>
+
+<p>
+  <code>--graph</code> 在左侧画出分叉与合并，<code>--all</code> 把所有分支都纳入显示。
+  第一行是合并提交，下面两行分别是两条分支上的提交，最后汇合到共同的历史。
+  功能分支删除后，它的提交仍然通过合并提交保留在历史里。
+</p>
+
+<h3 id="s2-2-6">switch 与 checkout</h3>
+
+<p>
+  较新的 Git 用 <code>git switch</code> 切换分支，用 <code>git switch -c</code>
+  创建并切换分支。更早的文档和脚本里常见 <code>git checkout</code>：
+  <code>git checkout feature-note</code> 切换分支，
+  <code>git checkout -b feature-note</code> 创建并切换。
+  两者的分支操作基本等价；<code>checkout</code> 还能用来恢复文件，
+  职责更多，<code>switch</code> 则只负责切换分支，读起来更清楚。
+  新写的命令可以优先用 <code>switch</code>，读到旧命令时知道它们是一回事即可。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>创建和切换分支、在分支上提交、
+  用快进与三方合并把分支合回主分支、删除已合并的分支，
+  并用 <code>git log --graph</code> 看懂分支历史。
+</p>
+
+</section>
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>远程仓库与 SSH</h2>
+
+<p>
+  远程仓库是放在另一台机器上的仓库副本，通常由代码托管平台或团队的服务器保存。
+  本地提交之后，把提交推送到远程，其他人才能看到；别人推送了新提交，
+  本地再把它们拉下来。这一课用一个本地目录模拟远端，不需要联网，
+  也不需要账号，就能把 <code>clone</code>、<code>push</code>、<code>fetch</code>、
+  <code>pull</code> 走一遍。
+</p>
+
+<h3 id="s2-3-1">远程仓库与 origin</h3>
+
+<p>
+  本地仓库可以登记若干个远程仓库，每个远程有一个名字。
+  <code>git clone</code> 自动创建的名字是 <code>origin</code>，
+  它只是「默认远端」的惯用名，不是特殊关键字。
+  一个远程保存两个地址：读取（fetch）用的和写入（push）用的；
+  多数情况下两者相同。
+</p>
+
+<h3 id="s2-3-2">建一个本地远端</h3>
+
+<p>
+  真正的远端通常是一个 URL。练习时用一个<b>裸仓库</b>（bare repository）代替：
+  它只有历史，没有工作区，不能直接在里面编辑文件，作用和服务器上的仓库一样。
+  在练习目录里执行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.3-远程仓库
+git init --bare -b main remote.git</code></pre>
+
+<pre class="out" data-label="真实输出">Initialized empty Git repository in /tmp/other-basics/示例代码/2.3-远程仓库/remote.git/</pre>
+
+<p>
+  <code>--bare</code> 表示只建历史、不建工作区。目录名以 <code>.git</code>
+  结尾是常见约定，方便一眼看出它是仓库而不是普通项目目录。
+</p>
+
+<h3 id="s2-3-3">克隆、提交、推送</h3>
+
+<p>
+  从远端克隆一份工作副本：
+</p>
+
+<pre data-lang="终端"><code>git clone remote.git work</code></pre>
+
+<pre class="out" data-label="真实输出">Cloning into 'work'...
+warning: You appear to have cloned an empty repository.
+done.</pre>
+
+<p>
+  远端还是空的，所以 Git 给出这条警告，克隆本身仍然成功。
+  进入工作副本，设置身份，把项目文件复制进来，提交并推送：
+</p>
+
+<pre data-lang="终端"><code>cd work
+git config user.name "alice"
+git config user.email "alice@example.com"
+cp ../项目文件/README.md .
+cp ../项目文件/score.py .
+git add README.md score.py
+git commit -m "初始提交：计分工具"
+git push -u origin main</code></pre>
+
+<pre class="out" data-label="真实输出（提交号与远端路径为练习目录）">[main (root-commit) c6e067f] 初始提交：计分工具
+ 2 files changed, 5 insertions(+)
+ create mode 100644 README.md
+ create mode 100644 score.py
+To /tmp/other-basics/示例代码/2.3-远程仓库/remote.git
+ * [new branch]      main -&gt; main
+branch 'main' set up to track 'origin/main'.</pre>
+
+<p>
+  <code>git push -u origin main</code> 把本地 <code>main</code> 推到名为
+  <code>origin</code> 的远端，并在远端建立同名分支。
+  <code>-u</code> 同时设置上游分支（upstream）：之后在这个分支上直接执行
+  <code>git push</code> 或 <code>git pull</code>，Git 就知道该和哪个远端分支同步。
+  输出里的 <code>To ...</code> 是远端地址；练习用的是本地路径，
+  真实远端的输出会是一个网络地址。
+</p>
+
+<p>
+  查看远程配置：
+</p>
+
+<pre data-lang="终端"><code>git remote -v</code></pre>
+
+<pre class="out" data-label="真实输出（远端路径为练习目录）">origin  /tmp/other-basics/示例代码/2.3-远程仓库/remote.git (fetch)
+origin  /tmp/other-basics/示例代码/2.3-远程仓库/remote.git (push)</pre>
+
+<h3 id="s2-3-4">拉取别人的改动</h3>
+
+<p>
+  再克隆一份，模拟另一位成员。第二份副本使用另一个示例身份，
+  在说明文件里补一行用法，提交并推送：
+</p>
+
+<pre data-lang="终端"><code>cd ..
+git clone remote.git other
+cd other
+git config user.name "bob"
+git config user.email "bob@example.com"
+cat &gt;&gt; README.md &lt;&lt;'EOF'
+
+用法：python3 score.py
+EOF
+git add README.md
+git commit -m "补充用法说明"
+git push</code></pre>
+
+<pre class="out" data-label="真实输出（提交号与远端路径为练习目录）">Cloning into 'other'...
+done.
+[main d70905e] 补充用法说明
+ 1 file changed, 2 insertions(+)
+To /tmp/other-basics/示例代码/2.3-远程仓库/remote.git
+   c6e067f..d70905e  main -&gt; main</pre>
+
+<p>
+  回到第一份副本，先抓取远端的新提交：
+</p>
+
+<pre data-lang="终端"><code>cd ../work
+git fetch</code></pre>
+
+<pre class="out" data-label="真实输出（提交号与远端路径为练习目录）">From /tmp/other-basics/示例代码/2.3-远程仓库/remote
+   c6e067f..d70905e  main       -&gt; origin/main</pre>
+
+<p>
+  <code>git fetch</code> 只把远端的新提交下载到本地，更新
+  <code>origin/main</code> 这个远程跟踪分支，不改动当前工作区和本地
+  <code>main</code>。所以抓取之后状态会显示「落后于远端」：
+</p>
+
+<pre data-lang="终端"><code>git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+Your branch is behind 'origin/main' by 1 commit, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+
+nothing to commit, working tree clean</pre>
+
+<p>
+  确认之后，把远端改动合并进来：
+</p>
+
+<pre data-lang="终端"><code>git pull</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Updating c6e067f..d70905e
+Fast-forward
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)</pre>
+
+<p>
+  <code>git pull</code> 相当于先 <code>fetch</code>，再把远端分支合并到当前分支。
+  这次两端没有分叉，所以是快进合并。如果本地也有新提交，
+  <code>pull</code> 可能生成合并提交，甚至产生冲突；想先看清楚再合并时，
+  可以像上面这样先 <code>fetch</code>，用 <code>git log</code> 或
+  <code>git diff</code> 查看 <code>origin/main</code> 与本地分支的差别，
+  确认后再执行 <code>git merge origin/main</code> 或 <code>git pull</code>。
+</p>
+
+<p>
+  拉取之后，说明文件里已经有了对方补的那一行：
+</p>
+
+<pre data-lang="终端"><code>cat README.md</code></pre>
+
+<pre class="out" data-label="真实输出"># 计分工具
+
+统计比赛得分。
+
+用法：python3 score.py</pre>
+
+<p>
+  这里的 <code>other</code> 与 <code>work</code> 都是同一个远端的克隆，
+  只是用两个目录模拟两个人。真实多人协作时，每个人在自己的机器上克隆、
+  提交、推送，通过远端交换改动。
+</p>
+
+<h3 id="s2-3-5">SSH 密钥与登记</h3>
+
+<p>
+  使用 SSH 地址访问代码托管平台时，需要用密钥证明身份。
+  密钥成对生成：私钥留在自己机器上，公钥登记到平台。
+  生成命令如下，在<b>自己的机器</b>上执行，不要在练习目录里执行：
+</p>
+
+<pre data-lang="终端"><code>ssh-keygen -t ed25519 -C "你的邮箱"</code></pre>
+
+<p>
+  命令会询问保存位置，默认是 <code>~/.ssh/id_ed25519</code>，直接回车即可；
+  然后询问口令（passphrase），可以留空，也可以设置。
+  执行完成后会得到两个文件：<code>id_ed25519</code> 是私钥，
+  <code>id_ed25519.pub</code> 是公钥。把公钥的内容复制出来：
+</p>
+
+<pre data-lang="终端"><code>cat ~/.ssh/id_ed25519.pub</code></pre>
+
+<p>
+  复制输出的整行内容，粘贴到代码托管平台的 SSH 密钥设置页面，保存即可。
+  <b>只登记公钥</b>；私钥不要发给任何人，不要粘贴到网页、聊天或仓库里。
+  如果 <code>~/.ssh/id_ed25519</code> 已经存在，<code>ssh-keygen</code>
+  会先询问是否覆盖；已有可用密钥时不要覆盖，直接使用原来的公钥，
+  或者给新密钥换一个文件名。
+</p>
+
+<p>
+  登记之后可以测试连接。把主机名换成实际使用的平台域名：
+</p>
+
+<pre data-lang="终端"><code>ssh -T git@github.com</code></pre>
+
+<p>
+  第一次连接会显示主机的指纹，询问是否继续，输入 <code>yes</code> 回车。
+  认证成功时，平台通常返回一句欢迎信息；不同平台的文字不同。
+  这条命令只验证 SSH 登录，不会传输仓库内容。课里不连接真实主机，
+  所以不贴具体输出。查看本机 SSH 版本：
+</p>
+
+<pre data-lang="终端"><code>ssh -V</code></pre>
+
+<pre class="out" data-label="真实输出（版本号可能不同）">OpenSSH_9.6p1 Ubuntu-3ubuntu13.20, OpenSSL 3.0.13 30 Jan 2024</pre>
+
+<h3 id="s2-3-6">远程地址的两种写法</h3>
+
+<p>
+  同一个远程可以用两种地址：
+</p>
+
+<ul>
+  <li>
+    <b>SSH</b>：形如 <code>git@github.com:用户名/仓库名.git</code>。
+    使用上面登记的密钥认证，配置好之后不用每次输入密码。
+  </li>
+  <li>
+    <b>HTTPS</b>：形如 <code>https://github.com/用户名/仓库名.git</code>。
+    通常需要输入账号和访问令牌；网络环境对 443 端口更友好时可以用它。
+  </li>
+</ul>
+
+<p>
+  已有的本地仓库要添加远程，用 <code>git remote add</code>。
+  当前所在的 <code>work</code> 是克隆出来的，<code>origin</code> 已经存在，
+  不能再用同名添加；下面在一个新的空仓库里演示写法：
+</p>
+
+<pre data-lang="终端"><code>cd ..
+git init -b main demo
+cd demo
+git remote add origin git@github.com:用户名/仓库名.git
+git remote -v
+cd ..</code></pre>
+
+<pre class="out" data-label="真实输出（路径为练习目录）">Initialized empty Git repository in /tmp/other-basics/示例代码/2.3-远程仓库/demo/.git/
+origin  git@github.com:用户名/仓库名.git (fetch)
+origin  git@github.com:用户名/仓库名.git (push)</pre>
+
+<p>
+  把地址换成自己的仓库地址即可。地址写错时用
+  <code>git remote set-url origin 新地址</code> 修改。
+  本课的练习远端是一个本地目录，不涉及 SSH，也不需要联网；
+  SSH 这一节只需要知道密钥怎么生成、公钥登记到哪里、私钥不能外传。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>建立裸仓库模拟远端、克隆仓库、
+  推送本地提交、抓取并拉取别人的改动，查看和修改远程地址；
+  知道 SSH 密钥如何生成与登记，以及私钥为什么不能外传。
+</p>
+
+</section>
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>冲突、回退与撤销</h2>
+
+<p>
+  合并时两边改了同一处，Git 无法替人决定保留哪一边，就会停下来等待处理，
+  这就是冲突。已经提交的内容也可能需要撤销或抵消。这一课先把一个冲突解决完，
+  再逐项练习撤销工作区改动、取消暂存、撤销提交、反向提交和临时保存。
+  这些命令有的会丢失内容，课里会逐条标明。
+</p>
+
+<h3 id="s2-4-1">冲突是怎么产生的</h3>
+
+<p>
+  进入练习目录，建立仓库并提交初始配置。然后开一条分支，把超时改成 30 秒：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.4-冲突与回退
+git init -b main
+git config user.name "alice"
+git config user.email "alice@example.com"
+git add config.txt
+git commit -m "添加超时与重试配置"
+git switch -c feature-timeout
+cat &gt; config.txt &lt;&lt;'EOF'
+timeout = 30
+retries = 3
+EOF
+git add config.txt
+git commit -m "把超时改为 30 秒"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Initialized empty Git repository in /tmp/other-basics/示例代码/2.4-冲突与回退/.git/
+[main (root-commit) 67b27db] 添加超时与重试配置
+ 1 file changed, 2 insertions(+)
+ create mode 100644 config.txt
+Switched to a new branch 'feature-timeout'
+[feature-timeout 322fec9] 把超时改为 30 秒
+ 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+
+<p>
+  切回主分支，把同一行改成 20 秒并提交：
+</p>
+
+<pre data-lang="终端"><code>git switch main
+cat &gt; config.txt &lt;&lt;'EOF'
+timeout = 20
+retries = 3
+EOF
+git add config.txt
+git commit -m "把超时改为 20 秒"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Switched to branch 'main'
+[main 77aa055] 把超时改为 20 秒
+ 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+
+<p>
+  现在两条分支都修改了配置文件的同一行。合并：
+</p>
+
+<pre data-lang="终端"><code>git merge feature-timeout</code></pre>
+
+<pre class="out" data-label="真实输出">Auto-merging config.txt
+CONFLICT (content): Merge conflict in config.txt
+Automatic merge failed; fix conflicts and then commit the result.</pre>
+
+<p>
+  Git 没有生成合并提交，而是把冲突留在工作区，等待人工解决。
+  状态里会列出未合并的路径：
+</p>
+
+<pre data-lang="终端"><code>git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add &lt;file&gt;..." to mark resolution)
+        both modified:   config.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")</pre>
+
+<p>
+  <code>both modified</code> 表示两边都改了这个文件。此刻如果不想继续合并，
+  可以执行 <code>git merge --abort</code>，工作区会回到合并之前的状态。
+</p>
+
+<h3 id="s2-4-2">看懂并解决冲突</h3>
+
+<p>
+  打开冲突文件，会看到 Git 插入的标记：
+</p>
+
+<pre data-lang="终端"><code>cat config.txt</code></pre>
+
+<pre class="out" data-label="真实输出">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+timeout = 20
+=======
+timeout = 30
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-timeout
+retries = 3</pre>
+
+<p>
+  <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> 与 <code>=======</code> 之间是当前分支
+  （<code>main</code>，也就是 <code>HEAD</code>）的内容；
+  <code>=======</code> 与 <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-timeout</code>
+  之间是待合并分支的内容。两边都只是「候选」，最终保留什么由人决定。
+  这里取一个折中的 25 秒，把整个文件改成想要的内容，并删掉所有冲突标记：
+</p>
+
+<pre data-lang="终端"><code>cat &gt; config.txt &lt;&lt;'EOF'
+timeout = 25
+retries = 3
+EOF
+git add config.txt
+git commit -m "合并两个超时改动，取 25 秒"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 25572cc] 合并两个超时改动，取 25 秒</pre>
+
+<p>
+  解决冲突的关键是三步：把文件改成最终想要的内容、确认文件里不再有冲突标记、
+  用 <code>git add</code> 告诉 Git 已经解决，然后提交。
+  <code>git add</code> 之后如果还有别的冲突文件，状态会继续列出它们；
+  全部解决并暂存后，<code>git commit</code> 才会完成这次合并。
+</p>
+
+<p>
+  合并完成后的历史：
+</p>
+
+<pre data-lang="终端"><code>git log --graph --oneline --decorate --all</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">*   25572cc (HEAD -&gt; main) 合并两个超时改动，取 25 秒
+|\
+| * 322fec9 (feature-timeout) 把超时改为 30 秒
+* | 77aa055 把超时改为 20 秒
+|/
+* 67b27db 添加超时与重试配置</pre>
+
+<h3 id="s2-4-3">撤销工作区改动</h3>
+
+<p>
+  下面的操作只影响工作区，不改变历史。把配置改成 99 秒，但先不暂存：
+</p>
+
+<pre data-lang="终端"><code>echo 'timeout = 99' &gt; config.txt
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出"> M config.txt</pre>
+
+<p>
+  <code>git status --short</code> 每行两个状态位：左边是暂存区，右边是工作区。
+  这里的 <code> M</code> 表示暂存区没有变化，工作区有修改。
+  <code>git diff</code> 可以看具体差异，确认改错了之后，用
+  <code>git restore</code> 丢弃工作区的改动：
+</p>
+
+<pre data-lang="终端"><code>git restore config.txt
+cat config.txt</code></pre>
+
+<pre class="out" data-label="真实输出">timeout = 25
+retries = 3</pre>
+
+<div class="aside warn">
+  <b><code>git restore</code> 不可恢复</b>
+  <p>
+    <code>git restore</code> 用暂存区或最后一次提交的内容覆盖工作区文件，
+    被覆盖的未暂存改动不会进入任何提交，Git 也无法找回。
+    执行前先用 <code>git diff</code> 看清楚；如果改动还有用，
+    先提交或先 <code>git stash</code>，不要直接丢弃。
+  </p>
+</div>
+
+<h3 id="s2-4-4">取消暂存</h3>
+
+<p>
+  如果已经把改动放进了暂存区，但决定这次不提交，可以取消暂存。
+  改动本身仍留在工作区：
+</p>
+
+<pre data-lang="终端"><code>echo 'timeout = 99' &gt; config.txt
+git add config.txt
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出">M  config.txt</pre>
+
+<p>
+  这时的 <code>M </code> 表示改动已经进入暂存区，工作区与暂存区一致。
+  取消暂存：
+</p>
+
+<pre data-lang="终端"><code>git restore --staged config.txt
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出"> M config.txt</pre>
+
+<p>
+  状态又回到「工作区有改动、暂存区没有」。这时可以继续修改，
+  也可以像上一节那样用 <code>git restore</code> 丢弃改动。
+  较老的 Git 用 <code>git reset HEAD</code> 加上文件名完成同一件事；
+  新写法 <code>git restore --staged</code> 含义更直接。
+</p>
+
+<h3 id="s2-4-5">撤销提交：soft、mixed、hard</h3>
+
+<p>
+  先把上一节留在工作区的改动丢弃，再提交一个临时改动，用来练习撤销：
+</p>
+
+<pre data-lang="终端"><code>git restore config.txt
+echo 'debug = false' &gt;&gt; config.txt
+git add config.txt
+git commit -m "添加 debug 开关"
+git log --oneline --decorate -1</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 9b95f24] 添加 debug 开关
+ 1 file changed, 1 insertion(+)
+9b95f24 (HEAD -&gt; main) 添加 debug 开关</pre>
+
+<p>
+  <code>git reset --soft HEAD~1</code> 把当前分支退回到上一个提交，
+  这次提交的改动<b>保留在暂存区</b>：
+</p>
+
+<pre data-lang="终端"><code>git reset --soft HEAD~1
+git log --oneline --decorate -1
+git status</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">25572cc (HEAD -&gt; main) 合并两个超时改动，取 25 秒
+On branch main
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+        modified:   config.txt</pre>
+
+<p>
+  这时可以重新提交，换成更清楚的提交信息，或者把改动拆成两次提交。
+  这里按原来的提交信息再提交一次，把分支恢复到刚才的位置：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "添加 debug 开关"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 7ac1d8e] 添加 debug 开关
+ 1 file changed, 1 insertion(+)</pre>
+
+<p>
+  不加 <code>--soft</code> 时，<code>git reset HEAD~1</code> 默认是
+  <code>--mixed</code>：退回到上一个提交，并<b>取消暂存</b>，
+  改动留在工作区：
+</p>
+
+<pre data-lang="终端"><code>git reset HEAD~1
+git status</code></pre>
+
+<pre class="out" data-label="真实输出">Unstaged changes after reset:
+M       config.txt
+On branch main
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+        modified:   config.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")</pre>
+
+<p>
+  先把刚才的改动再提交一次，回到同一个位置，然后看第三种写法。
+  <code>git reset --hard HEAD~1</code> 退回到上一个提交，
+  同时<b>用提交里的内容覆盖工作区</b>。未提交的改动会被丢弃：
+</p>
+
+<pre data-lang="终端"><code>git add config.txt
+git commit -m "添加 debug 开关"
+git reset --hard HEAD~1
+git status
+cat config.txt</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 5c0e2a1] 添加 debug 开关
+ 1 file changed, 1 insertion(+)
+HEAD is now at 25572cc 合并两个超时改动，取 25 秒
+On branch main
+nothing to commit, working tree clean
+timeout = 25
+retries = 3</pre>
+
+<div class="aside warn">
+  <b><code>reset --hard</code> 会丢改动</b>
+  <p>
+    <code>--hard</code> 不询问确认，直接覆盖工作区。未提交的修改无法找回。
+    已经提交但被退掉的那次提交，通常还能用 <code>git reflog</code>
+    找到提交号并恢复一段时间，但工作区里没提交的内容不在其中。
+    只在确认工作区没有需要保留的内容时使用。
+  </p>
+</div>
+
+<p>
+  <code>git reset</code> 改的是本地分支指针，属于改写历史。
+  如果提交已经推送并与他人共享，不要用 <code>reset</code> 退掉它：
+  别人可能已经基于这些提交继续工作，历史对不上会带来更多麻烦。
+  共享分支上的撤销应当用下一节的 <code>git revert</code>。
+</p>
+
+<h3 id="s2-4-6">用 revert 抵消提交</h3>
+
+<p>
+  先重新提交一个临时改动，再用 <code>git revert</code> 生成一个反向提交：
+</p>
+
+<pre data-lang="终端"><code>echo 'debug = false' &gt;&gt; config.txt
+git add config.txt
+git commit -m "添加 debug 开关"
+git revert HEAD --no-edit</code></pre>
+
+<pre class="out" data-label="真实输出（提交号与日期每次不同）">[main 304b01e] 添加 debug 开关
+ 1 file changed, 1 insertion(+)
+[main 2d03e57] Revert "添加 debug 开关"
+ Date: Sat Mar 14 13:09:00 2026 +0000
+ 1 file changed, 1 deletion(-)</pre>
+
+<p>
+  <code>git revert</code> 不删除原来的提交，而是新建一个提交，
+  把指定提交的改动反过来做一遍。历史完整保留，其他人拉取时不会出现分叉，
+  所以适合已经推送的提交。<code>--no-edit</code> 表示直接使用默认的
+  反向提交信息，不打开编辑器。日期只是这台机器上的示例，读者执行时会是当前时间。
+</p>
+
+<p>
+  <code>revert</code> 一个合并提交时，Git 无法判断要按哪一条父提交反向计算，
+  会要求用 <code>-m</code> 指定主干方向（例如 <code>-m 1</code>）。
+  这种情况较少见，执行前应当先确认历史结构；本课不展开。
+</p>
+
+<h3 id="s2-4-7">临时保存：stash</h3>
+
+<p>
+  改动还没做完，但需要临时切去处理别的事情，可以先把改动收起来。
+  把超时改成 99 秒，然后执行 <code>git stash</code>：
+</p>
+
+<pre data-lang="终端"><code>echo 'timeout = 99' &gt; config.txt
+git stash
+git status
+cat config.txt</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Saved working directory and index state WIP on main: 2d03e57 Revert "添加 debug 开关"
+On branch main
+nothing to commit, working tree clean
+timeout = 25
+retries = 3</pre>
+
+<p>
+  <code>git stash</code> 把已跟踪文件的未提交改动收进一个栈，工作区恢复到
+  最后一次提交的状态。查看栈里的条目：
+</p>
+
+<pre data-lang="终端"><code>git stash list</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">stash@{0}: WIP on main: 2d03e57 Revert "添加 debug 开关"</pre>
+
+<p>
+  需要时取回来：
+</p>
+
+<pre data-lang="终端"><code>git stash pop
+git status
+cat config.txt</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">On branch main
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+        modified:   config.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (e16f75b3a0c718cd4455c7e912bda1d59498a1fd)
+timeout = 99</pre>
+
+<p>
+  <code>git stash pop</code> 把栈顶的改动取回工作区，并删除这条记录；
+  <code>git stash apply</code> 只取回、不删除，适合还想保留一份的情况；
+  <code>git stash drop</code> 删除栈顶记录。栈里的记录保存在本地，
+  不会随 <code>push</code> 传到远端。
+</p>
+
+<p>
+  默认的 <code>stash</code> 只收已跟踪文件；新建的、还没被 Git 跟踪的文件
+  不会进去，需要加 <code>-u</code>。stash 只是临时存放，
+  不适合代替提交：长期未处理的 stash 容易被遗忘，重要改动应当尽快提交到分支。
+</p>
+
+<p>
+  练习结束时把工作区恢复干净：
+</p>
+
+<pre data-lang="终端"><code>git restore config.txt
+git status --short</code></pre>
+
+<h3 id="s2-4-8">哪些操作会丢东西</h3>
+
+<p>
+  把这一课的命令按影响列在一起。执行任何一条之前，先看清它动的是工作区、
+  暂存区还是历史。
+</p>
+
+<table>
+  <thead>
+    <tr><th>操作</th><th>作用</th><th>未提交的改动</th><th>历史</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>git restore 文件</code></td>
+      <td>丢弃工作区改动</td>
+      <td>丢失</td>
+      <td>不变</td>
+    </tr>
+    <tr>
+      <td><code>git restore --staged 文件</code></td>
+      <td>取消暂存</td>
+      <td>保留在工作区</td>
+      <td>不变</td>
+    </tr>
+    <tr>
+      <td><code>git reset --soft HEAD~1</code></td>
+      <td>撤销最近一次提交</td>
+      <td>保留在暂存区</td>
+      <td>本地历史后退一步</td>
+    </tr>
+    <tr>
+      <td><code>git reset HEAD~1</code></td>
+      <td>撤销提交并取消暂存</td>
+      <td>保留在工作区</td>
+      <td>本地历史后退一步</td>
+    </tr>
+    <tr>
+      <td><code>git reset --hard HEAD~1</code></td>
+      <td>撤销提交并覆盖工作区</td>
+      <td>丢失</td>
+      <td>本地历史后退一步</td>
+    </tr>
+    <tr>
+      <td><code>git revert HEAD</code></td>
+      <td>生成反向提交</td>
+      <td>不影响</td>
+      <td>历史向前一步</td>
+    </tr>
+    <tr>
+      <td><code>git stash</code></td>
+      <td>临时收起改动</td>
+      <td>移入 stash 栈</td>
+      <td>不变</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="aside tip">
+  <b><code>git reflog</code> 是最后一道线索</b>
+  <p>
+    <code>git reflog</code> 记录 <code>HEAD</code> 最近到过哪些提交。
+    误用了 <code>reset</code>，或者切走了一个分支之后找不到提交，
+    可以先用它找到提交号，再决定怎么恢复。它记录的是本地操作，
+    不是永久备份；时间久了或者仓库被重新克隆，这些记录也会消失。
+    重要的内容仍然应当及时提交并推送到远端。
+  </p>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>看懂并解决合并冲突，
+  用 <code>restore</code> 撤销工作区改动或取消暂存，
+  用 <code>reset</code> 的三种模式撤回本地提交，用 <code>revert</code>
+  抵消已经共享的提交，用 <code>stash</code> 临时保存改动；
+  并知道每条命令会不会丢失内容。
+</p>
+
+</section>
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>提交信息规范</h2>
+
+<p>
+  提交信息是写给以后的人看的，包括几个月后的自己。排查问题时，
+  <code>git log</code> 是最先翻的东西；一条清楚的提交信息能省下大量时间。
+  这一课讲三件事：一次提交只做一件事、标题和正文各写什么、提交前检查什么。
+</p>
+
+<div class="aside tip">
+  <b>这也是组内规范，之后要遵守</b>
+  <p>
+    这一课不只是通用介绍，也是本组的组内提交规范。从读到这里之后的提交开始，
+    自己与队内仓库的新提交都按这一课的要求写；合并请求和代码评审也按同样的
+    标准检查。已有的历史提交不要求回改。
+  </p>
+</div>
+
+<h3 id="s2-5-1">一次提交只做一件事</h3>
+
+<p>
+  一次提交应当对应一个完整而单一的改动：修一个错误、加一个功能、
+  补一段文档、做一次不改变行为的重构。把不相关的事情混在一次提交里，
+  会带来几个实际问题：
+</p>
+
+<ul>
+  <li>评审时看不清哪些改动属于哪件事，容易漏看；</li>
+  <li>需要撤销其中一件事时，没法只撤销那一部分；</li>
+  <li>以后用 <code>git log</code> 或 <code>git blame</code> 追查原因时，历史会变得含糊。</li>
+</ul>
+
+<p>
+  如果一次改了多个文件，但这些文件共同完成一件事，可以放在同一次提交里；
+  如果两件事互不相关，就分成两次。暂存时按文件逐个 <code>git add</code>，
+  比一次把所有改动都放进暂存区更容易控制提交的范围。
+</p>
+
+<h3 id="s2-5-2">标题与正文</h3>
+
+<p>
+  进入练习目录，先提交一个带标题和正文的版本：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.5-提交信息
+git init -b main
+git config user.name "alice"
+git config user.email "alice@example.com"
+git add README.md score.py
+git commit -m "添加计分工具" -m "读取固定的三个分数，输出总分。"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Initialized empty Git repository in /tmp/other-basics/示例代码/2.5-提交信息/.git/
+[main (root-commit) c6a46f7] 添加计分工具
+ 2 files changed, 5 insertions(+)
+ create mode 100644 README.md
+ create mode 100644 score.py</pre>
+
+<p>
+  <code>-m</code> 可以写多次，每一次是一段：第一段成为标题，后面各段成为正文，
+  Git 会在标题和正文之间自动空一行。查看完整的提交信息：
+</p>
+
+<pre data-lang="终端"><code>git log -1 --format=%B</code></pre>
+
+<pre class="out" data-label="真实输出">添加计分工具
+
+读取固定的三个分数，输出总分。</pre>
+
+<p>
+  <code>%B</code> 表示提交信息的原始正文，不含作者、日期和提交号。
+  标题应当满足：
+</p>
+
+<ul>
+  <li>一行写完，说清楚「做了什么」，让人不点开也知道这次提交的范围；</li>
+  <li>长度控制在几十个字以内，手机上也能看全；</li>
+  <li>结尾不加句号，不用「更新」「修改」这类没有信息量的词；</li>
+  <li>使用祈使语气或名词短语，例如「添加计分工具」「修正空列表处理」，不写「我加了……」。</li>
+</ul>
+
+<p>
+  正文用来解释「为什么」：原来的问题是什么、为什么选这个做法、
+  有什么影响或需要注意的地方。标题已经说清「做了什么」，正文不必重复 diff
+  里能看到的细节。正文每行控制在七十个字符左右，终端里读起来不费劲。
+</p>
+
+<p>
+  对比几组写法：
+</p>
+
+<table>
+  <thead>
+    <tr><th>不清楚的写法</th><th>更清楚的写法</th><th>原因</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>改了一下</code></td>
+      <td><code>fix: 修正平均分的显示</code></td>
+      <td>说清改了哪件事，而不是「有改动」</td>
+    </tr>
+    <tr>
+      <td><code>update</code></td>
+      <td><code>docs: 补充运行方法</code></td>
+      <td>指出改的是文档，以及补了什么</td>
+    </tr>
+    <tr>
+      <td><code>修复 bug</code></td>
+      <td><code>fix: 空列表时不再崩溃</code></td>
+      <td>写清触发条件和结果，方便搜索</td>
+    </tr>
+    <tr>
+      <td><code>新增功能</code></td>
+      <td><code>feat: 支持从文件读取分数</code></td>
+      <td>说明新增的能力，而不是笼统的「功能」</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="s2-5-3">常见类型前缀</h3>
+
+<p>
+  不少团队在标题前加一个类型前缀，用冒号与摘要隔开，例如
+  <code>fix: 空列表时不再崩溃</code>。常见的几类：
+</p>
+
+<table>
+  <thead>
+    <tr><th>前缀</th><th>用途</th><th>例子</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>feat</code></td><td>新增功能</td><td><code>feat: 支持从文件读取分数</code></td></tr>
+    <tr><td><code>fix</code></td><td>修正错误</td><td><code>fix: 空列表时不再崩溃</code></td></tr>
+    <tr><td><code>docs</code></td><td>文档</td><td><code>docs: 补充运行方法</code></td></tr>
+    <tr><td><code>refactor</code></td><td>重构，不改变外部行为</td><td><code>refactor: 把平均分计算拆成函数</code></td></tr>
+    <tr><td><code>test</code></td><td>测试</td><td><code>test: 补充空列表用例</code></td></tr>
+    <tr><td><code>chore</code></td><td>构建、依赖、脚本等杂项</td><td><code>chore: 更新构建脚本</code></td></tr>
+  </tbody>
+</table>
+
+<p>
+  需要说明影响范围时，可以写成 <code>fix(parser): ...</code> 这样的形式，
+  括号里是模块名。这套写法常被称为约定式提交（Conventional Commits），
+  很多项目采用，但不是 Git 的强制规定。<b>先看当前仓库已有的提交风格</b>：
+  团队已经统一用中文标题加正文时，就跟着现有风格写；团队约定使用前缀时，
+  再按前缀写。本课示例里两种都能看到，重点是标题具体、正文说清原因，
+  前缀只是帮助分类的辅助手段。
+</p>
+
+<h3 id="s2-5-4">提交前自查</h3>
+
+<p>
+  修改脚本，让输出带上「总分：」三个字，然后按顺序检查再提交：
+</p>
+
+<pre data-lang="终端"><code>cat &gt; score.py &lt;&lt;'EOF'
+scores = [12, 7, 9]
+print("总分：", sum(scores))
+EOF
+git status
+git diff</code></pre>
+
+<pre class="out" data-label="真实输出">On branch main
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+        modified:   score.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+diff --git a/score.py b/score.py
+index 1bc85f7..1a36547 100644
+--- a/score.py
++++ b/score.py
+@@ -1,2 +1,2 @@
+ scores = [12, 7, 9]
+-print(sum(scores))
++print("总分：", sum(scores))</pre>
+
+<p>
+  确认改动符合预期后，暂存并再看一次即将提交的内容：
+</p>
+
+<pre data-lang="终端"><code>git add score.py
+git diff --staged</code></pre>
+
+<pre class="out" data-label="真实输出">diff --git a/score.py b/score.py
+index 1bc85f7..1a36547 100644
+--- a/score.py
++++ b/score.py
+@@ -1,2 +1,2 @@
+ scores = [12, 7, 9]
+-print(sum(scores))
++print("总分：", sum(scores))</pre>
+
+<p>
+  <code>git diff --staged</code> 显示的是这次提交真正会包含的内容。
+  提交前逐项检查：
+</p>
+
+<ul>
+  <li>提交范围内只有一件事，没有混进无关文件；</li>
+  <li>没有调试输出、临时注释、测试用的假数据；</li>
+  <li>没有密钥、令牌、密码、私钥，也没有本机专用配置；</li>
+  <li>没有构建产物、日志、模型权重等大文件；</li>
+  <li>能运行的检查已经跑过，结果符合预期；</li>
+  <li>标题具体，正文说明了原因和影响。</li>
+</ul>
+
+<p>
+  确认之后提交，标题用 <code>fix:</code> 前缀，正文说明原因：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "fix: 输出中加上总分说明" \
+    -m "原来只打印数字，看不出含义；在数字前加上“总分：”。"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 7732f20] fix: 输出中加上总分说明
+ 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+
+<pre data-lang="终端"><code>git log --oneline --decorate
+git log -1 --format=%B</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">7732f20 (HEAD -&gt; main) fix: 输出中加上总分说明
+c6a46f7 添加计分工具
+fix: 输出中加上总分说明
+
+原来只打印数字，看不出含义；在数字前加上“总分：”。</pre>
+
+<p>
+  <code>git log --oneline --decorate</code> 看标题的列表，
+  <code>git log -1 --format=%B</code> 看最近一次提交的完整信息。
+  写完之后自己读一遍：如果只看标题不知道改了什么，或者正文里只有
+  「修改」「优化」而没有原因，就还需要再写具体一些。
+</p>
+
+<h3 id="s2-5-5">修改最近一次提交</h3>
+
+<p>
+  提交信息写完才发现有错别字，或者漏说了原因，可以用
+  <code>git commit --amend</code> 修改最近一次提交。它会把原来的提交替换成
+  一个新的提交，提交号也会变：
+</p>
+
+<pre data-lang="终端"><code>git commit --amend -m "fix: 输出中加上总分说明" \
+    -m "原来只打印数字，看不出含义；现在在数字前加上“总分：”，并保留原有计算。"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号与日期每次不同）">[main 1e20f2c] fix: 输出中加上总分说明
+ Date: Sat Mar 14 14:01:00 2026 +0000
+ 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+
+<p>
+  <code>--amend</code> 只适合还没有推送的提交。提交一旦推送并与他人共享，
+  修改它就会改写历史，别人拉取时可能产生分叉；这时应当用一个新的提交
+  来修正，而不是 amend。同理，<code>--amend</code> 也会改变提交号，
+  脚本或记录里如果引用了旧提交号，需要同步更新。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>按组内规范把一次改动拆成范围清楚的提交，
+  写出具体的标题和说明原因的正文，按团队习惯使用类型前缀，
+  在提交前用 <code>git status</code> 与 <code>git diff --staged</code> 自查，
+  并在提交尚未推送时用 <code>--amend</code> 修正信息。
+</p>
+
+</section>
+
+<section class="lesson" id="l2-6">
+<h2><span class="no">2.6</span>分支规范与 .gitignore</h2>
+
+<p>
+  前面几课把命令用起来了。这一课讲团队协作时的两条约定：
+  分支怎么起名、哪些文件不要进仓库。最后处理一种常见事故：
+  把本不该提交的文件提交进去了，应该怎么补救。
+</p>
+
+<div class="aside tip">
+  <b>这也是队内分支管理规范，之后要遵守</b>
+  <p>
+    这一课不只是通用介绍，也是队内的分支管理规范。从读到这里之后开始，
+    自己与队内仓库的分支命名、从哪条分支拉出、合回哪条分支，都按这一课的
+    要求执行；发布分支与紧急修复是否使用，由团队决定。已有的分支与历史提交
+    不要求回改。
+  </p>
+</div>
+
+<h3 id="s2-6-1">分支怎么命名</h3>
+
+<p>
+  分支名应当让人一眼看出它的用途。常见的分工：
+</p>
+
+<ul>
+  <li><b>主分支</b>：<code>main</code>（有些老仓库叫 <code>master</code>）。
+    始终保持可运行，不直接在上面做未完成的改动。</li>
+  <li><b>开发分支</b>：<code>dev</code> 或 <code>develop</code>。
+    团队需要把多人改动先集中到一条线上时使用；不是每个团队都需要。</li>
+  <li><b>功能分支</b>：<code>feature/短名</code>，例如
+    <code>feature/score-format</code>。从开发分支拉出；没有开发分支时
+    从主分支拉出。一条分支只做一件事。</li>
+  <li><b>修复分支</b>：<code>fix/短名</code>，例如
+    <code>fix/empty-list</code>。修完合回它拉出的那条线；有开发分支时
+    通常合回开发分支。</li>
+  <li><b>发布分支</b>：<code>release/短名</code> 或
+    <code>release/版本号</code>。从开发分支拉出，只做测试与修补。
+    测试通过后合入主分支并打版本标签，修补同时合回开发分支；
+    是否使用由团队决定。</li>
+  <li><b>紧急修复</b>：<code>hotfix/短名</code>。线上出问题时从主分支拉出，
+    修完合回主分支，并同步到开发分支；是否使用由团队决定。</li>
+</ul>
+
+<p>
+  下图是一次完整的分支流转示意。竖线表示长期存在的分支，方框表示提交，
+  箭头表示合并的方向。图在页面上缩得较小，双击图片可以放大，放大后用滚轮
+  继续缩放，按 Esc 退出。
+</p>
+
+<figure class="fig fig-box">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放"
+       src="图片/2.6-分支模型.jpg"
+       alt="Git 分支模型示意：master、release、develop、feature1、feature2 与 hotfix 六条分支，方框表示提交，箭头表示合并方向"
+       width="2512" height="759">
+  <figcaption>
+    分支模型示意。箭头是合并方向，不是提交的先后顺序；方框中的小字是
+    提交信息。图中分支名后的括号是原图自带的说明，这些名称的含义以上文为准。
+    原图各提交方框左下角的作者署名已遮去，分支结构未作改动。版本号只作示意。
+    双击图片可放大，滚轮缩放，按 Esc 退出。
+  </figcaption>
+</figure>
+
+<p>
+  按图走一遍：<code>develop</code> 汇集内部版本；<code>feature1</code> 与
+  <code>feature2</code> 从它拉出，各自完成后合回。功能集成后，从
+  <code>develop</code> 拉出 <code>release</code> 做测试与修补，测试通过就
+  合入 <code>master</code> 并打发布标签；<code>release</code> 上的修补合回
+  <code>develop</code>。线上出现问题时，从 <code>master</code> 拉出
+  <code>hotfix</code>，修完合回 <code>master</code> 并同步到
+  <code>develop</code>。
+</p>
+
+<p>
+  命名用英文小写，单词之间用短横线或斜杠分隔，避免空格和中文。
+  分支名太长、太笼统（<code>test</code>、<code>new</code>、<code>dev2</code>）
+  过几天就看不出用途。功能分支的生命周期应当尽量短：合并之后立即删除，
+  避免堆积大量过期分支。
+</p>
+
+<h3 id="s2-6-2">功能分支与合并请求</h3>
+
+<p>
+  常见流程是：从开发分支（没有开发分支时从主分支）拉出功能分支，
+  在分支上提交，推送到远端，然后发起合并请求（merge request，
+  GitLab 等平台常用）或拉取请求（pull request，GitHub 等平台常用）。
+  评审者在平台上查看 diff、留下评论，作者根据意见修改并再次推送，
+  检查通过后合并到它拉出的那条线，最后删除功能分支。
+</p>
+
+<p>
+  合并请求的作用不只是「合并」，更是让改动在进入目标分支之前被看一遍。
+  评审时重点看：改动是否只做了一件事、边界情况是否处理、有没有调试代码
+  或密钥、测试是否覆盖、提交信息是否说清原因。主分支与开发分支通常设置为
+  受保护分支，不允许直接推送，只能通过合并请求进入。
+</p>
+
+<p>
+  本课不连接代码托管平台，所以不演示合并请求的网页操作；
+  需要知道的是它对应的 Git 侧动作：推送功能分支，等待评审，
+  合并后删除分支。评审期间目标分支如果有新提交，先把目标分支的最新内容
+  同步到功能分支，在本地解决冲突并推送，再请评审者查看。
+</p>
+
+<h3 id="s2-6-3">.gitignore 忽略什么</h3>
+
+<p>
+  进入练习目录。这里有一个程序、一份说明，还有构建产物、日志、
+  模型权重和一份本地配置。先看未跟踪的文件：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/2.6-分支规范与忽略
+git init -b main
+git config user.name "alice"
+git config user.email "alice@example.com"
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出">Initialized empty Git repository in /tmp/other-basics/示例代码/2.6-分支规范与忽略/.git/
+?? README.md
+?? build/
+?? config.local.yaml
+?? logs/
+?? src/
+?? weights/</pre>
+
+<p>
+  <code>??</code> 表示未跟踪。构建产物、日志、权重和本地配置都不应该进入仓库：
+  它们要么每次生成，要么因机器而异，要么含有密钥。在项目根目录建立
+  <code>.gitignore</code>，一行一条规则，<code>#</code> 开头是注释：
+</p>
+
+<pre data-lang="终端"><code>cat &gt; .gitignore &lt;&lt;'EOF'
+# 构建产物
+build/
+
+# 日志
+logs/
+
+# 模型权重
+weights/
+
+# 本地配置与密钥
+config.local.yaml
+*.key
+EOF
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出">?? .gitignore
+?? README.md
+?? src/</pre>
+
+<p>
+  忽略规则生效后，<code>git status</code> 只显示剩下的未跟踪文件。
+  <code>.gitignore</code> 本身应当提交，让所有克隆这个仓库的人使用同一套规则。
+</p>
+
+<p>
+  常见需要忽略的内容：
+</p>
+
+<ul>
+  <li><b>构建产物</b>：<code>build/</code>、<code>*.o</code>、<code>*.so</code>、
+    编译生成的中间文件；它们可以从源码重新生成。</li>
+  <li><b>日志与临时文件</b>：<code>logs/</code>、<code>*.log</code>、
+    编辑器交换文件；内容随运行变化，没有版本价值。</li>
+  <li><b>模型权重与大文件</b>：<code>weights/</code>、<code>*.pt</code>、
+    <code>*.onnx</code>、<code>*.engine</code>；体积大，且通常由训练或转换产生。
+    需要共享时使用专门的大文件存储，不要直接塞进 Git。</li>
+  <li><b>本地配置与密钥</b>：<code>config.local.yaml</code>、<code>.env</code>、
+    <code>*.key</code>、<code>*.pem</code>；这些文件因机器而异，密钥更不能进仓库。</li>
+  <li><b>编辑器与系统文件</b>：<code>.vscode/</code>、<code>.idea/</code>、
+    <code>.DS_Store</code> 等；是否忽略取决于团队习惯。</li>
+</ul>
+
+<p>
+  不要忽略源码、说明文档、测试数据、依赖锁文件，以及作为示例或测试夹具的
+  小文件。规则写得过宽（例如整个目录一刀切）会把需要共享的文件也挡在外面，
+  以后别人克隆下来就缺东西。
+</p>
+
+<h3 id="s2-6-4">检查忽略规则</h3>
+
+<p>
+  不确定某条规则为什么生效，用 <code>git check-ignore -v</code> 查。
+  它会打印命中的规则所在文件、行号和模式：
+</p>
+
+<pre data-lang="终端"><code>git check-ignore -v build/app.bin logs/run.log weights/model.pt config.local.yaml</code></pre>
+
+<pre class="out" data-label="真实输出">.gitignore:2:build/     build/app.bin
+.gitignore:5:logs/      logs/run.log
+.gitignore:8:weights/   weights/model.pt
+.gitignore:11:config.local.yaml config.local.yaml</pre>
+
+<p>
+  输出中的 <code>.gitignore:2</code> 表示命中第 2 行，冒号后面是模式，
+  最后一列是被检查的路径。想看被忽略的文件有哪些，用
+  <code>git status --ignored</code>：
+</p>
+
+<pre data-lang="终端"><code>git status --ignored --short</code></pre>
+
+<pre class="out" data-label="真实输出">?? .gitignore
+?? README.md
+?? src/
+!! build/
+!! config.local.yaml
+!! logs/
+!! weights/</pre>
+
+<p>
+  <code>!!</code> 开头的是被忽略的路径。它们仍在磁盘上，只是 Git 不再提示。
+  <code>.gitignore</code> 只影响未跟踪的文件；一个文件一旦已经被提交，
+  再把它写进忽略规则也不会自动移出仓库，下一节处理这种情况。
+</p>
+
+<p>
+  把该提交的文件放进仓库并提交：
+</p>
+
+<pre data-lang="终端"><code>git add .gitignore README.md src/main.py
+git commit -m "初始提交：程序与忽略规则"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main (root-commit) f443b04] 初始提交：程序与忽略规则
+ 3 files changed, 17 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 README.md
+ create mode 100644 src/main.py</pre>
+
+<p>
+  再走一遍功能分支的流程。建分支、修改程序、提交：
+</p>
+
+<pre data-lang="终端"><code>git switch -c feature/score-format
+cat &gt; src/main.py &lt;&lt;'EOF'
+scores = [12, 7, 9]
+print(f"总分：{sum(scores)}")
+EOF
+git add src/main.py
+git commit -m "feat: 输出中加上总分说明"
+git switch main
+git merge --no-ff feature/score-format -m "合并：输出中加上总分说明"
+git branch -d feature/score-format</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Switched to a new branch 'feature/score-format'
+[feature/score-format f69ed90] feat: 输出中加上总分说明
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Switched to branch 'main'
+Merge made by the 'ort' strategy.
+ src/main.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Deleted branch feature/score-format (was f69ed90).</pre>
+
+<p>
+  这里用 <code>--no-ff</code> 保留了一条合并记录，方便看出这个功能是在哪一次
+  合并进来的。合并后的历史：
+</p>
+
+<pre data-lang="终端"><code>git log --graph --oneline --decorate --all</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">*   873a50f (HEAD -&gt; main) 合并：输出中加上总分说明
+|\
+| * f69ed90 feat: 输出中加上总分说明
+|/
+* f443b04 初始提交：程序与忽略规则</pre>
+
+<h3 id="s2-6-5">误提交之后</h3>
+
+<p>
+  忽略规则只对未跟踪文件生效。如果有人用 <code>git add -f</code> 强制加入了
+  被忽略的本地配置，或者文件在写规则之前就已经提交，它仍然在仓库里。
+  下面模拟一次误提交：
+</p>
+
+<pre data-lang="终端"><code>git add -f config.local.yaml
+git commit -m "chore: 添加本地配置"
+git status</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main cad9bbd] chore: 添加本地配置
+ 1 file changed, 2 insertions(+)
+ create mode 100644 config.local.yaml
+On branch main
+nothing to commit, working tree clean</pre>
+
+<p>
+  <code>-f</code> 表示强制暂存，即使文件被忽略。提交之后状态是干净的，
+  但文件已经进入历史。发现之后，把它从索引里移出，同时保留磁盘上的文件：
+</p>
+
+<pre data-lang="终端"><code>git rm --cached config.local.yaml
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出">rm 'config.local.yaml'
+D  config.local.yaml</pre>
+
+<p>
+  <code>--cached</code> 只从索引里删除，工作区文件还在；状态里的
+  <code>D </code> 表示这次删除已经暂存。提交这次删除：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "chore: 移除误提交的本地配置"
+git status --short
+git check-ignore -v config.local.yaml</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[main 067fc5d] chore: 移除误提交的本地配置
+ 1 file changed, 2 deletions(-)
+ delete mode 100644 config.local.yaml
+.gitignore:11:config.local.yaml      config.local.yaml</pre>
+
+<p>
+  现在文件不再被跟踪，忽略规则重新生效。用 <code>git ls-files</code>
+  可以确认当前跟踪了哪些文件：
+</p>
+
+<pre data-lang="终端"><code>git ls-files</code></pre>
+
+<pre class="out" data-label="真实输出">.gitignore
+README.md
+src/main.py</pre>
+
+<div class="aside warn">
+  <b>已经提交的密钥要当作已泄露</b>
+  <p>
+    <code>git rm --cached</code> 只是让文件不再出现在之后的提交里，
+    它仍然留在之前的历史中，任何人拉取仓库后都能翻出来。
+    如果误提交的是密码、令牌或私钥，第一步应当是<b>吊销并更换</b>这个凭据，
+    而不是只改仓库。然后通知团队，由团队决定是否清理历史。
+    改写历史（例如使用专门的过滤工具）会影响所有协作者，必须统一安排，
+    不能在共享仓库上随手强推。
+  </p>
+</div>
+
+<p>
+  不要用不带 <code>--cached</code> 的 <code>git rm</code> 处理这件事：
+  那会把工作区里的文件也删掉。需要保留本地文件时，一定加 <code>--cached</code>。
+</p>
+
+<h3 id="s2-6-6">团队约定小结</h3>
+
+<p>
+  把这一部分的约定收在一起：
+</p>
+
+<ul>
+  <li>主分支保持可运行，改动通过功能分支和合并请求进入；</li>
+  <li>分支名短而具体，功能分支合并后及时删除；</li>
+  <li>一次提交只做一件事，标题具体，正文说明原因；</li>
+  <li>提交前用 <code>git status</code> 和 <code>git diff --staged</code> 自查；</li>
+  <li><code>.gitignore</code> 在项目开始时建立并提交，构建产物、日志、
+    模型权重、本地配置和密钥都不进仓库；</li>
+  <li>已经推送的提交不要用 <code>reset</code> 改写，用 <code>revert</code> 抵消；</li>
+  <li>密钥一旦提交就按泄露处理，先更换再清理。</li>
+</ul>
+
+<p>
+  这些约定不是 Git 的语法要求，而是让历史可读、协作顺畅的做法。
+  不同团队会有细节差异，进入一个新仓库时，先看它已有的分支名、
+  提交信息和忽略规则，跟着现有风格走。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>按用途命名分支、走功能分支与合并请求的流程、
+  为项目建立 <code>.gitignore</code> 并用 <code>check-ignore</code>
+  检查规则、把误提交的文件移出索引，并知道密钥泄露后应当先更换凭据。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="01-Linux.html">← 第 1 部分 · Linux 文件结构与基础命令</a>
+  <span class="spacer"></span>
+  <a href="03-常见文件.html">第 3 部分 · 常见文件 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

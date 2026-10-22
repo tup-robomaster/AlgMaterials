@@ -1,0 +1,13 @@
+{
+  "name": "camera A",
+  "width": 1280,
+  "height": 1024,
+  "pixel_um": 10.0,
+  "focal_mm": 8.0,
+  "fx": 800.0,
+  "fy": 800.0,
+  "cx": 640.0,
+  "cy": 512.0,
+  "fps": 30,
+  "bits_per_pixel": 8
+}

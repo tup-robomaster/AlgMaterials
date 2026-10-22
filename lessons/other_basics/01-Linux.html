@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 1 部分 · Linux 文件结构与基础命令 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a class="active" href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html" aria-current="page">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 1 部分 · Linux 文件结构与基础命令</div>
+  <a class="toc-l" href="#l1-1"><span class="n">1.1</span>Linux 的目录结构</a>
+  <a class="toc-sub" href="#s1-1-1">从根目录开始</a>
+  <a class="toc-sub" href="#s1-1-2">每个目录放什么</a>
+  <a class="toc-sub" href="#s1-1-3">绝对路径与相对路径</a>
+  <a class="toc-sub" href="#s1-1-4">波浪号、点与点点</a>
+  <a class="toc-l" href="#l1-2"><span class="n">1.2</span>路径与文件操作</a>
+  <a class="toc-sub" href="#s1-2-1">看清当前位置</a>
+  <a class="toc-sub" href="#s1-2-2">建目录、复制、移动</a>
+  <a class="toc-sub" href="#s1-2-3">删除</a>
+  <a class="toc-sub" href="#s1-2-4">链接</a>
+  <a class="toc-sub" href="#s1-2-5">空格与通配符</a>
+  <a class="toc-l" href="#l1-3"><span class="n">1.3</span>查看、搜索与统计</a>
+  <a class="toc-sub" href="#s1-3-1">查看整个文件</a>
+  <a class="toc-sub" href="#s1-3-2">只看头尾</a>
+  <a class="toc-sub" href="#s1-3-3">按内容搜索</a>
+  <a class="toc-sub" href="#s1-3-4">按名字和类型查找</a>
+  <a class="toc-sub" href="#s1-3-5">统计、排序与去重</a>
+  <a class="toc-l" href="#l1-4"><span class="n">1.4</span>权限、用户与 sudo</a>
+  <a class="toc-sub" href="#s1-4-1">ls -l 的每一列</a>
+  <a class="toc-sub" href="#s1-4-2">三种权限</a>
+  <a class="toc-sub" href="#s1-4-3">chmod 的两种写法</a>
+  <a class="toc-sub" href="#s1-4-4">脚本为什么需要执行权限</a>
+  <a class="toc-sub" href="#s1-4-5">用户、组与 sudo</a>
+  <a class="toc-l" href="#l1-5"><span class="n">1.5</span>进程、前后台与信号</a>
+  <a class="toc-sub" href="#s1-5-1">进程与进程号</a>
+  <a class="toc-sub" href="#s1-5-2">后台运行</a>
+  <a class="toc-sub" href="#s1-5-3">暂停与切回</a>
+  <a class="toc-sub" href="#s1-5-4">信号</a>
+  <a class="toc-sub" href="#s1-5-5">nohup 与退出终端</a>
+  <a class="toc-l" href="#l1-6"><span class="n">1.6</span>管道、重定向与环境变量</a>
+  <a class="toc-sub" href="#s1-6-1">管道</a>
+  <a class="toc-sub" href="#s1-6-2">输出重定向</a>
+  <a class="toc-sub" href="#s1-6-3">输入重定向</a>
+  <a class="toc-sub" href="#s1-6-4">错误流</a>
+  <a class="toc-sub" href="#s1-6-5">tee</a>
+  <a class="toc-sub" href="#s1-6-6">环境变量</a>
+  <a class="toc-sub" href="#s1-6-7">退出码与命令替换</a>
+  <a class="toc-l" href="#l1-7"><span class="n">1.7</span>软件安装、压缩包与远程连接</a>
+  <a class="toc-sub" href="#s1-7-1">软件包管理</a>
+  <a class="toc-sub" href="#s1-7-2">tar</a>
+  <a class="toc-sub" href="#s1-7-3">zip 与 unzip</a>
+  <a class="toc-sub" href="#s1-7-4">ssh</a>
+  <a class="toc-sub" href="#s1-7-5">scp 与 rsync</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 1 部分</div>
+  <h1>Linux 文件结构与基础命令</h1>
+  <p class="part-lead">
+    这一部分的目标是「会用」，不是背命令。七课覆盖日常最常用的操作：
+    认清目录、找文件、看内容、改权限、管进程、接管道、打包与远程传输。
+    每一课都有可以照着输入的「跟着做」，输出是这台机器上的真实结果。
+    命令里的练习目录统一放在 <code>/tmp/other-basics</code> 下，不会碰读者自己的文件。
+  </p>
+</header>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令都在 <code>/tmp/other-basics/示例代码</code> 下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.2 准备过练习目录，或者准备之后重启过电脑，
+    先在课程文件夹 <code>lessons/other_basics</code> 里重新执行下面几行，
+    再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/other-basics
+mkdir -p /tmp/other-basics
+cp -r 示例代码 /tmp/other-basics/
+cd /tmp/other-basics/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/other-basics/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l1-1">
+<h2><span class="no">1.1</span>Linux 的目录结构</h2>
+
+<p>
+  Linux 的文件系统是一棵树，最上面是根目录 <code>/</code>。
+  所有文件、目录、设备都挂在这棵树上；没有 Windows 那样的盘符。
+  这一课先认清树的形状，再分清绝对路径与相对路径。
+</p>
+
+<h3 id="s1-1-1">从根目录开始</h3>
+
+<p>
+  列出根目录下一层的内容：
+</p>
+
+<pre data-lang="终端"><code>ls -1 /</code></pre>
+
+<pre class="out" data-label="真实输出">bin
+bin.usr-is-merged
+boot
+cdrom
+dev
+etc
+home
+lib
+lib64
+lib.usr-is-merged
+lost+found
+media
+mnt
+opt
+proc
+root
+run
+sbin
+sbin.usr-is-merged
+snap
+srv
+sys
+tmp
+usr
+var</pre>
+
+<p>
+  Ubuntu 24.04 上还会看到 <code>bin.usr-is-merged</code>、<code>lib.usr-is-merged</code>
+  和 <code>sbin.usr-is-merged</code> 这三项。它们是系统把
+  <code>/bin</code>、<code>/sbin</code> 合并到 <code>/usr</code> 之后留下的记录，
+  不需要处理。不同发行版、不同安装方式下，根目录的条目会略有差异；
+  下面这些是常见且稳定的。
+</p>
+
+<h3 id="s1-1-2">每个目录放什么</h3>
+
+<ul>
+  <li><b><code>/</code></b>——根目录，整棵树的起点。</li>
+  <li><b><code>/home</code></b>——普通用户的主目录。用户名 <code>alice</code> 的主目录通常是
+    <code>/home/alice</code>，也就是 <code>~</code> 展开后的位置。</li>
+  <li><b><code>/etc</code></b>——系统和软件的配置文件。改配置之前先备份。</li>
+  <li><b><code>/usr</code></b>——安装的程序、库、头文件和文档。
+    可执行文件通常在 <code>/usr/bin</code>，库在 <code>/usr/lib</code>。</li>
+  <li><b><code>/var</code></b>——运行中不断变化的数据：日志在 <code>/var/log</code>，
+    缓存、数据库、邮件队列也在这里。</li>
+  <li><b><code>/dev</code></b>——设备文件。串口通常是
+    <code>/dev/ttyUSB0</code> 或 <code>/dev/ttyACM0</code>，
+    相机通常是 <code>/dev/video0</code>。这些文件由内核维护，不要手动创建或删除。</li>
+  <li><b><code>/proc</code></b>——内核和进程信息的虚拟文件系统，内容在内存里，
+    不占磁盘。进程目录以进程号命名，例如 <code>/proc/1234</code>。</li>
+  <li><b><code>/tmp</code></b>——临时文件。任何用户都可以写，重启后通常会被清空。
+    练习目录放在这里，正是因为它不影响正式文件。</li>
+  <li><b><code>/opt</code></b>——额外安装的第三方软件，通常一个软件一个子目录。</li>
+  <li><b><code>/root</code></b>——<code>root</code> 用户的主目录，不在 <code>/home</code> 下。</li>
+  <li><b><code>/boot</code></b>——启动用的内核与引导文件，不要随意改动。</li>
+  <li><b><code>/media</code>、<code>/mnt</code></b>——挂载点。U 盘、移动硬盘、
+    网络文件系统通常挂在这两个目录下面。</li>
+</ul>
+
+<p>
+  初学时最常打交道的三个位置是：自己的主目录 <code>~</code>、
+  放代码的项目目录、以及 <code>/tmp</code> 下的临时目录。
+  <code>/etc</code> 和 <code>/var</code> 多数时候只需要读，不需要改。
+</p>
+
+<h3 id="s1-1-3">绝对路径与相对路径</h3>
+
+<p>
+  以 <code>/</code> 开头的路径是<b>绝对路径</b>，它从根目录开始，和当前所在位置无关。
+  不以 <code>/</code> 开头的路径是<b>相对路径</b>，它从当前目录开始算。
+</p>
+
+<p>
+  进入练习目录，查看当前位置：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.1-目录与路径
+pwd</code></pre>
+
+<pre class="out" data-label="真实输出">/tmp/other-basics/示例代码/1.1-目录与路径</pre>
+
+<p>
+  <code>pwd</code> 打印当前目录的绝对路径。接着用相对路径进入
+  <code>demo</code>，再回到上一层：
+</p>
+
+<pre data-lang="终端"><code>cd demo
+pwd
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">/tmp/other-basics/示例代码/1.1-目录与路径/demo
+note.txt</pre>
+
+<pre data-lang="终端"><code>cat note.txt</code></pre>
+
+<pre class="out" data-label="真实输出">Linux 目录结构示例
+这一行用来说明 note.txt 的内容。</pre>
+
+<pre data-lang="终端"><code>cd ..
+pwd</code></pre>
+
+<pre class="out" data-label="真实输出">/tmp/other-basics/示例代码/1.1-目录与路径</pre>
+
+<p>
+  <code>cd ..</code> 里的 <code>..</code> 表示上一层目录，所以 <code>pwd</code>
+  回到了 <code>1.1-目录与路径</code>。<code>cd</code> 后面不带参数时回到主目录；
+  <code>cd -</code> 回到上一次所在的目录。
+</p>
+
+<p>
+  再从根目录试一次。根目录没有上一层，<code>cd ..</code> 之后仍然停在
+  <code>/</code>：
+</p>
+
+<pre data-lang="终端"><code>cd /
+pwd
+cd ..
+pwd</code></pre>
+
+<pre class="out" data-label="真实输出">/
+/</pre>
+
+<h3 id="s1-1-4">波浪号、点与点点</h3>
+
+<p>
+  三个符号在路径里反复出现：
+</p>
+
+<ul>
+  <li><b><code>~</code></b>——当前用户的主目录。shell 在把命令交给程序之前，
+    会先把 <code>~</code> 展开成实际路径，所以程序本身通常看不到这个符号。</li>
+  <li><b><code>.</code></b>——当前目录。例如 <code>./demo</code> 表示当前目录下的
+    <code>demo</code>。</li>
+  <li><b><code>..</code></b>——上一层目录。<code>../..</code> 表示上两层。</li>
+</ul>
+
+<p>
+  <code>cd .</code> 不会移动位置，<code>pwd</code> 仍显示同一个目录：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.1-目录与路径/demo
+cd .
+pwd</code></pre>
+
+<pre class="out" data-label="真实输出">/tmp/other-basics/示例代码/1.1-目录与路径/demo</pre>
+
+<p>
+  运行当前目录下的程序时必须写 <code>./</code>，因为当前目录默认不在
+  <code>PATH</code> 里；这一点在 1.4 讲脚本执行权限时还会遇到。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>说出根目录下常见目录的用途，
+  分清绝对路径与相对路径，用 <code>pwd</code>、<code>cd</code>、
+  <code>~</code>、<code>.</code>、<code>..</code> 在目录树里移动。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-2">
+<h2><span class="no">1.2</span>路径与文件操作</h2>
+
+<p>
+  这一课处理文件和目录本身：查看、创建、复制、移动、删除、建立链接。
+  所有操作都在练习副本里进行，可以放心试。
+</p>
+
+<h3 id="s1-2-1">看清当前位置</h3>
+
+<p>
+  先进入本课的目录：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.2-路径与文件
+pwd
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">/tmp/other-basics/示例代码/1.2-路径与文件
+data
+notes.txt</pre>
+
+<p>
+  <code>ls</code> 列出目录内容；<code>-1</code> 表示一行一个。
+  加上 <code>-a</code> 会显示以点开头的隐藏文件，以及 <code>.</code> 和
+  <code>..</code> 这两个特殊目录：
+</p>
+
+<pre data-lang="终端"><code>ls -1a</code></pre>
+
+<pre class="out" data-label="真实输出">.
+..
+data
+notes.txt</pre>
+
+<p>
+  <code>ls</code> 的其他常用选项：<code>-l</code> 长格式（1.4 讲每一列）、
+  <code>-h</code> 把大小显示成 <code>K</code>、<code>M</code>，
+  <code>-R</code> 递归列出子目录。
+</p>
+
+<h3 id="s1-2-2">建目录、复制、移动</h3>
+
+<pre data-lang="终端"><code>mkdir backup
+cp notes.txt backup/
+cp -r data backup/
+ls -1 backup</code></pre>
+
+<pre class="out" data-label="真实输出">data
+notes.txt</pre>
+
+<p>
+  <code>mkdir</code> 建立目录；<code>cp</code> 复制文件；
+  复制目录要加 <code>-r</code>（递归）。<code>mv</code> 既是移动，也是改名：
+</p>
+
+<pre data-lang="终端"><code>mv backup/notes.txt backup/notes-copy.txt
+ls -1 backup</code></pre>
+
+<pre class="out" data-label="真实输出">data
+notes-copy.txt</pre>
+
+<p>
+  <code>mkdir -p a/b/c</code> 会一次建立多层目录，已经存在的目录不报错。
+  <code>cp</code> 默认覆盖同名文件；加 <code>-i</code> 会在覆盖前询问。
+</p>
+
+<h3 id="s1-2-3">删除</h3>
+
+<p>
+  <code>rm</code> 删除文件，<code>rm -r</code> 删除目录及其内容。
+  删除操作不进回收站，终端里也没有撤销：
+</p>
+
+<pre data-lang="终端"><code>rm backup/notes-copy.txt
+rm -r backup
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">data
+notes.txt</pre>
+
+<div class="aside warn">
+  <b>删除前确认路径</b>
+  <p>
+    <code>rm -rf</code> 会递归删除并且不询问确认。执行之前先用
+    <code>pwd</code> 确认当前位置，再把命令里的路径读一遍。
+    不要对 <code>/</code>、<code>~</code> 或者自己不确定的目录使用
+    <code>rm -rf</code>。想先看一眼会删什么，可以把 <code>rm</code>
+    换成 <code>ls</code> 执行一遍。
+  </p>
+</div>
+
+<h3 id="s1-2-4">链接</h3>
+
+<p>
+  符号链接（软链接）是一个指向另一个路径的特殊文件：
+</p>
+
+<pre data-lang="终端"><code>ln -s notes.txt link.txt
+ls -1
+readlink link.txt</code></pre>
+
+<pre class="out" data-label="真实输出">data
+link.txt
+notes.txt
+notes.txt</pre>
+
+<p>
+  <code>readlink</code> 显示链接指向的路径。通过链接读文件，读到的是目标文件的内容：
+</p>
+
+<pre data-lang="终端"><code>cat link.txt</code></pre>
+
+<pre class="out" data-label="真实输出">第一行：路径与文件操作
+第二行：复制、移动、删除
+第三行：隐藏文件与通配符</pre>
+
+<p>
+  <code>ln -s 目标 链接名</code> 创建软链接；不加 <code>-s</code> 创建硬链接。
+  软链接可以跨文件系统，目标被移动或删除后会失效；硬链接不能跨文件系统，
+  删除其中一个名字，文件内容仍然存在，直到所有硬链接都被删除。
+  日常使用中，软链接更常见。
+</p>
+
+<p>
+  <code>rm</code> 删除符号链接时，只删除链接本身，不会删除它指向的文件：
+</p>
+
+<pre data-lang="终端"><code>rm link.txt
+ls -1
+cat notes.txt</code></pre>
+
+<pre class="out" data-label="真实输出">data
+notes.txt
+第一行：路径与文件操作
+第二行：复制、移动、删除
+第三行：隐藏文件与通配符</pre>
+
+<h3 id="s1-2-5">空格与通配符</h3>
+
+<p>
+  文件名里可以有空格。有空格时，路径要用引号括起来，否则 shell 会把它拆成两个参数：
+</p>
+
+<pre data-lang="终端"><code>echo "带空格的文件名" &gt; "my note.txt"
+ls -1
+cat "my note.txt"</code></pre>
+
+<pre class="out" data-label="真实输出">data
+my note.txt
+notes.txt
+带空格的文件名</pre>
+
+<p>
+  隐藏文件以点开头，普通 <code>ls</code> 不显示：
+</p>
+
+<pre data-lang="终端"><code>touch .hidden
+ls -1
+ls -1a</code></pre>
+
+<pre class="out" data-label="真实输出">data
+my note.txt
+notes.txt
+.
+..
+data
+.hidden
+my note.txt
+notes.txt</pre>
+
+<p>
+  通配符由 shell 展开，常见的三个是：<code>*</code> 匹配任意长度的字符，
+  <code>?</code> 匹配一个字符，<code>[abc]</code> 匹配括号里的任意一个字符。
+</p>
+
+<pre data-lang="终端"><code>touch a1.txt a2.txt b1.txt
+ls -1 a*.txt
+ls -1 ?1.txt</code></pre>
+
+<pre class="out" data-label="真实输出">a1.txt
+a2.txt
+a1.txt
+b1.txt</pre>
+
+<p>
+  通配符只匹配当前目录下符合条件的名字，不递归进入子目录。
+  给 <code>grep</code>、<code>find</code> 这类命令传模式时，
+  通常要用引号防止 shell 先展开；这一点在 1.3 会看到。
+</p>
+
+<pre data-lang="终端"><code>rm a1.txt a2.txt b1.txt</code></pre>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>pwd</code>、<code>ls</code>、<code>cd</code>
+  在目录里定位，用 <code>mkdir</code>、<code>cp</code>、<code>mv</code>、
+  <code>rm</code> 管理文件，建立软链接，处理带空格的文件名与通配符。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-3">
+<h2><span class="no">1.3</span>查看、搜索与统计</h2>
+
+<p>
+  文件找到之后，下一步是看内容、在内容里找东西、统计结果。
+  这一课的命令经常和管道一起用，管道本身在 1.6 展开。
+</p>
+
+<h3 id="s1-3-1">查看整个文件</h3>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.3-查看与搜索
+ls -1
+cat scores.txt</code></pre>
+
+<pre class="out" data-label="真实输出">logs
+names.txt
+scores.txt
+苹果 3
+香蕉 5
+苹果 2
+橙子 4
+香蕉 1</pre>
+
+<p>
+  <code>cat</code> 把文件内容整个打印到屏幕，适合短文件。
+  文件很长时用 <code>less</code>：
+</p>
+
+<pre data-lang="终端"><code>less scores.txt</code></pre>
+
+<p>
+  <code>less</code> 打开后，用方向键或 <code>PageUp</code>、<code>PageDown</code>
+  翻页，按 <code>/</code> 输入要搜索的词，按 <code>q</code> 退出。
+  它不会把整个文件一次打印出来，读日志和长文档时更合适。
+</p>
+
+<h3 id="s1-3-2">只看头尾</h3>
+
+<pre data-lang="终端"><code>head -n 2 scores.txt
+tail -n 2 scores.txt</code></pre>
+
+<pre class="out" data-label="真实输出">苹果 3
+香蕉 5
+橙子 4
+香蕉 1</pre>
+
+<p>
+  <code>head</code> 看开头，<code>tail</code> 看结尾；不带 <code>-n</code> 时
+  默认各显示 10 行。<code>tail -f</code> 会持续跟踪文件末尾，
+  程序一边写日志，屏幕一边刷新；按 <code>Ctrl+C</code> 停止。
+  查正在运行的程序出了什么问题时，这个用法很常见。
+</p>
+
+<h3 id="s1-3-3">按内容搜索</h3>
+
+<pre data-lang="终端"><code>grep 苹果 scores.txt
+grep -n 苹果 scores.txt
+grep -c 苹果 scores.txt</code></pre>
+
+<pre class="out" data-label="真实输出">苹果 3
+苹果 2
+1:苹果 3
+3:苹果 2
+2</pre>
+
+<p>
+  <code>grep</code> 按行搜索，匹配的行整行打印。<code>-n</code> 带行号，
+  <code>-c</code> 只输出匹配的行数。默认区分大小写，
+  <code>-i</code> 忽略大小写，<code>-v</code> 反向匹配（打印不匹配的行）。
+</p>
+
+<p>
+  在目录里递归搜索，并带上文件名和行号：
+</p>
+
+<pre data-lang="终端"><code>grep -rn 启动 logs | sort</code></pre>
+
+<pre class="out" data-label="真实输出">logs/app.log:1:启动服务
+logs/error.log:1:启动服务</pre>
+
+<p>
+  <code>-r</code> 递归搜索目录，<code>-n</code> 显示行号。
+  后面接 <code>| sort</code> 是为了让输出顺序固定：不加时，
+  文件遍历的顺序由文件系统决定，不同机器上可能不同。
+</p>
+
+<p>
+  <code>grep</code> 的退出码表示有没有找到：找到返回 0，没找到返回 1，
+  出错返回 2。脚本里常用这个特性判断某个配置项是否存在。
+</p>
+
+<h3 id="s1-3-4">按名字和类型查找</h3>
+
+<pre data-lang="终端"><code>find . -name "*.log" | sort
+find . -type f | sort</code></pre>
+
+<pre class="out" data-label="真实输出">./logs/app.log
+./logs/error.log
+./logs/app.log
+./logs/error.log
+./names.txt
+./scores.txt</pre>
+
+<p>
+  <code>find 起始目录 条件 动作</code> 是它的基本形状。<code>-name</code>
+  按名字匹配，模式要加引号，否则 shell 会先展开 <code>*</code>；
+  <code>-type f</code> 只要普通文件，<code>-type d</code> 只要目录。
+  不加动作时，默认把找到的路径打印出来。
+</p>
+
+<p>
+  查一个命令在哪儿：
+</p>
+
+<pre data-lang="终端"><code>which python3
+which git
+file scores.txt</code></pre>
+
+<pre class="out" data-label="真实输出">/usr/bin/python3
+/usr/bin/git
+scores.txt: Unicode text, UTF-8 text</pre>
+
+<p>
+  <code>which</code> 在 <code>PATH</code> 列出的目录里找可执行文件，
+  找到就打印完整路径。同一台机器上装了多个版本时，它告诉你当前会运行哪一个。
+  <code>file</code> 根据文件内容判断类型，不看扩展名；
+  拿到一个不认识的文件时，先用它看一眼。
+</p>
+
+<h3 id="s1-3-5">统计、排序与去重</h3>
+
+<pre data-lang="终端"><code>wc -l scores.txt
+sort names.txt
+sort names.txt | uniq
+sort names.txt | uniq -c</code></pre>
+
+<pre class="out" data-label="真实输出">5 scores.txt
+apple
+apple
+banana
+banana
+banana
+orange
+apple
+banana
+orange
+      2 apple
+      3 banana
+      1 orange</pre>
+
+<p>
+  <code>wc -l</code> 数行数，<code>-w</code> 数单词，<code>-c</code> 数字节。
+  <code>sort</code> 按字典序排序；<code>uniq</code> 去掉<b>相邻</b>的重复行，
+  所以通常先 <code>sort</code> 再 <code>uniq</code>。
+  <code>uniq -c</code> 在每行前面加上出现次数。
+</p>
+
+<p>
+  把一列取出来再统计，也是常见组合：
+</p>
+
+<pre data-lang="终端"><code>cut -d " " -f 1 scores.txt | sort | uniq -c</code></pre>
+
+<pre class="out" data-label="真实输出">      1 橙子
+      2 苹果
+      2 香蕉</pre>
+
+<p>
+  <code>cut -d " " -f 1</code> 以空格为分隔符，取第一列。
+  这一条命令把「取第一列、排序、计数」三步接在一起，
+  是 1.6 管道那一课的预演。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>cat</code>、<code>less</code>、<code>head</code>、
+  <code>tail</code> 看文件，用 <code>grep</code> 按内容搜索，
+  用 <code>find</code>、<code>which</code>、<code>file</code> 按名字和类型查找，
+  用 <code>wc</code>、<code>sort</code>、<code>uniq</code> 统计结果。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-4">
+<h2><span class="no">1.4</span>权限、用户与 sudo</h2>
+
+<p>
+  Linux 里每个文件都有所有者、所属组和一组权限位。
+  权限决定谁能读、谁能在文件里写、谁能把它当作程序执行。
+</p>
+
+<h3 id="s1-4-1">ls -l 的每一列</h3>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.4-权限
+ls -l</code></pre>
+
+<pre class="out" data-label="真实输出（用户名与时间已替换）">总计 8
+-rw-rw-r-- 1 alice alice 34 3月 14 09:20 data.txt
+-rw-rw-r-- 1 alice alice 67 3月 14 09:20 hello.sh</pre>
+
+<p>
+  每一行从左到右是：
+</p>
+
+<ol>
+  <li><b>类型与权限</b>——第一个字符是类型：<code>-</code> 普通文件、
+    <code>d</code> 目录、<code>l</code> 符号链接。后面九个字符每三个一组，
+    分别是所有者、所属组、其他人的读（<code>r</code>）、写（<code>w</code>）、
+    执行（<code>x</code>）权限；没有权限的位置写 <code>-</code>。</li>
+  <li><b>硬链接数</b>——普通文件通常是 1，目录至少是 2。</li>
+  <li><b>所有者</b>与<b>所属组</b>——这里是示例名 <code>alice</code> 和同名的组；
+    实际显示的是读者自己的用户名和组名。</li>
+  <li><b>大小</b>——字节数。</li>
+  <li><b>修改时间</b>——这里是示例时间；实际显示的是文件最后一次修改的时间。
+    超过半年的文件会显示年份。</li>
+  <li><b>文件名</b>。</li>
+</ol>
+
+<p>
+  <code>ls -l</code> 的输出里，用户名、组名和时间每次都可能不同。
+  只想看权限位和八进制数值时，用 <code>stat</code>：
+</p>
+
+<pre data-lang="终端"><code>stat -c "%A %a %n" hello.sh data.txt</code></pre>
+
+<pre class="out" data-label="真实输出">-rw-rw-r-- 664 hello.sh
+-rw-rw-r-- 664 data.txt</pre>
+
+<h3 id="s1-4-2">三种权限</h3>
+
+<p>
+  对普通文件：
+</p>
+
+<ul>
+  <li><b><code>r</code>（读）</b>——可以查看内容。</li>
+  <li><b><code>w</code>（写）</b>——可以修改、截断、追加内容。</li>
+  <li><b><code>x</code>（执行）</b>——可以把它当作程序运行。</li>
+</ul>
+
+<p>
+  对目录，这三个字母的含义不同：
+</p>
+
+<ul>
+  <li><b><code>r</code></b>——可以列出目录里的名字。</li>
+  <li><b><code>w</code></b>——可以在目录里创建、删除、重命名文件。</li>
+  <li><b><code>x</code></b>——可以进入目录，访问里面的文件。</li>
+</ul>
+
+<p>
+  所以一个目录只有 <code>r</code> 没有 <code>x</code> 时，能看见名字，
+  但打不开里面的文件；只有 <code>x</code> 没有 <code>r</code> 时，
+  知道完整路径就能访问，但列不出目录内容。
+</p>
+
+<h3 id="s1-4-3">chmod 的两种写法</h3>
+
+<p>
+  符号写法用 <code>u</code>（所有者）、<code>g</code>（组）、<code>o</code>（其他人）、
+  <code>a</code>（所有人）加上 <code>+</code>、<code>-</code>、<code>=</code>：
+</p>
+
+<pre data-lang="终端"><code>chmod +x hello.sh
+stat -c "%A %a %n" hello.sh
+chmod 644 hello.sh
+chmod u+x hello.sh
+stat -c "%A %a %n" hello.sh</code></pre>
+
+<pre class="out" data-label="真实输出">-rwxrwxr-x 775 hello.sh
+-rwxr--r-- 744 hello.sh</pre>
+
+<p>
+  第一条 <code>chmod +x</code> 给所有人加执行权限，权限从 664 变成 775。
+  为了单独看 <code>u</code> 的作用，第三条先用 <code>chmod 644</code>
+  把权限设回「所有者读写，组和其他人只读」，这个写法下一段展开；
+  第四条 <code>chmod u+x</code> 只给所有者加执行权限，权限是 744。
+  符号写法适合「在现有权限上增减」。
+</p>
+
+<p>
+  八进制写法直接把三组权限写成三个数字。读是 4，写是 2，执行是 1，
+  每组把需要的值相加：
+</p>
+
+<pre data-lang="终端"><code>chmod 644 hello.sh
+stat -c "%A %a %n" hello.sh
+chmod 600 data.txt
+stat -c "%A %a %n" data.txt</code></pre>
+
+<pre class="out" data-label="真实输出">-rw-r--r-- 644 hello.sh
+-rw------- 600 data.txt</pre>
+
+<p>
+  常用组合：<code>644</code> 普通文件（所有者可写，其他人只读）、
+  <code>755</code> 可执行文件或目录（所有者可写，其他人可读可执行）、
+  <code>600</code> 只有所有者能读写的私密文件。
+  <code>777</code> 表示所有人都能读、写、执行，除非有明确理由，不要使用。
+</p>
+
+<p>
+  <code>chmod -R</code> 会递归修改目录下所有内容，使用前先确认范围。
+  <code>chown</code> 改所有者，<code>chgrp</code> 改所属组；
+  普通用户通常只能改自己的文件，改别人的文件需要 <code>sudo</code>。
+</p>
+
+<h3 id="s1-4-4">脚本为什么需要执行权限</h3>
+
+<p>
+  脚本文件前面通常有一行 <code>#!/bin/bash</code>，叫做 shebang，
+  告诉内核用哪个解释器运行它。没有执行权限时，直接运行会被拒绝：
+</p>
+
+<pre data-lang="终端"><code>chmod 644 hello.sh
+./hello.sh</code></pre>
+
+<pre class="out" data-label="真实输出">/bin/bash: 行 1: ./hello.sh: 权限不够</pre>
+
+<p>
+  退出码是 126。此时可以用解释器显式运行，不需要执行权限：
+</p>
+
+<pre data-lang="终端"><code>bash hello.sh</code></pre>
+
+<pre class="out" data-label="真实输出">脚本开始运行
+当前目录：/tmp/other-basics/示例代码/1.4-权限</pre>
+
+<p>
+  加上执行权限后，<code>./hello.sh</code> 就能直接运行：
+</p>
+
+<pre data-lang="终端"><code>chmod +x hello.sh
+./hello.sh</code></pre>
+
+<pre class="out" data-label="真实输出">脚本开始运行
+当前目录：/tmp/other-basics/示例代码/1.4-权限</pre>
+
+<p>
+  这里写 <code>./hello.sh</code> 而不是 <code>hello.sh</code>，
+  是因为当前目录默认不在 <code>PATH</code> 里。这样设计是为了防止
+  当前目录里一个同名的恶意脚本被误执行。
+</p>
+
+<h3 id="s1-4-5">用户、组与 sudo</h3>
+
+<p>
+  每个进程都以某个用户身份运行。查看当前用户和所属组：
+</p>
+
+<pre data-lang="终端"><code>id -un
+id -gn
+umask</code></pre>
+
+<pre class="out" data-label="真实输出（用户名为示例）">alice
+alice
+0002</pre>
+
+<p>
+  这里的用户名和组名用 <code>alice</code> 代替；实际运行时会显示读者自己的
+  用户名和组名。这里的 <code>umask</code> 是 0002，
+  表示新建文件时从默认权限里去掉「其他人写」这一位，
+  所以新文件是 664、新目录是 775；如果 <code>umask</code> 是 0022，
+  新文件就是 644、新目录是 755。
+</p>
+
+<p>
+  <code>sudo</code> 让普通用户以 <code>root</code> 身份执行一条命令。
+  第一次使用时会要求输入当前用户的密码；输入时屏幕上不显示字符，
+  这是正常的。例如更新软件包索引：
+</p>
+
+<pre data-lang="终端"><code>sudo apt update</code></pre>
+
+<p>
+  <code>sudo</code> 的权限很大，使用原则是：只在确实需要改系统文件、
+  安装软件、管理服务时使用；日常编辑代码、复制文件不需要 <code>sudo</code>。
+  用 <code>sudo</code> 创建的文件所有者是 <code>root</code>，
+  之后普通用户可能改不动，遇到这种情况要用 <code>sudo chown</code>
+  把所有者改回来。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>读懂 <code>ls -l</code> 的每一列，
+  说出读、写、执行权限对文件和目录分别意味着什么，
+  用符号写法和八进制写法改权限，判断一个脚本为什么不能直接运行，
+  并且知道什么时候该用 <code>sudo</code>、什么时候不该用。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-5">
+<h2><span class="no">1.5</span>进程、前后台与信号</h2>
+
+<p>
+  程序运行起来之后就是一个进程。这一课看进程号、把任务放到后台、
+  在前后台之间切换，以及用信号结束进程。
+</p>
+
+<p>
+  进入这一课的目录，先给后面要用到的脚本加上执行权限：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.5-进程
+chmod +x count.sh</code></pre>
+
+<h3 id="s1-5-1">进程与进程号</h3>
+
+<p>
+  每个进程有一个进程号（PID）。启动一个 <code>sleep</code> 放到后台，
+  再查看它：
+</p>
+
+<pre data-lang="终端"><code>sleep 300 &amp;
+jobs
+ps -o pid,ppid,stat,cmd -C sleep
+kill %1
+jobs</code></pre>
+
+<pre class="out" data-label="真实输出">[1] 1333857
+[1]+  运行中               sleep 300 &amp;
+    PID    PPID STAT CMD
+1333857 1333852 S    sleep 300
+[1]+  已终止               sleep 300</pre>
+
+<p>
+  <code>PID</code> 是进程号，<code>PPID</code> 是父进程号，
+  <code>STAT</code> 是状态（<code>S</code> 表示可中断的睡眠，
+  <code>R</code> 表示正在运行，<code>Z</code> 表示僵尸进程），
+  <code>CMD</code> 是启动命令。进程号和父进程号每次不同，是正常现象。
+</p>
+
+<p>
+  这一段最后用 <code>kill %1</code> 结束了这个任务，后面的例子从空的任务列表开始。
+  <code>kill</code> 在信号一节详细讲，这里只需要知道它能按任务号结束后台任务。
+</p>
+
+<p>
+  <code>ps</code> 不带选项时只显示当前终端相关的进程；
+  <code>ps aux</code> 显示所有用户的进程，<code>ps -ef</code> 是另一种常见写法。
+  <code>top</code> 或 <code>htop</code> 会持续刷新，按 CPU 或内存排序；
+  在 <code>top</code> 里按 <code>q</code> 退出。
+</p>
+
+<h3 id="s1-5-2">后台运行</h3>
+
+<p>
+  命令末尾加 <code>&amp;</code>，shell 会把它放到后台，立即返回提示符：
+</p>
+
+<pre data-lang="终端"><code>sleep 300 &amp;
+jobs
+kill %1</code></pre>
+
+<pre class="out" data-label="真实输出">[1] 1333858
+[1]+  运行中               sleep 300 &amp;
+[1]+  已终止               sleep 300</pre>
+
+<p>
+  <code>jobs</code> 列出当前 shell 的后台任务，方括号里的数字是任务号。
+  <code>jobs -l</code> 还会显示进程号。<code>fg %1</code> 把 1 号任务调回前台，
+  <code>bg %1</code> 让暂停的 1 号任务在后台继续运行。
+  这一段末尾同样用 <code>kill %1</code> 清掉了任务，接下来的操作从空的任务列表开始。
+</p>
+
+<p>
+  前台任务会占住终端，直到它结束；后台任务不会。长时间运行的训练、
+  采集、服务通常放到后台，或者用 <code>nohup</code>、终端复用工具管理。
+</p>
+
+<h3 id="s1-5-3">暂停与切回</h3>
+
+<p>
+  三个键盘操作要分清：
+</p>
+
+<ul>
+  <li><b><code>Ctrl+C</code></b>——给前台进程发送 <code>SIGINT</code>，
+    通常让它立即结束。</li>
+  <li><b><code>Ctrl+Z</code></b>——给前台进程发送 <code>SIGTSTP</code>，
+    让它暂停，回到 shell。进程没有结束，只是停住了。</li>
+  <li><b><code>Ctrl+D</code></b>——输入结束（EOF），不是信号；
+    在空行按它通常会退出当前 shell。</li>
+</ul>
+
+<p>
+  一个暂停的任务可以用 <code>jobs</code> 看到，状态显示「已停止」；
+  用 <code>bg %1</code> 让它转到后台继续，或用 <code>fg %1</code>
+  调回前台。例如运行一个每秒打印一行的脚本，按 <code>Ctrl+Z</code> 暂停：
+</p>
+
+<pre data-lang="终端"><code>./count.sh
+计数：1
+计数：2
+^Z
+[1]+  已停止               ./count.sh
+jobs
+[1]+  已停止               ./count.sh
+bg %1
+[1]+ ./count.sh &amp;
+fg %1
+./count.sh
+计数：3
+计数：4
+计数：5
+计数结束</code></pre>
+
+<p>
+  上面这一段是终端里的操作示意；<code>^Z</code> 是按 <code>Ctrl+Z</code>
+  之后终端显示的字样，不是要输入的字符。实际的任务号和进程号会不同。
+</p>
+
+<h3 id="s1-5-4">信号</h3>
+
+<p>
+  <code>kill</code> 的名字容易误解：它不只是「杀死」，而是给进程发一个信号。
+  常用信号的名字和编号：
+</p>
+
+<pre data-lang="终端"><code>kill -l 2
+kill -l 15
+kill -l 9</code></pre>
+
+<pre class="out" data-label="真实输出">INT
+TERM
+KILL</pre>
+
+<ul>
+  <li><b><code>SIGINT</code>（2）</b>——中断，通常由 <code>Ctrl+C</code> 发出。
+    进程可以捕获并做清理。</li>
+  <li><b><code>SIGTERM</code>（15）</b>——终止请求，<code>kill PID</code>
+    默认发这个信号。进程可以捕获，先保存数据再退出。</li>
+  <li><b><code>SIGKILL</code>（9）</b>——强制终止，进程无法捕获或忽略。
+    只在进程不响应 <code>SIGTERM</code> 时作为最后手段。</li>
+</ul>
+
+<p>
+  <code>kill 1234</code> 给进程号 1234 发 <code>SIGTERM</code>；
+  <code>kill -9 1234</code> 发 <code>SIGKILL</code>。
+  对后台任务也可以写 <code>kill %1</code>，这里的 <code>%1</code>
+  是任务号，不是进程号。按名字结束进程用 <code>pkill 名字</code>
+  或 <code>killall 名字</code>，使用前先用 <code>pgrep</code> 确认匹配到了哪些进程。
+</p>
+
+<p>
+  启动一个后台任务，再按任务号结束它：
+</p>
+
+<pre data-lang="终端"><code>sleep 300 &amp;
+kill %1
+jobs</code></pre>
+
+<pre class="out" data-label="真实输出">[1] 1333859
+[1]+  已终止               sleep 300</pre>
+
+<h3 id="s1-5-5">nohup 与退出终端</h3>
+
+<p>
+  关闭终端时，shell 会给它启动的后台任务发送 <code>SIGHUP</code>，
+  很多程序收到这个信号就退出。<code>nohup</code> 让命令忽略
+  <code>SIGHUP</code>，从而在终端关闭后继续运行：
+</p>
+
+<pre data-lang="终端"><code>nohup ./count.sh &gt; count.log 2&gt;&amp;1 &amp;</code></pre>
+
+<pre class="out" data-label="真实输出">[1] 1333860</pre>
+
+<p>
+  这条命令把标准输出和标准错误都写进 <code>count.log</code>，
+  再把任务放到后台。如果不写重定向，<code>nohup</code> 会把输出追加到
+  当前目录的 <code>nohup.out</code>。之后可以用
+  <code>tail -f count.log</code> 看运行情况。
+</p>
+
+<p>
+  <code>nohup</code> 只解决「终端关闭后不退出」，不解决「多个任务怎么管理」。
+  需要长期运行、随时切回查看的任务，通常用 <code>tmux</code> 或
+  <code>screen</code> 这类终端复用工具；它们不在本课范围内，需要时自行搜索。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>ps</code> 看进程号和状态，
+  用 <code>&amp;</code>、<code>jobs</code>、<code>bg</code>、<code>fg</code>
+  管理前后台任务，分清 <code>Ctrl+C</code>、<code>Ctrl+Z</code>、<code>Ctrl+D</code>
+  的作用，用 <code>kill</code> 发送常见信号，知道 <code>nohup</code> 解决什么问题。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-6">
+<h2><span class="no">1.6</span>管道、重定向与环境变量</h2>
+
+<p>
+  这一课把命令接起来：前一条的输出变成后一条的输入，
+  或者把输出写进文件、把错误单独接住。最后看环境变量与退出码。
+</p>
+
+<h3 id="s1-6-1">管道</h3>
+
+<p>
+  竖线 <code>|</code> 把左边命令的标准输出接到右边命令的标准输入：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.6-管道与重定向
+sort words.txt | uniq -c</code></pre>
+
+<pre class="out" data-label="真实输出">      2 apple
+      3 banana
+      1 orange</pre>
+
+<p>
+  左边 <code>sort</code> 的输出没有打印到屏幕，而是直接交给
+  <code>uniq -c</code>。两条命令同时运行，数据一边产生一边消费。
+  管道可以接很多段，但段数越多越难读；超过三四段时，
+  通常值得写成脚本。
+</p>
+
+<p>
+  <code>|</code> 是管道；<code>||</code> 是逻辑「或」，表示前一条命令失败时
+  才执行后一条。两个符号不要混用。
+</p>
+
+<h3 id="s1-6-2">输出重定向</h3>
+
+<p>
+  <code>&gt;</code> 把标准输出写进文件，文件原有的内容会被清空；
+  <code>&gt;&gt;</code> 追加到文件末尾：
+</p>
+
+<pre data-lang="终端"><code>grep banana words.txt &gt; banana.txt
+cat banana.txt
+echo "grape" &gt;&gt; banana.txt
+cat banana.txt</code></pre>
+
+<pre class="out" data-label="真实输出">banana
+banana
+banana
+banana
+banana
+banana
+grape</pre>
+
+<p>
+  重定向只影响标准输出，错误信息仍然打印在屏幕上。
+  想把错误也写进文件，见下一节。
+</p>
+
+<h3 id="s1-6-3">输入重定向</h3>
+
+<p>
+  <code>&lt;</code> 把文件内容接到命令的标准输入：
+</p>
+
+<pre data-lang="终端"><code>wc -l &lt; words.txt</code></pre>
+
+<pre class="out" data-label="真实输出">6</pre>
+
+<p>
+  和不加重定向、直接把文件名交给命令的写法相比，输出里少了文件名，
+  因为 <code>wc</code> 只知道自己读的是标准输入。脚本里常用这种写法
+  把文件内容喂给命令。另一种常见写法是 here-document：
+  <code>命令 &lt;&lt;EOF</code>，从下一行开始读，直到单独一行 <code>EOF</code>。
+</p>
+
+<h3 id="s1-6-4">错误流</h3>
+
+<p>
+  每个进程默认打开三个文件描述符：0 标准输入、1 标准输出、2 标准错误。
+  <code>2&gt;</code> 把标准错误写进文件：
+</p>
+
+<pre data-lang="终端"><code>LC_ALL=C ls no-such-file 2&gt; err.txt
+cat err.txt</code></pre>
+
+<pre class="out" data-label="真实输出">ls: cannot access 'no-such-file': No such file or directory</pre>
+
+<p>
+  这里的 <code>LC_ALL=C</code> 把这一次命令的语言环境临时设为 C，
+  让错误信息显示成英文。日常使用时通常不写它；课里写它，
+  是为了让不同语言环境的读者看到同一段文字。
+</p>
+
+<p>
+  把标准输出和标准错误都写进同一个文件：
+</p>
+
+<pre data-lang="终端"><code>LC_ALL=C ls no-such-file &gt; out.log 2&gt;&amp;1
+cat out.log</code></pre>
+
+<pre class="out" data-label="真实输出">ls: cannot access 'no-such-file': No such file or directory</pre>
+
+<p>
+  <code>2&gt;&amp;1</code> 的意思是「把标准错误指向标准输出当前指向的地方」。
+  顺序很重要：<code>&gt; out.log 2&gt;&amp;1</code> 先打开文件、再把错误指过去，
+  两者都进文件；反过来写成 <code>2&gt;&amp;1 &gt; out.log</code>，
+  错误会先指向终端，再改标准输出，错误仍然留在屏幕上。
+  Bash 还支持简写 <code>&amp;&gt; out.log</code>。
+</p>
+
+<h3 id="s1-6-5">tee</h3>
+
+<p>
+  <code>tee</code> 把标准输入同时写到屏幕和文件：
+</p>
+
+<pre data-lang="终端"><code>echo hello | tee tee.txt
+cat tee.txt</code></pre>
+
+<pre class="out" data-label="真实输出">hello
+hello</pre>
+
+<p>
+  第一行 <code>hello</code> 是 <code>tee</code> 打印到屏幕的，第二行是
+  <code>cat</code> 从文件里读出来的。<code>tee -a</code> 追加而不是覆盖。
+  需要一边看输出一边留记录时用它。写需要 <code>sudo</code> 的文件时，
+  常见写法是 <code>echo ... | sudo tee /path/file</code>，
+  因为 <code>sudo echo ... &gt; file</code> 里的重定向仍由普通用户执行。
+</p>
+
+<h3 id="s1-6-6">环境变量</h3>
+
+<p>
+  环境变量是进程启动时继承的一组键值。用 <code>export</code> 设置，
+  用 <code>$名字</code> 读取：
+</p>
+
+<pre data-lang="终端"><code>export GREETING=你好
+echo $GREETING
+env | grep GREETING</code></pre>
+
+<pre class="out" data-label="真实输出">你好
+GREETING=你好</pre>
+
+<p>
+  <code>export</code> 让变量进入环境，之后启动的子进程也能读到；
+  不写 <code>export</code> 的变量只存在于当前 shell。
+  这个设置只在当前终端有效，关闭终端就消失。
+  需要每次登录都生效时，把 <code>export</code> 那行写进
+  <code>~/.bashrc</code>，再执行 <code>source ~/.bashrc</code>。
+</p>
+
+<p>
+  <code>PATH</code> 是最常用的环境变量之一：它是一串用冒号分隔的目录，
+  shell 在这些目录里按顺序查找命令。输入 <code>python3</code> 时，
+  shell 并不是在任意位置找，而是按 <code>PATH</code> 的顺序找第一个匹配。
+  用 <code>echo $PATH</code> 可以查看，内容随机器和安装方式不同。
+  把新目录加到前面，写成
+  <code>export PATH="$HOME/bin:$PATH"</code>，不要覆盖掉原来的值。
+</p>
+
+<h3 id="s1-6-7">退出码与命令替换</h3>
+
+<p>
+  每条命令结束时返回一个退出码，保存在 <code>$?</code> 里。
+  0 表示成功，非 0 表示失败：
+</p>
+
+<pre data-lang="终端"><code>false; echo $?
+true; echo $?</code></pre>
+
+<pre class="out" data-label="真实输出">1
+0</pre>
+
+<p>
+  <code>&amp;&amp;</code> 表示前一条成功才执行后一条，
+  <code>||</code> 表示前一条失败才执行后一条。脚本里常见的写法是
+  <code>命令 || exit 1</code>，失败就停止。
+  <code>set -e</code> 让脚本在任意命令失败时退出，
+  <code>set -u</code> 让使用未定义变量时报错，
+  <code>set -o pipefail</code> 让管道中任意一段失败都算整个管道失败。
+</p>
+
+<p>
+  <code>$(命令)</code> 先把命令的输出取出来，再放进当前命令：
+</p>
+
+<pre data-lang="终端"><code>echo "今天是 $(echo 星期五)"</code></pre>
+
+<pre class="out" data-label="真实输出">今天是 星期五</pre>
+
+<p>
+  命令替换也可以写成反引号 <code>`命令`</code>，但嵌套时容易混乱，
+  现代写法统一用 <code>$(...)</code>。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>|</code> 把命令接起来，
+  用 <code>&gt;</code>、<code>&gt;&gt;</code>、<code>&lt;</code>、<code>2&gt;</code>、
+  <code>2&gt;&amp;1</code> 控制输入输出，用 <code>tee</code> 同时留记录，
+  设置和读取环境变量，用 <code>$?</code>、<code>&amp;&amp;</code>、<code>||</code>
+  与命令替换写出简单的脚本逻辑。
+</p>
+
+</section>
+
+<section class="lesson" id="l1-7">
+<h2><span class="no">1.7</span>软件安装、压缩包与远程连接</h2>
+
+<p>
+  这一课的三组内容经常一起出现：在新机器上装工具、把工程打包传到另一台机器、
+  通过 SSH 登录过去继续操作。软件安装与远程连接需要网络和账号，
+  课里只给命令与说明；压缩包部分可以完整地跟着做。
+</p>
+
+<h3 id="s1-7-1">软件包管理</h3>
+
+<p>
+  Ubuntu 用 <code>apt</code> 管理软件包。常用命令：
+</p>
+
+<pre data-lang="终端"><code>sudo apt update
+sudo apt install 包名
+sudo apt remove 包名
+apt search 关键字
+apt show 包名</code></pre>
+
+<ul>
+  <li><code>apt update</code> 刷新软件包索引，不升级已安装的软件；
+    它需要联网，通常放在安装之前执行。</li>
+  <li><code>apt install</code> 安装软件包，<code>apt remove</code> 卸载；
+    <code>apt purge</code> 连配置文件一起删除。</li>
+  <li><code>apt search</code> 按关键字查找，<code>apt show</code> 查看版本、
+    依赖和说明。</li>
+</ul>
+
+<p>
+  查看 <code>apt</code> 的版本：
+</p>
+
+<pre data-lang="终端"><code>apt --version</code></pre>
+
+<pre class="out" data-label="真实输出">apt 2.8.3 (amd64)</pre>
+
+<p>
+  本课不要求安装新软件；上面的安装命令只是常用写法。
+  需要安装时，优先用发行版的包管理器，不要把来源不明的二进制文件
+  直接放进系统目录。安装前先看清包名，<code>apt</code> 会列出将要安装、
+  升级和删除的包，确认后再输入 <code>y</code>。
+</p>
+
+<h3 id="s1-7-2">tar</h3>
+
+<p>
+  <code>tar</code> 把多个文件打成一个归档文件，常与 gzip 一起用。
+  先进入本课目录，打包再解包：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/1.7-压缩与远程
+ls -1
+tar -czf project.tar.gz project
+ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">project
+project
+project.tar.gz</pre>
+
+<p>
+  <code>-czf</code> 三个字母分别是：<code>c</code> 创建归档，
+  <code>z</code> 用 gzip 压缩，<code>f</code> 后面紧跟归档文件名。
+  查看归档里有什么，用 <code>t</code>：
+</p>
+
+<pre data-lang="终端"><code>tar -tzf project.tar.gz</code></pre>
+
+<pre class="out" data-label="真实输出">project/
+project/README.md
+project/src/
+project/src/main.py</pre>
+
+<p>
+  解包到指定目录：
+</p>
+
+<pre data-lang="终端"><code>mkdir unpack
+tar -xzf project.tar.gz -C unpack
+find unpack -type f | sort</code></pre>
+
+<pre class="out" data-label="真实输出">unpack/project/README.md
+unpack/project/src/main.py</pre>
+
+<p>
+  <code>x</code> 表示解包，<code>-C</code> 指定解包目录。
+  解包前先看一眼归档内容，确认里面没有指向系统目录的绝对路径；
+  来源不明的归档不要直接解到当前目录。其他压缩格式：
+  <code>.tar.bz2</code> 用 <code>-j</code>，<code>.tar.xz</code> 用 <code>-J</code>。
+</p>
+
+<h3 id="s1-7-3">zip 与 unzip</h3>
+
+<p>
+  <code>zip</code> 在 Windows 与 Linux 之间交换文件时更常见：
+</p>
+
+<pre data-lang="终端"><code>zip -qr project.zip project
+unzip -q project.zip -d unzip-test
+find unzip-test -type f | sort</code></pre>
+
+<pre class="out" data-label="真实输出">unzip-test/project/README.md
+unzip-test/project/src/main.py</pre>
+
+<p>
+  <code>zip -r</code> 递归打包目录，<code>-q</code> 安静模式；
+  <code>unzip -d</code> 指定解压目录，<code>-l</code> 只列出内容。
+  zip 默认不保留 Linux 的权限位，跨平台传递脚本时要重新确认执行权限。
+</p>
+
+<h3 id="s1-7-4">ssh</h3>
+
+<p>
+  <code>ssh</code> 登录远程机器，在对方的 shell 里执行命令：
+</p>
+
+<pre data-lang="终端"><code>ssh 用户名@主机地址
+ssh -p 2222 用户名@主机地址
+ssh 用户名@主机地址 "ls -1"</code></pre>
+
+<p>
+  第一次连接某台机器时，SSH 会显示对方的公钥指纹，询问是否继续；
+  核对来源后输入 <code>yes</code>。之后会把对方记进
+  <code>~/.ssh/known_hosts</code>。
+</p>
+
+<p>
+  更常用的登录方式是密钥认证。生成一对密钥：
+</p>
+
+<pre data-lang="终端"><code>ssh-keygen -t ed25519 -C "你的邮箱或备注"</code></pre>
+
+<p>
+  命令会在 <code>~/.ssh/</code> 下生成私钥 <code>id_ed25519</code> 和公钥
+  <code>id_ed25519.pub</code>。私钥不能发给任何人；公钥可以交给服务器。
+  把公钥登记到远程机器的 <code>~/.ssh/authorized_keys</code> 里，
+  常用命令是 <code>ssh-copy-id 用户名@主机地址</code>。
+  之后登录不再输入密码，而是用私钥验证；生成时可以给私钥设置口令。
+</p>
+
+<p>
+  查看本机 SSH 版本：
+</p>
+
+<pre data-lang="终端"><code>ssh -V</code></pre>
+
+<pre class="out" data-label="真实输出">OpenSSH_9.6p1 Ubuntu-3ubuntu13.20, OpenSSL 3.0.13 30 Jan 2024</pre>
+
+<p>
+  频繁连接的机器可以写进 <code>~/.ssh/config</code>，给主机起一个短名字；
+  这个文件的权限应当是 600。Git 通过 SSH 访问远程仓库时，
+  也用同一套密钥，<code>ssh -T git@主机</code> 可以测试连接。
+</p>
+
+<h3 id="s1-7-5">scp 与 rsync</h3>
+
+<p>
+  <code>scp</code> 在本地和远程之间复制文件，语法与 <code>cp</code> 类似：
+</p>
+
+<pre data-lang="终端"><code>scp 本地文件 用户名@主机:/远程目录/
+scp -r 本地目录 用户名@主机:/远程目录/
+scp 用户名@主机:/远程文件 .</code></pre>
+
+<p>
+  <code>-r</code> 递归复制目录。远程路径写在冒号后面，
+  冒号前是主机，冒号后是路径；只写文件名表示当前目录。
+</p>
+
+<p>
+  <code>rsync</code> 更适合反复同步大目录：它只传有变化的部分，
+  支持断点续传和排除规则：
+</p>
+
+<pre data-lang="终端"><code>rsync -av project/ 用户名@主机:/远程目录/project/
+rsync -avn project/ 用户名@主机:/远程目录/project/</code></pre>
+
+<p>
+  <code>-a</code> 保留权限、时间等属性，<code>-v</code> 显示过程，
+  <code>-n</code> 只演练、不实际传输。源路径末尾的斜杠有意义：
+  <code>project/</code> 表示复制目录里的内容，<code>project</code>
+  表示连目录本身一起复制。加 <code>--delete</code> 会删除目标端多余的文件，
+  使用前一定先用 <code>-n</code> 看一遍。
+</p>
+
+<pre data-lang="终端"><code>rsync --version | head -n 1</code></pre>
+
+<pre class="out" data-label="真实输出">rsync  version 3.2.7  protocol version 31</pre>
+
+<p>
+  <code>scp</code> 与 <code>rsync</code> 都通过 SSH 传输，需要网络和账号。
+  课里不连接真实主机；读者有服务器或开发板时，把示例里的用户名、
+  主机和路径换成自己的即可。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>用 <code>apt</code> 查找、安装、卸载软件包，
+  用 <code>tar</code>、<code>zip</code> 打包与解包，
+  用 <code>ssh</code> 登录远程机器、生成并登记密钥，
+  用 <code>scp</code>、<code>rsync</code> 在本地与远程之间传输文件。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="00-开始.html">← 第 0 部分 · 开始</a>
+  <span class="spacer"></span>
+  <a href="02-Git.html">第 2 部分 · Git 基础命令及规范 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,3930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 4 部分 · 线性代数基础 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a class="active" href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html" aria-current="page">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 4 部分 · 线性代数基础</div>
+  <a class="toc-l" href="#l4-1"><span class="n">4.1</span>向量与矩阵</a>
+  <a class="toc-sub" href="#s4-1-1">向量与分量</a>
+  <a class="toc-sub" href="#s4-1-2">加法与数乘</a>
+  <a class="toc-sub" href="#s4-1-3">内积、长度与夹角</a>
+  <a class="toc-sub" href="#s4-1-4">矩阵与矩阵乘法</a>
+  <a class="toc-sub" href="#s4-1-5">乘法顺序与不可交换</a>
+  <a class="toc-sub" href="#s4-1-6">练习</a>
+  <a class="toc-l" href="#l4-2"><span class="n">4.2</span>行列式</a>
+  <a class="toc-sub" href="#s4-2-1">2×2 行列式</a>
+  <a class="toc-sub" href="#s4-2-2">几何意义</a>
+  <a class="toc-sub" href="#s4-2-3">3×3 行列式</a>
+  <a class="toc-sub" href="#s4-2-4">性质与可逆</a>
+  <a class="toc-sub" href="#s4-2-5">三角形面积</a>
+  <a class="toc-sub" href="#s4-2-6">练习</a>
+  <a class="toc-l" href="#l4-3"><span class="n">4.3</span>秩</a>
+  <a class="toc-sub" href="#s4-3-1">线性组合与张成</a>
+  <a class="toc-sub" href="#s4-3-2">线性相关与无关</a>
+  <a class="toc-sub" href="#s4-3-3">高斯消元与主元</a>
+  <a class="toc-sub" href="#s4-3-4">秩与方程组的解</a>
+  <a class="toc-sub" href="#s4-3-5">练习</a>
+  <a class="toc-l" href="#l4-4"><span class="n">4.4</span>转置与逆</a>
+  <a class="toc-sub" href="#s4-4-1">转置</a>
+  <a class="toc-sub" href="#s4-4-2">逆矩阵</a>
+  <a class="toc-sub" href="#s4-4-3">2×2 逆公式</a>
+  <a class="toc-sub" href="#s4-4-4">高斯—约当求逆</a>
+  <a class="toc-sub" href="#s4-4-5">正交矩阵与旋转</a>
+  <a class="toc-sub" href="#s4-4-6">练习</a>
+  <a class="toc-l" href="#l4-5"><span class="n">4.5</span>坐标变换</a>
+  <a class="toc-sub" href="#s4-5-1">坐标系与基</a>
+  <a class="toc-sub" href="#s4-5-2">旋转</a>
+  <a class="toc-sub" href="#s4-5-3">平移与齐次坐标</a>
+  <a class="toc-sub" href="#s4-5-4">复合、顺序与逆</a>
+  <a class="toc-sub" href="#s4-5-5">练习</a>
+  <a class="toc-l" href="#l4-6"><span class="n">4.6</span>特征值与特征向量</a>
+  <a class="toc-sub" href="#s4-6-1">定义</a>
+  <a class="toc-sub" href="#s4-6-2">2×2 的求法</a>
+  <a class="toc-sub" href="#s4-6-3">特征向量</a>
+  <a class="toc-sub" href="#s4-6-4">对称矩阵的对角化</a>
+  <a class="toc-sub" href="#s4-6-5">幂迭代</a>
+  <a class="toc-sub" href="#s4-6-6">练习</a>
+  <a class="toc-l" href="#l4-7"><span class="n">4.7</span>最小二乘</a>
+  <a class="toc-sub" href="#s4-7-1">超定方程组与残差</a>
+  <a class="toc-sub" href="#s4-7-2">正规方程</a>
+  <a class="toc-sub" href="#s4-7-3">直线拟合</a>
+  <a class="toc-sub" href="#s4-7-4">过原点拟合与预测</a>
+  <a class="toc-sub" href="#s4-7-5">数值注意</a>
+  <a class="toc-sub" href="#s4-7-6">练习</a>
+  <a class="toc-l" href="#l4-8"><span class="n">4.8</span>奇异值分解（选学）</a>
+  <a class="toc-sub" href="#s4-8-1">定义与几何意义</a>
+  <a class="toc-sub" href="#s4-8-2">与 AᵀA 的关系</a>
+  <a class="toc-sub" href="#s4-8-3">2×2 的算法</a>
+  <a class="toc-sub" href="#s4-8-4">低秩近似</a>
+  <a class="toc-sub" href="#s4-8-5">伪逆与条件数</a>
+  <a class="toc-sub" href="#s4-8-6">练习</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 4 部分</div>
+  <h1>线性代数基础</h1>
+  <p class="part-lead">
+    这一部分讲算法组日常会用到的线性代数：向量、矩阵、行列式、秩、
+    转置与逆、坐标变换、特征值、最小二乘与奇异值分解。每一课先说明
+    这些量在程序里怎么表示、怎么算，再给出可以运行的 C++ 例子。
+    要求是会算、会用：每课 3 道练习，共 24 道，样例输入、预期输出与
+    折叠答案都在题目下面。
+  </p>
+</header>
+
+<p>
+  这一部分的 8 个例子与 24 道练习另有一份 Python 实现，集中在
+  <a href="Python版-线性代数.html">Python 版代码</a> 一页；题目、样例输入与
+  预期输出与这里相同。
+</p>
+
+<p>
+  小节标题后标有「重点」的，是本部分要求优先掌握的内容。
+</p>
+
+<div class="aside">
+  <b>与学校课程的关系</b>
+  <p>
+    这一部分按算法组的使用组织，内容的取舍、先后顺序、记号与讲解方式
+    都可能与学校线性代数课不同，也不覆盖学校课程的全部内容。
+    学校课程有明确要求时，以学校课程为准；这里的例题与程序用于理解和核对。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    这一部分的例子和练习都在 <code>/tmp/other-basics/示例代码</code> 下执行。
+    如果没有准备过练习目录，或者准备之后重启过电脑，先在课程文件夹里执行
+    下面几行：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/other-basics
+mkdir -p /tmp/other-basics
+cp -r 示例代码 /tmp/other-basics/
+cd /tmp/other-basics/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后用
+    <code>pwd</code> 确认当前目录是 <code>/tmp/other-basics/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l4-1">
+<h2><span class="no">4.1</span>向量与矩阵</h2>
+
+<p>
+  线性代数的基本对象是向量（vector）与矩阵（matrix）。在程序里，一个向量
+  通常表示成一列数，一个矩阵表示成按行排列的若干列数。这一课先把这两种
+  对象的加法、数乘与乘法讲清楚；后面的行列式、秩、逆与坐标变换都建立在这些
+  运算上。
+</p>
+
+<h3 id="s4-1-1">向量与分量<span class="key">（重点）</span></h3>
+
+<p>
+  一个 n 维向量是 n 个数组成的有序列表，列表中的每个数叫分量（component）。
+  例如 <code>[1, 2, 3]</code> 是三维向量。数学书常把向量写成竖排的列，
+  本课在程序里用 <code>std::vector&lt;double&gt;</code> 表示，打印时也按行写；
+  两种写法只是排版不同。
+  所有分量都是 0 的向量叫零向量（zero vector）。
+</p>
+
+<p>
+  向量可以表示位置、速度、颜色、传感器读数等。做下面的运算之前，
+  两个向量的维数必须相同；程序里应当自己检查长度，长度不一致时报错，
+  不要悄悄截断或补零。
+</p>
+
+<h3 id="s4-1-2">加法与数乘</h3>
+
+<p>
+  两个同维向量相加，是把对应分量分别相加：<code>[1, 2] + [3, 4] = [4, 6]</code>。
+  向量与一个数相乘，是每个分量都乘这个数，这个数叫标量（scalar）：
+  <code>2 * [1, 2] = [2, 4]</code>。几何上，加法对应位移的合成，
+  数乘对应沿原方向伸长、缩短或反向。
+</p>
+
+<p>
+  下图固定两个向量 u 与 v，用滑块改变系数 a 与 b。图中画出 a u、b v
+  与和向量 w = a u + b v；虚线围成以 a u 与 b v 为邻边的平行四边形。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="vec"></div>
+  <figcaption>线性组合的几何表示。u = (1.5, 0.5)，v = (0.5, 1.5)；
+    标有 a u、b v 的箭头是两个分向量，标有 w 的箭头是它们的和。
+    读数为 w 的坐标；把 a 或 b 调为 0，对应的分向量消失。</figcaption>
+</figure>
+
+<h3 id="s4-1-3">内积、长度与夹角</h3>
+
+<p>
+  两个同维向量的内积（inner product）是对应分量乘积之和：
+  <code>[1, 2] · [3, 4] = 1×3 + 2×4 = 11</code>。向量与自身的内积开平方，
+  叫向量的长度（norm），记作 <code>|a|</code>。长度为 1 的向量叫单位向量。
+</p>
+
+<p>
+  内积还给出夹角：<code>cosθ = a·b / (|a||b|)</code>。余弦为 0 时两个向量
+  垂直，叫正交（orthogonal）；余弦为 1 或 -1 时两个向量共线。程序里用
+  <code>std::sqrt</code> 开方，用一个循环逐项累加计算内积。两个向量中只要有
+  一个是零向量，夹角就没有定义，程序应当单独处理。
+</p>
+
+<h3 id="s4-1-4">矩阵与矩阵乘法</h3>
+
+<p>
+  矩阵是 m 行 n 列的数表，形状记作 m×n。矩阵乘向量时，结果的第 i 个分量
+  是矩阵第 i 行与向量的内积，所以矩阵的列数必须等于向量的维数。
+  矩阵乘矩阵时，结果的第 i 行第 j 列是左矩阵第 i 行与右矩阵第 j 列的内积；
+  左矩阵的列数必须等于右矩阵的行数。
+</p>
+
+<p>
+  矩阵乘法可以看成依次施加两个线性变换：先做右矩阵表示的变换，再做左矩阵
+  表示的变换。单位矩阵（identity matrix）是对角线为 1、其余为 0 的方阵，
+  记作 I；任何矩阵乘 I 都等于它本身。单位矩阵在矩阵乘法里的作用，
+  与数 1 在普通乘法里的作用相同。
+</p>
+
+<h3 id="s4-1-5">乘法顺序与不可交换</h3>
+
+<p>
+  矩阵乘法一般不满足交换律：A B 与 B A 不一定相等。程序里要把顺序写对，
+  先做的变换放在右边。下面这段程序计算点积、长度、矩阵乘向量，
+  并对照 A B 与 B A：
+</p>
+
+<pre data-lang="C++" data-name="vectors.cpp"><code>// 4.1：向量、矩阵与乘法。
+//
+// 向量用 vector&lt;double&gt; 表示，矩阵用 vector&lt;vector&lt;double&gt;&gt; 表示，
+// 一行是一个内层 vector。点积、矩阵乘向量、矩阵乘矩阵都从这里展开。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Vec = std::vector&lt;double&gt;;
+using Mat = std::vector&lt;Vec&gt;;
+
+double dot(const Vec&amp; u, const Vec&amp; v) {
+    double s = 0.0;
+    for (std::size_t i = 0; i &lt; u.size(); i++) {
+        s += u[i] * v[i];
+    }
+    return s;
+}
+
+double length(const Vec&amp; u) {
+    return std::sqrt(dot(u, u));
+}
+
+Vec mat_vec(const Mat&amp; M, const Vec&amp; x) {
+    Vec y;
+    for (const Vec&amp; row : M) {
+        y.push_back(dot(row, x));
+    }
+    return y;
+}
+
+Mat mat_mul(const Mat&amp; X, const Mat&amp; Y) {
+    Mat Z(X.size(), Vec(Y[0].size(), 0.0));
+    for (std::size_t i = 0; i &lt; X.size(); i++) {
+        for (std::size_t j = 0; j &lt; Y[0].size(); j++) {
+            for (std::size_t k = 0; k &lt; Y.size(); k++) {
+                Z[i][j] += X[i][k] * Y[k][j];
+            }
+        }
+    }
+    return Z;
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const Vec&amp; v) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; v.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += f(v[i]);
+    }
+    return s + "]";
+}
+
+std::string show(const Mat&amp; M) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += show(M[i]);
+    }
+    return s + "]";
+}
+
+int main() {
+    Vec a = {1.0, 2.0};
+    Vec b = {3.0, 4.0};
+    Mat A = {{1.0, 2.0}, {3.0, 4.0}};
+    Mat B = {{2.0, 1.0}, {0.0, 3.0}};
+
+    std::cout &lt;&lt; "点积 = " &lt;&lt; f(dot(a, b)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "a 的长度 = " &lt;&lt; f(length(a)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "A b = " &lt;&lt; show(mat_vec(A, b)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "A B = " &lt;&lt; show(mat_mul(A, B)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "B A = " &lt;&lt; show(mat_mul(B, A)) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">点积 = 11.000
+a 的长度 = 2.236
+A b = [11.000, 25.000]
+A B = [[2.000, 7.000], [6.000, 15.000]]
+B A = [[5.000, 8.000], [9.000, 12.000]]</pre>
+
+<p>
+  要自己复现上面的输出，进入本课目录，把程序编译成同名文件再运行。
+  <code>-std=c++17</code> 指定语言标准，<code>-Wall -Wextra</code>
+  打开常用警告，<code>-o</code> 指定可执行文件名；编译没有输出，
+  运行后才打印结果。
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.1-向量与矩阵
+g++ -std=c++17 -Wall -Wextra vectors.cpp -o vectors
+./vectors</code></pre>
+
+<p>
+  输出里最后两行是 A B 与 B A，数值不同。矩阵乘法只有在特殊情况下才可交换，
+  例如两个矩阵都是同一个矩阵的幂，或者其中一个是单位矩阵的倍数。
+  判断两个矩阵能否相乘，先看形状：左矩阵的列数必须等于右矩阵的行数。
+</p>
+
+<h3 id="s4-1-6">练习</h3>
+
+<div class="aside tip">
+  <b>练习怎么运行</b>
+  <p>
+    练习需要自己写程序。把样例输入按行存成一个文本文件，编译后从标准
+    输入读入：
+  </p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra ex.cpp -o ex
+./ex &lt; input.txt</code></pre>
+  <p>
+    把命令里的文件名换成自己的文件名。答案块里的程序也可以照此编译；
+    输出与题目下面的「预期输出」逐行对照。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-1</div>
+  <p>
+    读入维数 n、两个 n 维向量 a、b 和一个标量 k。输出两行：第一行是
+    a + b，第二行是 k*a。每个分量保留 3 位小数，向量写成
+    <code>[x, y, z]</code> 的形式。
+  </p>
+  <pre class="out" data-label="样例输入">3
+1 2 3
+4 5 6
+2</pre>
+  <pre class="out" data-label="预期输出">[5.000, 7.000, 9.000]
+[2.000, 4.000, 6.000]</pre>
+  <p>
+    输入的第一行是维数，接下来两行分别是 a 与 b 的全部分量，
+    最后一行是标量 k。
+  </p>
+  <p>
+    把两个向量的对应分量相加，再让 k 乘 a 的每个分量；打印时统一用
+    <code>%.3f</code>，负零显示成 <code>0.000</code>。
+  </p>
+  <!-- 答案 4-1 -->
+  <details class="ans" data-run="示例代码/答案/4-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个向量按分量相加，标量乘每个分量。打印时用 <code>f</code> 配合
+        <code>std::ostringstream</code> 保留 3 位小数，并把 <code>-0.000</code>
+        改成 <code>0.000</code>。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const std::vector&lt;double&gt;&amp; v) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; v.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += f(v[i]);
+    }
+    return s + "]";
+}
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;double&gt; a(n), b(n);
+    for (double&amp; x : a) {
+        std::cin &gt;&gt; x;
+    }
+    for (double&amp; x : b) {
+        std::cin &gt;&gt; x;
+    }
+    double k;
+    std::cin &gt;&gt; k;
+
+    std::vector&lt;double&gt; sum(n), scaled(n);
+    for (int i = 0; i &lt; n; i++) {
+        sum[i] = a[i] + b[i];
+        scaled[i] = k * a[i];
+    }
+    std::cout &lt;&lt; show(sum) &lt;&lt; std::endl;
+    std::cout &lt;&lt; show(scaled) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-2</div>
+  <p>
+    读入维数 n 和两个 n 维向量 a、b。输出点积、a 的长度、b 的长度与
+    夹角余弦，各保留 3 位小数。零向量不进入这道题的输入。
+  </p>
+  <pre class="out" data-label="样例输入">2
+3 4
+1 0</pre>
+  <pre class="out" data-label="预期输出">点积 = 3.000
+|a| = 5.000
+|b| = 1.000
+cos = 0.600</pre>
+  <p>
+    点积是对应分量乘积之和；长度是向量与自身内积的平方根；
+    余弦等于点积除以两个长度之积。
+  </p>
+  <!-- 答案 4-2 -->
+  <details class="ans" data-run="示例代码/答案/4-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先写一个求内积的循环，长度用内积开平方，余弦用点积除以两个长度之积。
+        输入保证没有零向量，所以不用单独处理除零。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;double&gt; a(n), b(n);
+    for (double&amp; x : a) {
+        std::cin &gt;&gt; x;
+    }
+    for (double&amp; x : b) {
+        std::cin &gt;&gt; x;
+    }
+
+    double dot = 0.0;
+    double aa = 0.0;
+    double bb = 0.0;
+    for (int i = 0; i &lt; n; i++) {
+        dot += a[i] * b[i];
+        aa += a[i] * a[i];
+        bb += b[i] * b[i];
+    }
+    double la = std::sqrt(aa);
+    double lb = std::sqrt(bb);
+    double cos = (la != 0.0 &amp;&amp; lb != 0.0) ? dot / (la * lb) : 0.0;
+
+    std::cout &lt;&lt; "点积 = " &lt;&lt; f(dot) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "|a| = " &lt;&lt; f(la) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "|b| = " &lt;&lt; f(lb) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "cos = " &lt;&lt; f(cos) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-3</div>
+  <p>
+    读入 m、n、一个 m×n 矩阵 A 和一个 n 维向量 x，输出 A x。
+    结果是一个 m 维向量，每个分量保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">2 3
+1 2 3
+4 5 6
+1 1 1</pre>
+  <pre class="out" data-label="预期输出">[6.000, 15.000]</pre>
+  <p>
+    矩阵按行给出，每行 n 个数；向量在矩阵之后单独给出一行。
+    结果的第 i 个分量是 A 的第 i 行与 x 的内积。
+  </p>
+  <!-- 答案 4-3 -->
+  <details class="ans" data-run="示例代码/答案/4-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        结果的每一行是矩阵对应行与向量的内积。矩阵按行读入后，逐行做点积即可。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const std::vector&lt;double&gt;&amp; v) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; v.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += f(v[i]);
+    }
+    return s + "]";
+}
+
+int main() {
+    int m, n;
+    std::cin &gt;&gt; m &gt;&gt; n;
+    std::vector&lt;std::vector&lt;double&gt;&gt; A(m, std::vector&lt;double&gt;(n));
+    for (int i = 0; i &lt; m; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            std::cin &gt;&gt; A[i][j];
+        }
+    }
+    std::vector&lt;double&gt; x(n);
+    for (double&amp; v : x) {
+        std::cin &gt;&gt; v;
+    }
+
+    std::vector&lt;double&gt; y(m, 0.0);
+    for (int i = 0; i &lt; m; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            y[i] += A[i][j] * x[j];
+        }
+    }
+    std::cout &lt;&lt; show(y) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>把向量和矩阵表示成列表，做加法、数乘、内积、
+  矩阵乘向量与矩阵乘法，并能判断两个矩阵能否相乘、乘法顺序为什么不能
+  随意交换。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-2">
+<h2><span class="no">4.2</span>行列式</h2>
+
+<p>
+  行列式（determinant）是一个由方阵算出的数。它同时回答两个问题：
+  这个矩阵把面积或体积放大了多少倍，以及这个矩阵是否可逆。
+  这一课先讲 2×2 与 3×3 的算法，再说明它的几何意义与常用性质。
+</p>
+
+<h3 id="s4-2-1">2×2 行列式</h3>
+
+<p>
+  方阵
+  <code>[[a, b], [c, d]]</code> 的行列式是 <code>ad - bc</code>，
+  记作 <code>det(A)</code> 或 <code>|A|</code>。例如
+  <code>[[2, 1], [1, 3]]</code> 的行列式是 <code>2×3 - 1×1 = 5</code>。
+  计算顺序不能颠倒：主对角线乘积减去副对角线乘积。
+</p>
+
+<h3 id="s4-2-2">几何意义<span class="key">（重点）</span></h3>
+
+<p>
+  把 2×2 矩阵的两行看成两个二维向量，行列式的绝对值等于这两个向量张成的
+  平行四边形的面积。行列式的符号表示方向：交换两行，符号改变；两行共线时，
+  平行四边形退化成一条线段，面积为 0，行列式也为 0。
+</p>
+
+<p>
+  下图固定 u = (2, 1)，用两个滑块改变 v 的分量。平行四边形随 v 变化，
+  读数同时给出 det、面积与方向。把 v 调到与 u 共线，面积变为 0。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="det"></div>
+  <figcaption>行列式与有向面积。u = (2, 1)，v = (vx, vy)；虚线围成以 u、v
+    为邻边的平行四边形。读数为 det = 2 vy − vx、面积与方向。方向按 v
+    在 u 的逆时针一侧还是顺时针一侧判定。</figcaption>
+</figure>
+
+<p>
+  对 3×3 矩阵，行列式的绝对值是三个行向量张成的平行六面体的体积。
+  行列式为 0 表示这些向量落在更低维的空间里，矩阵把原来的空间压扁了，
+  因此不可逆。这个判断在解方程组和求逆时都会用到。
+</p>
+
+<h3 id="s4-2-3">3×3 行列式</h3>
+
+<p>
+  3×3 行列式可以按第一行展开：第一个元素乘它对应的 2×2 余子式，
+  减去第二个元素乘它的余子式，再加上第三个元素乘它的余子式。
+  余子式是划掉该元素所在的行与列之后剩下的 2×2 矩阵的行列式。
+  符号按 <code>+ - +</code> 交替。
+</p>
+
+<h3 id="s4-2-4">性质与可逆</h3>
+
+<p>
+  行列式有几条常用性质：交换两行，行列式变号；某一行乘 k，行列式也乘 k；
+  两行相同或成比例时，行列式为 0；<code>det(AB) = det(A) det(B)</code>。
+  最后一条说明两个变换依次施加时，体积的放大倍数是各自倍数之积。
+</p>
+
+<p>
+  方阵可逆的充分必要条件是行列式不为 0。行列式为 0 时，矩阵至少把一个
+  非零方向压成零，逆变换无法把丢失的信息恢复出来。下一课会给出逆矩阵的
+  具体算法。
+</p>
+
+<h3 id="s4-2-5">三角形面积</h3>
+
+<p>
+  已知三个点 P1、P2、P3，三角形面积等于向量 P2-P1 与 P3-P1 张成的
+  平行四边形面积的一半。二维叉积 <code>(x2-x1)(y3-y1) - (y2-y1)(x3-x1)</code>
+  正是这两个向量组成的 2×2 行列式，取绝对值再除以 2 即可。
+</p>
+
+<p>
+  下面这段程序计算两个行列式和一个三角形的面积：
+</p>
+
+<pre data-lang="C++" data-name="determinant.cpp"><code>// 4.2：2×2 与 3×3 行列式，以及行列式的面积意义。
+//
+// 3×3 按第一行展开，每一项是一个 2×2 行列式。结果接近整数时按整数
+// 打印；否则保留 3 位小数。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+double det2(const Mat&amp; M) {
+    return M[0][0] * M[1][1] - M[0][1] * M[1][0];
+}
+
+double det3(const Mat&amp; M) {
+    Mat m1 = {{M[1][1], M[1][2]}, {M[2][1], M[2][2]}};
+    Mat m2 = {{M[1][0], M[1][2]}, {M[2][0], M[2][2]}};
+    Mat m3 = {{M[1][0], M[1][1]}, {M[2][0], M[2][1]}};
+    return M[0][0] * det2(m1) - M[0][1] * det2(m2) + M[0][2] * det2(m3);
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string num(double x) {
+    if (std::abs(x - std::round(x)) &lt; 1e-9) {
+        return std::to_string(static_cast&lt;long long&gt;(std::llround(x)));
+    }
+    return f(x);
+}
+
+int main() {
+    Mat A2 = {{2.0, 1.0}, {1.0, 3.0}};
+    Mat A3 = {{2.0, 1.0, 0.0}, {1.0, 3.0, 1.0}, {0.0, 1.0, 2.0}};
+
+    double px = 0.0, py = 0.0;
+    double qx = 4.0, qy = 0.0;
+    double rx = 0.0, ry = 3.0;
+    double area = std::abs((qx - px) * (ry - py) - (qy - py) * (rx - px)) / 2.0;
+
+    std::cout &lt;&lt; "2×2 行列式 = " &lt;&lt; num(det2(A2)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "3×3 行列式 = " &lt;&lt; num(det3(A3)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "三角形面积 = " &lt;&lt; f(area) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">2×2 行列式 = 5
+3×3 行列式 = 8
+三角形面积 = 6.000</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.2-行列式
+g++ -std=c++17 -Wall -Wextra determinant.cpp -o determinant
+./determinant</code></pre>
+
+<p>
+  程序里的 <code>det3</code> 按第一行展开，三个余子式都交给 <code>det2</code>。
+  面积那一步先做减法得到两条边，再算叉积。三个点共线时，叉积为 0，
+  面积为 0。
+</p>
+
+<h3 id="s4-2-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-4</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的行列式，并判断是否可逆。
+    行列式是整数时按整数输出，否则保留 3 位小数；第二行输出
+    <code>可逆</code> 或 <code>不可逆</code>。
+  </p>
+  <pre class="out" data-label="样例输入">2 1
+1 3</pre>
+  <pre class="out" data-label="预期输出">行列式 = 5
+可逆</pre>
+  <p>
+    输入按两行给出矩阵的四个元素。程序用 <code>double</code> 保存，
+    判断行列式是否为 0 时留 1e-9 的容差；行列式不为 0 就可逆。
+  </p>
+  <!-- 答案 4-4 -->
+  <details class="ans" data-run="示例代码/答案/4-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        程序用 <code>double</code> 保存矩阵元素，判断行列式是否为 0 时留
+        1e-9 的容差，避免浮点误差把接近 0 的值判成可逆。行列式接近整数时
+        按整数输出，否则保留 3 位小数。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+const double EPS = 1e-9;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string num(double x) {
+    if (std::abs(x - std::round(x)) &lt; EPS) {
+        return std::to_string(static_cast&lt;long long&gt;(std::llround(x)));
+    }
+    return f(x);
+}
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+    double det = a * d - b * c;
+
+    std::cout &lt;&lt; "行列式 = " &lt;&lt; num(det) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (std::abs(det) &lt; EPS ? "不可逆" : "可逆") &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-5</div>
+  <p>
+    读入一个 3×3 矩阵，输出它的行列式。行列式是整数时按整数输出，
+    否则保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">2 1 0
+1 3 1
+0 1 2</pre>
+  <pre class="out" data-label="预期输出">行列式 = 8</pre>
+  <p>
+    输入按三行给出。按第一行展开，三个 2×2 余子式用对角线法则计算，
+    注意三项的符号依次是正、负、正。
+  </p>
+  <!-- 答案 4-5 -->
+  <details class="ans" data-run="示例代码/答案/4-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        按第一行展开：三个 2×2 余子式分别乘 <code>+ - +</code> 的符号，
+        余子式交给 <code>det2</code> 计算。结果用 <code>double</code> 保存，
+        最后再决定按整数还是小数输出。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+const double EPS = 1e-9;
+
+double det2(const std::vector&lt;std::vector&lt;double&gt;&gt;&amp; M) {
+    return M[0][0] * M[1][1] - M[0][1] * M[1][0];
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string num(double x) {
+    if (std::abs(x - std::round(x)) &lt; EPS) {
+        return std::to_string(static_cast&lt;long long&gt;(std::llround(x)));
+    }
+    return f(x);
+}
+
+int main() {
+    std::vector&lt;std::vector&lt;double&gt;&gt; M(3, std::vector&lt;double&gt;(3));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+    double det = M[0][0] * det2({{M[1][1], M[1][2]}, {M[2][1], M[2][2]}})
+               - M[0][1] * det2({{M[1][0], M[1][2]}, {M[2][0], M[2][2]}})
+               + M[0][2] * det2({{M[1][0], M[1][1]}, {M[2][0], M[2][1]}});
+
+    std::cout &lt;&lt; "行列式 = " &lt;&lt; num(det) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-6</div>
+  <p>
+    读入三个点的坐标，输出它们组成的三角形面积，保留 3 位小数。
+    点的顺序不影响结果，三点共线时面积为 0。
+  </p>
+  <pre class="out" data-label="样例输入">0 0
+4 0
+0 3</pre>
+  <pre class="out" data-label="预期输出">面积 = 6.000</pre>
+  <p>
+    输入是三行，每行一个点的 x、y 坐标。先算两条边向量，再算二维叉积，
+    取绝对值除以 2。
+  </p>
+  <!-- 答案 4-6 -->
+  <details class="ans" data-run="示例代码/答案/4-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两条边是 <code>P2-P1</code> 与 <code>P3-P1</code>，二维叉积的绝对值
+        就是平行四边形面积，除以 2 得到三角形面积。点的顺序相反时叉积变号，
+        取绝对值即可。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    double x1, y1, x2, y2, x3, y3;
+    std::cin &gt;&gt; x1 &gt;&gt; y1 &gt;&gt; x2 &gt;&gt; y2 &gt;&gt; x3 &gt;&gt; y3;
+
+    double area = std::abs((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) / 2.0;
+    std::cout &lt;&lt; "面积 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; area
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>计算 2×2 与 3×3 行列式，说明行列式与面积、体积
+  和可逆性的关系，并用叉积求三角形的面积。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-3">
+<h2><span class="no">4.3</span>秩</h2>
+
+<p>
+  秩（rank）描述一个矩阵里有多少个互相独立的方向。它决定方程组有没有解、
+  解是否唯一，也决定一组向量能不能表示出整个空间。这一课从线性组合讲起，
+  用高斯消元求秩，再把秩与方程组的解对应起来。
+</p>
+
+<h3 id="s4-3-1">线性组合与张成</h3>
+
+<p>
+  给定一组向量，每个向量乘一个系数再相加，得到的结果叫这组向量的线性组合
+  （linear combination）。所有可能的线性组合组成的集合叫这组向量的张成
+  （span）。例如 <code>[1, 0]</code> 与 <code>[0, 1]</code> 的张成是整个
+  二维平面；<code>[1, 0]</code> 与 <code>[2, 0]</code> 的张成只是一条直线。
+</p>
+
+<h3 id="s4-3-2">线性相关与无关</h3>
+
+<p>
+  如果一组向量中有一个能写成其余向量的线性组合，这组向量叫线性相关
+  （linearly dependent）；否则叫线性无关（linearly independent）。
+  等价的判断是：只让系数取 0 才能让线性组合等于零向量时，这组向量线性无关。
+</p>
+
+<p>
+  把 k 个 n 维向量按行排成 k×n 矩阵，矩阵的秩等于这组向量中独立向量的个数。
+  秩等于 k 时线性无关，小于 k 时线性相关。k 大于 n 时，秩最多为 n，
+  所以一定线性相关。
+</p>
+
+<h3 id="s4-3-3">高斯消元与主元<span class="key">（重点）</span></h3>
+
+<p>
+  高斯消元用三种行变换把矩阵化成行简化阶梯形：交换两行、某一行乘一个非零数、
+  把一行的倍数加到另一行。化完之后，每行第一个非零元素叫主元（pivot），
+  主元的个数就是秩。
+</p>
+
+<p>
+  做消元时，浮点数可能把本该是 0 的位置算成很小的非零数，导致主元判断错误。
+  本课的程序统一用 <code>double</code> 保存元素，把绝对值小于 <code>1e-9</code>
+  的数当作 0，这个界限叫容差（tolerance）。容差取多大与数据的尺度有关；
+  需要了解浮点误差的来源时，可以搜索「浮点数 舍入误差」。
+</p>
+
+<h3 id="s4-3-4">秩与方程组的解<span class="key">（重点）</span></h3>
+
+<p>
+  把方程组写成增广矩阵，最后一列是等号右边的常数。设未知数个数为 n，
+  系数矩阵的秩为 r，增广矩阵的秩为 r'。若 r &lt; r'，方程组无解；
+  若 r = r' = n，有唯一解；若 r = r' &lt; n，有无穷多解。
+  直观地说，秩不够时约束不足以确定全部未知数，或者约束之间互相矛盾。
+</p>
+
+<p>
+  下面这段程序对矩阵做行简化、求秩，并判断一个增广矩阵的解的情况：
+</p>
+
+<pre data-lang="C++" data-name="rank.cpp"><code>// 4.3：行简化、秩与方程组的解。
+//
+// 高斯—约当消元把矩阵化成行简化阶梯形，主元的个数就是秩。
+// 这里用 double 计算，判断一个数是否为 0 时留一个很小的容差。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+void rref(Mat&amp; A, std::vector&lt;int&gt;&amp; pivots) {
+    int rows = static_cast&lt;int&gt;(A.size());
+    int cols = static_cast&lt;int&gt;(A[0].size());
+    int r = 0;
+    for (int c = 0; c &lt; cols &amp;&amp; r &lt; rows; c++) {
+        int p = -1;
+        for (int i = r; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            continue;
+        }
+        std::swap(A[r], A[p]);
+        double v = A[r][c];
+        for (double&amp; x : A[r]) {
+            x /= v;
+        }
+        for (int i = 0; i &lt; rows; i++) {
+            if (i != r &amp;&amp; std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = 0; j &lt; cols; j++) {
+                    A[i][j] -= k * A[r][j];
+                }
+            }
+        }
+        pivots.push_back(c);
+        r++;
+    }
+}
+
+std::string num(double x) {
+    if (std::abs(x - std::round(x)) &lt; EPS) {
+        return std::to_string(static_cast&lt;long long&gt;(std::llround(x)));
+    }
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    return os.str();
+}
+
+std::string show(const Mat&amp; M) {
+    std::string s;
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += "\n";
+        }
+        s += "[";
+        for (std::size_t j = 0; j &lt; M[i].size(); j++) {
+            if (j &gt; 0) {
+                s += ", ";
+            }
+            s += num(M[i][j]);
+        }
+        s += "]";
+    }
+    return s;
+}
+
+std::string kind(const Mat&amp; M) {
+    Mat A = M;
+    std::vector&lt;int&gt; pivots;
+    rref(A, pivots);
+    int n = static_cast&lt;int&gt;(M[0].size()) - 1;
+    for (const auto&amp; row : A) {
+        bool zero = true;
+        for (int j = 0; j &lt; n; j++) {
+            if (std::abs(row[j]) &gt; EPS) {
+                zero = false;
+            }
+        }
+        if (zero &amp;&amp; std::abs(row[n]) &gt; EPS) {
+            return "无解";
+        }
+    }
+    if (static_cast&lt;int&gt;(pivots.size()) &lt; n) {
+        return "无穷多解";
+    }
+    return "唯一解";
+}
+
+int main() {
+    Mat M = {{1.0, 2.0, 0.0}, {2.0, 4.0, 1.0}, {0.0, 0.0, 1.0}};
+    Mat R = M;
+    std::vector&lt;int&gt; pivots;
+    rref(R, pivots);
+
+    std::cout &lt;&lt; "行简化：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; show(R) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "秩 = " &lt;&lt; pivots.size() &lt;&lt; std::endl;
+    std::cout &lt;&lt; "增广矩阵的解：" &lt;&lt; kind({{1.0, 1.0, 3.0}, {2.0, -1.0, 0.0}})
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">行简化：
+[1, 2, 0]
+[0, 0, 1]
+[0, 0, 0]
+秩 = 2
+增广矩阵的解：唯一解</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.3-秩
+g++ -std=c++17 -Wall -Wextra rank.cpp -o rank
+./rank</code></pre>
+
+<p>
+  输出里的行简化矩阵，每一行的第一个非零数就是主元。主元有 2 个，所以秩为 2。
+  第二个增广矩阵的主元个数等于未知数个数，且没有矛盾行，因此有唯一解。
+</p>
+
+<h3 id="s4-3-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-7</div>
+  <p>
+    读入 m、n 和一个 m×n 矩阵，输出它的秩。
+  </p>
+  <pre class="out" data-label="样例输入">3 3
+1 2 0
+2 4 1
+0 0 1</pre>
+  <pre class="out" data-label="预期输出">秩 = 2</pre>
+  <p>
+    输入第一行是行数与列数，接下来每行是矩阵的一行。
+    用高斯—约当消元做行简化，数主元的个数；判断零时留 1e-9 的容差。
+  </p>
+  <!-- 答案 4-7 -->
+  <details class="ans" data-run="示例代码/答案/4-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>rref</code> 逐列找主元、交换到当前行、把主元化为 1，再把这一列
+        其余元素消成 0。主元的个数就是秩。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+int rank_of(Mat A) {
+    int rows = static_cast&lt;int&gt;(A.size());
+    int cols = static_cast&lt;int&gt;(A[0].size());
+    int r = 0;
+    for (int c = 0; c &lt; cols &amp;&amp; r &lt; rows; c++) {
+        int p = -1;
+        for (int i = r; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            continue;
+        }
+        std::swap(A[r], A[p]);
+        double v = A[r][c];
+        for (double&amp; x : A[r]) {
+            x /= v;
+        }
+        for (int i = r + 1; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = c; j &lt; cols; j++) {
+                    A[i][j] -= k * A[r][j];
+                }
+            }
+        }
+        r++;
+    }
+    return r;
+}
+
+int main() {
+    int m, n;
+    std::cin &gt;&gt; m &gt;&gt; n;
+    Mat M(m, std::vector&lt;double&gt;(n));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+    std::cout &lt;&lt; "秩 = " &lt;&lt; rank_of(M) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-8</div>
+  <p>
+    读入行数 m、未知数个数 n 和一个 m×(n+1) 的增广矩阵，判断方程组的解：
+    输出 <code>唯一解</code>、<code>无穷多解</code> 或 <code>无解</code>。
+  </p>
+  <pre class="out" data-label="样例输入">2 2
+1 1 3
+2 -1 0</pre>
+  <pre class="out" data-label="预期输出">唯一解</pre>
+  <p>
+    每行的前 n 个数是系数，最后一个是等号右边的常数。
+    行简化后，先找「系数全为 0 而常数不为 0」的矛盾行，再看主元个数与 n 的关系。
+  </p>
+  <!-- 答案 4-8 -->
+  <details class="ans" data-run="示例代码/答案/4-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先对增广矩阵做行简化。若出现系数全为 0 而常数不为 0 的行，方程组无解；
+        否则比较主元个数与未知数个数：相等时唯一解，少于未知数个数时无穷多解。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+void rref(Mat&amp; A) {
+    int rows = static_cast&lt;int&gt;(A.size());
+    int cols = static_cast&lt;int&gt;(A[0].size());
+    int r = 0;
+    for (int c = 0; c &lt; cols &amp;&amp; r &lt; rows; c++) {
+        int p = -1;
+        for (int i = r; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            continue;
+        }
+        std::swap(A[r], A[p]);
+        double v = A[r][c];
+        for (double&amp; x : A[r]) {
+            x /= v;
+        }
+        for (int i = 0; i &lt; rows; i++) {
+            if (i != r &amp;&amp; std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = 0; j &lt; cols; j++) {
+                    A[i][j] -= k * A[r][j];
+                }
+            }
+        }
+        r++;
+    }
+}
+
+int main() {
+    int m, n;
+    std::cin &gt;&gt; m &gt;&gt; n;
+    Mat M(m, std::vector&lt;double&gt;(n + 1));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+
+    Mat R = M;
+    rref(R);
+    for (const auto&amp; row : R) {
+        bool zero = true;
+        for (int j = 0; j &lt; n; j++) {
+            if (std::abs(row[j]) &gt; EPS) {
+                zero = false;
+            }
+        }
+        if (zero &amp;&amp; std::abs(row[n]) &gt; EPS) {
+            std::cout &lt;&lt; "无解" &lt;&lt; std::endl;
+            return 0;
+        }
+    }
+
+    int rank_a = 0;
+    for (const auto&amp; row : R) {
+        for (int j = 0; j &lt; n; j++) {
+            if (std::abs(row[j]) &gt; EPS) {
+                rank_a++;
+                break;
+            }
+        }
+    }
+    std::cout &lt;&lt; (rank_a &lt; n ? "无穷多解" : "唯一解") &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-9</div>
+  <p>
+    读入向量个数 k、维数 n 和 k 个 n 维向量。输出这组向量的秩，
+    并判断它们线性无关还是线性相关。
+  </p>
+  <pre class="out" data-label="样例输入">3 2
+1 0
+0 1
+1 1</pre>
+  <pre class="out" data-label="预期输出">秩 = 2
+线性相关</pre>
+  <p>
+    把每个向量作为矩阵的一行，求矩阵的秩。秩等于 k 时线性无关，
+    小于 k 时线性相关。
+  </p>
+  <!-- 答案 4-9 -->
+  <details class="ans" data-run="示例代码/答案/4-9.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把每个向量作为矩阵的一行，求矩阵的秩。秩等于向量个数时线性无关；
+        小于向量个数时，至少有一个向量能由其余向量表示，因此线性相关。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+int rank_of(Mat A) {
+    int rows = static_cast&lt;int&gt;(A.size());
+    int cols = static_cast&lt;int&gt;(A[0].size());
+    int r = 0;
+    for (int c = 0; c &lt; cols &amp;&amp; r &lt; rows; c++) {
+        int p = -1;
+        for (int i = r; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            continue;
+        }
+        std::swap(A[r], A[p]);
+        double v = A[r][c];
+        for (double&amp; x : A[r]) {
+            x /= v;
+        }
+        for (int i = r + 1; i &lt; rows; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = c; j &lt; cols; j++) {
+                    A[i][j] -= k * A[r][j];
+                }
+            }
+        }
+        r++;
+    }
+    return r;
+}
+
+int main() {
+    int k, n;
+    std::cin &gt;&gt; k &gt;&gt; n;
+    Mat M(k, std::vector&lt;double&gt;(n));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+
+    int r = rank_of(M);
+    std::cout &lt;&lt; "秩 = " &lt;&lt; r &lt;&lt; std::endl;
+    std::cout &lt;&lt; (r == k ? "线性无关" : "线性相关") &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>用高斯消元把矩阵化成行简化阶梯形，数主元求秩，
+  判断一组向量是否线性无关，并根据系数矩阵与增广矩阵的秩判断方程组
+  有唯一解、无穷多解还是无解。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-4">
+<h2><span class="no">4.4</span>转置与逆</h2>
+
+<p>
+  转置（transpose）把矩阵的行与列互换；逆矩阵（inverse matrix）把矩阵
+  表示的变换反向还原。这两个操作在坐标变换、解方程组和正交矩阵里反复出现。
+  这一课给出转置的性质、2×2 的逆公式与 3×3 的高斯—约当求法。
+</p>
+
+<h3 id="s4-4-1">转置</h3>
+
+<p>
+  把 m×n 矩阵 A 的行换成列，得到的 n×m 矩阵叫 A 的转置，记作 Aᵀ。
+  转置满足 <code>(Aᵀ)ᵀ = A</code>、<code>(A+B)ᵀ = Aᵀ+Bᵀ</code>、
+  <code>(AB)ᵀ = BᵀAᵀ</code>。最后一条的乘积顺序也要反过来。
+  如果 <code>Aᵀ = A</code>，A 叫对称矩阵（symmetric matrix）；
+  对称矩阵的元素关于主对角线对称。
+</p>
+
+<h3 id="s4-4-2">逆矩阵</h3>
+
+<p>
+  对方阵 A，如果存在矩阵 B 使 <code>AB = BA = I</code>，B 叫 A 的逆，
+  记作 A⁻¹。逆矩阵如果存在就唯一。不是所有方阵都有逆：行列式为 0 的方阵
+  没有逆。两个可逆矩阵乘积的逆是 <code>(AB)⁻¹ = B⁻¹A⁻¹</code>，
+  顺序同样要反过来。
+</p>
+
+<h3 id="s4-4-3">2×2 逆公式</h3>
+
+<p>
+  对 <code>A = [[a, b], [c, d]]</code>，先算行列式 <code>det = ad - bc</code>。
+  若 det 不为 0，则 <code>A⁻¹ = [[d, -b], [-c, a]] / det</code>。
+  这个公式可以直接背下来，也可以现推：把四个元素按副对角线交换、
+  另外两个变号，再除以行列式。
+</p>
+
+<h3 id="s4-4-4">高斯—约当求逆<span class="key">（重点）</span></h3>
+
+<p>
+  对 3×3 或更大的矩阵，常用的做法是把 A 与单位矩阵并排写成
+  <code>[A | I]</code>，然后做行变换。目标是把左半边化成单位矩阵；
+  左半边变成 I 的同时，右半边就从 I 变成了 A⁻¹。如果左半边出现全零行，
+  说明 A 不可逆。
+</p>
+
+<h3 id="s4-4-5">正交矩阵与旋转</h3>
+
+<p>
+  如果方阵 Q 满足 <code>QᵀQ = I</code>，Q 叫正交矩阵（orthogonal matrix）。
+  正交矩阵的逆等于它的转置：<code>Q⁻¹ = Qᵀ</code>。二维旋转矩阵
+  <code>[[cosθ, -sinθ], [sinθ, cosθ]]</code> 就是正交矩阵，
+  它的转置对应反向旋转 θ。
+</p>
+
+<p>
+  下面这段程序做转置、2×2 求逆、3×3 高斯—约当求逆，并验证旋转矩阵的
+  转置与自身相乘得到单位矩阵：
+</p>
+
+<pre data-lang="C++" data-name="inverse.cpp"><code>// 4.4：转置、逆矩阵与正交矩阵。
+//
+// 2×2 的逆用公式 [[d, -b], [-c, a]] 除以行列式；3×3 把 A 与单位矩阵
+// 并排做高斯—约当消元。旋转矩阵满足 RᵀR = I，所以它的逆就是转置。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+Mat transpose(const Mat&amp; M) {
+    Mat T(M[0].size(), std::vector&lt;double&gt;(M.size(), 0.0));
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        for (std::size_t j = 0; j &lt; M[0].size(); j++) {
+            T[j][i] = M[i][j];
+        }
+    }
+    return T;
+}
+
+Mat inverse(const Mat&amp; M) {
+    int n = static_cast&lt;int&gt;(M.size());
+    Mat A(n, std::vector&lt;double&gt;(2 * n, 0.0));
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            A[i][j] = M[i][j];
+        }
+        A[i][n + i] = 1.0;
+    }
+    for (int c = 0; c &lt; n; c++) {
+        int p = -1;
+        for (int i = c; i &lt; n; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            return {};
+        }
+        std::swap(A[c], A[p]);
+        double v = A[c][c];
+        for (double&amp; x : A[c]) {
+            x /= v;
+        }
+        for (int i = 0; i &lt; n; i++) {
+            if (i != c &amp;&amp; std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = 0; j &lt; 2 * n; j++) {
+                    A[i][j] -= k * A[c][j];
+                }
+            }
+        }
+    }
+    Mat inv(n, std::vector&lt;double&gt;(n, 0.0));
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            inv[i][j] = A[i][n + j];
+        }
+    }
+    return inv;
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const Mat&amp; M) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += "[";
+        for (std::size_t j = 0; j &lt; M[i].size(); j++) {
+            if (j &gt; 0) {
+                s += ", ";
+            }
+            s += f(M[i][j]);
+        }
+        s += "]";
+    }
+    return s + "]";
+}
+
+int main() {
+    Mat A2 = {{2.0, 1.0}, {1.0, 3.0}};
+    Mat A3 = {{2.0, 1.0, 0.0}, {1.0, 2.0, 1.0}, {0.0, 1.0, 2.0}};
+    Mat R = {{0.0, -1.0}, {1.0, 0.0}};
+    Mat RtR = {{0.0, 0.0}, {0.0, 0.0}};
+    for (int i = 0; i &lt; 2; i++) {
+        for (int j = 0; j &lt; 2; j++) {
+            for (int k = 0; k &lt; 2; k++) {
+                RtR[i][j] += R[k][i] * R[k][j];
+            }
+        }
+    }
+
+    std::cout &lt;&lt; "A2 的逆：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; show(inverse(A2)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "A3 的逆：" &lt;&lt; std::endl;
+    std::cout &lt;&lt; show(inverse(A3)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "RᵀR = " &lt;&lt; show(RtR) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">A2 的逆：
+[[0.600, -0.200], [-0.200, 0.400]]
+A3 的逆：
+[[0.750, -0.500, 0.250], [-0.500, 1.000, -0.500], [0.250, -0.500, 0.750]]
+RᵀR = [[1.000, 0.000], [0.000, 1.000]]</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.4-转置与逆
+g++ -std=c++17 -Wall -Wextra inverse.cpp -o inverse
+./inverse</code></pre>
+
+<p>
+  输出中的矩阵按行打印，元素保留 3 位小数。3×3 的逆用 <code>double</code>
+  做消元，判断零时留 1e-9 的容差。旋转矩阵那一行验证了
+  <code>RᵀR = I</code>。
+</p>
+
+<h3 id="s4-4-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-10</div>
+  <p>
+    读入 m、n 和一个 m×n 矩阵，输出它的转置。矩阵按行打印，
+    每个元素保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">2 3
+1 2 3
+4 5 6</pre>
+  <pre class="out" data-label="预期输出">[[1.000, 4.000], [2.000, 5.000], [3.000, 6.000]]</pre>
+  <p>
+    转置后的矩阵有 n 行 m 列，第 i 行第 j 列等于原矩阵的第 j 行第 i 列。
+  </p>
+  <!-- 答案 4-10 -->
+  <details class="ans" data-run="示例代码/答案/4-10.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        转置后的第 i 行第 j 列等于原矩阵的第 j 行第 i 列。读入时按行保存，
+        输出时交换两个下标。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const std::vector&lt;std::vector&lt;double&gt;&gt;&amp; M) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += "[";
+        for (std::size_t j = 0; j &lt; M[i].size(); j++) {
+            if (j &gt; 0) {
+                s += ", ";
+            }
+            s += f(M[i][j]);
+        }
+        s += "]";
+    }
+    return s + "]";
+}
+
+int main() {
+    int m, n;
+    std::cin &gt;&gt; m &gt;&gt; n;
+    std::vector&lt;std::vector&lt;double&gt;&gt; M(m, std::vector&lt;double&gt;(n));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+
+    std::vector&lt;std::vector&lt;double&gt;&gt; T(n, std::vector&lt;double&gt;(m));
+    for (int i = 0; i &lt; m; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            T[j][i] = M[i][j];
+        }
+    }
+    std::cout &lt;&lt; show(T) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-11</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的逆矩阵，每个元素保留 3 位小数；
+    如果不可逆，输出 <code>不可逆</code>。
+  </p>
+  <pre class="out" data-label="样例输入">2 1
+1 3</pre>
+  <pre class="out" data-label="预期输出">[[0.600, -0.200], [-0.200, 0.400]]</pre>
+  <p>
+    先用 <code>ad - bc</code> 判断行列式是否为 0，再用 2×2 逆公式。
+  </p>
+  <!-- 答案 4-11 -->
+  <details class="ans" data-run="示例代码/答案/4-11.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先算 <code>ad - bc</code>。绝对值小于 1e-9 时按 0 处理，没有逆矩阵；
+        否则按 <code>[[d, -b], [-c, a]] / (ad - bc)</code> 计算，四个元素
+        保留 3 位小数输出。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+const double EPS = 1e-9;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const std::vector&lt;std::vector&lt;double&gt;&gt;&amp; M) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += "[";
+        for (std::size_t j = 0; j &lt; M[i].size(); j++) {
+            if (j &gt; 0) {
+                s += ", ";
+            }
+            s += f(M[i][j]);
+        }
+        s += "]";
+    }
+    return s + "]";
+}
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+    double det = a * d - b * c;
+
+    if (std::abs(det) &lt; EPS) {
+        std::cout &lt;&lt; "不可逆" &lt;&lt; std::endl;
+        return 0;
+    }
+    std::vector&lt;std::vector&lt;double&gt;&gt; inv = {
+        {d / det, -b / det}, {-c / det, a / det}};
+    std::cout &lt;&lt; show(inv) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-12</div>
+  <p>
+    读入一个 3×3 矩阵，输出它的逆矩阵，每个元素保留 3 位小数；
+    如果不可逆，输出 <code>不可逆</code>。
+  </p>
+  <pre class="out" data-label="样例输入">2 1 0
+1 2 1
+0 1 2</pre>
+  <pre class="out" data-label="预期输出">[[0.750, -0.500, 0.250], [-0.500, 1.000, -0.500], [0.250, -0.500, 0.750]]</pre>
+  <p>
+    把矩阵与单位矩阵并排，做高斯—约当消元；左半边化成单位矩阵后，
+    右半边就是逆矩阵。
+  </p>
+  <!-- 答案 4-12 -->
+  <details class="ans" data-run="示例代码/答案/4-12.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把矩阵与单位矩阵并排，对左半边做高斯—约当消元。左半边化成单位矩阵后，
+        右半边就是逆矩阵；若左半边出现全零行，说明矩阵不可逆。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double EPS = 1e-9;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const Mat&amp; M) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; M.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += "[";
+        for (std::size_t j = 0; j &lt; M[i].size(); j++) {
+            if (j &gt; 0) {
+                s += ", ";
+            }
+            s += f(M[i][j]);
+        }
+        s += "]";
+    }
+    return s + "]";
+}
+
+bool inverse(const Mat&amp; M, Mat&amp; inv) {
+    int n = static_cast&lt;int&gt;(M.size());
+    Mat A(n, std::vector&lt;double&gt;(2 * n, 0.0));
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            A[i][j] = M[i][j];
+        }
+        A[i][n + i] = 1.0;
+    }
+    for (int c = 0; c &lt; n; c++) {
+        int p = -1;
+        for (int i = c; i &lt; n; i++) {
+            if (std::abs(A[i][c]) &gt; EPS) {
+                p = i;
+                break;
+            }
+        }
+        if (p &lt; 0) {
+            return false;
+        }
+        std::swap(A[c], A[p]);
+        double v = A[c][c];
+        for (double&amp; x : A[c]) {
+            x /= v;
+        }
+        for (int i = 0; i &lt; n; i++) {
+            if (i != c &amp;&amp; std::abs(A[i][c]) &gt; EPS) {
+                double k = A[i][c];
+                for (int j = 0; j &lt; 2 * n; j++) {
+                    A[i][j] -= k * A[c][j];
+                }
+            }
+        }
+    }
+    inv.assign(n, std::vector&lt;double&gt;(n, 0.0));
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; n; j++) {
+            inv[i][j] = A[i][n + j];
+        }
+    }
+    return true;
+}
+
+int main() {
+    Mat M(3, std::vector&lt;double&gt;(3));
+    for (auto&amp; row : M) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+
+    Mat inv;
+    if (!inverse(M, inv)) {
+        std::cout &lt;&lt; "不可逆" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; show(inv) &lt;&lt; std::endl;
+    }
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>求矩阵的转置，判断并计算 2×2 与 3×3 矩阵的逆，
+  理解正交矩阵的逆等于转置，并能用旋转矩阵验证这一性质。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-5">
+<h2><span class="no">4.5</span>坐标变换</h2>
+
+<p>
+  机器人、相机与地图里的坐标经常要在不同坐标系之间换算。二维平面上最常见的
+  两种变换是旋转与平移；把它们写成矩阵，就可以用矩阵乘法依次施加。
+  这一课讲坐标变换（coordinate transformation）的矩阵写法、复合顺序与逆变换，
+  并用齐次坐标把平移也纳入同一套乘法。
+</p>
+
+<h3 id="s4-5-1">坐标系与基<span class="key">（重点）</span></h3>
+
+<p>
+  一个二维坐标系由一个原点与两个基向量确定。标准基是
+  <code>e1 = [1, 0]</code> 与 <code>e2 = [0, 1]</code>，平面上任意一点
+  写成 <code>x e1 + y e2</code>，坐标就是 <code>(x, y)</code>。
+  换一组基向量之后，同一个点的坐标会改变；坐标变换研究的就是同一对象在
+  不同坐标系里的坐标如何换算。
+</p>
+
+<p>
+  下图固定点 P = (2.2, 1.4)，用滑块改变基 b1 = s (cosθ, sinθ) 与
+  b2 = s (−sinθ, cosθ)。虚线把 P 分解成沿 b1 与 b2 的两段，
+  读数给出同一位置在标准基与这组基下的两组坐标。坐标总是相对于某组基的；
+  后面讲相机时，同一点在世界、相机、图像几套坐标里的换算，用的是同一件事。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="basis"></div>
+  <figcaption>同一位置的两组坐标。P = (2.2, 1.4) 不动，b1 与 b2 随 θ、s
+    改变；虚线是沿两个基向量的分解。读数中「标准基」一栏是 P 的 x、y，
+    「这组基」一栏是 P = c1 b1 + c2 b2 的系数 c1、c2。s 改变基向量的
+    长度，c1、c2 也随之改变。</figcaption>
+</figure>
+
+<p>
+  点与向量要分开看：点表示位置，依赖原点；向量表示方向与长度，不依赖原点。
+  平移只改变点的位置，不改变向量。下面的齐次坐标会把这一点体现出来。
+</p>
+
+<h3 id="s4-5-2">旋转</h3>
+
+<p>
+  绕原点逆时针旋转 θ 角的矩阵是
+  <code>[[cosθ, -sinθ], [sinθ, cosθ]]</code>。把它乘到点
+  <code>[x, y]</code> 上，得到
+  <code>[x cosθ - y sinθ, x sinθ + y cosθ]</code>。旋转保持长度与夹角，
+  行列式等于 1。
+</p>
+
+<p>
+  输入的角度通常以度为单位，C++ 的三角函数用弧度，所以程序里先把角度乘
+  <code>PI / 180.0</code> 换算。旋转 90° 时余弦为 0、正弦为 1，
+  点 <code>[1, 0]</code> 转到 <code>[0, 1]</code>。
+</p>
+
+<h3 id="s4-5-3">平移与齐次坐标</h3>
+
+<p>
+  平移 <code>(tx, ty)</code> 是给每个点的坐标加上同一个向量。它不是二维
+  线性变换，无法写成 2×2 矩阵乘点的形式。齐次坐标（homogeneous coordinates）
+  在二维坐标后面补一个数：点写成 <code>[x, y, 1]</code>，平移就能写成
+  3×3 矩阵
+  <code>[[1, 0, tx], [0, 1, ty], [0, 0, 1]]</code>。
+</p>
+
+<p>
+  最后一行固定为 <code>[0, 0, 1]</code>。方向向量补 0，写成
+  <code>[x, y, 0]</code>，乘同一个矩阵时平移量不起作用，这与「平移不改变
+  方向向量」一致。三维空间的刚体变换用 4×4 矩阵，做法相同。
+</p>
+
+<h3 id="s4-5-4">复合、顺序与逆</h3>
+
+<p>
+  先施加变换 T1，再施加 T2，合起来是矩阵乘积 <code>T2 T1</code>。
+  顺序不能反：矩阵乘法一般不交换。写程序时先算好复合矩阵，再乘一次点，
+  比逐次乘点更省计算，也便于把整条坐标链保存下来。
+</p>
+
+<p>
+  旋转加平移的变换叫刚体变换。它的逆变换可以分两步求：旋转部分取转置，
+  平移部分取 <code>-Rᵀ t</code>，其中 R 是左上角的 2×2 旋转块，t 是平移列。
+  下面这段程序演示旋转、平移、复合与逆：
+</p>
+
+<pre data-lang="C++" data-name="transform.cpp"><code>// 4.5：旋转、平移、复合与逆变换。
+//
+// 平面上的刚体变换用 3×3 齐次矩阵表示：左上 2×2 是旋转，最后一列
+// 前两行是平移。点的齐次坐标写成 [x, y, 1]。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double PI = 3.14159265358979323846;
+
+Mat trans(double deg, double tx, double ty) {
+    double t = deg * PI / 180.0;
+    double c = std::cos(t);
+    double s = std::sin(t);
+    return {{c, -s, tx}, {s, c, ty}, {0.0, 0.0, 1.0}};
+}
+
+Mat mul(const Mat&amp; A, const Mat&amp; B) {
+    Mat C(3, std::vector&lt;double&gt;(3, 0.0));
+    for (int i = 0; i &lt; 3; i++) {
+        for (int j = 0; j &lt; 3; j++) {
+            for (int k = 0; k &lt; 3; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    return C;
+}
+
+std::vector&lt;double&gt; apply_point(const Mat&amp; T, const std::vector&lt;double&gt;&amp; p) {
+    return {T[0][0] * p[0] + T[0][1] * p[1] + T[0][2],
+            T[1][0] * p[0] + T[1][1] * p[1] + T[1][2]};
+}
+
+Mat inverse(const Mat&amp; T) {
+    Mat Rt = {{T[0][0], T[1][0], 0.0}, {T[0][1], T[1][1], 0.0},
+              {0.0, 0.0, 1.0}};
+    double tx = T[0][2];
+    double ty = T[1][2];
+    Rt[0][2] = -(Rt[0][0] * tx + Rt[0][1] * ty);
+    Rt[1][2] = -(Rt[1][0] * tx + Rt[1][1] * ty);
+    return Rt;
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+std::string show(const std::vector&lt;double&gt;&amp; v) {
+    std::string s = "[";
+    for (std::size_t i = 0; i &lt; v.size(); i++) {
+        if (i &gt; 0) {
+            s += ", ";
+        }
+        s += f(v[i]);
+    }
+    return s + "]";
+}
+
+int main() {
+    std::vector&lt;double&gt; p = {1.0, 0.0};
+    Mat R90 = trans(90.0, 0.0, 0.0);
+    Mat Tt = trans(0.0, 2.0, 1.0);
+    Mat T1 = mul(Tt, R90);
+    Mat T2 = trans(180.0, 1.0, 0.0);
+
+    std::cout &lt;&lt; "旋转 90° = " &lt;&lt; show(apply_point(R90, p)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "旋转后平移 = " &lt;&lt; show(apply_point(T1, p)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "复合矩阵作用于同一点 = " &lt;&lt; show(apply_point(mul(Tt, R90), p))
+              &lt;&lt; std::endl;
+    std::cout &lt;&lt; "逆变换送回 = "
+              &lt;&lt; show(apply_point(inverse(T1), apply_point(T1, p))) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "先 T1 再 T2 = " &lt;&lt; show(apply_point(mul(T2, T1), p))
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">旋转 90° = [0.000, 1.000]
+旋转后平移 = [2.000, 2.000]
+复合矩阵作用于同一点 = [2.000, 2.000]
+逆变换送回 = [1.000, 0.000]
+先 T1 再 T2 = [-1.000, -2.000]</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.5-坐标变换
+g++ -std=c++17 -Wall -Wextra transform.cpp -o transform
+./transform</code></pre>
+
+<p>
+  输出第三行与第二行相同，说明复合矩阵 <code>Tt R90</code> 作用一次，
+  与先旋转再平移等价。第四行把结果乘逆变换送回原来的点，第五行是另一个
+  复合顺序的结果。
+</p>
+
+<h3 id="s4-5-5">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-13</div>
+  <p>
+    读入一个角度（度）与一个点，输出该点绕原点逆时针旋转这个角度后的坐标。
+    结果写成 <code>[x, y]</code>，每个分量保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">90
+1 0</pre>
+  <pre class="out" data-label="预期输出">[0.000, 1.000]</pre>
+  <p>
+    第一行是角度，第二行是点的 x、y 坐标。旋转矩阵见本课正文；
+    角度先乘 <code>PI / 180.0</code> 换成弧度。
+  </p>
+  <!-- 答案 4-13 -->
+  <details class="ans" data-run="示例代码/答案/4-13.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        角度先乘 <code>PI / 180.0</code> 换成弧度，再按旋转矩阵
+        <code>[[c, -s], [s, c]]</code> 乘点。结果的两个分量分别保留 3 位小数。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+const double PI = 3.14159265358979323846;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    double deg, x, y;
+    std::cin &gt;&gt; deg &gt;&gt; x &gt;&gt; y;
+
+    double t = deg * PI / 180.0;
+    double c = std::cos(t);
+    double s = std::sin(t);
+    double rx = c * x - s * y;
+    double ry = s * x + c * y;
+
+    std::cout &lt;&lt; "[" &lt;&lt; f(rx) &lt;&lt; ", " &lt;&lt; f(ry) &lt;&lt; "]" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-14</div>
+  <p>
+    读入一个角度、一个平移量和一个点。先把点绕原点逆时针旋转这个角度，
+    再加上平移量，输出最终坐标，每个分量保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">90
+2 1
+1 0</pre>
+  <pre class="out" data-label="预期输出">[2.000, 2.000]</pre>
+  <p>
+    第一行是角度，第二行是平移量 tx、ty，第三行是点的 x、y 坐标。
+    先算旋转矩阵乘点，再加平移量。
+  </p>
+  <!-- 答案 4-14 -->
+  <details class="ans" data-run="示例代码/答案/4-14.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先算旋转后的坐标，再加上平移量 <code>tx</code>、<code>ty</code>。
+        顺序不能反：先平移再旋转会得到不同的点。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+const double PI = 3.14159265358979323846;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    double deg, tx, ty, x, y;
+    std::cin &gt;&gt; deg &gt;&gt; tx &gt;&gt; ty &gt;&gt; x &gt;&gt; y;
+
+    double t = deg * PI / 180.0;
+    double c = std::cos(t);
+    double s = std::sin(t);
+    double rx = c * x - s * y + tx;
+    double ry = s * x + c * y + ty;
+
+    std::cout &lt;&lt; "[" &lt;&lt; f(rx) &lt;&lt; ", " &lt;&lt; f(ry) &lt;&lt; "]" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-15</div>
+  <p>
+    读入两个变换和一个点。每个变换都是「先绕原点逆时针旋转给定角度，
+    再平移给定向量」。先施加第一个变换，再施加第二个，输出最终坐标，
+    每个分量保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">90 2 1
+180 1 0
+1 0</pre>
+  <pre class="out" data-label="预期输出">[-1.000, -2.000]</pre>
+  <p>
+    第一行与第二行分别是两个变换的角度、tx、ty，第三行是点的坐标。
+    用 3×3 齐次矩阵表示每个变换；先做 T1 再做 T2，复合矩阵是
+    <code>T2 T1</code>。
+  </p>
+  <!-- 答案 4-15 -->
+  <details class="ans" data-run="示例代码/答案/4-15.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每个变换写成 3×3 齐次矩阵，左上角是旋转块，最后一列是平移量。
+        先做 T1 再做 T2，复合矩阵是 <code>T2 T1</code>；用复合矩阵乘一次点，
+        与逐次施加两个变换等价。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+const double PI = 3.14159265358979323846;
+
+Mat trans(double deg, double tx, double ty) {
+    double t = deg * PI / 180.0;
+    double c = std::cos(t);
+    double s = std::sin(t);
+    return {{c, -s, tx}, {s, c, ty}, {0.0, 0.0, 1.0}};
+}
+
+Mat mul(const Mat&amp; A, const Mat&amp; B) {
+    Mat C(3, std::vector&lt;double&gt;(3, 0.0));
+    for (int i = 0; i &lt; 3; i++) {
+        for (int j = 0; j &lt; 3; j++) {
+            for (int k = 0; k &lt; 3; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    return C;
+}
+
+std::vector&lt;double&gt; apply_point(const Mat&amp; T, const std::vector&lt;double&gt;&amp; p) {
+    return {T[0][0] * p[0] + T[0][1] * p[1] + T[0][2],
+            T[1][0] * p[0] + T[1][1] * p[1] + T[1][2]};
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    double d1, tx1, ty1, d2, tx2, ty2, x, y;
+    std::cin &gt;&gt; d1 &gt;&gt; tx1 &gt;&gt; ty1 &gt;&gt; d2 &gt;&gt; tx2 &gt;&gt; ty2 &gt;&gt; x &gt;&gt; y;
+
+    Mat T1 = trans(d1, tx1, ty1);
+    Mat T2 = trans(d2, tx2, ty2);
+    std::vector&lt;double&gt; q = apply_point(mul(T2, T1), {x, y});
+
+    std::cout &lt;&lt; "[" &lt;&lt; f(q[0]) &lt;&lt; ", " &lt;&lt; f(q[1]) &lt;&lt; "]" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>写出二维旋转与平移的矩阵，用齐次坐标把平移纳入
+  矩阵乘法，按正确顺序复合多个变换，并求刚体变换的逆。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-6">
+<h2><span class="no">4.6</span>特征值与特征向量</h2>
+
+<p>
+  矩阵乘一个向量，通常会同时改变它的方向与长度。有些特殊方向只改变长度、
+  不改变方向，这些方向由特征向量描述，长度变化的倍数就是特征值。
+  这一课讲二维特征值与特征向量的求法、对称矩阵的对角化，以及用幂迭代
+  求主特征值。
+</p>
+
+<h3 id="s4-6-1">定义<span class="key">（重点）</span></h3>
+
+<p>
+  对方阵 A，如果存在非零向量 v 与数 λ，使 <code>A v = λ v</code>，
+  则 λ 叫 A 的特征值（eigenvalue），v 叫对应于 λ 的特征向量（eigenvector）。
+  特征向量不能是零向量；同一个特征值对应的特征向量可以乘任意非零倍数，
+  方向不变。
+</p>
+
+<p>
+  几何上，特征向量指出矩阵作用后方向不变的方向，特征值给出该方向上的
+  伸缩倍数。λ 为负表示方向反向，λ 的绝对值小于 1 表示缩短。
+  旋转 90° 的矩阵没有实特征值，因为平面上没有哪个非零向量旋转 90° 后
+  还留在原来的直线上。
+</p>
+
+<p>
+  下图用三个滑块改变实对称矩阵 A = [[a11, a12], [a12, a22]]。实线圆是
+  输入平面上所有长度为 1 的向量，它的像是一个椭圆；两条虚线是特征向量
+  所在的方向，读数给出对应的 λ1 与 λ2。特征值为正时，该方向的像与原方向
+  同向；为负时反向；为零时整个方向被压到原点。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="eigen"></div>
+  <figcaption>实对称矩阵把单位圆映射成椭圆。椭圆的两条轴沿特征向量方向，
+    半轴长度是 |λ1| 与 |λ2|。读数为当前矩阵、两个特征值与迹。a12 = 0 时，
+    矩阵已经是对角形，两条轴与坐标轴重合。</figcaption>
+</figure>
+
+<h3 id="s4-6-2">2×2 的求法</h3>
+
+<p>
+  把 <code>A v = λ v</code> 写成 <code>(A - λI) v = 0</code>。这个方程有
+  非零解的条件是 <code>det(A - λI) = 0</code>，叫特征方程。对 2×2 矩阵
+  <code>[[a, b], [c, d]]</code>，特征方程是
+  <code>λ² - (a+d)λ + (ad-bc) = 0</code>，其中 <code>a+d</code> 叫迹。
+</p>
+
+<p>
+  用求根公式解这个二次方程，判别式为
+  <code>(a+d)² - 4(ad-bc)</code>。判别式大于等于 0 时有两个实特征值；
+  小于 0 时没有实特征值。两个特征值相等时，特征方程有重根。
+</p>
+
+<h3 id="s4-6-3">特征向量</h3>
+
+<p>
+  求出 λ 之后，把它代回 <code>(A - λI) v = 0</code>，解出非零的 v。
+  二维情况下，取矩阵的一行就能得到一个与它垂直的非零向量。例如
+  <code>A = [[2, 1], [1, 2]]</code> 与 λ = 3，方程是
+  <code>-v1 + v2 = 0</code>，所以 <code>v = [1, 1]</code> 是一个特征向量。
+</p>
+
+<p>
+  特征向量有符号与倍数的歧义：<code>[1, 1]</code> 与
+  <code>[-1, -1]</code> 都是同一个特征值的特征向量。本课统一把它化成
+  单位向量，并规定第一个非零分量为正，答案就唯一了。
+</p>
+
+<h3 id="s4-6-4">对称矩阵的对角化</h3>
+
+<p>
+  实对称矩阵的特征值都是实数，不同特征值对应的特征向量互相垂直。
+  把单位特征向量按列排成矩阵 Q，Q 是正交矩阵，满足
+  <code>QᵀQ = I</code>。以特征值为对角元素排成对角矩阵 Λ，则有
+  <code>A = Q Λ Qᵀ</code>；这个过程叫对角化（diagonalization）。
+</p>
+
+<p>
+  对角化把矩阵乘法变成逐方向的数乘：<code>A = Q Λ Qᵀ</code> 表示先换到
+  特征向量这组基，按特征值缩放，再换回标准基。计算矩阵的高次幂时，
+  这个形式尤其方便。
+</p>
+
+<h3 id="s4-6-5">幂迭代</h3>
+
+<p>
+  求最大特征值常用的数值方法是幂迭代（power iteration）：任取一个非零
+  初始向量 v，反复计算 <code>w = A v</code> 并把 w 归一化，用
+  <code>vᵀw / vᵀv</code> 估计特征值，这个比值叫瑞利商（Rayleigh quotient）。
+  若最大特征值的绝对值严格大于其余特征值，且初始向量在对应特征方向上有
+  非零分量，迭代会收敛到主特征值与主特征向量。
+</p>
+
+<p>
+  下面这段程序求 2×2 矩阵的特征值与特征向量，验证对角化，再对 3×3 矩阵
+  做 100 步幂迭代：
+</p>
+
+<pre data-lang="C++" data-name="eigen.cpp"><code>// 4.6：2×2 特征值、特征向量与幂迭代。
+//
+// 特征方程是 λ² - (a+d)λ + (ad-bc) = 0。对称矩阵的两个特征向量正交，
+// Q Λ Qᵀ 能还原原矩阵。幂迭代每步乘一次 A 并归一化，用瑞利商估计主特征值。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+using Vec = std::vector&lt;double&gt;;
+using Mat = std::vector&lt;Vec&gt;;
+
+std::vector&lt;double&gt; eig2(const Mat&amp; M) {
+    double a = M[0][0], b = M[0][1];
+    double c = M[1][0], d = M[1][1];
+    double t = a + d;
+    double det = a * d - b * c;
+    double s = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    return {(t + s) / 2.0, (t - s) / 2.0};
+}
+
+Vec eigvec2(const Mat&amp; M, double lam) {
+    double a = M[0][0], b = M[0][1];
+    double c = M[1][0], d = M[1][1];
+    Vec v;
+    if (std::abs(b) &gt; 1e-12) {
+        v = {b, lam - a};
+    } else if (std::abs(c) &gt; 1e-12) {
+        v = {lam - d, c};
+    } else if (std::abs(a - lam) &lt; 1e-12) {
+        v = {1.0, 0.0};
+    } else {
+        v = {0.0, 1.0};
+    }
+    double n = std::sqrt(v[0] * v[0] + v[1] * v[1]);
+    v[0] /= n;
+    v[1] /= n;
+    for (double x : v) {
+        if (std::abs(x) &gt; 1e-12) {
+            if (x &lt; 0.0) {
+                v[0] = -v[0];
+                v[1] = -v[1];
+            }
+            break;
+        }
+    }
+    return v;
+}
+
+double power(const Mat&amp; A, Vec v, int steps = 100) {
+    double lam = 0.0;
+    for (int step = 0; step &lt; steps; step++) {
+        Vec w(v.size(), 0.0);
+        for (std::size_t i = 0; i &lt; v.size(); i++) {
+            for (std::size_t j = 0; j &lt; v.size(); j++) {
+                w[i] += A[i][j] * v[j];
+            }
+        }
+        double vv = 0.0;
+        double vw = 0.0;
+        for (std::size_t i = 0; i &lt; v.size(); i++) {
+            vv += v[i] * v[i];
+            vw += v[i] * w[i];
+        }
+        lam = vw / vv;
+        double n = 0.0;
+        for (double x : w) {
+            n += x * x;
+        }
+        n = std::sqrt(n);
+        for (double&amp; x : w) {
+            x /= n;
+        }
+        v = w;
+    }
+    return lam;
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    Mat A = {{2.0, 1.0}, {1.0, 2.0}};
+    std::vector&lt;double&gt; lams = eig2(A);
+    Vec v1 = eigvec2(A, lams[0]);
+    Vec v2 = eigvec2(A, lams[1]);
+    Mat Q = {{v1[0], v2[0]}, {v1[1], v2[1]}};
+    Mat QlQ = {{0.0, 0.0}, {0.0, 0.0}};
+    for (int i = 0; i &lt; 2; i++) {
+        for (int j = 0; j &lt; 2; j++) {
+            for (int k = 0; k &lt; 2; k++) {
+                QlQ[i][j] += Q[i][k] * lams[k] * Q[j][k];
+            }
+        }
+    }
+    Mat B = {{4.0, 1.0, 0.0}, {1.0, 3.0, 1.0}, {0.0, 1.0, 2.0}};
+
+    std::cout &lt;&lt; "特征值 = " &lt;&lt; f(lams[0]) &lt;&lt; ", " &lt;&lt; f(lams[1])
+              &lt;&lt; std::endl;
+    std::cout &lt;&lt; "较大特征值的单位特征向量 = [" &lt;&lt; f(v1[0]) &lt;&lt; ", "
+              &lt;&lt; f(v1[1]) &lt;&lt; "]" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Q Λ Qᵀ = [[" &lt;&lt; f(QlQ[0][0]) &lt;&lt; ", " &lt;&lt; f(QlQ[0][1])
+              &lt;&lt; "], [" &lt;&lt; f(QlQ[1][0]) &lt;&lt; ", " &lt;&lt; f(QlQ[1][1]) &lt;&lt; "]]"
+              &lt;&lt; std::endl;
+    std::cout &lt;&lt; "幂迭代的主特征值 = " &lt;&lt; f(power(B, {1.0, 1.0, 1.0}))
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">特征值 = 3.000, 1.000
+较大特征值的单位特征向量 = [0.707, 0.707]
+Q Λ Qᵀ = [[2.000, 1.000], [1.000, 2.000]]
+幂迭代的主特征值 = 4.732</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.6-特征值
+g++ -std=c++17 -Wall -Wextra eigen.cpp -o eigen
+./eigen</code></pre>
+
+<p>
+  输出第三行把 <code>Q Λ Qᵀ</code> 算回来，与原来的 A 相同，验证了对角化。
+  最后一行是幂迭代 100 步之后的瑞利商，与 3×3 矩阵的主特征值一致。
+</p>
+
+<h3 id="s4-6-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-16</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的两个实特征值，按从大到小排列，保留 3 位小数。
+    没有实特征值时输出 <code>无实特征值</code>。
+  </p>
+  <pre class="out" data-label="样例输入">2 1
+1 2</pre>
+  <pre class="out" data-label="预期输出">特征值 = 3.000, 1.000</pre>
+  <p>
+    输入按两行给出四个元素。用迹与行列式写特征方程，判别式小于 0 时
+    没有实特征值；两个特征值相等时输出两次。
+  </p>
+  <!-- 答案 4-16 -->
+  <details class="ans" data-run="示例代码/答案/4-16.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        特征方程是 <code>λ² - (a+d)λ + (ad-bc) = 0</code>。判别式小于 0 时
+        没有实特征值；否则两个根按从大到小输出。判别式接近 0 时按 0 处理，
+        避免浮点误差把重根拆成两个。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+
+    double t = a + d;
+    double det = a * d - b * c;
+    double disc = t * t - 4.0 * det;
+    if (disc &lt; -1e-9) {
+        std::cout &lt;&lt; "无实特征值" &lt;&lt; std::endl;
+        return 0;
+    }
+    double s = std::sqrt(std::max(disc, 0.0));
+    double l1 = (t + s) / 2.0;
+    double l2 = (t - s) / 2.0;
+    if (l1 &lt; l2) {
+        std::swap(l1, l2);
+    }
+    std::cout &lt;&lt; "特征值 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; l1
+              &lt;&lt; ", " &lt;&lt; l2 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-17</div>
+  <p>
+    读入一个 2×2 对称矩阵，输出较大的特征值与对应的单位特征向量。
+    特征向量写成 <code>[x, y]</code>，分量保留 3 位小数；规定第一个
+    非零分量为正。
+  </p>
+  <pre class="out" data-label="样例输入">2 1
+1 2</pre>
+  <pre class="out" data-label="预期输出">较大特征值 = 3.000
+单位特征向量 = [0.707, 0.707]</pre>
+  <p>
+    先求较大的特征值，再解 <code>(A - λI) v = 0</code> 得到一个特征向量，
+    除以它的长度化成单位向量，最后按符号规定调整方向。
+  </p>
+  <!-- 答案 4-17 -->
+  <details class="ans" data-run="示例代码/答案/4-17.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先求较大的特征值，再解 <code>(A - λI) v = 0</code> 得到一个特征向量。
+        把它除以长度化成单位向量，最后检查第一个非零分量：若为负，两个分量
+        同时变号。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+
+    double t = a + d;
+    double det = a * d - b * c;
+    double s = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double lam = (t + s) / 2.0;
+
+    std::vector&lt;double&gt; v;
+    if (std::abs(b) &gt; 1e-12) {
+        v = {b, lam - a};
+    } else if (std::abs(c) &gt; 1e-12) {
+        v = {lam - d, c};
+    } else if (std::abs(a - lam) &lt; 1e-12) {
+        v = {1.0, 0.0};
+    } else {
+        v = {0.0, 1.0};
+    }
+    double n = std::sqrt(v[0] * v[0] + v[1] * v[1]);
+    v[0] /= n;
+    v[1] /= n;
+    for (double x : v) {
+        if (std::abs(x) &gt; 1e-12) {
+            if (x &lt; 0.0) {
+                v[0] = -v[0];
+                v[1] = -v[1];
+            }
+            break;
+        }
+    }
+
+    std::cout &lt;&lt; "较大特征值 = " &lt;&lt; f(lam) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "单位特征向量 = [" &lt;&lt; f(v[0]) &lt;&lt; ", " &lt;&lt; f(v[1]) &lt;&lt; "]"
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-18</div>
+  <p>
+    读入一个 3×3 对称矩阵与一个三维初始向量，做 100 步幂迭代，
+    输出主特征值，保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4 1 0
+1 3 1
+0 1 2
+1 1 1</pre>
+  <pre class="out" data-label="预期输出">主特征值 = 4.732</pre>
+  <p>
+    前三行是矩阵的三行，第四行是初始向量。每一步先算 <code>A v</code>，
+    用瑞利商更新特征值估计，再把 <code>A v</code> 归一化作为下一步的 v。
+  </p>
+  <!-- 答案 4-18 -->
+  <details class="ans" data-run="示例代码/答案/4-18.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每一步先算 <code>w = A v</code>，用瑞利商
+        <code>vᵀw / vᵀv</code> 更新特征值估计，再把 <code>w</code> 归一化
+        作为下一步的 <code>v</code>。100 步之后输出最后的估计值。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;std::vector&lt;double&gt;&gt; A(3, std::vector&lt;double&gt;(3));
+    for (auto&amp; row : A) {
+        for (double&amp; x : row) {
+            std::cin &gt;&gt; x;
+        }
+    }
+    std::vector&lt;double&gt; v(3);
+    for (double&amp; x : v) {
+        std::cin &gt;&gt; x;
+    }
+
+    double lam = 0.0;
+    for (int step = 0; step &lt; 100; step++) {
+        std::vector&lt;double&gt; w(3, 0.0);
+        for (int i = 0; i &lt; 3; i++) {
+            for (int j = 0; j &lt; 3; j++) {
+                w[i] += A[i][j] * v[j];
+            }
+        }
+        double vv = 0.0;
+        double vw = 0.0;
+        for (int i = 0; i &lt; 3; i++) {
+            vv += v[i] * v[i];
+            vw += v[i] * w[i];
+        }
+        lam = vw / vv;
+        double n = std::sqrt(w[0] * w[0] + w[1] * w[1] + w[2] * w[2]);
+        for (double&amp; x : w) {
+            x /= n;
+        }
+        v = w;
+    }
+
+    std::cout &lt;&lt; "主特征值 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; lam
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>求 2×2 矩阵的特征值与特征向量，把对称矩阵写成
+  <code>Q Λ Qᵀ</code>，并用幂迭代求主特征值。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-7">
+<h2><span class="no">4.7</span>最小二乘</h2>
+
+<p>
+  测量数据通常多于未知数，方程组往往没有精确解。最小二乘（least squares）
+  不要求每个方程都成立，而是让所有方程的偏差平方和最小。这一课讲残差、
+  正规方程与直线拟合，这是实验数据处理与参数估计中最常用的方法之一。
+</p>
+
+<h3 id="s4-7-1">超定方程组与残差</h3>
+
+<p>
+  方程个数多于未知数个数的方程组叫超定方程组（overdetermined system）。
+  写成 <code>A x = b</code> 时，A 是一个高矩阵，列数小于行数。一般来说
+  不存在 x 使等式严格成立。
+</p>
+
+<p>
+  对任意 x，把差值 <code>r = A x - b</code> 叫残差（residual）。最小二乘
+  的目标是找使 <code>|r|²</code> 最小的 x，也就是让残差向量的长度最小。
+  这个目标对每个方程一视同仁，每个偏差都平方后计入总和。
+</p>
+
+<h3 id="s4-7-2">正规方程</h3>
+
+<p>
+  把 <code>|A x - b|²</code> 对 x 求导并令导数为零，得到正规方程
+  （normal equations）：<code>AᵀA x = Aᵀb</code>。若 A 的列向量线性无关，
+  <code>AᵀA</code> 可逆，最小二乘解是
+  <code>x = (AᵀA)⁻¹ Aᵀ b</code>。
+</p>
+
+<p>
+  正规方程的几何解释是：残差向量与 A 的每一列都垂直。最小二乘解对应的
+  <code>A x</code> 是 b 在 A 的列空间上的正交投影，剩下的残差垂直于这个
+  列空间，无法再通过调整 x 缩短。
+</p>
+
+<p>
+  下图用四个点 (1, 2)、(2, 3)、(3, 5)、(4, 7) 演示直线的最小二乘拟合。
+  滑块改变直线 y = a x + b 的斜率与截距；竖直线段是各点的残差，
+  读数为 a、b 与残差平方和（各残差平方的总和）。虚线是最小二乘解对应的
+  直线，「取最小二乘解」按钮把 a、b 直接置为这组值。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="lsq"></div>
+  <figcaption>最小二乘直线拟合。四个点为 (1, 2)、(2, 3)、(3, 5)、(4, 7)；
+    实线是当前直线，竖直线段是残差，斜贯图面的长虚线是最小二乘解。
+    读数为当前的 a、b 与残差平方和；残差平方和最小时，a = 1.700、
+    b = 0.000、残差平方和 = 0.300。</figcaption>
+</figure>
+
+<h3 id="s4-7-3">直线拟合</h3>
+
+<p>
+  给 n 个点 <code>(x_i, y_i)</code>，要拟合直线 <code>y = a x + b</code>。
+  把每个点代入，得到 n 个方程，未知数是 a 与 b。设计矩阵的第 i 行是
+  <code>[x_i, 1]</code>，因此正规方程可以用五个和表示：
+  <code>n</code>、<code>Σx</code>、<code>Σy</code>、<code>Σx²</code>、
+  <code>Σxy</code>。
+</p>
+
+<p>
+  解出 <code>a = (nΣxy - ΣxΣy) / (nΣx² - (Σx)²)</code>，
+  <code>b = (Σy - aΣx) / n</code>。分母为 0 时所有 x 相同，直线斜率
+  无法确定，程序应当单独报错或提示。残差平方和是
+  <code>Σ(y_i - a x_i - b)²</code>。
+</p>
+
+<h3 id="s4-7-4">过原点拟合与预测</h3>
+
+<p>
+  如果直线必须经过原点，模型是 <code>y = a x</code>，只剩一个未知数。
+  正规方程退化成 <code>a = Σxy / Σx²</code>。求出 a、b 之后，把新的 x
+  代入 <code>a x + b</code> 就得到预测值；预测只在数据覆盖的范围内较可靠，
+  外推到很远的位置需要额外的依据。
+</p>
+
+<p>
+  下面这段程序对四个点做直线拟合，并给出残差平方和与 x = 5 处的预测值：
+</p>
+
+<pre data-lang="C++" data-name="least_squares.cpp"><code>// 4.7：直线拟合与最小二乘。
+//
+// 拟合 y = a x + b，正规方程是 [n Σx; Σx Σx²] [b; a] = [Σy; Σxy]。
+// 解出 a、b 后，残差平方和是每个点的误差平方之和。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+using Point = std::pair&lt;double, double&gt;;
+
+struct Fit {
+    double a;
+    double b;
+    double sse;
+};
+
+Fit fit(const std::vector&lt;Point&gt;&amp; points, bool through_origin = false) {
+    int n = static_cast&lt;int&gt;(points.size());
+    double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
+    for (const Point&amp; p : points) {
+        sx += p.first;
+        sy += p.second;
+        sxx += p.first * p.first;
+        sxy += p.first * p.second;
+    }
+    double a, b;
+    if (through_origin) {
+        a = sxy / sxx;
+        b = 0.0;
+    } else {
+        double det = n * sxx - sx * sx;
+        a = (n * sxy - sx * sy) / det;
+        b = (sy - a * sx) / n;
+    }
+    double sse = 0.0;
+    for (const Point&amp; p : points) {
+        double e = p.second - (a * p.first + b);
+        sse += e * e;
+    }
+    return {a, b, sse};
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    std::vector&lt;Point&gt; points = {{1.0, 2.0}, {2.0, 3.0}, {3.0, 5.0}, {4.0, 7.0}};
+    Fit result = fit(points);
+
+    std::cout &lt;&lt; "a = " &lt;&lt; f(result.a) &lt;&lt; ", b = " &lt;&lt; f(result.b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "残差平方和 = " &lt;&lt; f(result.sse) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "x = 5 时的预测值 = " &lt;&lt; f(result.a * 5.0 + result.b)
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">a = 1.700, b = 0.000
+残差平方和 = 0.300
+x = 5 时的预测值 = 8.500</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.7-最小二乘
+g++ -std=c++17 -Wall -Wextra least_squares.cpp -o least_squares
+./least_squares</code></pre>
+
+<p>
+  输出第一行是斜率与截距，第二行是四个点的残差平方和，第三行是预测值。
+  数据点的分布接近直线 <code>y = 1.7x</code>，所以截距接近 0，残差很小。
+</p>
+
+<h3 id="s4-7-5">数值注意</h3>
+
+<p>
+  正规方程会把矩阵的条件数平方（条件数衡量矩阵求逆对误差的放大程度，
+  下一课给出定义），数据尺度差别大时误差会被放大。实际计算
+  常先把 x 减去平均值做中心化，或者直接对设计矩阵做 QR 分解、奇异值分解，
+  而不显式构造 <code>AᵀA</code>。这些方法的细节超出本课范围，需要时可以
+  搜索「最小二乘 QR 分解」与「最小二乘 奇异值分解」。
+</p>
+
+<h3 id="s4-7-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-19</div>
+  <p>
+    读入 n 个点，拟合直线 <code>y = a x + b</code>。输出斜率 a、截距 b 与
+    残差平方和，各占一行，保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4
+1 2
+2 3
+3 5
+4 7</pre>
+  <pre class="out" data-label="预期输出">a = 1.700
+b = 0.000
+残差平方和 = 0.300</pre>
+  <p>
+    第一行是点的个数 n，接下来每行一个点。按本课给出的五个和求 a、b，
+    再逐点算残差平方并求和。输出格式依次是 <code>a = </code>、
+    <code>b = </code>、<code>残差平方和 = </code>。
+  </p>
+  <!-- 答案 4-19 -->
+  <details class="ans" data-run="示例代码/答案/4-19.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先累加 <code>n</code>、<code>Σx</code>、<code>Σy</code>、
+        <code>Σx²</code>、<code>Σxy</code>，再代入斜率与截距的公式。
+        残差平方和是每个点 <code>(y - a x - b)²</code> 的总和。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+struct Fit {
+    double a;
+    double b;
+    double sse;
+};
+
+Fit fit(const std::vector&lt;std::pair&lt;double, double&gt;&gt;&amp; pts) {
+    int n = static_cast&lt;int&gt;(pts.size());
+    double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
+    for (const auto&amp; p : pts) {
+        sx += p.first;
+        sy += p.second;
+        sxx += p.first * p.first;
+        sxy += p.first * p.second;
+    }
+    double a = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+    double b = (sy - a * sx) / n;
+    double sse = 0.0;
+    for (const auto&amp; p : pts) {
+        double e = p.second - (a * p.first + b);
+        sse += e * e;
+    }
+    return {a, b, sse};
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;std::pair&lt;double, double&gt;&gt; pts(n);
+    for (auto&amp; p : pts) {
+        std::cin &gt;&gt; p.first &gt;&gt; p.second;
+    }
+
+    Fit r = fit(pts);
+    std::cout &lt;&lt; "a = " &lt;&lt; f(r.a) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "b = " &lt;&lt; f(r.b) &lt;&lt; std::endl;
+    std::cout &lt;&lt; "残差平方和 = " &lt;&lt; f(r.sse) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-20</div>
+  <p>
+    读入 n 个点，拟合过原点的直线 <code>y = a x</code>，输出 a，
+    保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4
+1 2
+2 3
+3 5
+4 7</pre>
+  <pre class="out" data-label="预期输出">a = 1.700</pre>
+  <p>
+    输入格式与上一题相同。过原点时 b = 0，只有一个未知量
+    <code>a = Σxy / Σx²</code>。
+  </p>
+  <!-- 答案 4-20 -->
+  <details class="ans" data-run="示例代码/答案/4-20.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        过原点时 <code>b = 0</code>，只剩一个未知量。正规方程退化成
+        <code>a = Σxy / Σx²</code>，直接累加两个和即可。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;std::pair&lt;double, double&gt;&gt; pts(n);
+    for (auto&amp; p : pts) {
+        std::cin &gt;&gt; p.first &gt;&gt; p.second;
+    }
+
+    double sxx = 0.0;
+    double sxy = 0.0;
+    for (const auto&amp; p : pts) {
+        sxx += p.first * p.first;
+        sxy += p.first * p.second;
+    }
+    double a = sxy / sxx;
+
+    std::cout &lt;&lt; "a = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; a
+              &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-21</div>
+  <p>
+    读入 n 个点与一个横坐标 x0，先拟合直线 <code>y = a x + b</code>，
+    再输出 x0 处的预测值，保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4
+1 2
+2 3
+3 5
+4 7
+5</pre>
+  <pre class="out" data-label="预期输出">预测值 = 8.500</pre>
+  <p>
+    第一行是 n，接下来 n 行是点，最后一行是 x0。先按正规方程求 a、b，
+    再算 <code>a x0 + b</code>，输出格式是 <code>预测值 = </code>。
+  </p>
+  <!-- 答案 4-21 -->
+  <details class="ans" data-run="示例代码/答案/4-21.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先按正规方程求出 <code>a</code>、<code>b</code>，再把 <code>x0</code>
+        代入 <code>a x0 + b</code>。预测值只保留 3 位小数，中间计算不要提前
+        四舍五入。
+      </p>
+      <pre><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;std::pair&lt;double, double&gt;&gt; pts(n);
+    for (auto&amp; p : pts) {
+        std::cin &gt;&gt; p.first &gt;&gt; p.second;
+    }
+    double x0;
+    std::cin &gt;&gt; x0;
+
+    double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
+    for (const auto&amp; p : pts) {
+        sx += p.first;
+        sy += p.second;
+        sxx += p.first * p.first;
+        sxy += p.first * p.second;
+    }
+    double a = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+    double b = (sy - a * sx) / n;
+
+    std::cout &lt;&lt; "预测值 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+              &lt;&lt; a * x0 + b &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>写出超定方程组的残差与正规方程，用五个和做直线
+  拟合，求过原点拟合的斜率，并用拟合结果做预测。
+</p>
+
+</section>
+
+<section class="lesson" id="l4-8">
+<h2><span class="no">4.8</span>奇异值分解（选学）</h2>
+
+<p>
+  奇异值分解（singular value decomposition，SVD）把任意矩阵拆成三个矩阵的
+  乘积，是矩阵计算里适用面最广的分解之一。这一课讲它的定义与几何意义、
+  与 <code>AᵀA</code> 特征值的关系、2×2 的算法、低秩近似、伪逆与条件数。
+  本课标为选学：正文与练习仍然完整，但不作为后续部分的先修要求。
+</p>
+
+<h3 id="s4-8-1">定义与几何意义</h3>
+
+<p>
+  对任意 m×n 矩阵 A，都存在分解 <code>A = U Σ Vᵀ</code>。U 是 m×m 正交
+  矩阵，V 是 n×n 正交矩阵，Σ 是 m×n 的对角形矩阵，对角元素
+  <code>σ1 ≥ σ2 ≥ … ≥ 0</code> 叫奇异值（singular value）。
+  奇异值一定非负，个数等于 min(m, n)。
+</p>
+
+<p>
+  几何上，这个分解表示任何线性变换都可以拆成三步：先在输入空间里旋转或
+  反射（Vᵀ），再沿坐标轴按奇异值缩放（Σ），最后在输出空间里旋转或反射
+  （U）。奇异值为 0 的方向被压到零，所以非零奇异值的个数等于矩阵的秩。
+</p>
+
+<p>
+  下图把 A = [[4, 0], [3, 5]] 的分解按作用顺序画出来：单位圆先经 Vᵀ，
+  再经 Σ，最后经 U。按钮逐步切换，「重来」回到单位圆。读数为两个奇异值
+  与当前这一步的矩阵；前两步在输入平面内，后两步在输出平面内。
+</p>
+
+<figure class="fig">
+  <div class="geo" data-geo="svd"></div>
+  <figcaption>奇异值分解的三步几何。单位圆依次经过 Vᵀ、Σ、U；Σ 把两个
+    坐标方向分别乘以 σ1 与 σ2。对这组数据，σ1 ≈ 6.325、σ2 ≈ 3.162，
+    条件数约为 2。每步的读数给出当前矩阵与形状。</figcaption>
+</figure>
+
+<h3 id="s4-8-2">与 AᵀA 的关系</h3>
+
+<p>
+  把 <code>A = U Σ Vᵀ</code> 代入 <code>AᵀA</code>。由转置的性质
+  <code>(X Y)ᵀ = Yᵀ Xᵀ</code> 与正交矩阵的 <code>Uᵀ U = I</code>，逐步展开：
+</p>
+
+<p>
+  <code>AᵀA = (U Σ Vᵀ)ᵀ (U Σ Vᵀ) = V Σᵀ Uᵀ U Σ Vᵀ
+  = V Σᵀ Σ Vᵀ = V Σ² Vᵀ</code>。
+</p>
+
+<p>
+  其中 <code>Σᵀ Σ</code> 是 n×n 对角矩阵，对角元素依次为
+  <code>σ1², σ2², …</code>，个数为 <code>min(m, n)</code>；若
+  <code>n &gt; m</code>，其余对角元素为 0。这里的 <code>Σ²</code> 就指
+  <code>Σᵀ Σ</code>，不是把长方矩阵 Σ 自乘。因此 <code>AᵀA</code> 的特征值
+  是奇异值的平方：V 的第 i 列 <code>v_i</code>（<code>i = 1, …, min(m, n)</code>）
+  是对应特征值 <code>σ_i²</code> 的单位特征向量；若 <code>n &gt; m</code>，
+  V 余下的列对应特征值 0。这些列称为右奇异向量（right singular vectors）。
+</p>
+
+<p>
+  对 <code>σ_i &gt; 0</code>，左奇异向量（left singular vector）由
+  <code>u_i = A v_i / σ_i</code> 得到；这样得到的 <code>u_i</code> 长度为 1，
+  且两两正交。对 <code>σ_i = 0</code>，由
+  <code>v_iᵀ Aᵀ A v_i = ‖A v_i‖² = 0</code> 得 <code>A v_i = 0</code>，
+  上式分母为 0，<code>u_i</code> 不能这样取；这些方向要在与已有左奇异向量
+  正交的空间里另取一组标准正交向量，补足 U 的列（若 <code>m &gt; r</code>，
+  r 为非零奇异值的个数）。这些列对应的奇异值为 0，在
+  <code>U Σ Vᵀ</code> 中乘出来是 0，不影响乘积。
+</p>
+
+<p>
+  这条关系给出了 2×2 的手算方法，但也说明直接构造 <code>AᵀA</code> 会把
+  条件数平方。实际软件用专门的双对角化与迭代算法求 SVD，不经过
+  <code>AᵀA</code>。
+</p>
+
+<h3 id="s4-8-3">2×2 的算法</h3>
+
+<p>
+  对 <code>A = [[a, b], [c, d]]</code>，先算
+  <code>p = a² + c²</code>、<code>q = ab + cd</code>、<code>r = b² + d²</code>，
+  它们正是 <code>AᵀA</code> 的三个独立元素。2×2 对称矩阵
+  <code>[[p, q], [q, r]]</code> 的特征值是
+  <code>(p+r ± √((p+r)² - 4(pr-q²))) / 2</code>，开平方并按从大到小
+  排列，就得到两个奇异值。
+</p>
+
+<h3 id="s4-8-4">低秩近似</h3>
+
+<p>
+  把 SVD 写成外积之和：<code>A = σ1 u1 v1ᵀ + σ2 u2 v2ᵀ + …</code>。
+  只保留前 k 项，得到秩不超过 k 的矩阵 <code>A_k</code>。在所有秩不超过 k
+  的矩阵中，<code>A_k</code> 与原矩阵的差（按 Frobenius 范数或谱范数度量）
+  最小，这一结论叫 Eckart–Young 定理。
+</p>
+
+<p>
+  秩 1 近似就是只保留第一项 <code>σ1 u1 v1ᵀ</code>。它常用于图像压缩、
+  数据去噪与潜在语义分析：大的奇异值对应主要结构，小的奇异值更多对应噪声
+  或细节。保留多少项，要在压缩率与误差之间权衡。
+</p>
+
+<h3 id="s4-8-5">伪逆与条件数</h3>
+
+<p>
+  把非零奇异值取倒数、零保持为零，得到 Σ⁺，再定义
+  <code>A⁺ = V Σ⁺ Uᵀ</code>，叫伪逆（pseudo-inverse）。长方矩阵或奇异
+  矩阵没有通常意义的逆，但伪逆仍然有定义；<code>x = A⁺ b</code> 给出
+  最小二乘解中长度最小的那个。
+</p>
+
+<p>
+  条件数（condition number）衡量线性方程组 <code>A x = b</code> 的解对
+  输入误差的敏感程度。先说明符号：<code>‖x‖₂</code> 是向量 x 的欧几里得
+  长度；<code>‖A‖₂</code> 是矩阵的 2-范数，等于最大奇异值（矩阵范数把
+  长度的概念推广到矩阵，细节可以搜索「矩阵 2-范数」）。对 n×n 可逆实矩阵
+  A，2-范数条件数定义为 <code>κ₂(A) = ‖A‖₂ ‖A⁻¹‖₂</code>。
+</p>
+
+<p>
+  因为 <code>‖A‖₂ = σ_max(A) = σ1</code>，
+  <code>‖A⁻¹‖₂ = 1 / σ_min(A) = 1 / σn</code>，其中
+  <code>σ_max(A)</code> 与 <code>σ_min(A)</code> 分别是最大与最小奇异值，
+  所以
+</p>
+
+<p>
+  <code>κ₂(A) = σ_max(A) / σ_min(A) = σ1 / σn</code>。
+</p>
+
+<p>
+  若 <code>σ_min(A) = 0</code>，A 奇异、没有逆，<code>κ₂(A)</code> 记为
+  无穷。对 m×n 且列满秩的矩阵，最小二乘问题的条件数同样取
+  <code>σ_max / σ_min</code>；列不满秩时记为无穷。设 A 不变，b 有微小扰动
+  <code>δb</code>，解相应变为 <code>x + δx</code>；对可逆 A，相对误差满足
+  <code>‖δx‖₂ / ‖x‖₂ ≤ κ₂(A) ‖δb‖₂ / ‖b‖₂</code>。
+  条件数的练习是 2×2 矩阵，记两个奇异值为 <code>σ1 ≥ σ2 ≥ 0</code>，
+  条件数就是 <code>σ1 / σ2</code>；<code>σ2 = 0</code> 时输出无穷。
+  下面这段程序求 2×2 矩阵的奇异值、秩 1 近似与条件数：
+</p>
+
+<pre data-lang="C++" data-name="svd.cpp"><code>// 4.8：2×2 奇异值分解、秩 1 近似与条件数。
+//
+// 奇异值是 AᵀA 的特征值开平方。取最大奇异值 σ1 和对应的单位向量
+// u1、v1，最佳秩 1 近似就是 σ1·u1·v1ᵀ。条件数是 σ1 / σ2。
+
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+using Mat = std::vector&lt;std::vector&lt;double&gt;&gt;;
+
+std::pair&lt;double, double&gt; svd2(const Mat&amp; M) {
+    double a = M[0][0], b = M[0][1];
+    double c = M[1][0], d = M[1][1];
+    double p = a * a + c * c;
+    double q = a * b + c * d;
+    double r = b * b + d * d;
+    double t = p + r;
+    double det = p * r - q * q;
+    double disc = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double l1 = (t + disc) / 2.0;
+    double l2 = (t - disc) / 2.0;
+    return {std::sqrt(std::max(l1, 0.0)), std::sqrt(std::max(l2, 0.0))};
+}
+
+Mat rank1(const Mat&amp; M) {
+    double a = M[0][0], b = M[0][1];
+    double c = M[1][0], d = M[1][1];
+    double p = a * a + c * c;
+    double q = a * b + c * d;
+    double r = b * b + d * d;
+    double t = p + r;
+    double det = p * r - q * q;
+    double disc = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double l1 = (t + disc) / 2.0;
+    double s1 = std::sqrt(std::max(l1, 0.0));
+    if (s1 == 0.0) {
+        return {{0.0, 0.0}, {0.0, 0.0}};
+    }
+    std::vector&lt;double&gt; v;
+    if (std::abs(q) &gt; 1e-12) {
+        v = {q, l1 - p};
+    } else if (p &gt;= r) {
+        v = {1.0, 0.0};
+    } else {
+        v = {0.0, 1.0};
+    }
+    double n = std::sqrt(v[0] * v[0] + v[1] * v[1]);
+    v[0] /= n;
+    v[1] /= n;
+    std::vector&lt;double&gt; w = {a * v[0] + b * v[1], c * v[0] + d * v[1]};
+    std::vector&lt;double&gt; u = {w[0] / s1, w[1] / s1};
+    Mat R(2, std::vector&lt;double&gt;(2, 0.0));
+    for (int i = 0; i &lt; 2; i++) {
+        for (int j = 0; j &lt; 2; j++) {
+            R[i][j] = s1 * u[i] * v[j];
+        }
+    }
+    return R;
+}
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    Mat A = {{4.0, 0.0}, {3.0, 5.0}};
+    std::pair&lt;double, double&gt; s = svd2(A);
+    Mat R = rank1(A);
+
+    std::cout &lt;&lt; "奇异值 = " &lt;&lt; f(s.first) &lt;&lt; ", " &lt;&lt; f(s.second)
+              &lt;&lt; std::endl;
+    std::cout &lt;&lt; "秩 1 近似 = [[" &lt;&lt; f(R[0][0]) &lt;&lt; ", " &lt;&lt; f(R[0][1])
+              &lt;&lt; "], [" &lt;&lt; f(R[1][0]) &lt;&lt; ", " &lt;&lt; f(R[1][1]) &lt;&lt; "]]"
+              &lt;&lt; std::endl;
+    std::cout &lt;&lt; "条件数 = " &lt;&lt; f(s.first / s.second) &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+
+<pre class="out" data-label="真实输出">奇异值 = 6.325, 3.162
+秩 1 近似 = [[2.000, 2.000], [4.000, 4.000]]
+条件数 = 2.000</pre>
+
+<p>
+  同样进入本课目录，编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/other-basics/示例代码/4.8-奇异值分解
+g++ -std=c++17 -Wall -Wextra svd.cpp -o svd
+./svd</code></pre>
+
+<p>
+  输出第一行是两个奇异值，第二行是只保留第一项得到的秩 1 矩阵，
+  第三行是它们的比值。这个矩阵的两个奇异值相差 2 倍，条件数为 2，
+  数值上比较稳定。
+</p>
+
+<h3 id="s4-8-6">练习</h3>
+
+<div class="ex">
+  <div class="ex-h">练习 4-22</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的两个奇异值，按从大到小排列，保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4 0
+3 5</pre>
+  <pre class="out" data-label="预期输出">奇异值 = 6.325, 3.162</pre>
+  <p>
+    输入按两行给出四个元素。按本课的方法先算 <code>AᵀA</code> 的三个元素，
+    再求它的两个特征值并开平方。
+  </p>
+  <!-- 答案 4-22 -->
+  <details class="ans" data-run="示例代码/答案/4-22.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>AᵀA</code> 的三个独立元素是
+        <code>p = a² + c²</code>、<code>q = ab + cd</code>、
+        <code>r = b² + d²</code>。求这个 2×2 对称矩阵的两个特征值，开平方
+        后按从大到小排列，就是两个奇异值。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+
+    double p = a * a + c * c;
+    double q = a * b + c * d;
+    double r = b * b + d * d;
+    double t = p + r;
+    double det = p * r - q * q;
+    double disc = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double s1 = std::sqrt(std::max((t + disc) / 2.0, 0.0));
+    double s2 = std::sqrt(std::max((t - disc) / 2.0, 0.0));
+
+    std::cout &lt;&lt; "奇异值 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; s1
+              &lt;&lt; ", " &lt;&lt; s2 &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-23</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的最佳秩 1 近似矩阵。矩阵按
+    <code>[[a, b], [c, d]]</code> 的形式打印，每个元素保留 3 位小数。
+  </p>
+  <pre class="out" data-label="样例输入">4 0
+3 5</pre>
+  <pre class="out" data-label="预期输出">[[2.000, 2.000], [4.000, 4.000]]</pre>
+  <p>
+    先求最大奇异值 σ1 与对应的右奇异向量 v1，再算
+    <code>u1 = A v1 / σ1</code>，近似矩阵是 <code>σ1 u1 v1ᵀ</code>。
+    两个向量同时变号时结果不变。
+  </p>
+  <!-- 答案 4-23 -->
+  <details class="ans" data-run="示例代码/答案/4-23.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        最大奇异值对应的右奇异向量由 <code>AᵀA</code> 的特征向量给出。
+        求出 <code>v1</code> 后，用 <code>u1 = A v1 / σ1</code> 得到左奇异
+        向量，近似矩阵就是 <code>σ1 u1 v1ᵀ</code>。两个向量同时变号时，
+        外积不变。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+std::string f(double x) {
+    std::ostringstream os;
+    os &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; x;
+    std::string s = os.str();
+    if (s == "-0.000") {
+        s = "0.000";
+    }
+    return s;
+}
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+
+    double p = a * a + c * c;
+    double q = a * b + c * d;
+    double r = b * b + d * d;
+    double t = p + r;
+    double det = p * r - q * q;
+    double disc = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double l1 = (t + disc) / 2.0;
+    double s1 = std::sqrt(std::max(l1, 0.0));
+
+    std::vector&lt;std::vector&lt;double&gt;&gt; R(2, std::vector&lt;double&gt;(2, 0.0));
+    if (s1 != 0.0) {
+        std::vector&lt;double&gt; v;
+        if (std::abs(q) &gt; 1e-12) {
+            v = {q, l1 - p};
+        } else if (p &gt;= r) {
+            v = {1.0, 0.0};
+        } else {
+            v = {0.0, 1.0};
+        }
+        double n = std::sqrt(v[0] * v[0] + v[1] * v[1]);
+        v[0] /= n;
+        v[1] /= n;
+        std::vector&lt;double&gt; w = {a * v[0] + b * v[1], c * v[0] + d * v[1]};
+        std::vector&lt;double&gt; u = {w[0] / s1, w[1] / s1};
+        for (int i = 0; i &lt; 2; i++) {
+            for (int j = 0; j &lt; 2; j++) {
+                R[i][j] = s1 * u[i] * v[j];
+            }
+        }
+    }
+
+    std::cout &lt;&lt; "[[" &lt;&lt; f(R[0][0]) &lt;&lt; ", " &lt;&lt; f(R[0][1]) &lt;&lt; "], ["
+              &lt;&lt; f(R[1][0]) &lt;&lt; ", " &lt;&lt; f(R[1][1]) &lt;&lt; "]]" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-24</div>
+  <p>
+    读入一个 2×2 矩阵，输出它的条件数，保留 3 位小数；
+    最小奇异值为 0 时输出 <code>条件数 = 无穷</code>。
+  </p>
+  <pre class="out" data-label="样例输入">4 0
+3 5</pre>
+  <pre class="out" data-label="预期输出">条件数 = 2.000</pre>
+  <p>
+    条件数是两个奇异值的比值。先按上一题的方法求两个奇异值，
+    较小的那个接近 0 时按 0 处理。
+  </p>
+  <!-- 答案 4-24 -->
+  <details class="ans" data-run="示例代码/答案/4-24.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        条件数是 <code>σ1 / σ2</code>。先按奇异值的算法求出两个值；
+        较小的那个接近 0 时，矩阵不可逆，按题面要求输出无穷。
+      </p>
+      <pre><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    double a, b, c, d;
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;
+
+    double p = a * a + c * c;
+    double q = a * b + c * d;
+    double r = b * b + d * d;
+    double t = p + r;
+    double det = p * r - q * q;
+    double disc = std::sqrt(std::max(t * t - 4.0 * det, 0.0));
+    double s1 = std::sqrt(std::max((t + disc) / 2.0, 0.0));
+    double s2 = std::sqrt(std::max((t - disc) / 2.0, 0.0));
+
+    if (s2 &lt; 1e-12) {
+        std::cout &lt;&lt; "条件数 = 无穷" &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; "条件数 = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+                  &lt;&lt; s1 / s2 &lt;&lt; std::endl;
+    }
+    return 0;
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能做什么：</b>说明 SVD 的分解形式与几何意义，用 <code>AᵀA</code>
+  求 2×2 矩阵的奇异值，写出秩 1 近似，并用奇异值之比求条件数。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="03-常见文件.html">← 第 3 部分 · 常见文件</a>
+  <span class="spacer"></span>
+  <a href="05-相机.html">第 5 部分 · 相机配置 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/geo.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  function unit(v) {
+    var n = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+    return n < 1e-9 ? [1, 0] : [v[0] / n, v[1] / n];
+  }
+
+  function mul(A, B) {
+    return [
+      [
+        A[0][0] * B[0][0] + A[0][1] * B[1][0],
+        A[0][0] * B[0][1] + A[0][1] * B[1][1]
+      ],
+      [
+        A[1][0] * B[0][0] + A[1][1] * B[1][0],
+        A[1][0] * B[0][1] + A[1][1] * B[1][1]
+      ]
+    ];
+  }
+
+  function imageOfCircle(M) {
+    var pts = [], i, t, x, y;
+    for (i = 0; i < 96; i++) {
+      t = i * 2 * Math.PI / 96;
+      x = Math.cos(t);
+      y = Math.sin(t);
+      pts.push([
+        M[0][0] * x + M[0][1] * y,
+        M[1][0] * x + M[1][1] * y
+      ]);
+    }
+    return pts;
+  }
+
+  // ----------------------------------------------------------
+  // 4.1.2 线性组合
+  // ----------------------------------------------------------
+  GEO.vec = {
+    title: "线性组合 a u + b v",
+    desc: "固定 u 与 v，用滑块改变 a 与 b，显示分向量与和向量。",
+    xr: [-4, 4], yr: [-3, 3], aspect: "equal", w: 640, h: 480,
+    controls: [
+      { id: "a", label: "a", min: -1.5, max: 1.5, step: 0.1, value: 1 },
+      { id: "b", label: "b", min: -1.5, max: 1.5, step: 0.1, value: 1 }
+    ],
+    draw: function (g, s) {
+      var u = [1.5, 0.5], v = [0.5, 1.5];
+      var au = [s.a * u[0], s.a * u[1]];
+      var bv = [s.b * v[0], s.b * v[1]];
+      var w = [au[0] + bv[0], au[1] + bv[1]];
+      g.grid(1, 1);
+      g.axes();
+      g.poly([[0, 0], au, w, bv], "g-aux", true);
+      g.arrow(0, 0, au[0], au[1], "g-c1");
+      g.arrow(0, 0, bv[0], bv[1], "g-c2");
+      g.arrow(0, 0, w[0], w[1], "g-c3");
+      if (Math.abs(s.a) > 0.05) {
+        g.text(au[0], au[1], "a u", "g-label-1", "middle", -12);
+      }
+      if (Math.abs(s.b) > 0.05) {
+        g.text(bv[0], bv[1], "b v", "g-label-2", "middle", -12);
+      }
+      if (Math.abs(s.a) + Math.abs(s.b) > 0.05) {
+        g.text(w[0], w[1], "w", "g-label-3", "middle", -12);
+      }
+      g.readout(
+        "a = " + g.fmt(s.a, 1) + "，b = " + g.fmt(s.b, 1) +
+        "；w = a u + b v = (" + g.fmt(w[0], 2) + ", " + g.fmt(w[1], 2) + ")"
+      );
+    }
+  };
+
+  // ----------------------------------------------------------
+  // 4.2.2 行列式与有向面积
+  // ----------------------------------------------------------
+  GEO.det = {
+    title: "行列式与有向面积",
+    desc: "固定 u = (2, 1)，改变 v 的分量，显示平行四边形的面积与方向。",
+    xr: [-4, 6], yr: [-3, 5], aspect: "equal", w: 640, h: 480,
+    controls: [
+      { id: "vx", label: "v 的 x 分量", min: -3, max: 3, step: 0.1, value: 1 },
+      { id: "vy", label: "v 的 y 分量", min: -2, max: 3, step: 0.1, value: 2 }
+    ],
+    draw: function (g, s) {
+      var u = [2, 1], v = [s.vx, s.vy];
+      var sum = [u[0] + v[0], u[1] + v[1]];
+      var d = u[0] * v[1] - u[1] * v[0];
+      var dir;
+      if (Math.abs(d) < 0.0005) {
+        dir = "零（u 与 v 共线）";
+      } else if (d > 0) {
+        dir = "正（v 在 u 的逆时针一侧）";
+      } else {
+        dir = "负（v 在 u 的顺时针一侧）";
+      }
+      g.grid(1, 1);
+      g.axes();
+      g.poly([[0, 0], u, sum, v], "g-fill1", true);
+      g.poly([[0, 0], u, sum, v], "g-c1 g-o1", true);
+      g.arrow(0, 0, u[0], u[1], "g-c1");
+      g.arrow(0, 0, v[0], v[1], "g-c2");
+      g.text(u[0], u[1], "u", "g-label-1", "middle", -12);
+      if (Math.abs(s.vx) + Math.abs(s.vy) > 0.05) {
+        g.text(v[0], v[1], "v", "g-label-2", "middle", -12);
+      }
+      g.readout(
+        "v = (" + g.fmt(s.vx, 1) + ", " + g.fmt(s.vy, 1) + ")" +
+        "；det = 2 vy − vx = " + g.fmt(d, 2) +
+        "；面积 = " + g.fmt(Math.abs(d), 2) + "；方向 = " + dir
+      );
+    }
+  };
+
+  // ----------------------------------------------------------
+  // 4.5.1 同一位置在两组基下的坐标
+  // ----------------------------------------------------------
+  GEO.basis = {
+    title: "同一位置在两组基下的坐标",
+    desc: "固定点 P，旋转并缩放基 b1、b2，显示标准坐标与基坐标。",
+    xr: [-3.5, 4], yr: [-3, 3.5], aspect: "equal", w: 640, h: 480,
+    controls: [
+      { id: "th", label: "θ（度）", min: -180, max: 180, step: 5, value: 15 },
+      { id: "sc", label: "基的长度比例 s", min: 0.6, max: 1.8, step: 0.05, value: 1.2 }
+    ],
+    draw: function (g, s) {
+      var th = s.th * Math.PI / 180;
+      var b1 = [s.sc * Math.cos(th), s.sc * Math.sin(th)];
+      var b2 = [-s.sc * Math.sin(th), s.sc * Math.cos(th)];
+      var P = [2.2, 1.4];
+      var c1 = (P[0] * b1[0] + P[1] * b1[1]) / (s.sc * s.sc);
+      var c2 = (P[0] * b2[0] + P[1] * b2[1]) / (s.sc * s.sc);
+      var q1 = [c1 * b1[0], c1 * b1[1]];
+      var q2 = [c2 * b2[0], c2 * b2[1]];
+      g.grid(1, 1);
+      g.axes();
+      g.line(0, 0, q1[0], q1[1], "g-c1", true);
+      g.line(q1[0], q1[1], P[0], P[1], "g-c1", true);
+      g.line(0, 0, q2[0], q2[1], "g-c2", true);
+      g.line(q2[0], q2[1], P[0], P[1], "g-c2", true);
+      g.arrow(0, 0, b1[0], b1[1], "g-c1");
+      g.arrow(0, 0, b2[0], b2[1], "g-c2");
+      g.dot(P[0], P[1], "g-c4");
+      g.text(b1[0], b1[1], "b1", "g-label-1", "middle", -12);
+      g.text(b2[0], b2[1], "b2", "g-label-2", "middle", -12);
+      g.text(P[0], P[1], "P", "g-label-4", "start", -10);
+      g.readout(
+        "θ = " + g.fmt(s.th, 0) + "°，s = " + g.fmt(s.sc, 2) +
+        "；标准基 (x, y) = (2.20, 1.40)" +
+        "；这组基 (c1, c2) = (" + g.fmt(c1, 2) + ", " + g.fmt(c2, 2) + ")"
+      );
+    }
+  };
+
+  // ----------------------------------------------------------
+  // 4.6.1 实对称矩阵的特征方向
+  // ----------------------------------------------------------
+  GEO.eigen = {
+    title: "实对称矩阵把单位圆映射成椭圆",
+    desc: "改变对称矩阵的元素，显示单位圆的像、特征方向与特征值。",
+    xr: [-5, 5], yr: [-4, 4], aspect: "equal", w: 640, h: 480,
+    controls: [
+      { id: "a11", label: "a11", min: -1, max: 2, step: 0.1, value: 2 },
+      { id: "a12", label: "a12", min: -1.5, max: 1.5, step: 0.1, value: 1 },
+      { id: "a22", label: "a22", min: -1, max: 2, step: 0.1, value: 2 }
+    ],
+    draw: function (g, s) {
+      var a11 = s.a11, a12 = s.a12, a22 = s.a22;
+      var tr = a11 + a22;
+      var det = a11 * a22 - a12 * a12;
+      var disc = Math.sqrt(Math.max((a11 - a22) * (a11 - a22) + 4 * a12 * a12, 0));
+      var l1 = (tr + disc) / 2;
+      var l2 = (tr - disc) / 2;
+      var v1, v2, angle;
+      if (Math.abs(a12) > 1e-9) {
+        v1 = unit([a12, l1 - a11]);
+      } else {
+        v1 = a11 >= a22 ? [1, 0] : [0, 1];
+      }
+      v2 = [-v1[1], v1[0]];
+      if (Math.abs(a12) < 1e-9 && Math.abs(a11 - a22) < 1e-9) {
+        v1 = [1, 0];
+        v2 = [0, 1];
+      }
+      angle = Math.atan2(v1[1], v1[0]);
+      g.grid(1, 1);
+      g.axes();
+      g.circle(0, 0, 1, "g-faint");
+      g.ellipse(0, 0, Math.abs(l1), Math.abs(l2), angle, "g-c3 g-o3");
+      g.line(-3.6 * v1[0], -3.6 * v1[1], 3.6 * v1[0], 3.6 * v1[1], "g-c1", true);
+      g.line(-3.6 * v2[0], -3.6 * v2[1], 3.6 * v2[0], 3.6 * v2[1], "g-c2", true);
+      g.arrow(0, 0, l1 * v1[0], l1 * v1[1], "g-c1");
+      g.arrow(0, 0, l2 * v2[0], l2 * v2[1], "g-c2");
+      g.text(l1 * v1[0], l1 * v1[1], "λ1 v1", "g-label-1", "middle", -12);
+      g.text(l2 * v2[0], l2 * v2[1], "λ2 v2", "g-label-2", "middle", -12);
+      g.readout(
+        "A = [[" + g.fmt(a11, 1) + ", " + g.fmt(a12, 1) + "], [" +
+        g.fmt(a12, 1) + ", " + g.fmt(a22, 1) + "]]" +
+        "；λ1 = " + g.fmt(l1, 2) + "，λ2 = " + g.fmt(l2, 2) +
+        "；迹 = " + g.fmt(tr, 2) + "，det = " + g.fmt(det, 2)
+      );
+    }
+  };
+
+  // ----------------------------------------------------------
+  // 4.7.2 最小二乘直线拟合
+  // ----------------------------------------------------------
+  GEO.lsq = {
+    title: "最小二乘直线拟合",
+    desc: "四点固定，用滑块改变直线，显示残差与残差平方和。",
+    xr: [-0.5, 5.5], yr: [0, 9.5], aspect: "fit", w: 640, h: 480,
+    controls: [
+      { id: "a", label: "斜率 a", min: -0.5, max: 2.5, step: 0.1, value: 0.5 },
+      { id: "b", label: "截距 b", min: 0, max: 4, step: 0.1, value: 3 }
+    ],
+    actions: [
+      {
+        label: "取最小二乘解",
+        run: function (g) {
+          g.set("a", 1.7);
+          g.set("b", 0);
+        }
+      }
+    ],
+    draw: function (g, s) {
+      var pts = [[1, 2], [2, 3], [3, 5], [4, 7]];
+      var sse = 0, i, x, y, pred;
+      g.grid(1, 1);
+      g.axes();
+      g.line(0, 0, 5, 8.5, "g-aux");
+      g.line(0, s.b, 5, 5 * s.a + s.b, "g-c1");
+      for (i = 0; i < pts.length; i++) {
+        x = pts[i][0];
+        y = pts[i][1];
+        pred = s.a * x + s.b;
+        sse += (y - pred) * (y - pred);
+        g.line(x, y, x, pred, "g-c4", true);
+        g.dot(x, y, "g-c2");
+      }
+      g.readout(
+        "a = " + g.fmt(s.a, 1) + "，b = " + g.fmt(s.b, 1) +
+        "；残差平方和 = " + g.fmt(sse, 3) +
+        "；最小二乘解为 a = 1.700，b = 0.000"
+      );
+    }
+  };
+
+  // ----------------------------------------------------------
+  // 4.8.1 SVD 的三步几何
+  // ----------------------------------------------------------
+  var SVD_STEPS = [
+    "单位圆（输入空间）",
+    "乘 Vᵀ：转到奇异向量方向",
+    "乘 Σ：沿坐标轴缩放",
+    "乘 U：转到输出方向"
+  ];
+
+  GEO.svd = {
+    title: "奇异值分解的三步几何",
+    desc: "单位圆依次经过 V 转置、Sigma 与 U，显示每一步的形状与基向量像。",
+    xr: [-7, 7], yr: [-7, 7], aspect: "equal", w: 640, h: 640,
+    steps: SVD_STEPS,
+    draw: function (g, s, step) {
+      var r2 = Math.SQRT1_2;
+      var s1 = 6.3249, s2 = 3.1623;
+      var v1 = [r2, r2], v2 = [r2, -r2];
+      var u1 = [0.4472, 0.8944], u2 = [0.8944, -0.4472];
+      var Vt = [[r2, r2], [r2, -r2]];
+      var S = [[s1, 0], [0, s2]];
+      var U = [[u1[0], u2[0]], [u1[1], u2[1]]];
+      var M = [[1, 0], [0, 1]];
+      var labels = [
+        ["v1", "v2"],
+        ["e1", "e2"],
+        ["σ1 e1", "σ2 e2"],
+        ["σ1 u1", "σ2 u2"]
+      ];
+      var anchors = [
+        ["start", "start"],
+        ["start", "middle"],
+        ["end", "middle"],
+        ["start", "start"]
+      ];
+      var dys = [
+        [-8, 12],
+        [-10, -10],
+        [-10, -10],
+        [-10, 10]
+      ];
+      var axes;
+      if (step >= 1) M = mul(Vt, M);
+      if (step >= 2) M = mul(S, M);
+      if (step >= 3) M = mul(U, M);
+      if (step === 0) {
+        axes = [v1, v2];
+      } else if (step === 1) {
+        axes = [[1, 0], [0, 1]];
+      } else if (step === 2) {
+        axes = [[s1, 0], [0, s2]];
+      } else {
+        axes = [[s1 * u1[0], s1 * u1[1]], [s2 * u2[0], s2 * u2[1]]];
+      }
+      g.grid(1, 1);
+      g.axes({ labels: false });
+      g.poly(imageOfCircle(M), "g-c3 g-o3", true);
+      g.arrow(0, 0, axes[0][0], axes[0][1], "g-c1");
+      g.arrow(0, 0, axes[1][0], axes[1][1], "g-c2");
+      g.text(axes[0][0], axes[0][1], labels[step][0], "g-label-1", anchors[step][0], dys[step][0]);
+      g.text(axes[1][0], axes[1][1], labels[step][1], "g-label-2", anchors[step][1], dys[step][1]);
+      g.readout(
+        "第 " + (step + 1) + " 步：" + SVD_STEPS[step] +
+        "；σ1 = 6.325，σ2 = 3.162" +
+        "；当前矩阵 = [[" + g.fmt(M[0][0], 3) + ", " + g.fmt(M[0][1], 3) +
+        "], [" + g.fmt(M[1][0], 3) + ", " + g.fmt(M[1][1], 3) + "]]"
+      );
+    }
+  };
+})();
+</script>
+</body>
+</html>

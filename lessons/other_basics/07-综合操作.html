@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · 综合操作 — 其他基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-Linux.html">第 1 部分</a>
+      <a href="02-Git.html">第 2 部分</a>
+      <a href="03-常见文件.html">第 3 部分</a>
+      <a href="04-线性代数.html">第 4 部分</a>
+      <a href="05-相机.html">第 5 部分</a>
+      <a href="06-网络服务.html">第 6 部分</a>
+      <a class="active" href="07-综合操作.html">第 7 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a class="active" href="index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">已写出的部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-Linux.html">第 1 部分 · Linux 文件结构与基础命令</a>
+  <a class="tree-l" href="02-Git.html">第 2 部分 · Git 基础命令及规范</a>
+  <a class="tree-l" href="03-常见文件.html">第 3 部分 · 常见文件</a>
+  <a class="tree-l" href="04-线性代数.html">第 4 部分 · 线性代数基础</a>
+  <a class="tree-l" href="05-相机.html">第 5 部分 · 相机配置</a>
+  <a class="tree-l" href="06-网络服务.html">第 6 部分 · 网络服务</a>
+  <a class="tree-l" href="07-综合操作.html" aria-current="page">第 7 部分 · 综合操作</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · 综合操作</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>从空目录到小工程</a>
+  <a class="toc-sub" href="#s7-1-1">这一课要完成什么</a>
+  <a class="toc-sub" href="#s7-1-2">建立目录与仓库</a>
+  <a class="toc-sub" href="#s7-1-3">写参数文件</a>
+  <a class="toc-sub" href="#s7-1-4">写计算脚本</a>
+  <a class="toc-sub" href="#s7-1-5">写启动脚本与说明</a>
+  <a class="toc-sub" href="#s7-1-6">运行与检查</a>
+  <a class="toc-sub" href="#s7-1-7">完成第一次提交</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>从功能分支到 V1.1</a>
+  <a class="toc-sub" href="#s7-2-1">先建开发分支</a>
+  <a class="toc-sub" href="#s7-2-2">功能分支：12 mm 焦距</a>
+  <a class="toc-sub" href="#s7-2-3">发布分支与 V1.0</a>
+  <a class="toc-sub" href="#s7-2-4">紧急修复与 V1.1</a>
+  <a class="toc-sub" href="#s7-2-5">检查最终状态</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>综合操作</h1>
+  <p class="part-lead">
+    这一部分把前面几部分串起来，做两组综合操作，不设练习，也不设答案。
+    7.1 在一个空目录里建立一个可以运行的小工程，并用 Git 记录第一次提交；
+    7.2 在这个工程上按队内分支规范走功能分支、发布分支与紧急修复，
+    一直走到发布版 V1.1。两组操作都只使用本机文件、Python 标准库与 Git，
+    不连接相机，不联网，也不需要管理员权限。
+  </p>
+</header>
+
+<div class="aside warn">
+  <b>安全边界与练习目录</b>
+  <p>
+    本部分的练习目录是 <code>~/tup-practice/camera-demo</code>。下面的命令
+    只在这个目录及其子目录里执行；不要对主目录、桌面或其他项目目录执行删除、
+    覆盖或 <code>chmod</code>。Git 只在本机操作：不执行 <code>git push</code>，
+    不配置远程仓库，不读取 SSH 密钥。示例身份为「练习者 /
+    practice@example.com」；执行仓库级设置时，它只写进练习仓库的本地配置，
+    不写入课程文件以外的位置。
+  </p>
+</div>
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>从空目录到小工程</h2>
+
+<p>
+  这一课从空目录开始，建立一个只做一件事的小工程。相机 A 的分辨率、像元尺寸
+  与焦距取第 5 部分的算例。整个过程不需要相机、SDK 或网络；Python 只使用
+  标准库，启动脚本只调用本机的 <code>python3</code>。
+</p>
+
+<h3 id="s7-1-1">这一课要完成什么</h3>
+
+<p>
+  这一课建立一个很小的相机参数工程：读取一台相机的参数，计算水平与垂直
+  视场角、单帧图像占多少字节，以及每秒产生多少数据，最后把输入与结果一起
+  写成一份 JSON 报告。完成之后，用 Git 记录第一次提交。
+</p>
+
+<p>
+  工程完成后，结构如下。<code>&lt;用户&gt;</code> 是当前用户名；左侧的竖线、
+  横线与反引号只是表示层级的连接符号，行尾的注释说明文件用途，两者都不是
+  文件名的一部分：
+</p>
+
+<pre>/home/&lt;用户&gt;/tup-practice/
+`-- camera-demo/
+    |-- camera.json    # 相机参数，换相机时主要改这里
+    |-- compute.py     # 读取参数，计算并写出 report.json
+    |-- run.sh         # 切换到工程目录后调用计算脚本
+    |-- README.md      # 工程用途与运行方法
+    `-- .gitignore     # 不提交报告与 Python 缓存</pre>
+
+<p>
+  运行后还会多出一个 <code>report.json</code>。它由脚本生成，每次运行都会重写，
+  不属于工程源码，所以不列在上面的结构树里，也不提交到 Git。
+  <code>.gitignore</code> 以点开头，部分文件管理器默认不显示；在终端里执行
+  <code>ls -a</code> 就能看到。
+</p>
+
+<p>
+  接下来的顺序是：建立目录与 Git 仓库，写参数文件，写计算脚本，写启动脚本与说明，
+  运行并检查，最后完成第一次提交。
+</p>
+
+<h3 id="s7-1-2">建立目录与仓库</h3>
+
+<p>
+  打开终端，建立目录并进入：
+</p>
+
+<pre data-lang="终端"><code>mkdir -p ~/tup-practice/camera-demo
+cd ~/tup-practice/camera-demo
+pwd</code></pre>
+
+<pre class="out" data-label="真实输出（用户名已换成占位符）">/home/&lt;用户&gt;/tup-practice/camera-demo</pre>
+
+<p>
+  在这个空目录里初始化 Git 仓库。下面的 <code>-b master</code> 把初始分支
+  命名为 <code>master</code>，与 2.6 的分支模型一致；如果 Git 版本较旧，
+  不认识 <code>-b</code>，可以先执行 <code>git init</code>，
+  再执行 <code>git branch -m master</code>，效果相同。
+</p>
+
+<pre data-lang="终端"><code>git init -b master</code></pre>
+
+<pre class="out" data-label="真实输出（用户名已换成占位符）">Initialized empty Git repository in /home/&lt;用户&gt;/tup-practice/camera-demo/.git/</pre>
+
+<p>
+  Git 的提示语可能随版本略有不同，只要出现
+  <code>Initialized empty Git repository</code> 且路径正确即可。
+  提交之前要有一个提交身份。这个练习是个人项目：如果这台机器上已经用
+  <code>git config --global user.name</code> 与
+  <code>git config --global user.email</code> 设置过全局身份，并且愿意沿用，
+  就不必再为这个仓库单独设置，Git 会直接使用全局身份。
+</p>
+
+<div class="aside tip">
+  <b>想练习仓库级配置时</b>
+  <p>
+    如果只是想了解怎样给单个仓库设置身份，可以继续按下面的命令做一遍。
+    仓库级配置写在当前工程目录的 <code>.git/config</code> 里，只影响这个仓库，
+    并会覆盖同名的全局配置。设置之后，可以用
+    <code>git config --get user.name</code> 与
+    <code>git config --get user.email</code> 查看当前生效的值。想单独确认
+    全局配置，就在这两条命令里加上 <code>--global</code>；没有输出表示未设置。
+  </p>
+</div>
+
+<p>
+  下面使用示例身份。读者在自己的练习仓库里可以换成自己的名字与邮箱，
+  但不要把真实姓名、学号或私人邮箱写进课程示例。
+</p>
+
+<pre data-lang="终端"><code>git config user.name "练习者"
+git config user.email "practice@example.com"
+git config --local --get user.name
+git config --local --get user.email</code></pre>
+
+<pre class="out" data-label="真实输出">练习者
+practice@example.com</pre>
+
+<p>
+  如果执行了上面的设置，这两条配置写在工程目录的 <code>.git/config</code> 里，
+  只影响这个仓库；如果跳过，<code>--local --get</code> 可能没有输出，
+  这表示本仓库没有单独的身份配置，提交仍会使用全局身份。
+  现在目录里还没有文件，<code>git status</code> 会提示尚未提交：
+</p>
+
+<pre data-lang="终端"><code>git status</code></pre>
+
+<pre class="out" data-label="真实输出">On branch master
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)</pre>
+
+<h3 id="s7-1-3">写参数文件</h3>
+
+<p>
+  用编辑器在工程目录里新建 <code>camera.json</code>，内容如下：
+</p>
+
+<pre data-lang="JSON" data-name="camera.json"><code>{
+  "name": "camera A",
+  "width": 1280,
+  "height": 1024,
+  "pixel_um": 10.0,
+  "focal_mm": 8.0,
+  "fx": 800.0,
+  "fy": 800.0,
+  "cx": 640.0,
+  "cy": 512.0,
+  "fps": 30,
+  "bits_per_pixel": 8
+}</code></pre>
+
+<p>
+  各字段的含义：<code>width</code> 与 <code>height</code> 是像素数；
+  <code>pixel_um</code> 是像元边长，单位微米；<code>focal_mm</code> 是焦距，
+  单位毫米；<code>fx</code>、<code>fy</code>、<code>cx</code>、<code>cy</code>
+  是内参；<code>fps</code> 是帧率；<code>bits_per_pixel</code> 是每个像素的位数。
+  这台相机的主点是图像中心，因此 <code>cx = 1280 / 2 = 640</code>、
+  <code>cy = 1024 / 2 = 512</code>。像元为 10 µm 即 0.01 mm，焦距 8 mm
+  折算成像素是 <code>8 / 0.01 = 800</code>，与 <code>fx</code>、<code>fy</code>
+  一致。
+</p>
+
+<p>
+  JSON 不允许注释，字段名与字符串必须使用双引号。这个文件只保存参数，
+  不保存计算结果；计算结果由后面的脚本生成。
+</p>
+
+<h3 id="s7-1-4">写计算脚本</h3>
+
+<p>
+  在同一个目录里新建 <code>compute.py</code>：
+</p>
+
+<pre data-lang="Python" data-name="compute.py"><code>#!/usr/bin/env python3
+# 读取 camera.json，计算视场角、单帧大小与数据量，写入 report.json。
+
+import json
+import math
+import sys
+from pathlib import Path
+
+
+def load_camera(path):
+    """读取并检查相机参数。"""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except OSError as error:
+        raise SystemExit(f"无法读取 {path}：{error.strerror}")
+    except json.JSONDecodeError as error:
+        raise SystemExit(
+            f"{path} 不是有效的 JSON：第 {error.lineno} 行"
+            f"第 {error.colno} 列"
+        )
+
+    required = [
+        "name", "width", "height", "pixel_um", "focal_mm",
+        "fx", "fy", "cx", "cy", "fps", "bits_per_pixel",
+    ]
+    missing = [key for key in required if key not in data]
+    if missing:
+        raise SystemExit("缺少字段：" + "、".join(missing))
+    for key in required[1:]:
+        value = data[key]
+        if not isinstance(value, (int, float)) or value &lt;= 0:
+            raise SystemExit(f"字段 {key} 必须是正数")
+    return data
+
+
+def compute(camera):
+    """由分辨率、像元、焦距与帧率计算四项结果。"""
+    pixel_mm = camera["pixel_um"] / 1000
+    sensor_width_mm = camera["width"] * pixel_mm
+    sensor_height_mm = camera["height"] * pixel_mm
+    horizontal_fov = 2 * math.atan(
+        sensor_width_mm / (2 * camera["focal_mm"])
+    )
+    vertical_fov = 2 * math.atan(
+        sensor_height_mm / (2 * camera["focal_mm"])
+    )
+    frame_bytes = (
+        camera["width"] * camera["height"]
+        * camera["bits_per_pixel"] // 8
+    )
+    bandwidth = frame_bytes * camera["fps"]
+    return {
+        "sensor_width_mm": round(sensor_width_mm, 4),
+        "sensor_height_mm": round(sensor_height_mm, 4),
+        "focal_px": round(camera["focal_mm"] / pixel_mm, 4),
+        "horizontal_fov_deg": round(math.degrees(horizontal_fov), 6),
+        "vertical_fov_deg": round(math.degrees(vertical_fov), 6),
+        "frame_bytes": frame_bytes,
+        "frame_mib": round(frame_bytes / (1024 * 1024), 4),
+        "bandwidth_bytes_s": bandwidth,
+        "bandwidth_mib_s": round(bandwidth / (1024 * 1024), 4),
+    }
+
+
+def main():
+    path = Path(sys.argv[1] if len(sys.argv) &gt; 1 else "camera.json")
+    camera = load_camera(path)
+    result = compute(camera)
+    report = {**camera, **result}
+    target = path.resolve().with_name("report.json")
+    target.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    print(f"相机：{camera['name']}")
+    print(f"分辨率：{camera['width']} × {camera['height']}")
+    print(f"像元：{camera['pixel_um']:.1f} µm")
+    print(f"焦距：{camera['focal_mm']:.1f} mm")
+    print(
+        f"焦距折算：{result['focal_px']:.1f} px"
+        f"（fx={camera['fx']:.1f}，fy={camera['fy']:.1f}）"
+    )
+    print(f"水平视场角：{result['horizontal_fov_deg']:.2f}°")
+    print(f"垂直视场角：{result['vertical_fov_deg']:.2f}°")
+    print(
+        f"单帧：{result['frame_bytes']} 字节"
+        f"（{result['frame_mib']:.2f} MiB）"
+    )
+    print(
+        f"{camera['fps']} fps 数据量："
+        f"{result['bandwidth_mib_s']:.2f} MB/s"
+    )
+    print(f"已写入 {target.name}")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+<p>
+  脚本分成三段。<code>load_camera</code> 读取 JSON，检查必需字段是否齐全，
+  并拒绝非正数；<code>compute</code> 由像元尺寸与焦距计算视场角，
+  由分辨率与位深计算单帧字节数，再乘以帧率得到每秒数据量；
+  <code>main</code> 把参数与结果合并写入 <code>report.json</code>，
+  并在终端打印一份可读的结果。
+</p>
+
+<p>
+  计算视场角使用 <code>2 × arctan(传感器边长 / (2 × 焦距))</code>。
+  水平方向用传感器宽度，垂直方向用传感器高度。单帧字节数按
+  <code>宽 × 高 × 位深 / 8</code> 计算；这里是 1280 × 1024 × 8 / 8 =
+  1,310,720 字节，也就是 1.25 MiB。30 fps 时每秒为 37.50 MiB。
+  本课输出的单位先写成 <code>MB/s</code>；7.2 会把发布后发现的这个
+  单位问题作为紧急修复，改成 <code>MiB/s</code>。数值本身按 1024 进制折算。
+</p>
+
+<h3 id="s7-1-5">写启动脚本与说明</h3>
+
+<p>
+  新建启动脚本，内容如下：
+</p>
+
+<pre data-lang="Bash" data-name="run.sh"><code>#!/usr/bin/env bash
+set -eu
+
+cd "$(dirname "$0")"
+python3 compute.py camera.json</code></pre>
+
+<p>
+  第一行指定用 Bash 执行；<code>set -eu</code> 让脚本在命令失败或使用未定义
+  变量时立即退出；<code>cd "$(dirname "$0")"</code> 切换到脚本所在目录，
+  因此无论从哪个目录调用，<code>camera.json</code> 都能被找到。
+  最后一行调用计算脚本。
+</p>
+
+<p>
+  给启动脚本加上执行权限：
+</p>
+
+<pre data-lang="终端"><code>chmod +x run.sh</code></pre>
+
+<p>
+  <code>chmod +x</code> 只增加执行位，不改变文件内容。之后可以直接运行
+  启动脚本；如果不加执行权限，则需要用 <code>bash</code> 加上脚本名调用。
+  第 1 部分的权限一课讲过
+  <code>chmod</code> 与权限位的读法，这里不再展开。
+</p>
+
+<p>
+  新建 <code>README.md</code>：
+</p>
+
+<pre data-lang="Markdown" data-name="README.md"><code># camera-demo
+
+读取 `camera.json` 中的相机 A 参数，计算视场角、单帧大小与数据量，
+结果写入 `report.json`。
+
+## 运行
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+`report.json` 是生成文件，不提交到仓库。
+
+## 文件
+
+- `camera.json`：相机参数
+- `compute.py`：计算脚本
+- `run.sh`：启动脚本</code></pre>
+
+<p>
+  新建 <code>.gitignore</code>：
+</p>
+
+<pre data-lang="文本" data-name=".gitignore"><code>report.json
+__pycache__/
+*.pyc</code></pre>
+
+<p>
+  <code>report.json</code> 是每次运行都会重新生成的结果文件，不应该进入
+  提交历史；<code>__pycache__/</code> 与 <code>*.pyc</code> 是 Python
+  可能产生的缓存。忽略规则只影响 Git 是否跟踪，不会删除文件本身。
+</p>
+
+<h3 id="s7-1-6">运行与检查</h3>
+
+<p>
+  在工程目录里运行启动脚本：
+</p>
+
+<pre data-lang="终端"><code>./run.sh</code></pre>
+
+<pre class="out" data-label="真实输出" data-run="7.1-从空目录到小工程/run.sh">相机：camera A
+分辨率：1280 × 1024
+像元：10.0 µm
+焦距：8.0 mm
+焦距折算：800.0 px（fx=800.0，fy=800.0）
+水平视场角：77.32°
+垂直视场角：65.24°
+单帧：1310720 字节（1.25 MiB）
+30 fps 数据量：37.50 MB/s
+已写入 report.json</pre>
+
+<p>
+  输出逐行对应相机名称、分辨率、像元、焦距、焦距折算、两个视场角、
+  单帧大小与每秒数据量。视场角的计算结果是传感器宽度 12.8 mm、
+  高度 10.24 mm 时的水平 77.32°、垂直 65.24°。
+  单帧 1,310,720 字节就是 1.25 MiB；30 fps 时每秒 37.50 MiB。
+</p>
+
+<p>
+  脚本还会在 <code>camera.json</code> 旁边写出 <code>report.json</code>。
+  打开它，内容应当如下：
+</p>
+
+<pre class="out" data-label="真实输出（report.json）" data-report="7.1-从空目录到小工程/report.json">{
+  "name": "camera A",
+  "width": 1280,
+  "height": 1024,
+  "pixel_um": 10.0,
+  "focal_mm": 8.0,
+  "fx": 800.0,
+  "fy": 800.0,
+  "cx": 640.0,
+  "cy": 512.0,
+  "fps": 30,
+  "bits_per_pixel": 8,
+  "sensor_width_mm": 12.8,
+  "sensor_height_mm": 10.24,
+  "focal_px": 800.0,
+  "horizontal_fov_deg": 77.319617,
+  "vertical_fov_deg": 65.238486,
+  "frame_bytes": 1310720,
+  "frame_mib": 1.25,
+  "bandwidth_bytes_s": 39321600,
+  "bandwidth_mib_s": 37.5
+}</pre>
+
+<p>
+  报告把输入参数与计算结果放在同一个对象里：前 11 个字段来自
+  <code>camera.json</code>，后面的字段由脚本计算。这样一份报告就能同时
+  说明用了什么参数、得到了什么结果。查看目录内容：
+</p>
+
+<pre data-lang="终端"><code>ls -1</code></pre>
+
+<pre class="out" data-label="真实输出">README.md
+camera.json
+compute.py
+report.json
+run.sh</pre>
+
+<p>
+  <code>ls -1</code> 不显示以点开头的隐藏文件，所以 <code>.gitignore</code>
+  不在上面；<code>report.json</code> 是生成文件。用 Git 查看当前状态：
+</p>
+
+<pre data-lang="终端"><code>git status --short --ignored</code></pre>
+
+<pre class="out" data-label="真实输出（report.json 被忽略）">?? .gitignore
+?? README.md
+?? camera.json
+?? compute.py
+?? run.sh
+!! report.json</pre>
+
+<p>
+  <code>??</code> 表示未跟踪的文件，<code>!!</code> 表示被忽略的文件。
+  <code>report.json</code> 没有出现在 <code>??</code> 里，说明忽略规则已经
+  生效。下面把它排除在提交之外，只提交工程源码与说明。
+</p>
+
+<h3 id="s7-1-7">完成第一次提交</h3>
+
+<p>
+  逐个列出要提交的文件，不把生成文件带进来：
+</p>
+
+<pre data-lang="终端"><code>git add camera.json compute.py run.sh README.md .gitignore
+git status --short</code></pre>
+
+<pre class="out" data-label="真实输出">A  .gitignore
+A  README.md
+A  camera.json
+A  compute.py
+A  run.sh</pre>
+
+<p>
+  <code>A</code> 表示已经进入暂存区的新文件。提交：
+</p>
+
+<pre data-lang="终端"><code>git commit -m "feat: 建立相机参数小工程"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[master (root-commit) 0054672] feat: 建立相机参数小工程
+ 5 files changed, 138 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 README.md
+ create mode 100644 camera.json
+ create mode 100644 compute.py
+ create mode 100755 run.sh</pre>
+
+<p>
+  <code>root-commit</code> 表示这是仓库的第一次提交；<code>100755</code>
+  表示启动脚本带有执行位。提交号每次都会不同，行数也会随文件内容变化，
+  其余部分应当一致。查看提交与工作区：
+</p>
+
+<pre data-lang="终端"><code>git log --oneline --decorate -1
+git status
+git ls-files</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">0054672 (HEAD -&gt; master) feat: 建立相机参数小工程
+On branch master
+nothing to commit, working tree clean
+.gitignore
+README.md
+camera.json
+compute.py
+run.sh</pre>
+
+<p>
+  <code>git status</code> 显示工作区干净；<code>git ls-files</code> 列出
+  被跟踪的五个文件，其中没有 <code>report.json</code>。到这里，7.1 的检查点
+  全部满足：
+</p>
+
+<ul>
+  <li>工程目录里有五个源码与说明文件，运行后多出被忽略的报告；</li>
+  <li>启动脚本可以运行，输出与页面一致；</li>
+  <li><code>report.json</code> 的关键数值与页面一致；</li>
+  <li>第一次提交包含五个文件，工作区干净。</li>
+</ul>
+
+<p class="can">
+  <b>你现在能做什么：</b>从空目录建立一个可运行的小工程，
+  写参数文件、计算脚本、启动脚本与说明，设置忽略规则，
+  用 Git 完成第一次提交，并核对提交内容与工作区状态。
+</p>
+
+</section>
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>从功能分支到 V1.1</h2>
+
+<p>
+  7.1 的工程只有 <code>master</code> 与一次提交。这一课在它上面按 2.6 的
+  分支规范走一遍：<code>develop</code> 汇集开发，功能分支只做一件事，
+  发布分支准备版本，紧急修复处理发布后的问题，最后得到 V1.0 与 V1.1
+  两个附注标签。所有操作都在本机仓库里，不推送，也不配置远程仓库。
+</p>
+
+<p>
+  开始前确认当前在工程目录、工作区干净：
+</p>
+
+<pre data-lang="终端"><code>cd ~/tup-practice/camera-demo
+git status --short
+git log --oneline --decorate -1</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">0054672 (HEAD -&gt; master) feat: 建立相机参数小工程</pre>
+
+<p>
+  <code>git status --short</code> 没有输出，表示没有未提交的改动。
+  后面的提交号与合并结果都会因读者机器上的时间、身份与 Git 版本不同，
+  但分支名、标签名与每一步的文件变化应当一致。
+</p>
+
+<h3 id="s7-2-1">先建开发分支</h3>
+
+<p>
+  从 <code>master</code> 拉出开发分支：
+</p>
+
+<pre data-lang="终端"><code>git switch -c develop</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to a new branch 'develop'</pre>
+
+<p>
+  <code>develop</code> 与 <code>master</code> 现在指向同一个提交，
+  工程文件没有变化。这条分支用来汇集内部版本；功能分支从它拉出，
+  完成后再合回它。查看分支：
+</p>
+
+<pre data-lang="终端"><code>git branch</code></pre>
+
+<pre class="out" data-label="真实输出">* develop
+  master</pre>
+
+<h3 id="s7-2-2">功能分支：12 mm 焦距</h3>
+
+<p>
+  从开发分支拉出功能分支：
+</p>
+
+<pre data-lang="终端"><code>git switch -c feature/focal-12mm</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to a new branch 'feature/focal-12mm'</pre>
+
+<p>
+  这一条分支只做一件事：把焦距从 8 mm 改为 12 mm。焦距改变后，
+  <code>fx</code> 与 <code>fy</code> 也要随之改变，否则内参与焦距不一致。
+  用 <code>sed -i</code> 直接修改三行：
+</p>
+
+<pre data-lang="终端"><code>sed -i 's/"focal_mm": 8.0/"focal_mm": 12.0/' camera.json
+sed -i 's/"fx": 800.0/"fx": 1200.0/' camera.json
+sed -i 's/"fy": 800.0/"fy": 1200.0/' camera.json
+grep -E '"(focal_mm|fx|fy)"' camera.json</code></pre>
+
+<pre class="out" data-label="真实输出">  "focal_mm": 12.0,
+  "fx": 1200.0,
+  "fy": 1200.0,</pre>
+
+<p>
+  <code>sed -i</code> 会在原文件上替换匹配到的文本，不产生备份文件。
+  三条命令分别替换焦距、<code>fx</code> 与 <code>fy</code>；模式里的空格
+  与引号必须与文件一致。若文件已经被其他编辑改动过，<code>sed</code>
+  可能找不到匹配，这时用编辑器改这三个值，结果相同。
+</p>
+
+<p>
+  运行一次，确认新参数能算出新的视场角：
+</p>
+
+<pre data-lang="终端"><code>./run.sh</code></pre>
+
+<pre class="out" data-label="真实输出">相机：camera A
+分辨率：1280 × 1024
+像元：10.0 µm
+焦距：12.0 mm
+焦距折算：1200.0 px（fx=1200.0，fy=1200.0）
+水平视场角：56.14°
+垂直视场角：46.21°
+单帧：1310720 字节（1.25 MiB）
+30 fps 数据量：37.50 MB/s
+已写入 report.json</pre>
+
+<p>
+  焦距变长，视场角变小，这是预期结果；单帧大小与数据量不变，因为分辨率、
+  位深与帧率都没有改。查看工作区与暂存区的差异：
+</p>
+
+<pre data-lang="终端"><code>git diff</code></pre>
+
+<pre class="out" data-label="真实输出（index 行是文件摘要）">diff --git a/camera.json b/camera.json
+index a061378..7a478f3 100644
+--- a/camera.json
++++ b/camera.json
+@@ -3,9 +3,9 @@
+   "width": 1280,
+   "height": 1024,
+   "pixel_um": 10.0,
+-  "focal_mm": 8.0,
+-  "fx": 800.0,
+-  "fy": 800.0,
++  "focal_mm": 12.0,
++  "fx": 1200.0,
++  "fy": 1200.0,
+   "cx": 640.0,
+   "cy": 512.0,
+   "fps": 30,</pre>
+
+<p>
+  差异只有三行：两行删除、两行增加在同一个块里，共三处值变化。
+  <code>git diff</code> 比较的是工作区与暂存区；现在还没有暂存，
+  所以这三行都显示为未暂存的改动。
+</p>
+
+<p>
+  提交功能分支：
+</p>
+
+<pre data-lang="终端"><code>git add camera.json
+git commit -m "feat: 试用 12 mm 焦距"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[feature/focal-12mm 622827d] feat: 试用 12 mm 焦距
+ 1 file changed, 3 insertions(+), 3 deletions(-)</pre>
+
+<p>
+  切回开发分支并合并。使用 <code>--no-ff</code> 保留一条明确的合并提交，
+  这样历史里能看出功能分支曾经独立存在：
+</p>
+
+<pre data-lang="终端"><code>git switch develop
+git merge --no-ff feature/focal-12mm -m "合并功能分支 feature/focal-12mm"</code></pre>
+
+<pre class="out" data-label="真实输出（合并策略可能不同）">Switched to branch 'develop'
+Merge made by the 'ort' strategy.
+ camera.json | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)</pre>
+
+<p>
+  查看合并后的历史：
+</p>
+
+<pre data-lang="终端"><code>git log --graph --oneline --decorate --all</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">*   5236f68 (HEAD -&gt; develop) 合并功能分支 feature/focal-12mm
+|\
+| * 622827d (feature/focal-12mm) feat: 试用 12 mm 焦距
+|/
+* 36c32d9 (master) feat: 建立相机参数小工程</pre>
+
+<p>
+  合并提交在 <code>develop</code> 上，功能分支的提交在右侧；两条线在
+  初始提交处汇合。<code>--no-ff</code> 的作用是即使可以快进也生成合并提交，
+  保留分支结构。功能分支已经合入开发分支，按 2.6 的约定立即删除：
+</p>
+
+<pre data-lang="终端"><code>git branch -d feature/focal-12mm</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Deleted branch feature/focal-12mm (was 622827d).</pre>
+
+<p>
+  <code>-d</code> 只删除已经合并的分支；如果分支还有未合并的提交，
+  Git 会拒绝删除。这里不使用 <code>-D</code>，因为那会丢弃尚未合并的内容。
+</p>
+
+<h3 id="s7-2-3">发布分支与 V1.0</h3>
+
+<p>
+  功能集成后，从开发分支拉出发布分支：
+</p>
+
+<pre data-lang="终端"><code>git switch -c release/v1.0</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to a new branch 'release/v1.0'</pre>
+
+<p>
+  发布分支只做发布前的准备与修补，不再加入新功能。这里在说明文件末尾
+  补一段发布说明：
+</p>
+
+<pre data-lang="终端"><code>cat &gt;&gt; README.md &lt;&lt;'EOF'
+
+## V1.0 发布说明
+
+- 相机 A 的焦距改为 12 mm，`fx` 与 `fy` 同步改为 1200。
+- 视场角与数据量由 `compute.py` 重新计算。
+EOF</code></pre>
+
+<p>
+  <code>&gt;&gt;</code> 表示追加，<code>&lt;&lt;'EOF'</code> 表示把下面到
+  <code>EOF</code> 为止的文本交给 <code>cat</code>；单引号让内容按原样写入，
+  不展开变量。提交这次修改：
+</p>
+
+<pre data-lang="终端"><code>git add README.md
+git commit -m "docs: 补充 V1.0 发布说明"</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[release/v1.0 119829f] docs: 补充 V1.0 发布说明
+ 1 file changed, 5 insertions(+)</pre>
+
+<p>
+  发布分支测试通过后，切到主分支合入，并打附注标签：
+</p>
+
+<pre data-lang="终端"><code>git switch master
+git merge --no-ff release/v1.0 -m "合并发布分支 release/v1.0"
+git tag -a v1.0 -m "发布 V1.0：12 mm 焦距版本"
+git tag -n</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to branch 'master'
+Merge made by the 'ort' strategy.
+ README.md   | 5 +++++
+ camera.json | 6 +++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+v1.0            发布 V1.0：12 mm 焦距版本</pre>
+
+<p>
+  <code>git tag -a</code> 创建带说明的附注标签；<code>git tag -n</code>
+  显示标签及其说明。标签指向的是主分支上的这次合并提交，不是发布分支的
+  末端。发布分支上的修补还要合回开发分支：
+</p>
+
+<pre data-lang="终端"><code>git switch develop
+git merge --no-ff release/v1.0 -m "同步发布分支的修改"</code></pre>
+
+<pre class="out" data-label="真实输出（合并策略可能不同）">Switched to branch 'develop'
+Merge made by the 'ort' strategy.
+ README.md | 5 +++++
+ 1 file changed, 5 insertions(+)</pre>
+
+<p>
+  发布分支的内容已经同时进入主分支与开发分支，可以删除：
+</p>
+
+<pre data-lang="终端"><code>git branch -d release/v1.0</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Deleted branch release/v1.0 (was 119829f).</pre>
+
+<h3 id="s7-2-4">紧急修复与 V1.1</h3>
+
+<p>
+  发布之后发现一个单位问题：输出里的数据量按 1024 进制折算，
+  却写成了 <code>MB/s</code>。线上问题要从主分支拉紧急修复分支，
+  修完合回主分支，再同步到开发分支。先切到主分支：
+</p>
+
+<pre data-lang="终端"><code>git switch master
+git switch -c hotfix/unit-label</code></pre>
+
+<pre class="out" data-label="真实输出">Switched to branch 'master'
+Switched to a new branch 'hotfix/unit-label'</pre>
+
+<p>
+  只改输出单位，不动计算：
+</p>
+
+<pre data-lang="终端"><code>sed -i 's|MB/s|MiB/s|' compute.py
+grep -n 'MiB/s' compute.py</code></pre>
+
+<pre class="out" data-label="真实输出（行号以实际文件为准）">92:        f"{result['bandwidth_mib_s']:.2f} MiB/s"</pre>
+
+<p>
+  运行一次，确认单位已经改变：
+</p>
+
+<pre data-lang="终端"><code>./run.sh</code></pre>
+
+<pre class="out" data-label="真实输出">相机：camera A
+分辨率：1280 × 1024
+像元：10.0 µm
+焦距：12.0 mm
+焦距折算：1200.0 px（fx=1200.0，fy=1200.0）
+水平视场角：56.14°
+垂直视场角：46.21°
+单帧：1310720 字节（1.25 MiB）
+30 fps 数据量：37.50 MiB/s
+已写入 report.json</pre>
+
+<p>
+  查看差异，确认只改了一行：
+</p>
+
+<pre data-lang="终端"><code>git diff compute.py</code></pre>
+
+<pre class="out" data-label="真实输出（index 行是文件摘要）">diff --git a/compute.py b/compute.py
+index 8a1cfe9..4fe84bb 100644
+--- a/compute.py
++++ b/compute.py
+@@ -89,7 +89,7 @@ def main():
+     )
+     print(
+         f"{camera['fps']} fps 数据量："
+-        f"{result['bandwidth_mib_s']:.2f} MB/s"
++        f"{result['bandwidth_mib_s']:.2f} MiB/s"
+     )
+     print(f"已写入 {target.name}")</pre>
+
+<p>
+  提交并合回主分支：
+</p>
+
+<pre data-lang="终端"><code>git add compute.py
+git commit -m "fix: 数据量单位改为 MiB/s"
+git switch master
+git merge --no-ff hotfix/unit-label -m "合并紧急修复 hotfix/unit-label"
+git tag -a v1.1 -m "发布 V1.1：数据量单位改为 MiB/s"
+git tag -n</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">[hotfix/unit-label 83cdd40] fix: 数据量单位改为 MiB/s
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Switched to branch 'master'
+Merge made by the 'ort' strategy.
+ compute.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+v1.0            发布 V1.0：12 mm 焦距版本
+v1.1            发布 V1.1：数据量单位改为 MiB/s</pre>
+
+<p>
+  最后把紧急修复同步回开发分支：
+</p>
+
+<pre data-lang="终端"><code>git switch develop
+git merge --no-ff hotfix/unit-label -m "同步紧急修复"</code></pre>
+
+<pre class="out" data-label="真实输出（合并策略可能不同）">Switched to branch 'develop'
+Merge made by the 'ort' strategy.
+ compute.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+
+<h3 id="s7-2-5">检查最终状态</h3>
+
+<p>
+  紧急修复已经同时进入主分支与开发分支，可以删除分支。删除之前先看一次
+  历史；下面的输出是在示例副本上运行得到的，提交号与横向位置会随历史不同：
+</p>
+
+<pre data-lang="终端"><code>git log --graph --oneline --decorate --all --no-color</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">*   d23cf8a (HEAD -&gt; develop) 同步紧急修复
+|\
+* \   b0756ed 同步发布分支的修改
+|\ \
+| | | *   f618561 (tag: v1.1, master) 合并紧急修复 hotfix/unit-label
+| | | |\
+| | | |/
+| | |/|
+| | * | 83cdd40 (hotfix/unit-label) fix: 数据量单位改为 MiB/s
+| | |/
+| | *   45e7e9a (tag: v1.0) 合并发布分支 release/v1.0
+| | |\
+| | |/
+| |/|
+| * | 119829f docs: 补充 V1.0 发布说明
+|/ /
+* |   5236f68 合并功能分支 feature/focal-12mm
+|\ \
+| |/
+|/|
+| * 622827d feat: 试用 12 mm 焦距
+|/
+* 36c32d9 feat: 建立相机参数小工程</pre>
+
+<p>
+  实际历史比 2.6 的示意图多几条线，因为主分支与开发分支各自都有合并提交，
+  两个标签都落在主分支的历史上。阅读时先找 <code>HEAD</code> 与标签，
+  再顺着合并提交看每条分支从哪来、合回哪里；不必逐行对照示意图。
+  功能分支与发布分支此前已经删除，所以图上只剩紧急修复分支的名字。
+</p>
+
+<pre data-lang="终端"><code>git branch -d hotfix/unit-label
+git branch
+git tag -n
+git status</code></pre>
+
+<pre class="out" data-label="真实输出（提交号每次不同）">Deleted branch hotfix/unit-label (was 83cdd40).
+* develop
+  master
+v1.0            发布 V1.0：12 mm 焦距版本
+v1.1            发布 V1.1：数据量单位改为 MiB/s
+On branch develop
+nothing to commit, working tree clean</pre>
+
+<p>
+  最终只剩下 <code>develop</code> 与 <code>master</code> 两条长期分支，
+  两个附注标签都在主分支的历史上。两条分支的文件内容应当一致，
+  但两条分支上的提交历史不同；用下面的命令比较内容：
+</p>
+
+<pre data-lang="终端"><code>git diff master..develop</code></pre>
+
+<p>
+  这条命令没有输出，说明两条分支的最终文件内容没有差异。
+  如果输出不为空，先检查是否还有未合并的提交，不要直接删除分支或覆盖文件。
+</p>
+
+<ul>
+  <li>功能分支从 <code>develop</code> 拉出，合回 <code>develop</code> 后删除；</li>
+  <li>发布分支从 <code>develop</code> 拉出，合入 <code>master</code> 并打
+    <code>v1.0</code>，再同步回 <code>develop</code> 后删除；</li>
+  <li>紧急修复从 <code>master</code> 拉出，合入 <code>master</code> 并打
+    <code>v1.1</code>，再同步回 <code>develop</code> 后删除；</li>
+  <li>最终两条长期分支内容一致，工作区干净，没有远程仓库与推送操作。</li>
+</ul>
+
+<p class="can">
+  <b>你现在能做什么：</b>按队内分支规范建立开发分支、功能分支、
+  发布分支与紧急修复分支，使用 <code>--no-ff</code> 合并，打附注标签，
+  在合并后删除分支，并从最终的分支、标签与工作区状态核对发布流程。
+</p>
+
+</section>
+
+<nav class="pager">
+  <a href="06-网络服务.html">← 第 6 部分 · 网络服务</a>
+  <span class="spacer"></span>
+  <a href="index.html">回课程目录 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

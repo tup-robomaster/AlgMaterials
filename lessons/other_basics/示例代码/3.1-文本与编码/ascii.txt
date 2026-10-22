@@ -1,0 +1,2 @@
+camera
+resolution 1280x1024

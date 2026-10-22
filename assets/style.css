@@ -451,6 +451,15 @@ h3 {
   margin: 2.2rem 0 0.9rem;
 }
 
+/* 小节标题后的「重点」标记。用强调色的小字，不加底色与边框——
+   这一页的设计不放徽章（见文件头）。 */
+h3 .key {
+  margin-left: 0.15em;
+  color: var(--accent);
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
 /* h4 用在「三条规矩」这类小分条上，比 h3 轻一档 */
 h4 {
   font-size: 0.97rem;
@@ -672,6 +681,13 @@ th {
   font-size: 0.85rem;
   letter-spacing: 0.03em;
   border-bottom-color: var(--rule-strong);
+}
+
+/* 相机部分那张对比表：第一列是短标签，不跟着中文自动断行。
+   不设固定布局，只把这一列的宽度交给内容，其余列照常分配。 */
+table.compare th:first-child,
+table.compare td:first-child {
+  white-space: nowrap;
 }
 
 /* 速查表（附录 A 和 B）：列宽定死。
@@ -1039,6 +1055,155 @@ li::marker { color: var(--ink-faint); }
   padding: 1rem 1.2rem;
   color: var(--warn);
   font-size: 0.92rem;
+}
+
+/* ---------- 13.5 图示与交互图 ----------
+
+   几何图由 assets/geo.js 画成 SVG，控件是原生的 range 与 button。
+   图里的颜色只写语义类（g-c1…g-c4），值全从第一节的变量来，
+   所以换配色不用重画。位图只有 Git 那一张，白底保留。 */
+
+.fig { margin: 2rem 0; }
+.fig figcaption {
+  margin-top: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.92em;
+  line-height: 1.7;
+}
+.fig img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: #fff;
+}
+/* 图片与图注装进紫色框，和正文分开。紫色借用例题的 --eg，
+   暗色下自动换成浅紫；框只包住图与图注，不扩大到整节。 */
+.fig-box {
+  border: 1px solid var(--eg);
+  border-radius: 8px;
+  background: var(--eg-soft);
+  padding: 1rem 1.1rem 0.9rem;
+}
+.fig-box img { border-color: var(--eg); }
+.fig-box figcaption { padding: 0 0.1rem; }
+.zoomable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.geo {
+  margin: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: 5px;
+  background: var(--paper);
+  overflow: hidden;
+  max-width: 100%;
+}
+.geo-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--paper);
+}
+.geo-svg text { font-family: inherit; }
+
+.g-grid { stroke: var(--rule); stroke-width: 1; fill: none; }
+.g-axis { stroke: var(--ink-faint); stroke-width: 1.2; fill: var(--ink-faint); }
+.g-aux  { stroke: var(--ink-faint); stroke-width: 1.2; fill: none; stroke-dasharray: 5 4; }
+.g-line { fill: none; stroke-width: 2; stroke-linecap: round; }
+.g-c1 { stroke: var(--accent); fill: var(--accent); }
+.g-c2 { stroke: var(--eg);     fill: var(--eg); }
+.g-c3 { stroke: var(--tip);    fill: var(--tip); }
+.g-c4 { stroke: var(--warn);   fill: var(--warn); }
+.g-o1, .g-o2, .g-o3, .g-o4 { fill: none; }
+.g-faint { stroke: var(--ink-faint); stroke-width: 1.4; fill: none; }
+.g-head { stroke: none; }
+.g-fill1 { fill: color-mix(in srgb, var(--accent) 14%, transparent); stroke: none; }
+.g-fill2 { fill: color-mix(in srgb, var(--eg) 14%, transparent);     stroke: none; }
+.g-fill3 { fill: color-mix(in srgb, var(--tip) 14%, transparent);    stroke: none; }
+.g-fill4 { fill: color-mix(in srgb, var(--warn) 14%, transparent);   stroke: none; }
+.g-dot { stroke: var(--paper); stroke-width: 2; }
+.g-label {
+  font-size: 13px;
+  fill: var(--ink-soft);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.g-label-1 { fill: var(--accent); }
+.g-label-2 { fill: var(--eg); }
+.g-label-3 { fill: var(--tip); }
+.g-label-4 { fill: var(--warn); }
+.g-label-small { font-size: 11px; }
+
+.geo-panel {
+  border-top: 1px solid var(--rule);
+  padding: 0.55rem 0.9rem 0.65rem;
+}
+.geo-ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+}
+.geo-ctl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 12rem;
+}
+.geo-ctl-label {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.geo-range {
+  width: 8rem;
+  accent-color: var(--accent);
+}
+.geo-ctl-val {
+  min-width: 3.2rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink);
+  text-align: right;
+}
+.geo-steps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+}
+.geo-steps:first-child { margin-top: 0; }
+.geo-readout {
+  margin-top: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+.geo-missing,
+.geo-error {
+  padding: 1rem 1.2rem;
+  color: var(--warn);
+  font-size: 0.92rem;
+}
+.geo-error { border-top: 1px solid var(--rule); }
+
+@media (max-width: 620px) {
+  .geo-ctl { min-width: 100%; }
+  .geo-range { flex: 1; width: auto; }
+}
+
+@media print {
+  .geo-ctrl, .geo-steps { display: none; }
+  .fig, .geo { break-inside: avoid; page-break-inside: avoid; }
+  .geo-readout { color: #333; }
 }
 
 /* ---------- 14. 打印 ---------- */
