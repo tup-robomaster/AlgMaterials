@@ -3,28 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenCV — TUP 算法组</title>
+<title>OpenCV 视觉基础 — TUP 算法组</title>
 <link rel="stylesheet" href="../../assets/style.css">
-<style>
-/* 占位页的版式：一栏字、没有目录栏，跟 TUP.html 首页是一套。
-   样式写在本页里，不动 style.css，别的页不受影响。 */
-.stub {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 5rem 1.5rem 4rem;
-}
-.stub-slot {
-  margin: 2rem 0 0;
-  padding: 1.1rem 1.3rem;
-  background: var(--code-bg);
-  border-left: 3px solid var(--rule-strong);
-  border-radius: 0 4px 4px 0;
-  color: var(--ink-soft);
-  font-size: 0.94rem;
-}
-.stub-slot > b { color: var(--ink-mid); }
-.stub-slot p:last-child { margin-bottom: 0; }
-</style>
 <script src="../../assets/theme.js"></script>
 </head>
 <body>
@@ -36,6 +16,20 @@
   </a>
   <span class="sep" aria-hidden="true"></span>
   <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
     <nav class="nav-courses" aria-label="课程">
       <a href="../cpp_Basics/index.html">C++ 基础课</a>
       <a href="../cpp_advanced/index.html">C++ 进阶课</a>
@@ -50,20 +44,654 @@
   <button class="theme-btn" type="button"></button>
 </header>
 
-<main class="stub">
+<div class="wrap">
 
-  <h1>OpenCV</h1>
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
 
-  <div class="stub-slot">
-    <p><b>作者很懒，还没写....</b></p>
-    <p>已经写好的是 <a href="../cpp_Basics/index.html">C++ 基础课</a>和 <a href="../cpp_advanced/index.html">C++ 进阶课</a>。</p>
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么读这门课</a>
+  <a class="toc-l" href="#structure">课程结构</a>
+  <a class="toc-l" href="#paths">推荐路径</a>
+  <a class="toc-l" href="#env">环境与链接</a>
+  <a class="toc-l" href="#media">素材说明</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · 图像与 Mat</a>
+  <a class="toc-l" href="#p2">第 2 部分 · 图像处理</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 轮廓与形状</a>
+  <a class="toc-l" href="#p4">第 4 部分 · 颜色目标检测</a>
+  <a class="toc-l" href="#p5">第 5 部分 · 视频与相机</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 特征匹配</a>
+  <a class="toc-l" href="#p7">第 7 部分 · 相机模型与标定</a>
+  <a class="toc-l" href="#p8">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="toc-l" href="#p9">第 9 部分 · 综合：装甲板识别</a>
+  <a class="toc-l" href="#p10">第 10 部分 · 检测题</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
+  <h1>OpenCV 视觉基础</h1>
+  <p class="part-lead">
+    这门课讲怎样用 C++ 与 OpenCV 处理图像和视频。内容从 <code>Mat</code>、
+    颜色空间与绘制开始，经过阈值、轮廓与颜色目标检测，走到视频采集、
+    相机标定和卡尔曼滤波。每个例子都给出完整代码、编译命令、真实输出与结果图。
+  </p>
+</header>
+
+<section id="how">
+  <h2 class="sec-plain">怎么读这门课</h2>
+
+  <p>
+    全课 11 个部分、58 课，分三档要求。<b>第 0–1 部分是基础</b>，
+    建议按顺序读完，并亲手运行、修改例子。<b>第 2–9 部分按需阅读</b>：
+    每一部分开头先列前置课，读完前置再按当前任务选读。<b>第 10 部分是综合练习</b>，
+    建议在读完第 1–5 部分以及 7.1、7.6、8.1–8.2 之后再做。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>档次</th><th>部分</th><th>读到什么程度</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>基础</b></td>
+        <td>第 0–1 部分</td>
+        <td>按顺序读；例子必须运行，参数要能改，输出要能解释</td>
+      </tr>
+      <tr>
+        <td><b>按需</b></td>
+        <td>第 2–9 部分</td>
+        <td>先读该部分列出的前置课，再按任务选读；不要求从头到尾</td>
+      </tr>
+      <tr>
+        <td><b>综合</b></td>
+        <td>第 10 部分</td>
+        <td>独立完成一条完整流程与一组检测题</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    具体到每一课，用四个词标注要求。<b>会用</b>指能运行、能改参数、能解释输出；
+    <b>掌握</b>指能独立写出一段完整流程并定位常见错误；<b>看懂</b>指能读懂代码、
+    公式与参数，不要求独立实现；<b>了解</b>指知道概念、流程与适用场景。
+  </p>
+
+  <p>
+    全课有三课标为<b>选学</b>：2.7 图像金字塔；3.6 距离变换、分水岭与
+    漫水填充；8.5 扩展卡尔曼与自适应噪声。选学课可以跳过，也不进入任何
+    部分的前置。
+  </p>
+
+
+  <h3>每页怎么读</h3>
+
+  <p>
+    课里的 C++ 例子都是完整程序，代码块后紧跟真实输出，含窗口交互的例子另给结果图。
+    正文中的图片可以双击放大，滚轮继续缩放，按住拖动平移，按 Esc 或再次双击还原。
+    运行方法见 <a href="00-开始.html#l0-2">0.2</a>，练习目录与代码输出的阅读约定见
+    <a href="00-开始.html#l0-1">0.1</a>。课程假设读者已经会写基本的 C++ 程序：
+    变量、循环、函数、<code>std::vector</code> 与结构体，能用 <code>g++</code>
+    编译一个源文件；课程不重复讲这些语法，需要时先读 C++ 基础课。
+  </p>
+</section>
+
+<section id="structure">
+  <h2 class="sec-plain">课程结构</h2>
+
+  <p>
+    下表给出 11 个部分的分工、课数、前置与主要内容。“前置”只列必读课，
+    不列选学课；每一部分页的第一屏会把这些前置写成可点击的链接。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>部分</th><th>类型</th><th>课数</th><th>前置</th><th>主要内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>0 开始</b></td>
+        <td>基础</td><td>5</td><td>无</td>
+        <td>课程地图、链接命令、编辑器配置、第一个程序、完整例子</td>
+      </tr>
+      <tr>
+        <td><b>1 图像与 Mat</b></td>
+        <td>基础</td><td>5</td><td>0.2–0.5</td>
+        <td>Mat 内存、读写、ROI、颜色空间、绘制</td>
+      </tr>
+      <tr>
+        <td><b>2 图像处理</b></td>
+        <td>按需</td><td>7</td><td>1.1–1.4</td>
+        <td>平滑、阈值、形态学、边缘、直方图、几何变换、金字塔（2.7 选学）</td>
+      </tr>
+      <tr>
+        <td><b>3 轮廓与形状</b></td>
+        <td>按需</td><td>6</td><td>1.1–1.3、2.2–2.3</td>
+        <td>轮廓、面积、外接矩形、形状特征、筛选、分水岭（3.6 选学）</td>
+      </tr>
+      <tr>
+        <td><b>4 颜色目标检测</b></td>
+        <td>按需</td><td>6</td><td>1.4、2.1–2.3、3.1–3.4</td>
+        <td>HSV、绿球、苹果、粘连、灯条、配对</td>
+      </tr>
+      <tr>
+        <td><b>5 视频与相机</b></td>
+        <td>按需</td><td>7</td><td>0.4、1.1–1.2</td>
+        <td>VideoCapture、摄像头、帧循环、VideoWriter、工业相机取图、像素格式</td>
+      </tr>
+      <tr>
+        <td><b>6 特征匹配</b></td>
+        <td>按需</td><td>1</td><td>1.1–1.4</td>
+        <td>模板匹配、ORB、单应性、光流（只作了解）</td>
+      </tr>
+      <tr>
+        <td><b>7 相机模型与标定</b></td>
+        <td>按需</td><td>8</td><td>1.1–1.4、2.6</td>
+        <td>坐标系、针孔、畸变、棋盘、标定、去畸变、PnP、点云</td>
+      </tr>
+      <tr>
+        <td><b>8 卡尔曼与跟踪</b></td>
+        <td>按需</td><td>5</td><td>1.1–1.5、2.3、2.6、3.1–3.2、3.4</td>
+        <td>直觉、KalmanFilter、角度展开、代码优化、EKF（8.5 选学）</td>
+      </tr>
+      <tr>
+        <td><b>9 综合：装甲板</b></td>
+        <td>按需</td><td>6</td><td>1.1–1.5、2.1–2.3、2.6、3.1–3.5、4.1、4.5–4.6、5.1、5.3–5.4</td>
+        <td>灯条、配对、颜色、数字、状态机、性能</td>
+      </tr>
+      <tr>
+        <td><b>10 检测题</b></td>
+        <td>综合</td><td>2</td><td>第 1–5 部分、7.1、7.6、8.1–8.2</td>
+        <td>综合例题、五道检测题</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    合计 5 + 5 + 7 + 6 + 6 + 7 + 1 + 8 + 5 + 6 + 2 = 58 课。
+  </p>
+</section>
+
+<section id="paths">
+  <h2 class="sec-plain">推荐路径</h2>
+
+  <p>
+    不要求按 0 到 10 的顺序读完。可以按目标选一条路径，先读前置，
+    再读该路径列出的课。路径里的编号都指课程编号，不是页码。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>目标</th><th>建议顺序</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>颜色目标检测</td>
+        <td>0 → 1 → 2.2–2.3 → 3.1–3.4 → 4.1–4.4</td>
+        <td>绿球、苹果与色块的计数；先打好 Mat 与掩码的基础</td>
+      </tr>
+      <tr>
+        <td>视频与相机</td>
+        <td>0 → 1 → 5.1–5.4</td>
+        <td>读写视频、打开摄像头、处理帧循环；没有摄像头也能用视频文件完成</td>
+      </tr>
+      <tr>
+        <td>相机标定</td>
+        <td>0 → 1 → 2.6 → 7.1–7.7</td>
+        <td>针孔模型、畸变、棋盘标定、去畸变与 PnP</td>
+      </tr>
+      <tr>
+        <td>卡尔曼与跟踪</td>
+        <td>0 → 1 → 3.3–3.4 → 8.1–8.4</td>
+        <td>预测与校正、角度展开、完整代码的阅读与优化</td>
+      </tr>
+      <tr>
+        <td>装甲板识别</td>
+        <td>0 → 1 → 2 → 3.1–3.5 → 4.1、4.5–4.6 → 5.1、5.3–5.4 → 9.1–9.5</td>
+        <td>传统流程：灯条、配对、颜色与状态机；9.6 只要看懂</td>
+      </tr>
+      <tr>
+        <td>全课</td>
+        <td>0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10</td>
+        <td>第 6 部分只作了解，可以跳过</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="env">
+  <h2 class="sec-plain">环境与链接</h2>
+
+  <p>
+    课程假设运行环境为 Ubuntu、OpenCV 4.x（测试机验证版本为 4.9.0）；
+    <code>g++</code> 支持 C++17，VS Code 已安装 C/C++ 插件。例子直接
+    使用这套环境编译运行。
+  </p>
+
+  <p>
+    编译命令、<code>pkg-config</code> 的检查方法与链接失败的常见原因，见
+    <a href="00-开始.html#l0-2">0.2 环境与链接</a>；VS Code 中头文件红线的
+    处理与 IntelliSense 配置，见 <a href="00-开始.html#l0-3">0.3</a>。
+  </p>
+</section>
+
+<section id="media">
+  <h2 class="sec-plain">素材说明</h2>
+
+  <p>
+    课程例子使用的图片与视频都随课程放在本地，页面不引用外部地址。
+    合成素材由课程脚本生成，位置、颜色与尺寸固定，重复运行得到同一张图。
+  </p>
+
+  <p>
+    第 0、1 部分的图片是合成图 <code>synth_balls.png</code>：浅色渐变背景上
+    分布 22 个绿色圆球，由课程脚本生成。
+    真实素材另有苹果照片 <code>apple.jpg</code> 与一段视频 <code>cube.mp4</code>。
+    视频只作为普通素材使用；没有摄像头时，摄像头一课自动回退到视频文件，
+    不要求硬件。第 9 部分另有一段实拍观察视频 <code>real_armor.mp4</code>，
+    用于 9.6 的属性读取与抽帧对照；页面不提供这段视频的检测程序。
+  </p>
+
+  <div class="aside tip">
+    <b>关于图片与视频</b>
+    <p>
+      课里的结果图都由页面上的程序生成。读者运行时得到的图应当与课里一致；
+      若阈值或路径不同，计数可能变化，后续课程会说明怎样调整参数与定位差异。
+    </p>
   </div>
+</section>
 
-  <footer class="site-footer">
-    TUP 战队算法组 · OpenCV
-  </footer>
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">
+    基础，5 课，无前置。只要求能读懂 C++ 基本语句。
+    这一部分完成练习准备、环境、链接、编辑器配置与第一个完整例子。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">练习目录与代码约定</a>
+      <span class="d">练习目录的复制与重建、代码与输出的阅读约定</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">环境与链接</a>
+      <span class="d">确认 <code>pkg-config</code>、<code>g++</code> 与 <code>cmake</code>；最小程序；<code>g++</code> 编译、链接与运行；一份最小 <code>CMakeLists.txt</code>；链接失败的常见原因</span>
+    </span></li>
+    <li><span class="n">0.3</span><span class="body">
+      <a class="t" href="00-开始.html#l0-3">VS Code 配置与 IntelliSense 排错</a>
+      <span class="d"><code>.vscode</code> 四个文件的分工；IntelliSense 与编译的区别；最小配置；修复与验证；常见问题</span>
+    </span></li>
+    <li><span class="n">0.4</span><span class="body">
+      <a class="t" href="00-开始.html#l0-4">第一个程序：读图、显示、保存</a>
+      <span class="d"><code>imread</code> 与 <code>empty</code>；尺寸与类型；<code>imshow</code>、<code>waitKey</code>、<code>imwrite</code>；运行结果</span>
+    </span></li>
+    <li><span class="n">0.5</span><span class="body">
+      <a class="t" href="00-开始.html#l0-5">先运行一个完整例子：数绿球</a>
+      <span class="d">HSV 阈值、形态学、轮廓、面积过滤、画框与计数；先运行，不要求理解每一行</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a></h2>
+  <p class="part-note">
+    基础，5 课，前置 0.2–0.5。这一部分从 OpenCV 的基本容器 <code>Mat</code>
+    开始，讲清内存、像素、视图与颜色空间，最后把结果画到图上。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-图像与Mat.html#l1-1">Mat 的内存模型</a>
+      <span class="d">头部与数据；行、列、通道、深度、类型、步长；浅拷贝与深拷贝；连续内存</span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-图像与Mat.html#l1-2">读、写、显示与错误处理</a>
+      <span class="d">三个读取标志；<code>empty</code> 检查；显示与保存；路径与工作目录；常见错误</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-图像与Mat.html#l1-3">像素、ROI 与克隆</a>
+      <span class="d">先行后列的坐标；<code>at</code> 读写；ROI 是视图；<code>clone</code> 后独立；ROI 边界</span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-图像与Mat.html#l1-4">颜色空间：BGR、灰度、HSV</a>
+      <span class="d">BGR 顺序；灰度转换；H、S、V 的范围；为什么颜色分割常用 HSV</span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-图像与Mat.html#l1-5">绘制、掩码与标注</a>
+      <span class="d">掩码与形态学；<code>line</code>、<code>rectangle</code>、<code>circle</code>、<code>putText</code>；画轮廓、框、重心与编号</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-图像处理.html">第 2 部分 · 图像处理</a></h2>
+  <p class="part-note">
+    按需，7 课，前置 1.1–1.4。这一部分处理颜色检测之前最常见的图像处理
+    步骤：抑制噪声、分开目标与背景、清理掩码、提取边缘、判断曝光，
+    最后做缩放、旋转与透视校正。2.1–2.6 需要掌握，2.7 为选学。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-1">平滑与去噪</a>
+      <span class="d">四种滤波器的分工；噪声类型与选择；加噪比较；速度、参数与副作用</span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-2">阈值：固定、Otsu、自适应</a>
+      <span class="d">五种阈值类型；Otsu 与自适应阈值；五种类型与光照不均；参数与常见错误</span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-3">形态学：腐蚀、膨胀、开、闭</a>
+      <span class="d">结构元、腐蚀与膨胀；开、闭与派生运算；清理噪声掩码；核大小与运算顺序</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-4">边缘：Sobel、Laplacian、Canny</a>
+      <span class="d">Sobel 与梯度；Laplacian 与 Canny；四种边缘图；阈值与后续处理</span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-5">直方图与曝光</a>
+      <span class="d"><code>calcHist</code> 与直方图；<code>equalizeHist</code> 与 CLAHE；低对比度增强；彩色图与归一化</span>
+    </span></li>
+    <li><span class="n">2.6</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-6">几何变换：缩放、旋转、透视</a>
+      <span class="d"><code>resize</code> 与插值；旋转与仿射；透视变换与四点顺序；缩放、旋转与卡片矫正</span>
+    </span></li>
+    <li><span class="n">2.7</span><span class="body">
+      <a class="t" href="02-图像处理.html#l2-7">图像金字塔（选学）</a>
+      <span class="d"><code>pyrDown</code> 与 <code>pyrUp</code>；尺度空间与多尺度匹配；三层金字塔与两档匹配；匹配的边界</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a></h2>
+  <p class="part-note">
+    按需，6 课，前置 1.1–1.3、2.2–2.3。这一部分从二值掩码出发：
+    先把目标边界提取成轮廓，再计算面积、周长、外接矩形、旋转矩形、
+    重心与圆形度，最后组合这些特征筛选候选并去重。3.1–3.5 需要掌握，
+    3.6 为选学。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-1">轮廓提取：findContours</a>
+      <span class="d">从掩码到轮廓；检索模式与层级；绿色掩码的外轮廓与孔洞；绘制与输入错误</span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-2">面积、周长与外接矩形</a>
+      <span class="d">面积、周长与有向性；外接矩形与填充率；面积与外接矩形筛选；尺寸、分辨率与阈值换算</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-3">旋转矩形、外接圆与多边形逼近</a>
+      <span class="d"><code>minAreaRect</code> 与 <code>boxPoints</code>；外接圆与 <code>approxPolyDP</code>；直角、边长比与判据</span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-4">矩、重心与形状特征</a>
+      <span class="d">矩与重心；圆形度、填充率与凸性；绿球的重心与圆形度；哪些特征稳定</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-5">轮廓筛选与去重</a>
+      <span class="d">组合特征与阈值表；排序、IoU 与非极大值抑制；四张图上的候选与去重；调试顺序与参数维护</span>
+    </span></li>
+    <li><span class="n">3.6</span><span class="body">
+      <a class="t" href="03-轮廓与形状.html#l3-6">距离变换、分水岭与漫水填充（选学）</a>
+      <span class="d">距离变换；连通分量与分水岭；把接触的球分开；漫水填充与适用边界</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p4">
+  <h2><a href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a></h2>
+  <p class="part-note">
+    按需，6 课，前置 1.4、2.1–2.3、3.1–3.4。这一部分把颜色变成掩码，
+    再从掩码里数出目标：HSV 阈值、形态学、面积与圆形度、粘连与白球、
+    红蓝灯条、灯条配对。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-1">HSV 阈值与 inRange</a>
+      <span class="d">从 BGR 到 HSV；inRange 的上下界；绿色的 S/V 下限；阈值失败时先看掩码</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-2">红苹果：双区间、形态学与面积</a>
+      <span class="d">红色跨过 H=0；闭运算与面积过滤；苹果计数；参数表与分辨率</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-3">绿球：面积、圆形度与计数</a>
+      <span class="d">面积与最小外接圆；圆形度与宽高比；四张图的计数；参数表与取舍</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-4">粘连、白球与干扰</a>
+      <span class="d">面积异常与腐蚀分离；白球与高光；三种情况；处理顺序与参数</span>
+    </span></li>
+    <li><span class="n">4.5</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-5">红蓝灯条与多颜色统计</a>
+      <span class="d">灰度阈值、通道差与 HSV；方向性形态学；红蓝灯条计数；多颜色表与调试</span>
+    </span></li>
+    <li><span class="n">4.6</span><span class="body">
+      <a class="t" href="04-颜色目标检测.html#l4-6">灯条配对与装甲板候选</a>
+      <span class="d">灯条筛选；配对约束；装甲板候选；去重与后续</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p5">
+  <h2><a href="05-视频与相机.html">第 5 部分 · 视频与相机</a></h2>
+  <p class="part-note">
+    按需，7 课，前置 0.4、1.1–1.2。这一部分把单张图像扩展成按时间到达的帧：
+    打开视频文件与摄像头，写帧循环，保存处理结果，并把采集与处理分开；
+    后两课读懂工业相机的取图流程、参数与像素格式，5.5 读懂采集与处理
+    分离的结构。前四课要求会用，后三课要求看懂。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-1">VideoCapture：打开视频</a>
+      <span class="d">容器与帧；元数据与第一帧；位置与时间戳；路径与打开失败</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-2">摄像头：打开、参数与采集</a>
+      <span class="d">设备索引；请求参数与实际参数；采集、镜像与保存；失败回退与释放</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-3">帧循环、按键与帧率</a>
+      <span class="d">循环与退出条件；按键、暂停与时间戳；帧率计算与跳帧</span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-4">VideoWriter：保存处理结果</a>
+      <span class="d">FourCC、尺寸与帧率；写入、释放与回读；录像与常见错误</span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-5">采集与处理分离</a>
+      <span class="d">生产者与消费者；浅拷贝与 clone；有界队列、丢旧帧与背压</span>
+    </span></li>
+    <li><span class="n">5.6</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-6">工业相机 SDK：从取图到 Mat</a>
+      <span class="d">取图流程；包装缓冲区与 Bayer；步长、缓冲区归属与错误</span>
+    </span></li>
+    <li><span class="n">5.7</span><span class="body">
+      <a class="t" href="05-视频与相机.html#l5-7">相机参数与像素格式</a>
+      <span class="d">曝光、增益与白平衡；模拟参数影响；像素格式与位深；参数错误</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p6">
+  <h2><a href="06-特征匹配.html">第 6 部分 · 特征匹配</a></h2>
+  <p class="part-note">
+    按需，1 课，前置 1.1–1.4。这一部分用一课横向比较四类方法：
+    模板匹配、特征点与描述子、单应性与 RANSAC、光流。重点是各自依赖的假设、
+    适用条件与失效情形，只作了解，不设程序练习。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-特征匹配.html#l6-1">特征匹配简介</a>
+      <span class="d">模板匹配的滑动与分数；ORB、汉明距离与比值检验；单应性与 RANSAC；金字塔光流；四种方法的适用范围</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p7">
+  <h2><a href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a></h2>
+  <p class="part-note">
+    按需，8 课，前置 1.1–1.4、2.6。这一部分从四个坐标系与针孔模型出发，
+    经过单应、畸变、棋盘角点与 <code>calibrateCamera</code>，讲到去畸变、
+    PnP 与点云投影。7.1–7.6 要求掌握，7.7 要求会用，7.8 要求看懂。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-1">四大坐标系与针孔模型</a>
+      <span class="d">世界、相机、图像物理与像素坐标；内参矩阵；投影公式与深度</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-2">单应与张正友标定</a>
+      <span class="d">平面单应；<code>B=K^-T K^-1</code> 约束；至少三个姿态；用途与边界</span>
+    </span></li>
+    <li><span class="n">7.3</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-3">畸变模型</a>
+      <span class="d">径向 <code>k1 k2 k3</code>；切向 <code>p1 p2</code>；归一化坐标到像素；畸变系数的顺序</span>
+    </span></li>
+    <li><span class="n">7.4</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-4">棋盘格角点检测</a>
+      <span class="d">内角点；<code>findChessboardCorners</code>；<code>cornerSubPix</code>；绘制与常见失败</span>
+    </span></li>
+    <li><span class="n">7.5</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-5">calibrateCamera 与重投影误差</a>
+      <span class="d">对象点与图像点；<code>rvecs</code>、<code>tvecs</code>；RMS 与每视角误差；标定流程</span>
+    </span></li>
+    <li><span class="n">7.6</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-6">去畸变与 remap</a>
+      <span class="d"><code>undistort</code>；映射表与 <code>remap</code>；新的内参；<code>alpha</code> 与 ROI</span>
+    </span></li>
+    <li><span class="n">7.7</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-7">solvePnP、投影与 AR</a>
+      <span class="d">PnP 的输入与方法；<code>Rodrigues</code>；重投影；坐标轴与立方体</span>
+    </span></li>
+    <li><span class="n">7.8</span><span class="body">
+      <a class="t" href="07-相机模型与标定.html#l7-8">深度图与点云投影</a>
+      <span class="d">深度图；点云变换与投影；<code>Z&gt;0</code> 与出界过滤；遮挡与 ROI 均值</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p8">
+  <h2><a href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 1.1–1.5、2.3、2.6、3.1–3.2、3.4。这一部分从预测
+    与校正的循环出发，
+    用一维匀速模型写出手工版本，再使用 <code>cv::KalmanFilter</code>；
+    随后在旋转目标上完成角度测量、展开、丢帧处理与预测，最后阅读完整
+    跟踪骨架并比较参数。8.1–8.3 要求掌握，8.4 要求能逐行解释并提出
+    可验证的修改，8.5 为了解。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">8.1</span><span class="body">
+      <a class="t" href="08-卡尔曼滤波与跟踪.html#l8-1">卡尔曼滤波的直觉</a>
+      <span class="d">预测与校正；状态向量与协方差；一维匀速模型；不依赖滤波类的手工实现</span>
+    </span></li>
+    <li><span class="n">8.2</span><span class="body">
+      <a class="t" href="08-卡尔曼滤波与跟踪.html#l8-2">cv::KalmanFilter 的状态与矩阵</a>
+      <span class="d">构造参数与五个矩阵；<code>predict</code> 与 <code>correct</code>；角度序列；状态与协方差变化</span>
+    </span></li>
+    <li><span class="n">8.3</span><span class="body">
+      <a class="t" href="08-卡尔曼滤波与跟踪.html#l8-3">旋转目标：角度测量、展开与预测</a>
+      <span class="d">轮廓到角度；圆拟合与方向；<code>±π</code> 展开与八帧平均；丢帧、重置与一秒预测</span>
+    </span></li>
+    <li><span class="n">8.4</span><span class="body">
+      <a class="t" href="08-卡尔曼滤波与跟踪.html#l8-4">代码阅读与优化</a>
+      <span class="d">跟踪骨架的数据流；参数对比；滑动平均；预测时长；有数字支撑的修改</span>
+    </span></li>
+    <li><span class="n">8.5</span><span class="body">
+      <a class="t" href="08-卡尔曼滤波与跟踪.html#l8-5">选学：扩展卡尔曼与自适应噪声</a>
+      <span class="d">非线性观测；雅可比与数值校验；自适应 <code>Q</code>、<code>R</code>；适用边界</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p9">
+  <h2><a href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a></h2>
+  <p class="part-note">
+    按需，6 课，前置 1.1–1.5、2.1–2.3、2.6、3.1–3.5、4.1、4.5–4.6、
+    5.1、5.3–5.4。这一部分把颜色、阈值、形态学、轮廓、透视变换、模板匹配
+    与视频状态机接成一条传统装甲板检测流程，在合成视频上检查候选筛选、
+    颜色与数字识别、丢失与重捕。9.1–9.5 要求掌握每一步的输入输出，
+    9.6 要求看懂分段计时、参数结构与 ROI 坐标重映射，并用一段实拍视频
+    对照合成与真实画面的差异。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">9.1</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-1">任务拆解与数据</a>
+      <span class="d">两阶段流程；输入、输出与评价；合成视频与数字模板；中间结果</span>
+    </span></li>
+    <li><span class="n">9.2</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-2">预处理与灯条提取</a>
+      <span class="d">灰度、阈值与形态学；面积、长宽比、填充率与倾角筛选；轮廓与 PCA</span>
+    </span></li>
+    <li><span class="n">9.3</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-3">配对、透视矫正与颜色</a>
+      <span class="d">平行、长度、中心与间距约束；候选评分；四点透视矫正；HSV 颜色投票</span>
+    </span></li>
+    <li><span class="n">9.4</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-4">数字区域与模板匹配</a>
+      <span class="d">数字 ROI 与白色掩码；字形归一化；1–5 模板；<code>TM_CCOEFF_NORMED</code></span>
+    </span></li>
+    <li><span class="n">9.5</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-5">视频状态机与跟踪</a>
+      <span class="d">候选、确认与丢失；连续帧计数；重捕；标注视频与状态日志</span>
+    </span></li>
+    <li><span class="n">9.6</span><span class="body">
+      <a class="t" href="09-综合-装甲板识别.html#l9-6">性能、调试与参数</a>
+      <span class="d">分段计时；<code>Params</code> 参数结构；ROI 局部坐标重映射；实拍视频观察；检查清单</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p10">
+  <h2><a href="10-检测题.html">第 10 部分 · 检测题</a></h2>
+  <p class="part-note">
+    综合，2 课，前置第 1–5 部分，以及 7.1、7.6、8.1–8.2。这一部分用
+    一段立方体视频把颜色掩码、形态学、轮廓、碎片合并、重心跟踪、视频
+    写入与统计接成一条完整流程；再用五道检测题检查 Mat 与 ROI、阈值与
+    形态学、轮廓筛选、去畸变与重投影、卡尔曼预测与更新。
+    10.1 给出完整实现、真实输出、轨迹图与评价方法；10.2 要求先独立完成，
+    再展开折叠的答案对照。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">10.1</span><span class="body">
+      <a class="t" href="10-检测题.html#l10-1">综合例题：视频中的目标计数与轨迹</a>
+      <span class="d">颜色掩码与碎片合并；目标计数；重心跟踪与平滑；标注视频；轨迹图；参数变化</span>
+    </span></li>
+    <li><span class="n">10.2</span><span class="body">
+      <a class="t" href="10-检测题.html#l10-2">五道检测题与答案</a>
+      <span class="d">Mat 与 ROI；阈值与形态学；轮廓筛选；去畸变与投影；卡尔曼预测与更新</span>
+    </span></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · OpenCV 视觉基础
+</footer>
 
 </main>
+</div>
 
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
 </body>
 </html>

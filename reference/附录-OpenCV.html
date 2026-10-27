@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>附录 · OpenCV 速查 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../TUP.html">
+    <img class="logo" src="../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="../lessons/opencv/00-开始.html">第 0 部分</a>
+      <a href="../lessons/opencv/01-图像与Mat.html">第 1 部分</a>
+      <a href="../lessons/opencv/02-图像处理.html">第 2 部分</a>
+      <a href="../lessons/opencv/03-轮廓与形状.html">第 3 部分</a>
+      <a href="../lessons/opencv/04-颜色目标检测.html">第 4 部分</a>
+      <a href="../lessons/opencv/05-视频与相机.html">第 5 部分</a>
+      <a href="../lessons/opencv/06-特征匹配.html">第 6 部分</a>
+      <a href="../lessons/opencv/07-相机模型与标定.html">第 7 部分</a>
+      <a href="../lessons/opencv/08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="../lessons/opencv/09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="../lessons/opencv/10-检测题.html">第 10 部分</a>
+      <a class="active" href="附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../lessons/cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../lessons/cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../lessons/other_basics/index.html">其他基础</a>
+      <a class="active" href="../lessons/opencv/index.html">OpenCV</a>
+      <a href="../lessons/python/index.html">Python</a>
+      <a href="../lessons/ros2/index.html">ROS 2</a>
+      <a href="../lessons/machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="../lessons/opencv/00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="../lessons/opencv/01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="../lessons/opencv/02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="../lessons/opencv/03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="../lessons/opencv/04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="../lessons/opencv/05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="../lessons/opencv/06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="../lessons/opencv/07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="../lessons/opencv/08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="../lessons/opencv/09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="../lessons/opencv/10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="附录-OpenCV.html" aria-current="page">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="../lessons/opencv/素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">附录 · OpenCV 速查</div>
+  <a class="toc-l" href="#apA"><span class="n">A</span>API 速查</a>
+  <a class="toc-sub" href="#sA-1">core</a>
+  <a class="toc-sub" href="#sA-2">imgcodecs 与 highgui</a>
+  <a class="toc-sub" href="#sA-3">imgproc</a>
+  <a class="toc-sub" href="#sA-4">videoio</a>
+  <a class="toc-sub" href="#sA-5">calib3d</a>
+  <a class="toc-l" href="#apB"><span class="n">B</span>常见错误</a>
+  <a class="toc-sub" href="#sB-1">编译与链接</a>
+  <a class="toc-sub" href="#sB-2">Mat 与内存</a>
+  <a class="toc-sub" href="#sB-3">图像处理与轮廓</a>
+  <a class="toc-sub" href="#sB-4">视频、显示与标定</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">附录</div>
+  <h1>OpenCV 速查</h1>
+  <p class="part-lead">
+    A 按头文件列出课程用到的类型与函数，给出签名、一行用途与第一次系统讲解的课；
+    B 按现象、原因、处理列出 15 类常见错误。签名只保留常用参数，方括号内为
+    可省略参数；完整声明见对应头文件。附录不代替正文，参数的含义与调法在
+    对应课程中说明。
+  </p>
+</header>
+
+<section class="lesson" id="apA">
+<h2><span class="no">A</span>API 速查</h2>
+
+<p>
+  每个模块的表格先列类型与构造，再列函数与方法；最后一列是第一次系统讲解
+  该条目的课。只列课程用过的条目，未出现的函数不进入本表。
+</p>
+
+<h3 id="sA-1">core</h3>
+
+<p>
+  头文件 <code>&lt;opencv2/core.hpp&gt;</code>。矩阵、点、矩形、尺寸、颜色与
+  逐元素运算都在这个模块。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::Mat(rows, cols, type[, scalar])</code></td><td>创建指定尺寸与类型的矩阵</td><td>1.1</td></tr>
+  <tr><td><code>cv::Mat(Size, type[, scalar])</code></td><td>用宽高创建矩阵</td><td>1.1</td></tr>
+  <tr><td><code>cv::Mat::zeros(rows, cols, type)</code></td><td>全零矩阵</td><td>2.3</td></tr>
+  <tr><td><code>cv::Mat_&lt;T&gt;(rows, cols)</code></td><td>元素类型为 <code>T</code> 的矩阵</td><td>7.1</td></tr>
+  <tr><td><code>cv::Point_&lt;T&gt;(x, y)</code></td><td>二维点</td><td>1.1</td></tr>
+  <tr><td><code>cv::Point3_&lt;T&gt;(x, y, z)</code></td><td>三维点</td><td>7.1</td></tr>
+  <tr><td><code>cv::Rect_&lt;T&gt;(x, y, w, h)</code></td><td>矩形区域</td><td>1.1</td></tr>
+  <tr><td><code>cv::Size_&lt;T&gt;(w, h)</code></td><td>宽高</td><td>1.1</td></tr>
+  <tr><td><code>cv::Scalar(v0[, v1, v2, v3])</code></td><td>四分量常量，常用于颜色</td><td>1.1</td></tr>
+  <tr><td><code>cv::Vec&lt;T, n&gt;</code></td><td>固定长度向量，<code>Vec3b</code> 为三通道字节</td><td>1.1</td></tr>
+  <tr><td><code>cv::TermCriteria(type, maxCount, epsilon)</code></td><td>迭代算法的终止条件</td><td>7.4</td></tr>
+  <tr><td><code>mat.clone()</code></td><td>深拷贝，分配新的像素缓冲区</td><td>1.1</td></tr>
+  <tr><td><code>mat.copyTo(dst[, mask])</code></td><td>深拷贝；给定掩码时只复制掩码非零处</td><td>1.1</td></tr>
+  <tr><td><code>mat.setTo(value[, mask])</code></td><td>把指定位置设为常量</td><td>1.3</td></tr>
+  <tr><td><code>mat.convertTo(dst, rtype[, alpha, beta])</code></td><td>转换元素类型并按 <code>alpha·x+beta</code> 缩放</td><td>3.6</td></tr>
+  <tr><td><code>mat.at&lt;T&gt;(row, col)</code></td><td>按元素类型访问像素</td><td>1.1</td></tr>
+  <tr><td><code>mat.ptr&lt;T&gt;(row)</code></td><td>取某一行的首地址</td><td>2.2</td></tr>
+  <tr><td><code>mat.rowRange(y0, y1)</code></td><td>按行取视图</td><td>1.3</td></tr>
+  <tr><td><code>mat.colRange(x0, x1)</code></td><td>按列取视图</td><td>1.3</td></tr>
+  <tr><td><code>mat.empty()</code></td><td>判断矩阵是否为空</td><td>1.2</td></tr>
+  <tr><td><code>mat.total()</code></td><td>元素总数</td><td>5.6</td></tr>
+  <tr><td><code>mat.channels()</code></td><td>通道数</td><td>1.1</td></tr>
+  <tr><td><code>mat.depth()</code></td><td>元素深度，如 <code>CV_8U</code></td><td>1.1</td></tr>
+  <tr><td><code>mat.type()</code></td><td>类型编号，如 <code>CV_8UC3</code></td><td>1.1</td></tr>
+  <tr><td><code>mat.isContinuous()</code></td><td>判断行与行之间是否连续</td><td>1.1</td></tr>
+  <tr><td><code>cv::countNonZero(src)</code></td><td>非零元素个数</td><td>2.2</td></tr>
+  <tr><td><code>cv::mean(src[, mask])</code></td><td>各通道均值</td><td>1.4</td></tr>
+  <tr><td><code>cv::meanStdDev(src, mean, stddev[, mask])</code></td><td>各通道均值与标准差</td><td>2.5</td></tr>
+  <tr><td><code>cv::minMaxLoc(src[, minVal, maxVal, minLoc, maxLoc, mask])</code></td><td>最小值、最大值及其位置</td><td>2.5</td></tr>
+  <tr><td><code>cv::normalize(src, dst[, alpha, beta, normType])</code></td><td>按范数或数值范围归一化</td><td>2.5</td></tr>
+  <tr><td><code>cv::split(src, channels)</code></td><td>拆分为单通道矩阵</td><td>4.5</td></tr>
+  <tr><td><code>cv::compare(a, b, dst, cmpop)</code></td><td>逐元素比较，输出 0 或 255</td><td>4.5</td></tr>
+  <tr><td><code>cv::subtract(a, b, dst[, mask])</code></td><td>逐元素相减</td><td>4.5</td></tr>
+  <tr><td><code>cv::absdiff(a, b, dst)</code></td><td>逐元素绝对差</td><td>2.1</td></tr>
+  <tr><td><code>cv::addWeighted(a, alpha, b, beta, gamma, dst)</code></td><td>加权和 <code>alpha·a+beta·b+gamma</code></td><td>2.4</td></tr>
+  <tr><td><code>cv::bitwise_and(a, b, dst[, mask])</code></td><td>逐元素按位与</td><td>1.5</td></tr>
+  <tr><td><code>cv::bitwise_or(a, b, dst[, mask])</code></td><td>逐元素按位或</td><td>4.1</td></tr>
+  <tr><td><code>cv::hconcat(mats, dst)</code></td><td>横向拼接</td><td>9.1</td></tr>
+  <tr><td><code>cv::vconcat(mats, dst)</code></td><td>纵向拼接</td><td>9.1</td></tr>
+  <tr><td><code>cv::norm(a[, b, normType])</code></td><td>向量范数或两点距离</td><td>4.6</td></tr>
+  <tr><td><code>cv::solve(A, b, x[, flags])</code></td><td>解线性方程 <code>A·x=b</code></td><td>8.3</td></tr>
+  <tr><td><code>cv::getTickCount()</code></td><td>取当前时钟计数</td><td>2.1</td></tr>
+  <tr><td><code>cv::getTickFrequency()</code></td><td>取每秒时钟计数</td><td>2.1</td></tr>
+  <tr><td><code>cv::format(fmt, ...)</code></td><td>按格式生成字符串</td><td>2.1</td></tr>
+  <tr><td><code>cv::noArray()</code></td><td>给可省略的矩阵参数占位</td><td>4.5</td></tr>
+  <tr><td><code>cv::saturate_cast&lt;T&gt;(v)</code></td><td>带饱和的数值转换</td><td>2.1</td></tr>
+</table>
+
+<h3 id="sA-2">imgcodecs 与 highgui</h3>
+
+<p>
+  <code>&lt;opencv2/imgcodecs.hpp&gt;</code> 负责读写图像文件，
+  <code>&lt;opencv2/highgui.hpp&gt;</code> 负责窗口与按键。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::imread(path[, flags])</code></td><td>读入图像；失败时返回空 Mat</td><td>1.2</td></tr>
+  <tr><td><code>cv::imwrite(path, image)</code></td><td>写出图像；返回是否成功</td><td>1.2</td></tr>
+  <tr><td><code>cv::imshow(winname, image)</code></td><td>在窗口中显示图像</td><td>1.2</td></tr>
+  <tr><td><code>cv::waitKey(delay)</code></td><td>等待按键；<code>0</code> 表示一直等待</td><td>1.2</td></tr>
+  <tr><td><code>cv::destroyAllWindows()</code></td><td>关闭所有窗口</td><td>1.2</td></tr>
+</table>
+
+<p>
+  常用常量：<code>IMREAD_COLOR</code> 读为三通道 BGR，<code>IMREAD_GRAYSCALE</code>
+  读为单通道，<code>IMREAD_UNCHANGED</code> 保留原通道与位深。
+</p>
+
+<h3 id="sA-3">imgproc</h3>
+
+<p>
+  头文件 <code>&lt;opencv2/imgproc.hpp&gt;</code>。下表按功能分组，组内按
+  第一次系统讲解的课排列。
+</p>
+
+<h4>颜色与阈值</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::cvtColor(src, dst, code[, dstCn])</code></td><td>转换颜色空间</td><td>1.4</td></tr>
+  <tr><td><code>cv::inRange(src, lower, upper, dst)</code></td><td>按分量范围生成二值掩码</td><td>4.1</td></tr>
+  <tr><td><code>cv::threshold(src, dst, thresh, maxval, type)</code></td><td>固定阈值或 Otsu 阈值</td><td>2.2</td></tr>
+  <tr><td><code>cv::adaptiveThreshold(src, dst, maxValue, method, type, blockSize, C)</code></td><td>局部自适应阈值</td><td>2.2</td></tr>
+</table>
+
+<h4>平滑与边缘</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::blur(src, dst, ksize)</code></td><td>均值滤波</td><td>2.1</td></tr>
+  <tr><td><code>cv::GaussianBlur(src, dst, ksize, sigmaX[, sigmaY])</code></td><td>高斯滤波</td><td>2.1</td></tr>
+  <tr><td><code>cv::medianBlur(src, dst, ksize)</code></td><td>中值滤波</td><td>2.1</td></tr>
+  <tr><td><code>cv::bilateralFilter(src, dst, d, sigmaColor, sigmaSpace)</code></td><td>双边滤波，保边平滑</td><td>2.1</td></tr>
+  <tr><td><code>cv::Sobel(src, dst, ddepth, dx, dy[, ksize, scale, delta, borderType])</code></td><td>一阶差分，求梯度</td><td>2.4</td></tr>
+  <tr><td><code>cv::Laplacian(src, dst, ddepth[, ksize, scale, delta, borderType])</code></td><td>二阶差分</td><td>2.4</td></tr>
+  <tr><td><code>cv::Canny(image, edges, threshold1, threshold2[, apertureSize, L2gradient])</code></td><td>Canny 边缘检测</td><td>2.4</td></tr>
+</table>
+
+<h4>形态学</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::getStructuringElement(shape, ksize)</code></td><td>生成矩形、椭圆或十字结构元</td><td>2.3</td></tr>
+  <tr><td><code>cv::morphologyEx(src, dst, op, kernel)</code></td><td>开、闭、梯度、顶帽、黑帽</td><td>2.3</td></tr>
+  <tr><td><code>cv::erode(src, dst, kernel)</code></td><td>腐蚀</td><td>2.3</td></tr>
+  <tr><td><code>cv::dilate(src, dst, kernel)</code></td><td>膨胀</td><td>2.3</td></tr>
+</table>
+
+<h4>几何变换</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::resize(src, dst, dsize[, fx, fy, interpolation])</code></td><td>缩放</td><td>2.6</td></tr>
+  <tr><td><code>cv::warpAffine(src, dst, M, dsize[, flags, borderMode, borderValue])</code></td><td>仿射变换</td><td>2.6</td></tr>
+  <tr><td><code>cv::getRotationMatrix2D(center, angle, scale)</code></td><td>生成旋转矩阵</td><td>2.6</td></tr>
+  <tr><td><code>cv::warpPerspective(src, dst, M, dsize[, flags, borderMode, borderValue])</code></td><td>透视变换</td><td>2.6</td></tr>
+  <tr><td><code>cv::getPerspectiveTransform(src, dst)</code></td><td>由四对点求透视矩阵</td><td>2.6</td></tr>
+  <tr><td><code>cv::remap(src, dst, map1, map2, interpolation)</code></td><td>按映射表重采样</td><td>7.6</td></tr>
+  <tr><td><code>cv::pyrDown(src, dst[, dstsize])</code></td><td>高斯金字塔降采样</td><td>2.7</td></tr>
+  <tr><td><code>cv::pyrUp(src, dst[, dstsize])</code></td><td>高斯金字塔上采样</td><td>2.7</td></tr>
+</table>
+
+<h4>直方图</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::calcHist(images, channels, mask, hist, histSize, ranges)</code></td><td>计算直方图</td><td>2.5</td></tr>
+  <tr><td><code>cv::equalizeHist(src, dst)</code></td><td>全局直方图均衡</td><td>2.5</td></tr>
+  <tr><td><code>cv::createCLAHE([clipLimit, tileGridSize])</code></td><td>创建限制对比度的自适应均衡器</td><td>2.5</td></tr>
+</table>
+
+<h4>轮廓与连通域</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::findContours(image, contours, hierarchy, mode, method)</code></td><td>提取二值图的外轮廓或全部轮廓</td><td>3.1</td></tr>
+  <tr><td><code>cv::drawContours(image, contours, contourIdx, color[, thickness, lineType, hierarchy, maxLevel, offset])</code></td><td>绘制轮廓</td><td>3.1</td></tr>
+  <tr><td><code>cv::contourArea(contour[, oriented])</code></td><td>轮廓面积</td><td>3.2</td></tr>
+  <tr><td><code>cv::arcLength(curve, closed)</code></td><td>轮廓周长</td><td>3.2</td></tr>
+  <tr><td><code>cv::boundingRect(array)</code></td><td>正外接矩形</td><td>3.2</td></tr>
+  <tr><td><code>cv::minAreaRect(points)</code></td><td>最小面积旋转矩形</td><td>3.3</td></tr>
+  <tr><td><code>cv::boxPoints(rect, points)</code></td><td>取旋转矩形的四个顶点</td><td>3.3</td></tr>
+  <tr><td><code>cv::minEnclosingCircle(points, center, radius)</code></td><td>最小外接圆</td><td>3.3</td></tr>
+  <tr><td><code>cv::convexHull(points, hull[, clockwise, returnPoints])</code></td><td>凸包</td><td>3.4</td></tr>
+  <tr><td><code>cv::approxPolyDP(curve, approxCurve, epsilon, closed)</code></td><td>多边形逼近</td><td>3.3</td></tr>
+  <tr><td><code>cv::isContourConvex(contour)</code></td><td>判断轮廓是否凸</td><td>10.2</td></tr>
+  <tr><td><code>cv::moments(array[, binaryImage])</code></td><td>矩，用于重心与方向</td><td>3.4</td></tr>
+  <tr><td><code>cv::connectedComponentsWithStats(image, labels, stats, centroids[, connectivity, ltype])</code></td><td>连通域标记与统计</td><td>3.6</td></tr>
+</table>
+
+<h4>距离变换与分水岭</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::distanceTransform(src, dst, distanceType[, maskSize])</code></td><td>到最近零像素的距离</td><td>3.6</td></tr>
+  <tr><td><code>cv::watershed(image, markers)</code></td><td>分水岭分割</td><td>3.6</td></tr>
+  <tr><td><code>cv::floodFill(image, mask, seedPoint, newVal[, loDiff, upDiff, flags])</code></td><td>漫水填充</td><td>3.6</td></tr>
+  <tr><td><code>cv::applyColorMap(src, dst, colormap)</code></td><td>把灰度图映射为伪彩色</td><td>3.6</td></tr>
+</table>
+
+<h4>绘制</h4>
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::line(img, pt1, pt2, color[, thickness, lineType])</code></td><td>画线段</td><td>1.5</td></tr>
+  <tr><td><code>cv::rectangle(img, rect, color[, thickness, lineType])</code></td><td>画矩形</td><td>1.5</td></tr>
+  <tr><td><code>cv::circle(img, center, radius, color[, thickness, lineType])</code></td><td>画圆</td><td>1.5</td></tr>
+  <tr><td><code>cv::polylines(img, pts, isClosed, color[, thickness, lineType])</code></td><td>画折线</td><td>2.5</td></tr>
+  <tr><td><code>cv::fillPoly(img, pts, color[, lineType])</code></td><td>填充多边形</td><td>2.5</td></tr>
+  <tr><td><code>cv::fillConvexPoly(img, points, color[, lineType])</code></td><td>填充凸多边形</td><td>3.3</td></tr>
+  <tr><td><code>cv::putText(img, text, org, fontFace, fontScale, color[, thickness, lineType])</code></td><td>绘制文字</td><td>1.5</td></tr>
+  <tr><td><code>cv::getTextSize(text, fontFace, fontScale, thickness, baseLine)</code></td><td>测量文字尺寸</td><td>1.5</td></tr>
+  <tr><td><code>cv::drawMarker(img, position, color[, markerType, markerSize, thickness, lineType])</code></td><td>画十字、星形等标记</td><td>3.4</td></tr>
+</table>
+
+<h3 id="sA-4">videoio</h3>
+
+<p>
+  头文件 <code>&lt;opencv2/videoio.hpp&gt;</code>。读取与写入视频都经过
+  <code>VideoCapture</code> 与 <code>VideoWriter</code>。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::VideoCapture(source[, apiPreference])</code></td><td>打开文件或相机</td><td>5.1</td></tr>
+  <tr><td><code>cap.open(source[, apiPreference])</code></td><td>重新打开源</td><td>5.1</td></tr>
+  <tr><td><code>cap.isOpened()</code></td><td>判断是否打开成功</td><td>5.1</td></tr>
+  <tr><td><code>cap.read(frame)</code></td><td>读取一帧；失败时返回 <code>false</code></td><td>5.1</td></tr>
+  <tr><td><code>cap &gt;&gt; frame</code></td><td>读取一帧的运算符写法</td><td>5.1</td></tr>
+  <tr><td><code>cap.get(propId)</code></td><td>读取帧宽、帧高、帧率、帧数等属性</td><td>5.1</td></tr>
+  <tr><td><code>cap.set(propId, value)</code></td><td>设置属性</td><td>5.2</td></tr>
+  <tr><td><code>cap.release()</code></td><td>释放源</td><td>5.1</td></tr>
+  <tr><td><code>cv::VideoWriter(path, fourcc, fps, frameSize[, isColor])</code></td><td>创建视频写入器</td><td>5.4</td></tr>
+  <tr><td><code>writer.isOpened()</code></td><td>判断写入器是否可用</td><td>5.4</td></tr>
+  <tr><td><code>writer.write(frame)</code></td><td>写入一帧</td><td>5.4</td></tr>
+  <tr><td><code>writer &lt;&lt; frame</code></td><td>写入一帧的运算符写法</td><td>5.4</td></tr>
+  <tr><td><code>writer.release()</code></td><td>结束写入并关闭文件</td><td>5.4</td></tr>
+</table>
+
+<p>
+  常用常量：<code>CAP_ANY</code> 自动选择后端，<code>CAP_V4L2</code> 指定
+  Linux 摄像头后端；属性名为 <code>CAP_PROP_FRAME_WIDTH</code>、
+  <code>CAP_PROP_FRAME_HEIGHT</code>、<code>CAP_PROP_FPS</code>、
+  <code>CAP_PROP_FRAME_COUNT</code>、<code>CAP_PROP_POS_FRAMES</code>、
+  <code>CAP_PROP_POS_MSEC</code>。
+</p>
+
+<h3 id="sA-5">calib3d</h3>
+
+<p>
+  头文件 <code>&lt;opencv2/calib3d.hpp&gt;</code>。标定、去畸变、姿态与
+  单应性都在这个模块。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 47%"><col style="width: 42%"><col style="width: 11%"></colgroup>
+  <tr><th>签名</th><th>用途</th><th>课</th></tr>
+  <tr><td><code>cv::findChessboardCorners(image, patternSize, corners[, flags])</code></td><td>检测棋盘格内角点</td><td>7.4</td></tr>
+  <tr><td><code>cv::cornerSubPix(image, corners, winSize, zeroZone, criteria)</code></td><td>角点亚像素细化</td><td>7.4</td></tr>
+  <tr><td><code>cv::drawChessboardCorners(image, patternSize, corners, patternWasFound)</code></td><td>绘制检测到的角点</td><td>7.4</td></tr>
+  <tr><td><code>cv::calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs, rvecs, tvecs[, flags, criteria])</code></td><td>求相机矩阵与畸变系数</td><td>7.5</td></tr>
+  <tr><td><code>cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, alpha[, newImgSize, centerPrincipalPoint])</code></td><td>去畸变后的新相机矩阵</td><td>7.6</td></tr>
+  <tr><td><code>cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, R, newCameraMatrix, size, m1type, map1, map2)</code></td><td>生成去畸变映射表</td><td>7.6</td></tr>
+  <tr><td><code>cv::undistort(src, dst, cameraMatrix, distCoeffs[, newCameraMatrix])</code></td><td>直接去畸变</td><td>7.6</td></tr>
+  <tr><td><code>cv::undistortPoints(src, dst, cameraMatrix, distCoeffs[, R, P])</code></td><td>去畸变后的归一化坐标或像素坐标</td><td>7.6</td></tr>
+  <tr><td><code>cv::projectPoints(objectPoints, rvec, tvec, cameraMatrix, distCoeffs, imagePoints[, jacobian, aspectRatio])</code></td><td>三维点投影到像素</td><td>7.1</td></tr>
+  <tr><td><code>cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec[, useExtrinsicGuess, flags])</code></td><td>由点对求相机姿态</td><td>7.7</td></tr>
+  <tr><td><code>cv::Rodrigues(src, dst[, jacobian])</code></td><td>旋转向量与旋转矩阵互转</td><td>7.1</td></tr>
+  <tr><td><code>cv::findHomography(srcPoints, dstPoints[, method, ransacReprojThreshold, mask, maxIters, confidence])</code></td><td>由点对求单应矩阵</td><td>7.2</td></tr>
+  <tr><td><code>cv::perspectiveTransform(src, dst, m)</code></td><td>按单应矩阵变换点集</td><td>7.2</td></tr>
+</table>
+
+<p>
+  常用常量：<code>SOLVEPNP_ITERATIVE</code> 与 <code>SOLVEPNP_IPPE</code>
+  选择 <code>solvePnP</code> 的解法；<code>CALIB_CB_ADAPTIVE_THRESH</code>、
+  <code>CALIB_CB_NORMALIZE_IMAGE</code> 调整棋盘格检测；
+  <code>CALIB_FIX_K3</code>、<code>CALIB_ZERO_TANGENT_DIST</code> 约束标定参数。
+</p>
+</section>
+
+<section class="lesson" id="apB">
+<h2><span class="no">B</span>常见错误</h2>
+
+<p>
+  每条按“现象、原因、处理”排列。现象只摘录关键一行，省略编译器的安装路径；
+  处理给最小复现或判断方法。命令都在 <code>示例代码</code> 目录下执行，
+  素材路径以该目录为基准。
+</p>
+
+<h3 id="sB-1">编译与链接</h3>
+
+<h4>1. 找不到 OpenCV 头文件</h4>
+<p><b>现象</b></p>
+<pre class="diag">fatal error: opencv2/core.hpp: No such file or directory</pre>
+<p>
+  <b>原因</b>：编译命令没有给出 OpenCV 头文件目录。系统包通常安装在
+  <code>/usr/include/opencv4</code>，源码安装通常在
+  <code>/usr/local/include/opencv4</code>，两者都不在编译器默认搜索路径中。
+</p>
+<p>
+  <b>处理</b>：用 <code>pkg-config --cflags opencv4</code> 取得 <code>-I</code>
+  参数，并把它放进编译命令。最小复现：对任意包含
+  <code>#include &lt;opencv2/core.hpp&gt;</code> 的源文件执行
+  <code>g++ -std=c++17 main.cpp -o main</code>，出现同一错误；加上
+  <code>$(pkg-config --cflags opencv4)</code> 后错误消失。
+</p>
+
+<h4>2. 链接时 undefined reference</h4>
+<p><b>现象</b></p>
+<pre class="diag">/usr/bin/ld: x.cpp:(.text+0x2a): undefined reference to `cv::imread(std::string const&, int)'
+collect2: error: ld returned 1 exit status</pre>
+<p>
+  <b>原因</b>：编译命令只加了 <code>--cflags</code>，没有加 <code>--libs</code>；
+  或者库参数写在源文件前面。链接器从左到右扫描，库出现在未定义符号之前时，
+  该符号不会被记录。
+</p>
+<p>
+  <b>处理</b>：把 <code>$(pkg-config --cflags --libs opencv4)</code> 放在命令
+  末尾。最小复现：先执行
+  <code>g++ -std=c++17 main.cpp -o main $(pkg-config --cflags --libs opencv4)</code>，
+  再执行
+  <code>g++ -std=c++17 $(pkg-config --cflags --libs opencv4) main.cpp -o main</code>，
+  前者成功、后者报同一错误。统一写法见 0.2。
+</p>
+
+<h4>3. cannot find -lopencv_world</h4>
+<p><b>现象</b></p>
+<pre class="diag">/usr/bin/ld: cannot find -lopencv_world</pre>
+<p>
+  <b>原因</b>：编译命令手写了库名。<code>opencv_world</code> 只在部分构建中
+  存在；Ubuntu 的模块化安装把它拆成 <code>opencv_core</code>、
+  <code>opencv_imgproc</code> 等若干个库。
+</p>
+<p>
+  <b>处理</b>：不手写 <code>-l</code> 参数，改用
+  <code>pkg-config --libs opencv4</code> 的输出。判断方法：该命令列出的库名
+  与已安装的库一致，直接把它们放进编译命令即可。
+</p>
+
+<h3 id="sB-2">Mat 与内存</h3>
+
+<h4>4. imread 返回空图，后续处理或显示报错</h4>
+<p><b>现象</b></p>
+<pre class="diag">error: (-215:Assertion failed) !_src.empty() in function 'cvtColor'</pre>
+<pre class="diag">error: (-215:Assertion failed) size.width&gt;0 &amp;&amp; size.height&gt;0 in function 'imshow'</pre>
+<p>
+  <b>原因</b>：路径错误、工作目录不对、文件不存在或解码失败。<code>imread</code>
+  不抛异常，失败时返回空 Mat；空 Mat 进入 <code>cvtColor</code> 或
+  <code>imshow</code> 才触发断言。
+</p>
+<p>
+  <b>处理</b>：读入后立即检查 <code>image.empty()</code>，并打印实际路径。
+  从 <code>示例代码</code> 目录运行，素材使用 <code>../素材/...</code>。
+  最小复现：
+</p>
+<pre data-lang="C++"><code>cv::Mat image = cv::imread("missing.png");
+cv::Mat gray;
+cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);</code></pre>
+
+<h4>5. ROI 越界</h4>
+<p><b>现象</b></p>
+<pre class="diag">error: (-215:Assertion failed) 0 &lt;= roi.x &amp;&amp; 0 &lt;= roi.width &amp;&amp; roi.x + roi.width &lt;= m.cols &amp;&amp; 0 &lt;= roi.y &amp;&amp; 0 &lt;= roi.height &amp;&amp; roi.y + roi.height &lt;= m.rows in function 'Mat'</pre>
+<p>
+  <b>原因</b>：<code>Rect(x, y, w, h)</code> 超出源图边界，即
+  <code>x+w &gt; cols</code> 或 <code>y+h &gt; rows</code>。
+</p>
+<p>
+  <b>处理</b>：取 ROI 前检查四个边界，或用
+  <code>rect &amp; cv::Rect(0, 0, src.cols, src.rows)</code> 求交集。
+  最小复现：在 <code>640×480</code> 的图上取
+  <code>Rect(600, 400, 100, 100)</code>。
+</p>
+
+<h4>6. at&lt;T&gt; 的元素类型不匹配</h4>
+<p>
+  <b>现象</b>：程序不报错，读出的像素值与预期不符；三通道图用
+  <code>at&lt;uchar&gt;</code> 只读到第一个通道。
+</p>
+<p>
+  <b>原因</b>：<code>at&lt;T&gt;</code> 的 <code>T</code> 必须与矩阵的元素类型
+  一致。<code>CV_8UC3</code> 的元素是 <code>cv::Vec3b</code>，
+  <code>CV_8UC1</code> 的元素是 <code>uchar</code>。
+</p>
+<p>
+  <b>处理</b>：先打印 <code>image.type()</code> 与 <code>channels()</code>；
+  三通道用 <code>at&lt;cv::Vec3b&gt;(r, c)</code> 取元素，再用
+  <code>[0]</code>、<code>[1]</code>、<code>[2]</code> 访问 B、G、R
+  分量；灰度用 <code>at&lt;uchar&gt;(r, c)</code>。判断方法：遍历一行，
+  比较读出的值与 <code>imwrite</code> 后重新读入的值。
+</p>
+
+<h4>7. 浅拷贝或 ROI 修改了原图</h4>
+<p>
+  <b>现象</b>：修改 <code>roi</code> 或赋值得到的矩阵后，原图的像素也改变。
+</p>
+<p>
+  <b>原因</b>：<code>cv::Mat b = a</code> 只复制矩阵头，两个对象共享同一块
+  像素；<code>a(rect)</code> 返回的是原图的视图，不是独立副本。
+</p>
+<p>
+  <b>处理</b>：需要独立副本时用 <code>a.clone()</code> 或
+  <code>a.copyTo(b)</code>；只读访问用 <code>const cv::Mat&amp;</code>。
+  判断方法：比较 <code>a.data == b.data</code>，相等即为共享。
+</p>
+
+<h3 id="sB-3">图像处理与轮廓</h3>
+
+<h4>8. findContours 的输入不是单通道</h4>
+<p><b>现象</b></p>
+<pre class="diag">error: (-210:Unsupported format or combination of formats) [Start]FindContours supports only CV_8UC1 images when mode != CV_RETR_FLOODFILL otherwise supports CV_32SC1 images only in function 'cvStartFindContours_Impl'</pre>
+<p>
+  <b>原因</b>：传入的是 BGR 三通道图或浮点图；<code>findContours</code> 要求
+  8 位单通道二值图。
+</p>
+<p>
+  <b>处理</b>：先 <code>cvtColor(..., COLOR_BGR2GRAY)</code>，再用
+  <code>threshold</code> 或 <code>inRange</code> 得到 <code>CV_8UC1</code>。
+  判断方法：<code>mask.type() == CV_8UC1</code>。最小复现：把
+  <code>CV_8UC3</code> 矩阵直接传给 <code>findContours</code>。
+</p>
+
+<h4>9. 掩码与图像尺寸不一致</h4>
+<p><b>现象</b></p>
+<pre class="diag">error: (-215:Assertion failed) (mtype == CV_8U || mtype == CV_8S) &amp;&amp; _mask.sameSize(*psrc1) in function 'binary_op'</pre>
+<p>
+  <b>原因</b>：掩码在缩小图上生成，或图像经过 <code>resize</code> 后掩码没有
+  同步缩放；<code>bitwise_and</code> 等按位运算要求掩码与输入同尺寸。
+</p>
+<p>
+  <b>处理</b>：让掩码与输入保持相同的 <code>rows</code> 与 <code>cols</code>；
+  在缩略图上检测时，用
+  <code>resize(mask, mask, src.size(), 0, 0, INTER_NEAREST)</code>
+  把掩码放回原尺寸，或按比例换算轮廓坐标。判断方法：
+  <code>mask.size() == src.size()</code>。最小复现：<code>480×640</code>
+  的图像配 <code>120×240</code> 的掩码。
+</p>
+
+<h4>10. HSV 色相使用 0–360</h4>
+<p>
+  <b>现象</b>：<code>inRange</code> 不报错，掩码全黑；红色、粉色等目标检测不到。
+</p>
+<p>
+  <b>原因</b>：OpenCV 的 8 位 HSV 把色相压缩到 <code>0–179</code>，不是
+  <code>0–360</code> 度。按角度填写上限会超出实际范围。
+</p>
+<p>
+  <b>处理</b>：把角度值除以 <code>2</code>；跨过 <code>0</code> 点的颜色拆成
+  两段范围并按位或，写法见 10.1。判断方法：打印目标像素的 <code>H</code>
+  分量，确认落在 <code>0–179</code>。
+</p>
+
+<h4>11. approxPolyDP 后顶点数不是 4</h4>
+<p>
+  <b>现象</b>：轮廓明明是矩形，<code>approxPolyDP</code> 返回 5–8 个点，
+  后续四边形判断全部失败。
+</p>
+<p>
+  <b>原因</b>：轮廓边缘有噪声，<code>epsilon</code> 取得过小；或轮廓本身
+  有缺口、不闭合。
+</p>
+<p>
+  <b>处理</b>：<code>epsilon</code> 取周长的 <code>1%–2%</code>；先做开闭
+  运算平滑边缘；判断前打印 <code>poly.size()</code> 与
+  <code>isContourConvex(poly)</code>。最小复现：在带噪声的矩形轮廓上用
+  <code>0.001 * arcLength(contour, true)</code> 逼近，顶点数明显多于 4。
+</p>
+
+<h3 id="sB-4">视频、显示与标定</h3>
+
+<h4>12. VideoCapture 打开或读取失败</h4>
+<p>
+  <b>现象</b>：<code>cap.isOpened()</code> 为假，或第一帧
+  <code>frame.empty()</code>；循环一次也不执行。
+</p>
+<p>
+  <b>原因</b>：相对路径以运行目录为基准，不以源文件所在目录为基准；文件
+  不存在、编码不受支持或相机编号不对。
+</p>
+<p>
+  <b>处理</b>：打开后检查 <code>isOpened()</code>，读取后检查
+  <code>frame.empty()</code>，并打印
+  <code>get(CAP_PROP_FRAME_COUNT)</code>。从 <code>示例代码</code> 目录运行。
+  判断方法：帧数大于 0 且首帧非空。最小复现：
+  <code>cv::VideoCapture cap("missing.mp4");</code>。
+</p>
+
+<h4>13. VideoWriter 输出 0 字节或无法播放</h4>
+<p>
+  <b>现象</b>：<code>writer.isOpened()</code> 为真，程序正常结束，输出文件
+  很小或播放器打不开。
+</p>
+<p>
+  <b>原因</b>：<code>write</code> 的帧尺寸与构造时的 <code>frameSize</code>
+  不一致，写入被忽略；或 fourcc 与文件扩展名不匹配。
+</p>
+<p>
+  <b>处理</b>：构造前取 <code>frame.size()</code>，所有写入帧保持同一尺寸；
+  <code>mp4v</code> 配 <code>.mp4</code>。写完后用 <code>VideoCapture</code>
+  回读，确认帧数与写入数一致。最小复现：声明 <code>640×480</code>，实际写入
+  <code>320×240</code> 的帧，文件不可读。
+</p>
+
+<h4>14. 棋盘格角点找不到</h4>
+<p>
+  <b>现象</b>：<code>findChessboardCorners</code> 始终返回 <code>false</code>，
+  <code>corners</code> 为空。
+</p>
+<p>
+  <b>原因</b>：<code>patternSize</code> 传的是方格数，函数要的是内角点数；
+  或图像模糊、棋盘不完整、黑白对比不足。
+</p>
+<p>
+  <b>处理</b>：<code>patternSize</code> 使用内角点数。例如 <code>9×6</code>
+  个方格的棋盘，内角点为 <code>8×5</code>。先用 <code>imshow</code> 检查
+  图像，再用 <code>drawChessboardCorners</code> 显示检测结果。判断方法：
+  返回 <code>true</code> 且 <code>corners.size() == patternSize.area()</code>。
+  最小复现：在空白图上检测 <code>Size(9, 6)</code>，返回 <code>false</code>。
+</p>
+
+<h4>15. 卡尔曼滤波的类型混用</h4>
+<p><b>现象</b></p>
+<pre class="diag">error: (-215:Assertion failed) C.type() == type in function 'gemm'</pre>
+<p>
+  <b>原因</b>：<code>KalmanFilter</code> 的状态与各矩阵使用 <code>CV_32F</code>，
+  而测量值或噪声矩阵使用 <code>CV_64F</code>；<code>correct</code> 内部的
+  矩阵乘法要求类型一致。报错位置在 <code>gemm</code>，不直接指向卡尔曼代码。
+</p>
+<p>
+  <b>处理</b>：状态、转移矩阵、观测矩阵、过程噪声、观测噪声与测量值统一为
+  <code>CV_32F</code> 或统一为 <code>CV_64F</code>。判断方法：逐个打印
+  <code>type()</code>。最小复现：<code>CV_32F</code> 的滤波器调用
+  <code>correct</code> 时传入 <code>cv::Mat_&lt;double&gt;</code> 的测量值。
+</p>
+</section>
+
+<p class="can">
+  <b>附录到这里就完了。</b>
+  查函数签名与第一次出现的课，翻 A；查报错的原因与处理，翻 B。
+  正文中的参数含义、调参与完整例子在各课中说明。
+</p>
+
+<nav class="pager">
+  <a href="../lessons/opencv/index.html">← 回课程目录</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../assets/toc.js"></script>
+<script src="../assets/code.js"></script>
+<script src="../assets/zoom.js"></script>
+</body>
+</html>

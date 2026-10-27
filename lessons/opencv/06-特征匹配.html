@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 6 部分 · 特征匹配 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a class="active" href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" aria-current="page" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 6 部分 · 特征匹配</div>
+  <a class="toc-l" href="#l6-1"><span class="n">6.1</span>特征匹配简介</a>
+  <a class="toc-sub" href="#s6-1-1">模板匹配</a>
+  <a class="toc-sub" href="#s6-1-2">特征点与描述子</a>
+  <a class="toc-sub" href="#s6-1-3">单应性与 RANSAC</a>
+  <a class="toc-sub" href="#s6-1-4">光流</a>
+  <a class="toc-sub" href="#s6-1-5">四种方法的适用范围</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 6 部分</div>
+  <h1>特征匹配</h1>
+  <p class="part-lead">
+    这一部分用一课说明四类方法各自解决什么问题：模板匹配、特征点与描述子、
+    单应性与 RANSAC、光流。重点在适用条件与失效情形，为选择方法提供依据。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4">
+  <b>读这一部分之前</b>
+  <p>
+    需要先读 <a href="01-图像与Mat.html#l1-1">1.1</a>，知道
+    <code>Mat</code> 的浅拷贝与 <code>clone</code>；读
+    <a href="01-图像与Mat.html#l1-2">1.2</a>，会按路径读图并检查
+    <code>empty</code>；读 <a href="01-图像与Mat.html#l1-3">1.3</a>，
+    会取 ROI；读 <a href="01-图像与Mat.html#l1-4">1.4</a>，会做灰度与颜色
+    空间转换。下面提到的图像、模板与点集都建立在这些操作之上。
+  </p>
+</div>
+
+<section class="lesson" id="l6-1">
+<h2><span class="no">6.1</span>特征匹配简介</h2>
+
+<p>
+  “在另一张图里找到同一个目标”有几种不同的问法。目标大小、朝向、光照
+  基本不变，只是位置移动，可以用模板匹配；目标会缩放、旋转，但表面有
+  足够的纹理，可以用特征点匹配；目标是一个平面，需要求出它在两幅图之间
+  的对应关系，可以用单应性；输入是连续的视频帧，只需要跟着上一帧的点走，
+  可以用光流。四种方法依赖的假设不同，失效条件也不同。
+</p>
+
+<h3 id="s6-1-1">模板匹配</h3>
+
+<p>
+  模板匹配把一小块模板图像放在原图上逐位置滑动，在每个位置计算一个相似
+  分数，再取分数最高或最低的位置作为结果。设原图宽高为
+  <code>W×H</code>，模板宽高为 <code>w×h</code>，滑动的有效位置共有
+  <code>(W-w+1)×(H-h+1)</code> 个。OpenCV 的 <code>matchTemplate</code>
+  一次算出整张分数图，再用 <code>minMaxLoc</code> 找极值。
+</p>
+
+<p>
+  分数准则分为平方差、相关与相关系数三类，每类又有归一化版本。平方差
+  在亮度一致时最直接；归一化相关系数对整体亮度与对比度的线性变化不敏感，
+  因而更常用。分数图上的一个点只对应一个左上角位置，模板尺寸固定，所以
+  目标在图中变大或变小、旋转以后，同一个模板就不再匹配。目标被遮挡、
+  背景纹理与模板相近、光照出现非线性变化时，分数图的峰值也会变弱或偏移。
+</p>
+
+<p>
+  模板匹配适合外观固定、尺度固定、以平移为主的目标，例如已经矫正过的
+  数字区域、固定工位上的标记。图中有多个同类目标时，不能只取全局最大值，
+  而要按阈值取多个局部极大值，再做非极大值抑制，避免在同一个目标上重复
+  检出。
+</p>
+
+<h3 id="s6-1-2">特征点与描述子</h3>
+
+<p>
+  特征点方法先在图中选出一批位置稳定、容易重复找到的点，再为每个点计算
+  一个描述子。关键点记录位置、尺度与主方向；描述子记录邻域内的灰度或梯度
+  模式。两张图各自提取关键点与描述子以后，按描述子距离配对，得到一组候选
+  对应点。
+</p>
+
+<p>
+  ORB 由 FAST 关键点与 BRIEF 二进制描述子组成，并加入尺度金字塔与方向
+  估计。二进制描述子的距离用汉明距离计算，即两个比特串不同位的个数，速度
+  快于浮点描述子的欧氏距离。匹配时通常用暴力匹配加汉明距离，或用量化后的
+  近似最近邻结构。描述子只比较局部邻域，纹理重复的区域会出现大量相似
+  描述子，配对结果中混有错误对应。
+</p>
+
+<p>
+  常用的过滤手段是比值检验：对每个查询描述子取最近与次近两个候选，只有
+  最近距离明显小于次近时才保留。这个条件要求正确匹配比错误匹配更突出；
+  当目标区域纹理单一、次近邻与最近邻几乎一样时，比值接近 1，匹配会被
+  丢弃。双向检验与基础矩阵约束也能去掉一部分错误配对，但都需要额外的
+  计算。
+</p>
+
+<h3 id="s6-1-3">单应性与 RANSAC</h3>
+
+<p>
+  同一个平面上的点在两幅图之间的对应关系可以用一个 <code>3×3</code> 的
+  单应矩阵 <code>H</code> 表示。把点写成齐次坐标，
+  <code>s[u,v,1]^T = H[X,Y,1]^T</code>，其中 <code>s</code> 是尺度因子。
+  <code>H</code> 整体乘一个非零常数不改变映射，因此只有 8 个自由度；
+  一对点给出两个方程，至少需要 4 对点，且其中任意三点不共线。
+  有点共线或四点过于接近时，方程退化，求出的矩阵不稳定。
+</p>
+
+<p>
+  匹配得到的点对里通常有外点。直接对所有点做最小二乘，少量错误对应就会
+  使结果偏离。RANSAC 反复随机抽取最小点集求模型，统计有多少点对符合该
+  模型，保留内点最多的一组，再用全部内点重新拟合。判断一个点对是否符合
+  模型，用它在两幅图中的重投影距离与阈值比较。内点比例越低，需要的抽样
+  次数越多；阈值过小会把正确对应判为外点，过大则会把错误对应保留为内点。
+</p>
+
+<p>
+  单应性只对平面成立。目标离开该平面、场景有明显深度变化时，
+  <code>H</code> 不能描述整幅图的对应关系。镜头畸变明显时，应先完成
+  去畸变，再求单应性；否则直线在图中弯曲，平面假设与实际像素位置不一致。
+  单应性可以用于平面标记的定位、俯视图变换、倾斜拍摄的正面矫正，也可以
+  与已知内参结合，进一步分解出平面目标的位姿。
+</p>
+
+<h3 id="s6-1-4">光流</h3>
+
+<p>
+  光流利用相邻两帧之间同一物体的亮度模式基本不变这一假设，估计每个像素
+  或每个特征点的位移。Lucas–Kanade 方法在一个小窗口内假设位移一致，把
+  亮度守恒方程线性化，解一个 <code>2×2</code> 的方程组得到水平和垂直速度。
+  窗口内的纹理必须有梯度；平坦区域两个方向都没有变化，方程无法确定位移。
+</p>
+
+<p>
+  基本 Lucas–Kanade 只适合小位移，因为线性化只在位移远小于窗口尺度时
+  成立。金字塔光流把图像逐级缩小，先在低分辨率层估计大位移，再逐层向上
+  修正，可处理的位移随层数增加。OpenCV 的
+  <code>calcOpticalFlowPyrLK</code> 接收上一帧、当前帧与上一帧的特征点，
+  输出当前帧的对应点、状态与误差。
+</p>
+
+<p>
+  光流跟踪的是已有特征点，不会重新检测目标。目标被遮挡、移出画面、运动
+  过快或光照突变时，状态会标为失败，跟踪点逐渐减少。长时间逐帧跟踪会
+  累积漂移，通常每隔若干帧重新检测一次特征点，或在有效点数量低于阈值时
+  重置。前向与后向跟踪的往返误差可以用来剔除不可靠的点。
+</p>
+
+<h3 id="s6-1-5">四种方法的适用范围</h3>
+
+<p>
+  选择方法时先看输入与变化形式，再看失效条件。下表把四种方法放在同一组
+  条件下比较。
+</p>
+
+<table class="compare">
+  <thead>
+    <tr><th>方法</th><th>输入</th><th>适用条件</th><th>主要失效情形</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>模板匹配</td>
+      <td>模板图与搜索图</td>
+      <td>外观、尺度、朝向基本不变，以平移为主；背景与模板区分明显</td>
+      <td>缩放、旋转、遮挡、非线性光照变化；同类目标重复出现</td>
+    </tr>
+    <tr>
+      <td>特征点匹配</td>
+      <td>两幅图或两帧</td>
+      <td>表面有足够纹理；尺度与旋转变化中等；可接受一定数量的错误配对</td>
+      <td>弱纹理、重复纹理、强模糊、极大视角变化</td>
+    </tr>
+    <tr>
+      <td>单应性</td>
+      <td>同一平面上的 4 对以上对应点</td>
+      <td>目标是平面；需要平面到平面的映射；点对中有外点时配合 RANSAC 剔除外点</td>
+      <td>场景有深度变化；点共线或过于集中；未先去畸变</td>
+    </tr>
+    <tr>
+      <td>光流</td>
+      <td>相邻两帧与上一帧的特征点</td>
+      <td>连续帧、位移较小、光照稳定；已有可跟踪的点</td>
+      <td>快速运动、遮挡、出画、光照突变；长时间跟踪漂移</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  实际流程经常组合使用：用特征点与单应性在关键帧上重新定位平面目标，
+  在关键帧之间用光流跟踪已有点；模板匹配只用于外观与尺度已经固定的
+  小区域。组合时仍要保留各自的失败判断，例如内点数量、有效跟踪点数量
+  与重投影误差，不能只看某一帧的分数。
+</p>
+
+<p class="can">
+  <b>你现在能判断什么：</b>说出模板匹配、特征点匹配、单应性与光流各自
+  依赖的假设；根据目标是否缩放旋转、是否为平面、输入是否为连续帧选择
+  方法；指出纹理不足、遮挡、快速运动、共线点与未去畸变分别会让哪一种
+  方法失效；解释比值检验、RANSAC 与金字塔光流各自解决什么问题。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="05-视频与相机.html">← 第 5 部分 · 视频与相机</a>
+  <span class="spacer"></span>
+  <a href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

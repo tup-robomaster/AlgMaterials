@@ -1,0 +1,3098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 9 部分 · 综合：装甲板识别 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a class="active" href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" aria-current="page" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 9 部分 · 综合：装甲板识别</div>
+  <a class="toc-l" href="#l9-1"><span class="n">9.1</span>任务拆解与数据</a>
+  <a class="toc-sub" href="#s9-1-1">两阶段流程</a>
+  <a class="toc-sub" href="#s9-1-2">输入、输出与评价</a>
+  <a class="toc-sub" href="#e9-1">例题：读取素材</a>
+  <a class="toc-l" href="#l9-2"><span class="n">9.2</span>预处理与灯条提取</a>
+  <a class="toc-sub" href="#s9-2-1">灰度、阈值与形态学</a>
+  <a class="toc-sub" href="#s9-2-2">灯条筛选</a>
+  <a class="toc-sub" href="#e9-2">例题：一帧灯条</a>
+  <a class="toc-sub" href="#s9-2-3">常见错误</a>
+  <a class="toc-l" href="#l9-3"><span class="n">9.3</span>配对、透视矫正与颜色</a>
+  <a class="toc-sub" href="#s9-3-1">配对约束与评分</a>
+  <a class="toc-sub" href="#s9-3-2">矫正与颜色判别</a>
+  <a class="toc-sub" href="#e9-3">例题：一帧配对</a>
+  <a class="toc-sub" href="#s9-3-3">常见错误</a>
+  <a class="toc-l" href="#l9-4"><span class="n">9.4</span>数字区域与模板匹配</a>
+  <a class="toc-sub" href="#s9-4-1">数字 ROI</a>
+  <a class="toc-sub" href="#s9-4-2">模板与分数</a>
+  <a class="toc-sub" href="#e9-4">例题：识别数字</a>
+  <a class="toc-sub" href="#s9-4-3">常见错误</a>
+  <a class="toc-l" href="#l9-5"><span class="n">9.5</span>视频状态机与跟踪</a>
+  <a class="toc-sub" href="#s9-5-1">状态与帧计数</a>
+  <a class="toc-sub" href="#e9-5">例题：整段视频</a>
+  <a class="toc-sub" href="#s9-5-2">日志与视频输出</a>
+  <a class="toc-sub" href="#s9-5-3">常见错误</a>
+  <a class="toc-l" href="#l9-6"><span class="n">9.6</span>性能、调试与参数</a>
+  <a class="toc-sub" href="#s9-6-1">分段计时</a>
+  <a class="toc-sub" href="#s9-6-2">参数结构与 ROI</a>
+  <a class="toc-sub" href="#e9-6">例题：计时与重映射</a>
+  <a class="toc-sub" href="#s9-6-3">实拍视频观察</a>
+  <a class="toc-sub" href="#e9-6-real">例题：读取实拍视频</a>
+  <a class="toc-sub" href="#s9-6-4">检查清单</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 9 部分</div>
+  <h1>综合：装甲板识别</h1>
+  <p class="part-lead">
+    这一部分把颜色、阈值、形态学、轮廓、透视变换、模板匹配与视频状态机
+    接成一条传统装甲板检测流程。主流程的输入是课程生成的合成视频，
+    目标在第 <code>130–169</code> 帧离开画面，颜色与数字会变化，用来
+    检查候选筛选、丢失与重捕；9.6 另用一段实拍视频观察真实画面的
+    边界。9.1–9.5 提供可运行的骨架，要求掌握每一步的输入输出；9.6
+    要求看懂分段计时、参数结构与 ROI 坐标重映射。流程的每个阶段都由
+    可检查的传统图像处理与模板匹配完成，便于逐段调试。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l2-1 l2-2 l2-3 l2-6 l3-1 l3-2 l3-3 l3-4 l3-5 l4-1 l4-5 l4-6 l5-1 l5-3 l5-4">
+  <b>读这一部分之前</b>
+  <p>
+    需要掌握 Mat 的读写与 ROI、图像平滑与阈值、形态学、几何变换、
+    轮廓与形状、HSV 颜色阈值、灯条轮廓以及视频读写。对应的课程是
+    <a href="01-图像与Mat.html#l1-1">1.1</a>、
+    <a href="01-图像与Mat.html#l1-2">1.2</a>、
+    <a href="01-图像与Mat.html#l1-3">1.3</a>、
+    <a href="01-图像与Mat.html#l1-4">1.4</a>、
+    <a href="01-图像与Mat.html#l1-5">1.5</a>、
+    <a href="02-图像处理.html#l2-1">2.1</a>、
+    <a href="02-图像处理.html#l2-2">2.2</a>、
+    <a href="02-图像处理.html#l2-3">2.3</a>、
+    <a href="02-图像处理.html#l2-6">2.6</a>、
+    <a href="03-轮廓与形状.html#l3-1">3.1</a>、
+    <a href="03-轮廓与形状.html#l3-2">3.2</a>、
+    <a href="03-轮廓与形状.html#l3-3">3.3</a>、
+    <a href="03-轮廓与形状.html#l3-4">3.4</a>、
+    <a href="03-轮廓与形状.html#l3-5">3.5</a>、
+    <a href="04-颜色目标检测.html#l4-1">4.1</a>、
+    <a href="04-颜色目标检测.html#l4-5">4.5</a>、
+    <a href="04-颜色目标检测.html#l4-6">4.6</a>、
+    <a href="05-视频与相机.html#l5-1">5.1</a>、
+    <a href="05-视频与相机.html#l5-3">5.3</a>、
+    <a href="05-视频与相机.html#l5-4">5.4</a>。状态机只使用帧计数与中心
+    位置，读完上面列出的内容即可开始。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l9-1">
+<h2><span class="no">9.1</span>任务拆解与数据</h2>
+
+<p>
+  装甲板检测的目标是：在一帧图像中找到两块平行的灯条，确认它们构成
+  一块装甲板，再读出板面的颜色与数字。传统流程把任务拆成若干可检查的
+  阶段，每个阶段都能单独保存中间图；出错时可以先定位到具体阶段，而不是
+  面对一个端到端的黑箱结果。本课先约定输入、输出与评价方式，后面的
+  课程逐段实现。
+</p>
+
+<h3 id="s9-1-1">两阶段流程</h3>
+
+<p>
+  单阶段检测直接用一张图回归目标框与类别；两阶段检测先产生候选区域，
+  再对候选做分类或识别。这里的“两阶段”指传统流程中的两级筛选：第一级
+  从图像中找灯条，第二级把灯条配成装甲板并读取板面信息。灯条是局部
+  特征，数量少、几何约束强；装甲板是组合特征，必须由两条灯条共同
+  确认。先找局部再组合，比直接搜索整块装甲板更容易控制误检。
+</p>
+
+<p>
+  完整数据流为：读取视频帧 → 限定车辆 ROI → 灰度或通道差 → 阈值与
+  形态学 → 轮廓 → 灯条筛选 → 两两配对 → 四点透视矫正 → 颜色判别 →
+  数字 ROI → 模板匹配 → 状态机 → 标注视频与日志。每一段都接收明确的
+  输入，输出可以保存为图像或表格；参数集中在结构体中，便于逐项调整。
+</p>
+
+<h3 id="s9-1-2">输入、输出与评价</h3>
+
+<p>
+  课程素材是 <code>素材/synth_armor.mp4</code>：640×480、30 帧每秒、
+  300 帧、共 10 秒。画面中的装甲板会平移、轻微旋转与缩放；第 130–169 帧目标
+  离开画面，用来观察丢失与重捕；板面颜色在红色与蓝色之间切换，数字在
+  1、2、3、5 之间切换。另有一根固定亮条作为干扰，它尺寸不足，不能与
+  装甲板灯条配对。
+</p>
+
+<p>
+  中间结果统一写到 <code>素材/</code>：首帧
+  <code>out_armor_first.png</code>，四帧拼图
+  <code>out_armor_story.png</code>，灯条候选
+  <code>out_armor_bars.png</code>，配对与矫正
+  <code>out_armor_pair.png</code>，数字识别
+  <code>out_armor_digit.png</code>，状态机视频
+  <code>out_armor_state.mp4</code> 与单帧
+  <code>out_armor_state.png</code>，实拍对比
+  <code>out_armor_real.png</code>，ROI 示意
+  <code>out_armor_roi.png</code>。命名固定，便于按阶段回看。
+</p>
+
+<p>
+  评价不引入复杂指标，只记录三类数字：每帧灯条候选数、每帧配对候选数、
+  状态日志中的确认与丢失次数。候选数突然升高，通常是阈值过低或干扰
+  增多；候选数长期为零，通常是阈值过高、灯条断裂或 ROI 取错。把候选
+  数与中间图一起看，才能判断是检测失败还是配对失败。
+</p>
+
+<div class="eg" id="e9-1">
+  <div class="eg-h">例题 · 读取素材</div>
+  <p>
+    程序打开视频，打印宽、高、帧率、总帧数与时长，保存首帧，并抽取
+    第 0、40、150、240 帧拼成一张四格图。第 150 帧目标不在画面中，
+    其余三帧分别对应红色与蓝色板面。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.1-video_meta.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+void label(cv::Mat&amp; frame, const std::string&amp; text) {
+    cv::rectangle(frame, cv::Rect(0, 0, frame.cols, 34),
+                  cv::Scalar(20, 20, 20), cv::FILLED);
+    cv::putText(frame, text, cv::Point(10, 24), cv::FONT_HERSHEY_SIMPLEX,
+                0.65, cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_armor.mp4";
+    cv::VideoCapture cap(path);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 " &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    const int width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const int frames = cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+
+    cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+    cv::Mat first;
+    cap &gt;&gt; first;
+    const bool first_saved =
+        !first.empty() &amp;&amp; cv::imwrite("../素材/out_armor_first.png", first);
+
+    const std::vector&lt;int&gt; samples = {0, 40, 150, 240};
+    std::vector&lt;cv::Mat&gt; tiles;
+    for (int index : samples) {
+        cap.set(cv::CAP_PROP_POS_FRAMES, index);
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            continue;
+        }
+        label(frame, "frame " + std::to_string(index));
+        tiles.push_back(frame);
+    }
+
+    cv::Mat storyboard;
+    if (tiles.size() == 4) {
+        cv::Mat top;
+        cv::Mat bottom;
+        cv::hconcat(std::vector&lt;cv::Mat&gt;{tiles[0], tiles[1]}, top);
+        cv::hconcat(std::vector&lt;cv::Mat&gt;{tiles[2], tiles[3]}, bottom);
+        cv::vconcat(top, bottom, storyboard);
+    }
+    const bool story_saved = !storyboard.empty() &amp;&amp;
+                             cv::imwrite("../素材/out_armor_story.png",
+                                        storyboard);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "width = " &lt;&lt; width &lt;&lt; " height = " &lt;&lt; height &lt;&lt; '\n';
+    std::cout &lt;&lt; "fps = " &lt;&lt; fps &lt;&lt; " frames = " &lt;&lt; frames &lt;&lt; '\n';
+    std::cout &lt;&lt; "duration_s = " &lt;&lt; frames / fps &lt;&lt; '\n';
+    std::cout &lt;&lt; "first_saved = " &lt;&lt; (first_saved ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "story_frames = " &lt;&lt; tiles.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "story_saved = " &lt;&lt; (story_saved ? "yes" : "no");
+    if (!storyboard.empty()) {
+        std::cout &lt;&lt; " " &lt;&lt; storyboard.cols &lt;&lt; "x" &lt;&lt; storyboard.rows;
+    }
+    std::cout &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 9.1-video_meta.cpp -o armor_meta \
+    $(pkg-config --cflags --libs opencv4)
+./armor_meta</code></pre>
+<pre class="out" data-label="真实输出">width = 640 height = 480
+fps = 30.000 frames = 300
+duration_s = 10.000
+first_saved = yes
+story_frames = 4
+story_saved = yes 1280x960</pre>
+  <p>
+    元数据与文件一致：<code>640×480</code>、<code>30</code> 帧每秒、
+    <code>300</code> 帧，时长为 <code>10 s</code>。四格图尺寸
+    <code>1280×960</code>，每格保留原始 <code>640×480</code> 分辨率，
+    方便观察灯条与数字细节。第 150 帧只有背景和固定亮条，说明检测器
+    必须能区分“没有目标”和“目标很小”。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_story.png" alt="合成装甲板视频的第 0、40、150、240 帧" width="1280" height="960">
+    <figcaption>
+      第 0 帧红色数字 3，第 40 帧目标右移并轻微旋转，第 150 帧目标离开
+      画面，第 240 帧为蓝色数字 1。固定亮条始终在左上区域，用来检查
+      单根灯条不会误配成装甲板。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-1</div>
+  <p>
+    打开 <code>素材/synth_armor.mp4</code>，打印分辨率、帧率、总帧数与
+    时长。分辨率写成 <code>宽x高</code>，时长保留三位小数。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">video = 640x480
+fps = 30.000 frames = 300
+duration_s = 10.000</pre>
+  <details class="ans" data-run="示例代码/答案/9-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        视频属性来自 <code>VideoCapture::get</code>。帧率返回
+        <code>30.000</code>，总帧数 <code>300</code>，两者相除得到
+        <code>10.000 s</code>。若总帧数返回 0，先检查文件是否成功打开，
+        而不是直接拿 0 去除。
+      </p>
+<pre data-lang="C++" data-name="答案/9-1.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "open failed\n";
+        return 1;
+    }
+    const int width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const int frames = cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "video = " &lt;&lt; width &lt;&lt; 'x' &lt;&lt; height &lt;&lt; '\n';
+    std::cout &lt;&lt; "fps = " &lt;&lt; fps &lt;&lt; " frames = " &lt;&lt; frames &lt;&lt; '\n';
+    std::cout &lt;&lt; "duration_s = " &lt;&lt; frames / fps &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">video = 640x480
+fps = 30.000 frames = 300
+duration_s = 10.000</pre>
+    </div>
+  </details>
+</div>
+</section>
+
+<section class="lesson" id="l9-2">
+<h2><span class="no">9.2</span>预处理与灯条提取</h2>
+
+<p>
+  灯条是装甲板上最稳定的亮结构。它们在图像中表现为细长的亮矩形，宽度
+  小、高度大、填充率高，倾斜角接近竖直。预处理的目标是把这些结构从
+  背景、车身与反光中分离出来，再用几何条件筛掉不符合灯条形状的轮廓。
+  本课在合成视频的一帧上完成这条链路，并保存每一步的中间结果。
+</p>
+
+<h3 id="s9-2-1">灰度、阈值与形态学</h3>
+
+<p>
+  合成灯条接近白色，灰度值在 <code>230</code> 以上，背景与车身低于
+  <code>100</code>，因此先用灰度阈值 <code>190</code> 就能分开。真实
+  场景中，灯条可能偏蓝或偏红，背景可能有同色高光；常用做法是先算通道
+  差，例如蓝色通道减红色通道，再做阈值。通道差能压低暖色背景，保留
+  冷色灯条。本课保留灰度版本，是因为合成数据的颜色关系简单，后续的
+  轮廓与配对步骤不受影响；换到真实数据时，只需替换这一段的掩码来源。
+</p>
+
+<p>
+  阈值后做一次 <code>3×3</code> 开运算，去掉孤立亮斑与毛刺；再做一次
+  闭运算，把灯条内部因压缩产生的小孔连起来。核不宜过大：核增大能连接
+  断裂，也会把相邻灯条或灯条与反光粘在一起，后续轮廓数量反而下降。
+  形态学后的掩码应保存，参数变化时先看掩码，不要只看最终候选。
+</p>
+
+<h3 id="s9-2-2">灯条筛选</h3>
+
+<p>
+  程序对每个外部轮廓计算面积、外接矩形、填充率与主轴角。面积范围取
+  <code>500–10000</code>，排除固定亮条与数字笔画；宽高比取
+  <code>2.5–12</code>，排除接近方形的色块；填充率取
+  <code>0.45</code> 以上，排除弯曲或破碎的亮边；主轴与竖直方向的偏差
+  不超过 <code>30°</code>，排除横条与斜放的装饰。
+</p>
+
+<p>
+  主轴方向用主成分分析求：把轮廓点排成矩阵，取第一主成分作为长轴方向，
+  再把它归一到 <code>[-90°, 90°]</code>。与 <code>minAreaRect</code>
+  相比，主成分对轮廓上的毛刺更稳定；<code>minAreaRect</code> 仍用来
+  画旋转矩形框，二者用途不同。轮廓按中心 <code>x</code> 排序，后面的
+  配对可以直接把左边的灯条放在前面。
+</p>
+
+<div class="eg" id="e9-2">
+  <div class="eg-h">例题 · 一帧灯条</div>
+  <p>
+    程序读取第 40 帧，转灰度、阈值、开闭运算，提取外部轮廓，按面积、
+    宽高比、填充率与倾角筛选灯条，打印候选表，并把候选框与阈值掩码
+    并排保存。固定亮条面积不足 <code>500</code>，不会进入候选。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.2-light_bars.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+struct Bar {
+    int cx = 0;
+    int cy = 0;
+    double area = 0.0;
+    double width = 0.0;
+    double height = 0.0;
+    double fill = 0.0;
+    double angle = 0.0;
+    cv::RotatedRect rect;
+};
+
+double axisAngle(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    const double ax = pca.eigenvectors.at&lt;double&gt;(0, 0);
+    const double ay = pca.eigenvectors.at&lt;double&gt;(0, 1);
+    double angle = std::atan2(ay, ax) * 180.0 / CV_PI;
+    if (angle &gt; 90.0) {
+        angle -= 180.0;
+    }
+    if (angle &lt;= -90.0) {
+        angle += 180.0;
+    }
+    return angle;
+}
+
+cv::Mat buildMask(const cv::Mat&amp; gray) {
+    cv::Mat mask;
+    cv::threshold(gray, mask, 190, 255, cv::THRESH_BINARY);
+    const cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,
+                                                     cv::Size(3, 3));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+    return mask;
+}
+
+std::vector&lt;Bar&gt; findBars(const cv::Mat&amp; mask) {
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;Bar&gt; bars;
+    for (const auto&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; 500.0 || area &gt; 10000.0) {
+            continue;
+        }
+        const cv::Rect box = cv::boundingRect(contour);
+        if (box.width == 0 || box.height == 0) {
+            continue;
+        }
+        const double aspect = static_cast&lt;double&gt;(box.height) / box.width;
+        const double fill = area / (box.width * box.height);
+        const double angle = axisAngle(contour);
+        if (aspect &lt; 2.5 || aspect &gt; 12.0 || fill &lt; 0.45 ||
+            std::fabs(std::fabs(angle) - 90.0) &gt; 30.0) {
+            continue;
+        }
+        Bar bar;
+        bar.cx = cvRound(box.x + box.width / 2.0);
+        bar.cy = cvRound(box.y + box.height / 2.0);
+        bar.area = area;
+        bar.width = box.width;
+        bar.height = box.height;
+        bar.fill = fill;
+        bar.angle = angle;
+        bar.rect = cv::minAreaRect(contour);
+        bars.push_back(bar);
+    }
+    std::sort(bars.begin(), bars.end(),
+              [](const Bar&amp; a, const Bar&amp; b) { return a.cx &lt; b.cx; });
+    return bars;
+}
+
+}  // namespace
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 synth_armor.mp4\n";
+        return 1;
+    }
+    const int frame_index = 40;
+    cap.set(cv::CAP_PROP_POS_FRAMES, frame_index);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "无法读取第 " &lt;&lt; frame_index &lt;&lt; " 帧\n";
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    const cv::Mat mask = buildMask(gray);
+    const std::vector&lt;Bar&gt; bars = findBars(mask);
+
+    cv::Mat annotated = frame.clone();
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "frame = " &lt;&lt; frame_index &lt;&lt; '\n';
+    std::cout &lt;&lt; "bars = " &lt;&lt; bars.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; " idx     cx     cy     area   width  height   fill  angle\n";
+    for (std::size_t i = 0; i &lt; bars.size(); ++i) {
+        const Bar&amp; bar = bars[i];
+        cv::Point2f corners[4];
+        bar.rect.points(corners);
+        for (int k = 0; k &lt; 4; ++k) {
+            cv::line(annotated, cv::Point(cvRound(corners[k].x),
+                                          cvRound(corners[k].y)),
+                     cv::Point(cvRound(corners[(k + 1) % 4].x),
+                               cvRound(corners[(k + 1) % 4].y)),
+                     cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+        }
+        cv::putText(annotated, std::to_string(i),
+                    cv::Point(bar.cx + 8, bar.cy - 8),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(40, 220, 40),
+                    2, cv::LINE_AA);
+        std::cout &lt;&lt; std::setw(4) &lt;&lt; i &lt;&lt; std::setw(7) &lt;&lt; bar.cx
+                  &lt;&lt; std::setw(7) &lt;&lt; bar.cy &lt;&lt; std::setw(9) &lt;&lt; bar.area
+                  &lt;&lt; std::setw(8) &lt;&lt; bar.width &lt;&lt; std::setw(8) &lt;&lt; bar.height
+                  &lt;&lt; std::setw(7) &lt;&lt; bar.fill &lt;&lt; std::setw(7) &lt;&lt; bar.angle
+                  &lt;&lt; '\n';
+    }
+
+    cv::Mat mask_bgr;
+    cv::cvtColor(mask, mask_bgr, cv::COLOR_GRAY2BGR);
+    cv::Mat panel;
+    cv::hconcat(annotated, mask_bgr, panel);
+    cv::putText(panel, "light bar candidates", cv::Point(16, 32),
+                cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(40, 220, 40), 2,
+                cv::LINE_AA);
+    cv::putText(panel, "threshold mask", cv::Point(656, 32),
+                cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(40, 220, 40), 2,
+                cv::LINE_AA);
+    const bool saved = cv::imwrite("../素材/out_armor_bars.png", panel);
+    std::cout &lt;&lt; "saved out_armor_bars.png " &lt;&lt; panel.cols &lt;&lt; "x" &lt;&lt; panel.rows
+              &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 9.2-light_bars.cpp -o light_bars \
+    $(pkg-config --cflags --libs opencv4)
+./light_bars</code></pre>
+<pre class="out" data-label="真实输出">frame = 40
+bars = 2
+ idx     cx     cy     area   width  height   fill  angle
+   0    356    285 1394.500  25.000  86.000  0.649 84.131
+   1    506    271 1398.000  25.000  86.000  0.650 84.913
+saved out_armor_bars.png 1280x480: yes</pre>
+  <p>
+    第 40 帧得到两根灯条，中心分别在 <code>(356,285)</code> 与
+    <code>(506,271)</code>。两灯条的宽高比约 <code>3.4</code>，填充率
+    <code>0.649</code> 与 <code>0.650</code>，主轴角
+    <code>84.131°</code> 与 <code>84.913°</code>。角度不是严格的
+    <code>90°</code>，因为整块装甲板在画面中倾斜了几度；两根灯条的
+    倾角接近，说明它们仍属于同一块板。
+  </p>
+  <p>
+    固定亮条在掩码中清晰可见，但面积只有约 <code>360</code>，低于下限，
+    因此没有进入候选表。这个对比说明：面积下限不仅过滤噪声，也能排除
+    尺寸不对的亮结构；若把下限降到 <code>300</code>，候选数会变成 3，
+    后续配对必须再处理这根孤立灯条。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_bars.png" alt="灯条候选与阈值掩码" width="1280" height="480">
+    <figcaption>
+      左图绿色旋转矩形是两根灯条候选，编号按中心横坐标排序；右图是
+      阈值与形态学后的掩码。白色数字 3 也出现在掩码中，但面积不足，
+      被灯条筛选排除。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-2</div>
+  <p>
+    用与例题相同的阈值与筛选条件，统计第 0 帧与第 150 帧的灯条候选数。
+    第 150 帧目标离开画面，预期只剩背景与固定亮条。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">frame_0_bars = 2
+frame_150_bars = 0</pre>
+  <details class="ans" data-run="示例代码/答案/9-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第 0 帧仍有完整装甲板，两根灯条满足全部条件，候选数为
+        <code>2</code>；第 150 帧没有装甲板，固定亮条面积不足，候选数
+        为 <code>0</code>。若第 150 帧仍返回 2，应检查是否把固定亮条
+        或背景高光算进了候选，而不是先怀疑视频。
+      </p>
+<pre data-lang="C++" data-name="答案/9-2.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+double axisAngle(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    const double ax = pca.eigenvectors.at&lt;double&gt;(0, 0);
+    const double ay = pca.eigenvectors.at&lt;double&gt;(0, 1);
+    double angle = std::atan2(ay, ax) * 180.0 / CV_PI;
+    if (angle &gt; 90.0) {
+        angle -= 180.0;
+    }
+    if (angle &lt;= -90.0) {
+        angle += 180.0;
+    }
+    return angle;
+}
+
+int countBars(const cv::Mat&amp; frame) {
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat mask;
+    cv::threshold(gray, mask, 190, 255, cv::THRESH_BINARY);
+    const cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,
+                                                     cv::Size(3, 3));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    int count = 0;
+    for (const auto&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        const cv::Rect box = cv::boundingRect(contour);
+        if (box.width == 0 || box.height == 0) {
+            continue;
+        }
+        const double aspect = static_cast&lt;double&gt;(box.height) / box.width;
+        const double fill = area / (box.width * box.height);
+        const double angle = axisAngle(contour);
+        if (area &gt;= 500.0 &amp;&amp; area &lt;= 10000.0 &amp;&amp; aspect &gt;= 2.5 &amp;&amp;
+            aspect &lt;= 12.0 &amp;&amp; fill &gt;= 0.45 &amp;&amp;
+            std::fabs(std::fabs(angle) - 90.0) &lt;= 30.0) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+cv::Mat readFrame(cv::VideoCapture&amp; cap, int index) {
+    cap.set(cv::CAP_PROP_POS_FRAMES, index);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    return frame;
+}
+
+}  // namespace
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "open failed\n";
+        return 1;
+    }
+    const cv::Mat first = readFrame(cap, 0);
+    const cv::Mat gap = readFrame(cap, 150);
+    std::cout &lt;&lt; "frame_0_bars = " &lt;&lt; countBars(first) &lt;&lt; '\n';
+    std::cout &lt;&lt; "frame_150_bars = " &lt;&lt; countBars(gap) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">frame_0_bars = 2
+frame_150_bars = 0</pre>
+    </div>
+  </details>
+</div>
+
+<h3 id="s9-2-3">常见错误</h3>
+
+<p>
+  <b>高光导致灯条断裂。</b>灯条表面过曝时，中心可能饱和成一片白，边缘
+  反而变暗，阈值后断成两段。断开的两段各自面积变小、宽高比改变，可能
+  全部被筛掉。先看掩码是否连续，再决定是否增大闭运算核或降低阈值。
+</p>
+
+<p>
+  <b>运动模糊。</b>目标快速移动时，灯条在曝光期间被拉长，宽度增大、
+  峰值亮度下降。固定阈值会把边缘切掉，宽高比也随之变化。可以用更低的
+  阈值保留边缘，或按帧间位移自适应调整；不要只调宽高比下限。
+</p>
+
+<p>
+  <b>阈值随光照漂移。</b>同一组阈值在暗场有效，到了强光下可能把背景
+  一起选入。固定阈值适合光照稳定的场景；光照变化明显时，应改用通道差、
+  局部阈值或按帧统计亮度后归一化。
+</p>
+
+<p>
+  <b>宽高比范围过窄。</b>灯条倾斜后，外接矩形的宽高比会变化；透视也会
+  让左右灯条的长度不同。范围过窄会把倾斜的正常灯条筛掉，表现为目标
+  一转就丢失。范围应覆盖实际姿态变化，再用配对约束进一步筛选。
+</p>
+</section>
+
+<section class="lesson" id="l9-3">
+<h2><span class="no">9.3</span>配对、透视矫正与颜色</h2>
+
+<p>
+  单根灯条不足以确认装甲板。两块灯条必须平行、长度接近、中心高度接近，
+  间距落在合理范围内，才可能属于同一块板。配对后，用四条内边缘点做
+  透视变换，把倾斜的板面拉正，再在板面中心区域判断颜色。本课在一帧上
+  完成配对、矫正与颜色判别，并给出可排序的候选分数。
+</p>
+
+<h3 id="s9-3-1">配对约束与评分</h3>
+
+<p>
+  程序对任意两根灯条计算以下量：主轴夹角、中心差在长轴方向的投影
+  <code>dy</code>、中心差在法线方向的投影 <code>dx</code>、长度比。
+  夹角不超过 <code>8°</code>；<code>dx</code> 要在灯条全长的
+  <code>0.8–2.5</code> 倍之间；<code>|dy|</code> 不超过全长的
+  <code>0.25</code> 倍；较短灯条与较长灯条的长度比不低于
+  <code>0.8</code>。这些条件把“同一块板的两根灯条”和“画面中偶然平行
+  的两根亮条”区分开。
+</p>
+
+<p>
+  满足条件的配对计算分数：
+  <code>score = 夹角误差/8 + 中心误差/0.25 + (1-长度比)/0.2</code>。
+  三项都做了归一化，分数越低越好；夹角误差单位是度，中心误差是
+  <code>|dy|</code> 除以全长。分数用于排序，不替代硬性条件：先筛掉
+  不满足约束的配对，再在剩下的候选里选分数最低的一对。
+</p>
+
+<p>
+  同一根灯条可能同时满足多个配对。程序目前只保留所有合法配对并排序，
+  在 9.5 的整段处理中只取分数最低的一对；若画面里有多块装甲板，需要
+  在配对阶段加入“一根灯条只能使用一次”的标记，再按分数依次占用。
+  否则同一根灯条会出现在多个候选框里，统计数量被高估。
+</p>
+
+<h3 id="s9-3-2">矫正与颜色判别</h3>
+
+<p>
+  取左灯条的右边缘上、下两点，右灯条的左边缘上、下两点，按左上、右上、
+  右下、左下顺序送入 <code>getPerspectiveTransform</code>，目标尺寸
+  <code>140×80</code>。四点顺序必须与目标顺序一致；顺序错了会得到
+  镜像或扭曲的板面，数字也被拉坏。矫正后的板面把灯条内边缘对齐到
+  矩形左右边，板面中心落在图像中央。
+</p>
+
+<p>
+  颜色在矫正后的中心区域统计。程序取
+  <code>(20,15)</code> 起、<code>100×50</code> 的矩形，转 HSV，只统计
+  饱和度 <code>S≥100</code>、亮度 <code>V≥60</code> 的像素；红色取
+  <code>H&lt;10</code> 或 <code>H&gt;170</code>，蓝色取
+  <code>100&lt;H&lt;130</code>，哪一类像素多就判为哪一类。白色数字的
+  饱和度低，不参与投票；装甲板边框与灯条也不在中心区域内。
+</p>
+
+<div class="eg" id="e9-3">
+  <div class="eg-h">例题 · 一帧配对</div>
+  <p>
+    程序读取第 40 帧，提取灯条，枚举全部灯条对，按约束筛选并计算分数，
+    对最低分的一对做透视矫正与颜色判别，打印候选表，保存原始画面与
+    矫正板面的并排图。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.3-armor_pair.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+struct Bar {
+    cv::Point2f center;
+    cv::Point2f axis;
+    cv::Point2f normal;
+    float half_len = 0.0f;
+    float half_wid = 0.0f;
+    double area = 0.0;
+    double angle = 0.0;
+};
+
+struct Pair {
+    int left = -1;
+    int right = -1;
+    double score = 0.0;
+    double angle_error = 0.0;
+    double center_error = 0.0;
+    double length_ratio = 1.0;
+    cv::Point2f corners[4];
+    cv::Mat plate;
+    std::string color;
+    int red_pixels = 0;
+    int blue_pixels = 0;
+};
+
+float dot(const cv::Point2f&amp; a, const cv::Point2f&amp; b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+cv::Point2f normalize(const cv::Point2f&amp; v) {
+    const float n = std::sqrt(v.x * v.x + v.y * v.y);
+    if (n &lt; 1e-6f) {
+        return cv::Point2f(0.0f, 1.0f);
+    }
+    return cv::Point2f(v.x / n, v.y / n);
+}
+
+Bar makeBar(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    Bar bar;
+    bar.center = cv::Point2f(
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 1)));
+    bar.axis = normalize(cv::Point2f(
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 1))));
+    if (bar.axis.y &lt; 0.0f) {
+        bar.axis.x = -bar.axis.x;
+        bar.axis.y = -bar.axis.y;
+    }
+    bar.normal = cv::Point2f(bar.axis.y, -bar.axis.x);
+    float min_a = 1e9f;
+    float max_a = -1e9f;
+    float min_n = 1e9f;
+    float max_n = -1e9f;
+    for (const auto&amp; p : contour) {
+        const cv::Point2f q = cv::Point2f(p) - bar.center;
+        const float a = dot(q, bar.axis);
+        const float n = dot(q, bar.normal);
+        min_a = std::min(min_a, a);
+        max_a = std::max(max_a, a);
+        min_n = std::min(min_n, n);
+        max_n = std::max(max_n, n);
+    }
+    bar.half_len = 0.5f * (max_a - min_a);
+    bar.half_wid = 0.5f * (max_n - min_n);
+    bar.area = cv::contourArea(contour);
+    bar.angle = std::atan2(bar.axis.y, bar.axis.x) * 180.0 / CV_PI;
+    return bar;
+}
+
+std::vector&lt;Bar&gt; findBars(const cv::Mat&amp; gray) {
+    cv::Mat mask;
+    cv::threshold(gray, mask, 190, 255, cv::THRESH_BINARY);
+    const cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,
+                                                     cv::Size(3, 3));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;Bar&gt; bars;
+    for (const auto&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; 500.0 || area &gt; 10000.0) {
+            continue;
+        }
+        const Bar bar = makeBar(contour);
+        if (bar.half_wid &lt; 1.0f) {
+            continue;
+        }
+        const double aspect = bar.half_len / bar.half_wid;
+        const double fill = area / (4.0 * bar.half_len * bar.half_wid);
+        if (aspect &lt; 2.5 || aspect &gt; 12.0 || fill &lt; 0.45 ||
+            std::fabs(std::fabs(bar.angle) - 90.0) &gt; 30.0) {
+            continue;
+        }
+        bars.push_back(bar);
+    }
+    std::sort(bars.begin(), bars.end(), [](const Bar&amp; a, const Bar&amp; b) {
+        return a.center.x &lt; b.center.x;
+    });
+    return bars;
+}
+
+void classifyColor(Pair&amp; pair) {
+    cv::Mat hsv;
+    cv::cvtColor(pair.plate, hsv, cv::COLOR_BGR2HSV);
+    const cv::Rect roi(20, 15, 100, 50);
+    for (int y = roi.y; y &lt; roi.y + roi.height; ++y) {
+        const cv::Vec3b* row = hsv.ptr&lt;cv::Vec3b&gt;(y);
+        for (int x = roi.x; x &lt; roi.x + roi.width; ++x) {
+            const int h = row[x][0];
+            const int s = row[x][1];
+            const int v = row[x][2];
+            if (s &lt; 100 || v &lt; 60) {
+                continue;
+            }
+            if (h &lt; 10 || h &gt; 170) {
+                ++pair.red_pixels;
+            } else if (h &gt; 100 &amp;&amp; h &lt; 130) {
+                ++pair.blue_pixels;
+            }
+        }
+    }
+    pair.color = pair.red_pixels &gt;= pair.blue_pixels ? "red" : "blue";
+}
+
+bool buildPair(const std::vector&lt;Bar&gt;&amp; bars, int i, int j, Pair&amp; pair) {
+    const Bar&amp; a = bars[i];
+    const Bar&amp; b = bars[j];
+    const float dir = dot(a.axis, b.axis);
+    if (dir &lt; 0.0f) {
+        return false;
+    }
+    const double angle_error = std::acos(std::min(1.0f, std::max(-1.0f, dir))) *
+                               180.0 / CV_PI;
+    if (angle_error &gt; 8.0) {
+        return false;
+    }
+    const cv::Point2f axis = normalize(a.axis + b.axis);
+    const cv::Point2f normal(axis.y, -axis.x);
+    const float dx = dot(b.center - a.center, normal);
+    const float dy = dot(b.center - a.center, axis);
+    const float mean_len = 0.5f * (a.half_len + b.half_len);
+    const float full_len = 2.0f * mean_len;
+    if (dx &lt;= 0.0f || dx &lt; 0.8f * full_len || dx &gt; 2.5f * full_len) {
+        return false;
+    }
+    if (std::fabs(dy) &gt; 0.25f * full_len) {
+        return false;
+    }
+    const double length_ratio = std::min(a.half_len, b.half_len) /
+                                std::max(a.half_len, b.half_len);
+    if (length_ratio &lt; 0.8) {
+        return false;
+    }
+
+    pair.left = i;
+    pair.right = j;
+    pair.angle_error = angle_error;
+    pair.center_error = std::fabs(dy) / full_len;
+    pair.length_ratio = length_ratio;
+    pair.score = angle_error / 8.0 + pair.center_error / 0.25 +
+                 (1.0 - length_ratio) / 0.2;
+
+    pair.corners[0] = a.center - axis * a.half_len + normal * a.half_wid;
+    pair.corners[1] = b.center - axis * b.half_len - normal * b.half_wid;
+    pair.corners[2] = b.center + axis * b.half_len - normal * b.half_wid;
+    pair.corners[3] = a.center + axis * a.half_len + normal * a.half_wid;
+    return true;
+}
+
+cv::Mat warpPair(const cv::Mat&amp; frame, const Pair&amp; pair) {
+    const cv::Point2f dst[4] = {
+        cv::Point2f(0.0f, 0.0f), cv::Point2f(139.0f, 0.0f),
+        cv::Point2f(139.0f, 79.0f), cv::Point2f(0.0f, 79.0f)};
+    const cv::Mat transform = cv::getPerspectiveTransform(pair.corners, dst);
+    cv::Mat plate;
+    cv::warpPerspective(frame, plate, transform, cv::Size(140, 80),
+                        cv::INTER_LINEAR);
+    return plate;
+}
+
+}  // namespace
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 synth_armor.mp4\n";
+        return 1;
+    }
+    const int frame_index = 40;
+    cap.set(cv::CAP_PROP_POS_FRAMES, frame_index);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "无法读取第 " &lt;&lt; frame_index &lt;&lt; " 帧\n";
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    const std::vector&lt;Bar&gt; bars = findBars(gray);
+
+    std::vector&lt;Pair&gt; pairs;
+    for (std::size_t i = 0; i &lt; bars.size(); ++i) {
+        for (std::size_t j = i + 1; j &lt; bars.size(); ++j) {
+            Pair pair;
+            if (buildPair(bars, static_cast&lt;int&gt;(i), static_cast&lt;int&gt;(j),
+                          pair)) {
+                pair.plate = warpPair(frame, pair);
+                classifyColor(pair);
+                pairs.push_back(pair);
+            }
+        }
+    }
+    std::sort(pairs.begin(), pairs.end(),
+              [](const Pair&amp; a, const Pair&amp; b) { return a.score &lt; b.score; });
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "frame = " &lt;&lt; frame_index &lt;&lt; '\n';
+    std::cout &lt;&lt; "bars = " &lt;&lt; bars.size() &lt;&lt; " pairs = " &lt;&lt; pairs.size()
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; " idx  left right  angle  center  ratio  score  color\n";
+    for (std::size_t i = 0; i &lt; pairs.size(); ++i) {
+        const Pair&amp; pair = pairs[i];
+        std::cout &lt;&lt; std::setw(4) &lt;&lt; i &lt;&lt; std::setw(6) &lt;&lt; pair.left
+                  &lt;&lt; std::setw(6) &lt;&lt; pair.right &lt;&lt; std::setw(7)
+                  &lt;&lt; pair.angle_error &lt;&lt; std::setw(8) &lt;&lt; pair.center_error
+                  &lt;&lt; std::setw(7) &lt;&lt; pair.length_ratio &lt;&lt; std::setw(7)
+                  &lt;&lt; pair.score &lt;&lt; "  " &lt;&lt; pair.color &lt;&lt; '\n';
+    }
+
+    cv::Mat annotated = frame.clone();
+    if (!pairs.empty()) {
+        const Pair&amp; best = pairs.front();
+        for (int k = 0; k &lt; 4; ++k) {
+            cv::line(annotated,
+                     cv::Point(cvRound(best.corners[k].x),
+                               cvRound(best.corners[k].y)),
+                     cv::Point(cvRound(best.corners[(k + 1) % 4].x),
+                               cvRound(best.corners[(k + 1) % 4].y)),
+                     cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+        }
+        cv::putText(annotated, best.color, cv::Point(20, 32),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(40, 220, 40), 2,
+                    cv::LINE_AA);
+    }
+
+    cv::Mat panel(480, 1280, CV_8UC3, cv::Scalar(24, 24, 24));
+    annotated.copyTo(panel(cv::Rect(0, 0, 640, 480)));
+    if (!pairs.empty()) {
+        cv::Mat plate = pairs.front().plate;
+        cv::Mat shown;
+        cv::resize(plate, shown, cv::Size(420, 240), 0.0, 0.0,
+                   cv::INTER_NEAREST);
+        shown.copyTo(panel(cv::Rect(740, 120, 420, 240)));
+        cv::putText(panel, "perspective corrected plate",
+                    cv::Point(700, 70), cv::FONT_HERSHEY_SIMPLEX, 0.7,
+                    cv::Scalar(230, 230, 230), 2, cv::LINE_AA);
+        cv::putText(panel, "color = " + pairs.front().color,
+                    cv::Point(700, 410), cv::FONT_HERSHEY_SIMPLEX, 0.7,
+                    cv::Scalar(230, 230, 230), 2, cv::LINE_AA);
+    }
+    const bool saved = cv::imwrite("../素材/out_armor_pair.png", panel);
+    std::cout &lt;&lt; "saved out_armor_pair.png " &lt;&lt; panel.cols &lt;&lt; "x" &lt;&lt; panel.rows
+              &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 9.3-armor_pair.cpp -o armor_pair \
+    $(pkg-config --cflags --libs opencv4)
+./armor_pair</code></pre>
+<pre class="out" data-label="真实输出">frame = 40
+bars = 2 pairs = 1
+ idx  left right  angle  center  ratio  score  color
+   0     0     1  0.782   0.006  1.000  0.123  red
+saved out_armor_pair.png 1280x480: yes</pre>
+  <p>
+    两根灯条组成 <code>1</code> 对候选，左灯条编号 0、右灯条编号 1。
+    夹角误差 <code>0.782°</code>，中心误差 <code>0.006</code>，长度比
+    <code>1.000</code>，总分 <code>0.123</code>。分数三项分别约为
+    <code>0.098</code>、<code>0.024</code>、<code>0</code>；夹角误差
+    <code>0.782°</code> 折算为 <code>0.098</code>，是主要贡献，中心与
+    长度几乎完全一致。颜色判为红色，与画面一致。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_pair.png" alt="灯条配对、四点透视矫正与颜色判别" width="1280" height="480">
+    <figcaption>
+      左图绿色四边形连接两根灯条的内边缘，右图是矫正后的 <code>140×80</code>
+      板面放大显示。矫正后数字 3 直立，红色底色占据中心区域的大部分，
+      颜色判别因此稳定。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-3</div>
+  <p>
+    两对候选的参数如下：A 的夹角误差 <code>2.0°</code>、中心误差
+    <code>0.05</code>、长度比 <code>0.95</code>；B 的夹角误差
+    <code>5.0°</code>、中心误差 <code>0.20</code>、长度比
+    <code>0.82</code>。按例题的硬性条件判断是否接受，并计算分数，
+    打印较低分的一对。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">candidate A accepted=yes score=0.700
+candidate B accepted=yes score=2.325
+best = A</pre>
+  <details class="ans" data-run="示例代码/答案/9-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两对都满足夹角与中心误差的上限、长度比的下限，因此都接受。
+        A 的分数为
+        <code>0.25+0.20+0.25=0.700</code>，B 为
+        <code>0.625+0.80+0.90=2.325</code>；A 更接近理想配对。分数只
+        用于排序，接受与否仍由硬性条件决定。
+      </p>
+<pre data-lang="C++" data-name="答案/9-3.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+namespace {
+
+struct Candidate {
+    char name;
+    double angle_error;
+    double center_error;
+    double length_ratio;
+};
+
+bool accepted(const Candidate&amp; c) {
+    return c.angle_error &lt;= 8.0 &amp;&amp; c.center_error &lt;= 0.25 &amp;&amp;
+           c.length_ratio &gt;= 0.8;
+}
+
+double score(const Candidate&amp; c) {
+    return c.angle_error / 8.0 + c.center_error / 0.25 +
+           (1.0 - c.length_ratio) / 0.2;
+}
+
+}  // namespace
+
+int main() {
+    const Candidate a{'A', 2.0, 0.05, 0.95};
+    const Candidate b{'B', 5.0, 0.20, 0.82};
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    for (const Candidate&amp; c : {a, b}) {
+        std::cout &lt;&lt; "candidate " &lt;&lt; c.name
+                  &lt;&lt; " accepted=" &lt;&lt; (accepted(c) ? "yes" : "no")
+                  &lt;&lt; " score=" &lt;&lt; score(c) &lt;&lt; '\n';
+    }
+    std::cout &lt;&lt; "best = " &lt;&lt; (score(a) &lt; score(b) ? 'A' : 'B') &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">candidate A accepted=yes score=0.700
+candidate B accepted=yes score=2.325
+best = A</pre>
+    </div>
+  </details>
+</div>
+
+<h3 id="s9-3-3">常见错误</h3>
+
+<p>
+  <b>同一灯条重复配对。</b>只排序不占用，会让一根灯条出现在多个候选
+  中，候选数虚高。整段处理时应维护已使用标记，或按分数从低到高贪心
+  选择并跳过已占用的灯条。
+</p>
+
+<p>
+  <b>透视后宽高比失真。</b>目标矩形的宽高比与实际板面差得太多，数字
+  会被横向或纵向拉伸，模板匹配分数下降。目标尺寸应按实际板面比例设置，
+  并保持四点顺序一致；不要为了“看起来大”随意改尺寸。
+</p>
+
+<p>
+  <b>颜色阈值受曝光影响。</b>曝光升高时红色可能偏黄，色相靠近
+  <code>10</code> 的边界；蓝色可能偏青，落到 <code>100</code> 以下。
+  固定色相区间适合光照稳定的场景，变化明显时应按帧统计或改用归一化
+  色差。
+</p>
+
+<p>
+  <b>中心区域取偏。</b>矫正后的板面如果仍有几度倾斜，固定的中心矩形
+  可能包含灯条边缘或边框，颜色投票被污染。先检查矫正图，再调整中心
+  矩形的位置与大小；不要只看颜色输出。
+</p>
+</section>
+
+<section class="lesson" id="l9-4">
+<h2><span class="no">9.4</span>数字区域与模板匹配</h2>
+
+<p>
+  板面颜色确认后，下一步是读数字。数字位于板面中心，颜色接近白色，
+  与红、蓝底色区分明显。传统做法是提取数字的二值掩码，归一化到固定
+  尺寸，再与一组模板逐一比对，取分数最高的类别。模板匹配不需要训练；
+  本课使用 1–5 五个模板，说明模板匹配的调用、分数与失败条件。
+</p>
+
+<h3 id="s9-4-1">数字 ROI</h3>
+
+<p>
+  程序直接在矫正后的 <code>140×80</code> 板面上取中心区域
+  <code>(22,12)</code> 起、<code>96×56</code> 的矩形，避开左右灯条
+  与外侧边框。转 HSV 后，用 <code>S≤85</code>、<code>V≥170</code>
+  选白色像素；红色与蓝色底色的饱和度都高于 85，不会进入掩码。对掩码
+  取最大外部轮廓，得到数字的包围盒；包围盒过小则视为没有数字。
+</p>
+
+<p>
+  数字笔画可能因透视与压缩出现缺口，但最大轮廓仍覆盖主要笔画。程序把
+  包围盒内的掩码缩放到 <code>40×56</code>，再放到
+  <code>72×88</code> 黑底画布中央。缩放会改变笔画粗细比例，因此模板
+  也必须走同一条归一化路径，不能用原始字体图像直接比较。
+</p>
+
+<h3 id="s9-4-2">模板与分数</h3>
+
+<p>
+  模板由 <code>cv::putText</code> 生成：在 <code>90×120</code> 画布上
+  用 Hershey 字体写数字，阈值二值化，取包围盒，缩放到
+  <code>40×56</code>，居中到同样大小的画布。五个模板分别对应 1–5。
+  对每个模板调用
+  <code>cv::matchTemplate(glyph, templ, result, cv::TM_CCOEFF_NORMED)</code>；
+  两者尺寸相同，结果只有一个数，即归一化相关系数，范围约
+  <code>[-1,1]</code>，越接近 1 越相似。
+</p>
+
+<p>
+  分数不能只看绝对值。合成数据中数字 3 的分数为 <code>0.8724</code>，
+  第二位数字 5 为 <code>0.7193</code>，差距 <code>0.1531</code>；绝对值
+  不到 0.9，是因为模板字体与目标字体的笔画粗细、边缘抗锯齿不同。实际
+  使用时可以同时设绝对下限与相对差距：最高分低于下限，或与第二名的
+  差距太小，都输出“不确定”，交给后续帧或人工检查。
+</p>
+
+<div class="eg" id="e9-4">
+  <div class="eg-h">例题 · 识别数字</div>
+  <p>
+    程序复用灯条提取、配对与透视矫正，取第 40 帧的红色板面，提取数字
+    掩码并归一化，生成 1–5 五个模板，逐一匹配，打印每个类别的分数与
+    最高分类别，保存板面、掩码与归一化字形。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.4-digit.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/highgui.hpp&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+struct Bar {
+    cv::Point2f center;
+    cv::Point2f axis;
+    cv::Point2f normal;
+    float half_len = 0.0f;
+    float half_wid = 0.0f;
+    double area = 0.0;
+    double angle = 0.0;
+};
+
+struct Pair {
+    int left = -1;
+    int right = -1;
+    double score = 0.0;
+    double angle_error = 0.0;
+    double center_error = 0.0;
+    double length_ratio = 1.0;
+    cv::Point2f corners[4];
+    cv::Mat plate;
+    std::string color;
+    int red_pixels = 0;
+    int blue_pixels = 0;
+};
+
+float dot(const cv::Point2f&amp; a, const cv::Point2f&amp; b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+cv::Point2f normalize(const cv::Point2f&amp; v) {
+    const float n = std::sqrt(v.x * v.x + v.y * v.y);
+    if (n &lt; 1e-6f) {
+        return cv::Point2f(0.0f, 1.0f);
+    }
+    return cv::Point2f(v.x / n, v.y / n);
+}
+
+Bar makeBar(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    Bar bar;
+    bar.center = cv::Point2f(
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 1)));
+    bar.axis = normalize(cv::Point2f(
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 1))));
+    if (bar.axis.y &lt; 0.0f) {
+        bar.axis.x = -bar.axis.x;
+        bar.axis.y = -bar.axis.y;
+    }
+    bar.normal = cv::Point2f(bar.axis.y, -bar.axis.x);
+    float min_a = 1e9f;
+    float max_a = -1e9f;
+    float min_n = 1e9f;
+    float max_n = -1e9f;
+    for (const auto&amp; p : contour) {
+        const cv::Point2f q = cv::Point2f(p) - bar.center;
+        const float a = dot(q, bar.axis);
+        const float n = dot(q, bar.normal);
+        min_a = std::min(min_a, a);
+        max_a = std::max(max_a, a);
+        min_n = std::min(min_n, n);
+        max_n = std::max(max_n, n);
+    }
+    bar.half_len = 0.5f * (max_a - min_a);
+    bar.half_wid = 0.5f * (max_n - min_n);
+    bar.area = cv::contourArea(contour);
+    bar.angle = std::atan2(bar.axis.y, bar.axis.x) * 180.0 / CV_PI;
+    return bar;
+}
+
+std::vector&lt;Bar&gt; findBars(const cv::Mat&amp; gray) {
+    cv::Mat mask;
+    cv::threshold(gray, mask, 190, 255, cv::THRESH_BINARY);
+    const cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,
+                                                     cv::Size(3, 3));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;Bar&gt; bars;
+    for (const auto&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; 500.0 || area &gt; 10000.0) {
+            continue;
+        }
+        const Bar bar = makeBar(contour);
+        if (bar.half_wid &lt; 1.0f) {
+            continue;
+        }
+        const double aspect = bar.half_len / bar.half_wid;
+        const double fill = area / (4.0 * bar.half_len * bar.half_wid);
+        if (aspect &lt; 2.5 || aspect &gt; 12.0 || fill &lt; 0.45 ||
+            std::fabs(std::fabs(bar.angle) - 90.0) &gt; 30.0) {
+            continue;
+        }
+        bars.push_back(bar);
+    }
+    std::sort(bars.begin(), bars.end(), [](const Bar&amp; a, const Bar&amp; b) {
+        return a.center.x &lt; b.center.x;
+    });
+    return bars;
+}
+
+void classifyColor(Pair&amp; pair) {
+    cv::Mat hsv;
+    cv::cvtColor(pair.plate, hsv, cv::COLOR_BGR2HSV);
+    const cv::Rect roi(20, 15, 100, 50);
+    for (int y = roi.y; y &lt; roi.y + roi.height; ++y) {
+        const cv::Vec3b* row = hsv.ptr&lt;cv::Vec3b&gt;(y);
+        for (int x = roi.x; x &lt; roi.x + roi.width; ++x) {
+            const int h = row[x][0];
+            const int s = row[x][1];
+            const int v = row[x][2];
+            if (s &lt; 100 || v &lt; 60) {
+                continue;
+            }
+            if (h &lt; 10 || h &gt; 170) {
+                ++pair.red_pixels;
+            } else if (h &gt; 100 &amp;&amp; h &lt; 130) {
+                ++pair.blue_pixels;
+            }
+        }
+    }
+    pair.color = pair.red_pixels &gt;= pair.blue_pixels ? "red" : "blue";
+}
+
+bool buildPair(const std::vector&lt;Bar&gt;&amp; bars, int i, int j, Pair&amp; pair) {
+    const Bar&amp; a = bars[i];
+    const Bar&amp; b = bars[j];
+    const float dir = dot(a.axis, b.axis);
+    if (dir &lt; 0.0f) {
+        return false;
+    }
+    const double angle_error = std::acos(std::min(1.0f, std::max(-1.0f, dir))) *
+                               180.0 / CV_PI;
+    if (angle_error &gt; 8.0) {
+        return false;
+    }
+    const cv::Point2f axis = normalize(a.axis + b.axis);
+    const cv::Point2f normal(axis.y, -axis.x);
+    const float dx = dot(b.center - a.center, normal);
+    const float dy = dot(b.center - a.center, axis);
+    const float mean_len = 0.5f * (a.half_len + b.half_len);
+    const float full_len = 2.0f * mean_len;
+    if (dx &lt;= 0.0f || dx &lt; 0.8f * full_len || dx &gt; 2.5f * full_len) {
+        return false;
+    }
+    if (std::fabs(dy) &gt; 0.25f * full_len) {
+        return false;
+    }
+    const double length_ratio = std::min(a.half_len, b.half_len) /
+                                std::max(a.half_len, b.half_len);
+    if (length_ratio &lt; 0.8) {
+        return false;
+    }
+
+    pair.left = i;
+    pair.right = j;
+    pair.angle_error = angle_error;
+    pair.center_error = std::fabs(dy) / full_len;
+    pair.length_ratio = length_ratio;
+    pair.score = angle_error / 8.0 + pair.center_error / 0.25 +
+                 (1.0 - length_ratio) / 0.2;
+
+    pair.corners[0] = a.center - axis * a.half_len + normal * a.half_wid;
+    pair.corners[1] = b.center - axis * b.half_len - normal * b.half_wid;
+    pair.corners[2] = b.center + axis * b.half_len - normal * b.half_wid;
+    pair.corners[3] = a.center + axis * a.half_len + normal * a.half_wid;
+    return true;
+}
+
+cv::Mat warpPair(const cv::Mat&amp; frame, const Pair&amp; pair) {
+    const cv::Point2f dst[4] = {
+        cv::Point2f(0.0f, 0.0f), cv::Point2f(139.0f, 0.0f),
+        cv::Point2f(139.0f, 79.0f), cv::Point2f(0.0f, 79.0f)};
+    const cv::Mat transform = cv::getPerspectiveTransform(pair.corners, dst);
+    cv::Mat plate;
+    cv::warpPerspective(frame, plate, transform, cv::Size(140, 80),
+                        cv::INTER_LINEAR);
+    return plate;
+}
+
+
+cv::Mat glyphTemplate(char digit) {
+    cv::Mat canvas(120, 90, CV_8UC1, cv::Scalar(0));
+    const std::string text(1, digit);
+    cv::putText(canvas, text, cv::Point(12, 92), cv::FONT_HERSHEY_SIMPLEX,
+                2.0, cv::Scalar(255), 5, cv::LINE_AA);
+    cv::Mat binary;
+    cv::threshold(canvas, binary, 128, 255, cv::THRESH_BINARY);
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(binary.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    if (contours.empty()) {
+        return cv::Mat();
+    }
+    const cv::Rect box = cv::boundingRect(contours.front());
+    cv::Mat glyph = binary(box).clone();
+    cv::Mat normalized;
+    cv::resize(glyph, normalized, cv::Size(40, 56), 0.0, 0.0,
+               cv::INTER_NEAREST);
+    cv::Mat centered(88, 72, CV_8UC1, cv::Scalar(0));
+    normalized.copyTo(centered(cv::Rect(16, 16, 40, 56)));
+    return centered;
+}
+
+cv::Mat extractDigit(const cv::Mat&amp; plate, cv::Mat&amp; mask_out) {
+    cv::Mat hsv;
+    cv::cvtColor(plate, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat mask;
+    cv::inRange(hsv, cv::Scalar(0, 0, 170), cv::Scalar(180, 85, 255), mask);
+    const cv::Rect center_roi(22, 12, 96, 56);
+    cv::Mat center = mask(center_roi).clone();
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(center.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    if (contours.empty()) {
+        mask_out = center;
+        return cv::Mat();
+    }
+    std::size_t best = 0;
+    double best_area = 0.0;
+    for (std::size_t i = 0; i &lt; contours.size(); ++i) {
+        const double area = cv::contourArea(contours[i]);
+        if (area &gt; best_area) {
+            best_area = area;
+            best = i;
+        }
+    }
+    const cv::Rect box = cv::boundingRect(contours[best]);
+    if (box.width &lt; 4 || box.height &lt; 10) {
+        mask_out = center;
+        return cv::Mat();
+    }
+    cv::Mat glyph = center(box).clone();
+    cv::Mat normalized;
+    cv::resize(glyph, normalized, cv::Size(40, 56), 0.0, 0.0,
+               cv::INTER_NEAREST);
+    cv::Mat centered(88, 72, CV_8UC1, cv::Scalar(0));
+    normalized.copyTo(centered(cv::Rect(16, 16, 40, 56)));
+    mask_out = center;
+    return centered;
+}
+
+}  // namespace
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 synth_armor.mp4\n";
+        return 1;
+    }
+    const int frame_index = 40;
+    cap.set(cv::CAP_PROP_POS_FRAMES, frame_index);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "无法读取第 " &lt;&lt; frame_index &lt;&lt; " 帧\n";
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    const std::vector&lt;Bar&gt; bars = findBars(gray);
+    std::vector&lt;Pair&gt; pairs;
+    for (std::size_t i = 0; i &lt; bars.size(); ++i) {
+        for (std::size_t j = i + 1; j &lt; bars.size(); ++j) {
+            Pair pair;
+            if (buildPair(bars, static_cast&lt;int&gt;(i), static_cast&lt;int&gt;(j),
+                          pair)) {
+                pair.plate = warpPair(frame, pair);
+                classifyColor(pair);
+                pairs.push_back(pair);
+            }
+        }
+    }
+    std::sort(pairs.begin(), pairs.end(),
+              [](const Pair&amp; a, const Pair&amp; b) { return a.score &lt; b.score; });
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "frame = " &lt;&lt; frame_index &lt;&lt; " pairs = " &lt;&lt; pairs.size()
+              &lt;&lt; '\n';
+    if (pairs.empty()) {
+        std::cout &lt;&lt; "no armor plate\n";
+        return 0;
+    }
+    const Pair&amp; best = pairs.front();
+    cv::Mat digit_mask;
+    const cv::Mat glyph = extractDigit(best.plate, digit_mask);
+    if (glyph.empty()) {
+        std::cout &lt;&lt; "no digit roi\n";
+        return 0;
+    }
+
+    const char digits[5] = {'1', '2', '3', '4', '5'};
+    std::vector&lt;double&gt; scores;
+    int best_digit = 0;
+    double best_score = -2.0;
+    for (int i = 0; i &lt; 5; ++i) {
+        const cv::Mat templ = glyphTemplate(digits[i]);
+        cv::Mat result;
+        cv::matchTemplate(glyph, templ, result, cv::TM_CCOEFF_NORMED);
+        const double score = result.at&lt;float&gt;(0, 0);
+        scores.push_back(score);
+        if (score &gt; best_score) {
+            best_score = score;
+            best_digit = digits[i] - '0';
+        }
+    }
+
+    std::cout &lt;&lt; "color = " &lt;&lt; best.color &lt;&lt; '\n';
+    std::cout &lt;&lt; "digit_scores =";
+    for (int i = 0; i &lt; 5; ++i) {
+        std::cout &lt;&lt; " " &lt;&lt; digits[i] &lt;&lt; ":" &lt;&lt; scores[i];
+    }
+    std::cout &lt;&lt; '\n';
+    std::cout &lt;&lt; "digit = " &lt;&lt; best_digit &lt;&lt; " score = " &lt;&lt; best_score &lt;&lt; '\n';
+
+    cv::Mat annotated = frame.clone();
+    for (int k = 0; k &lt; 4; ++k) {
+        cv::line(annotated,
+                 cv::Point(cvRound(best.corners[k].x),
+                           cvRound(best.corners[k].y)),
+                 cv::Point(cvRound(best.corners[(k + 1) % 4].x),
+                           cvRound(best.corners[(k + 1) % 4].y)),
+                 cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+    }
+    cv::putText(annotated, "digit " + std::to_string(best_digit),
+                cv::Point(20, 34), cv::FONT_HERSHEY_SIMPLEX, 0.8,
+                cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+
+    cv::Mat panel(480, 1280, CV_8UC3, cv::Scalar(24, 24, 24));
+    annotated.copyTo(panel(cv::Rect(0, 0, 640, 480)));
+    cv::Mat plate_shown;
+    cv::resize(best.plate, plate_shown, cv::Size(280, 160), 0.0, 0.0,
+               cv::INTER_NEAREST);
+    plate_shown.copyTo(panel(cv::Rect(700, 70, 280, 160)));
+    cv::Mat mask_bgr;
+    cv::cvtColor(digit_mask, mask_bgr, cv::COLOR_GRAY2BGR);
+    cv::Mat mask_shown;
+    cv::resize(mask_bgr, mask_shown, cv::Size(280, 160), 0.0, 0.0,
+               cv::INTER_NEAREST);
+    mask_shown.copyTo(panel(cv::Rect(1000, 70, 280, 160)));
+    cv::Mat glyph_shown;
+    cv::resize(glyph, glyph_shown, cv::Size(180, 220), 0.0, 0.0,
+               cv::INTER_NEAREST);
+    cv::cvtColor(glyph_shown, glyph_shown, cv::COLOR_GRAY2BGR);
+    glyph_shown.copyTo(panel(cv::Rect(760, 250, 180, 220)));
+    cv::putText(panel, "plate", cv::Point(700, 50),
+                cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(230, 230, 230), 1,
+                cv::LINE_AA);
+    cv::putText(panel, "white mask", cv::Point(1000, 50),
+                cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(230, 230, 230), 1,
+                cv::LINE_AA);
+    cv::putText(panel, "normalized glyph", cv::Point(960, 270),
+                cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(230, 230, 230), 1,
+                cv::LINE_AA);
+    const bool saved = cv::imwrite("../素材/out_armor_digit.png", panel);
+    std::cout &lt;&lt; "saved out_armor_digit.png " &lt;&lt; panel.cols &lt;&lt; "x"
+              &lt;&lt; panel.rows &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 9.4-digit.cpp -o armor_digit \
+    $(pkg-config --cflags --libs opencv4)
+./armor_digit</code></pre>
+<pre class="out" data-label="真实输出">frame = 40 pairs = 1
+color = red
+digit_scores = 1:0.5285 2:0.4871 3:0.8724 4:0.3352 5:0.7193
+digit = 3 score = 0.8724
+saved out_armor_digit.png 1280x480: yes</pre>
+  <p>
+    五个分数中，数字 3 最高，为 <code>0.8724</code>；数字 5 为
+    <code>0.7193</code>，数字 1 为 <code>0.5285</code>。3 与 5 在上半部
+    都有横笔画，轮廓相关系数不低；1 的笔画窄，归一化后被横向拉伸，
+    反而与宽字形差距更大。最高分与第二名相差 <code>0.1531</code>，
+    排序明确，但绝对值说明模板与目标并非完全一致。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_digit.png" alt="数字板面、白色掩码与归一化字形" width="1280" height="480">
+    <figcaption>
+      左图绿色框为装甲板，右图依次是矫正板面、白色数字掩码与归一化后的
+      <code>72×88</code> 字形。掩码边缘的少量亮边来自灯条与边框，最大
+      轮廓仍是数字主体。
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/synth_digits.png" alt="数字 1 到 5 的模板拼图" width="700" height="110">
+    <figcaption>
+      生成脚本保存的模板拼图：每格是板面裁片，下方是类别。模板与目标
+      使用同一字体生成，仍然存在缩放与抗锯齿差异，因此匹配分数不会
+      达到 1。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-4</div>
+  <p>
+    给定模板匹配分数 <code>1:0.5285</code>、<code>2:0.4871</code>、
+    <code>3:0.8724</code>、<code>4:0.3352</code>、<code>5:0.7193</code>，
+    打印最高分类别、置信度，以及最高分与第二高分的差。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">best_digit = 3
+confidence = 0.8724
+margin = 0.1531</pre>
+  <details class="ans" data-run="示例代码/答案/9-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        最高分是类别 3 的 <code>0.8724</code>，第二高是类别 5 的
+        <code>0.7193</code>，差距 <code>0.1531</code>。若只报最高类别
+        而不报差距，遇到两个字形的分数接近时，无法判断结果是否可靠。
+      </p>
+<pre data-lang="C++" data-name="答案/9-4.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    const std::vector&lt;char&gt; digits = {'1', '2', '3', '4', '5'};
+    const std::vector&lt;double&gt; scores = {0.5285, 0.4871, 0.8724,
+                                        0.3352, 0.7193};
+    int best = 0;
+    int second = 1;
+    for (int i = 1; i &lt; 5; ++i) {
+        if (scores[i] &gt; scores[best]) {
+            second = best;
+            best = i;
+        } else if (i != best &amp;&amp; scores[i] &gt; scores[second]) {
+            second = i;
+        }
+    }
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "best_digit = " &lt;&lt; digits[best] &lt;&lt; '\n';
+    std::cout &lt;&lt; "confidence = " &lt;&lt; scores[best] &lt;&lt; '\n';
+    std::cout &lt;&lt; "margin = " &lt;&lt; scores[best] - scores[second] &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">best_digit = 3
+confidence = 0.8724
+margin = 0.1531</pre>
+    </div>
+  </details>
+</div>
+
+<h3 id="s9-4-3">常见错误</h3>
+
+<p>
+  <b>模板与目标尺寸不一致。</b><code>matchTemplate</code> 只在固定
+  尺度上逐像素滑动，不会因为模板比目标大或小就自动适应；尺寸不一致
+  时，最高分位置偏移，分数也不可比。尺度变化时先缩放图像或建立
+  金字塔，模板与目标再经过同一条归一化流程，缩放到同一画布尺寸。
+</p>
+
+<p>
+  <b>二值化阈值过严。</b><code>V</code> 下限太高会切掉数字边缘，笔画
+  变细；<code>S</code> 上限太低会把偏色的数字排除。先看掩码是否保留
+  完整笔画，再调阈值；不要只根据最终类别调参数。
+</p>
+
+<p>
+  <b>把颜色当成数字特征。</b>红色与蓝色板面上的同一种数字，笔画掩码
+  应当相似；若把颜色通道直接送进模板匹配，颜色变化会被误认为字形变化。
+  数字匹配只用白色掩码，颜色由 9.3 单独判断。
+</p>
+
+<p>
+  <b>样本不足。</b>五个模板只覆盖 1–5，遇到 6–9 或不同字体时，最高分
+  仍会给出一个类别，但结果没有意义。应同时检查绝对分数与差距，并在
+  模板集中加入实际字体的样本。
+</p>
+</section>
+
+<section class="lesson" id="l9-5">
+<h2><span class="no">9.5</span>视频状态机与跟踪</h2>
+
+<p>
+  单帧检测会抖动：某一帧漏检不代表目标消失，某一帧误检也不代表目标
+  出现。状态机用连续帧计数把单帧结果变成稳定状态。本课在整段 300 帧
+  视频上运行检测、配对与颜色判别，维护“候选、确认、丢失”三个状态，
+  写出标注视频并打印状态切换日志。
+</p>
+
+<h3 id="s9-5-1">状态与帧计数</h3>
+
+<p>
+  初始状态为候选。每检测到一块装甲板，命中计数加一；连续命中达到
+  <code>3</code> 帧，进入确认状态。确认后若连续 <code>5</code> 帧没有
+  检测，进入丢失状态。丢失期间不立即相信单帧检测，要求连续
+  <code>3</code> 帧重新检测到，才回到确认状态并记为一次重捕。任何一次
+  漏检都会把命中计数清零，任何一次检测都会把丢失计数清零。
+</p>
+
+<p>
+  三个阈值对应三种取舍：确认帧数越大，误检越难进入确认，但真实目标
+  出现得更晚；丢失帧数越大，短暂遮挡越不容易打断跟踪，但目标真正离开
+  后状态切换更慢；重捕帧数越大，重捕越可靠，但恢复更慢。阈值应由
+  帧率、目标停留时间与允许延迟共同决定，不能只看一段视频调死。
+</p>
+
+<p>
+  本课没有把卡尔曼滤波接进状态机。检测框中心已经足够画框与判断状态；
+  若需要预测丢失期间的位置，可以在确认状态后对中心或角度加一层第 8 部分
+  的滤波，丢失时只预测，重捕时重置。先让状态机在原始检测上稳定，再
+  加滤波，问题更容易定位。
+</p>
+
+<div class="eg" id="e9-5">
+  <div class="eg-h">例题 · 整段视频</div>
+  <p>
+    程序逐帧读取视频，执行灯条提取、配对、透视矫正与颜色判别，按上述
+    规则更新状态；在画面上绘制候选框、颜色、状态与帧号，写出
+    <code>out_armor_state.mp4</code>，最后回读帧数并打印统计。第 200 帧
+    另存为 <code>out_armor_state.png</code>，用于检查标注样式。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.5-state_machine.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+struct Bar {
+    cv::Point2f center;
+    cv::Point2f axis;
+    cv::Point2f normal;
+    float half_len = 0.0f;
+    float half_wid = 0.0f;
+    double area = 0.0;
+    double angle = 0.0;
+};
+
+struct Pair {
+    int left = -1;
+    int right = -1;
+    double score = 0.0;
+    double angle_error = 0.0;
+    double center_error = 0.0;
+    double length_ratio = 1.0;
+    cv::Point2f corners[4];
+    cv::Mat plate;
+    std::string color;
+    int red_pixels = 0;
+    int blue_pixels = 0;
+};
+
+float dot(const cv::Point2f&amp; a, const cv::Point2f&amp; b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+cv::Point2f normalize(const cv::Point2f&amp; v) {
+    const float n = std::sqrt(v.x * v.x + v.y * v.y);
+    if (n &lt; 1e-6f) {
+        return cv::Point2f(0.0f, 1.0f);
+    }
+    return cv::Point2f(v.x / n, v.y / n);
+}
+
+Bar makeBar(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    Bar bar;
+    bar.center = cv::Point2f(
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 1)));
+    bar.axis = normalize(cv::Point2f(
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 1))));
+    if (bar.axis.y &lt; 0.0f) {
+        bar.axis.x = -bar.axis.x;
+        bar.axis.y = -bar.axis.y;
+    }
+    bar.normal = cv::Point2f(bar.axis.y, -bar.axis.x);
+    float min_a = 1e9f;
+    float max_a = -1e9f;
+    float min_n = 1e9f;
+    float max_n = -1e9f;
+    for (const auto&amp; p : contour) {
+        const cv::Point2f q = cv::Point2f(p) - bar.center;
+        const float a = dot(q, bar.axis);
+        const float n = dot(q, bar.normal);
+        min_a = std::min(min_a, a);
+        max_a = std::max(max_a, a);
+        min_n = std::min(min_n, n);
+        max_n = std::max(max_n, n);
+    }
+    bar.half_len = 0.5f * (max_a - min_a);
+    bar.half_wid = 0.5f * (max_n - min_n);
+    bar.area = cv::contourArea(contour);
+    bar.angle = std::atan2(bar.axis.y, bar.axis.x) * 180.0 / CV_PI;
+    return bar;
+}
+
+std::vector&lt;Bar&gt; findBars(const cv::Mat&amp; gray) {
+    cv::Mat mask;
+    cv::threshold(gray, mask, 190, 255, cv::THRESH_BINARY);
+    const cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,
+                                                     cv::Size(3, 3));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;Bar&gt; bars;
+    for (const auto&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; 500.0 || area &gt; 10000.0) {
+            continue;
+        }
+        const Bar bar = makeBar(contour);
+        if (bar.half_wid &lt; 1.0f) {
+            continue;
+        }
+        const double aspect = bar.half_len / bar.half_wid;
+        const double fill = area / (4.0 * bar.half_len * bar.half_wid);
+        if (aspect &lt; 2.5 || aspect &gt; 12.0 || fill &lt; 0.45 ||
+            std::fabs(std::fabs(bar.angle) - 90.0) &gt; 30.0) {
+            continue;
+        }
+        bars.push_back(bar);
+    }
+    std::sort(bars.begin(), bars.end(), [](const Bar&amp; a, const Bar&amp; b) {
+        return a.center.x &lt; b.center.x;
+    });
+    return bars;
+}
+
+void classifyColor(Pair&amp; pair) {
+    cv::Mat hsv;
+    cv::cvtColor(pair.plate, hsv, cv::COLOR_BGR2HSV);
+    const cv::Rect roi(20, 15, 100, 50);
+    for (int y = roi.y; y &lt; roi.y + roi.height; ++y) {
+        const cv::Vec3b* row = hsv.ptr&lt;cv::Vec3b&gt;(y);
+        for (int x = roi.x; x &lt; roi.x + roi.width; ++x) {
+            const int h = row[x][0];
+            const int s = row[x][1];
+            const int v = row[x][2];
+            if (s &lt; 100 || v &lt; 60) {
+                continue;
+            }
+            if (h &lt; 10 || h &gt; 170) {
+                ++pair.red_pixels;
+            } else if (h &gt; 100 &amp;&amp; h &lt; 130) {
+                ++pair.blue_pixels;
+            }
+        }
+    }
+    pair.color = pair.red_pixels &gt;= pair.blue_pixels ? "red" : "blue";
+}
+
+bool buildPair(const std::vector&lt;Bar&gt;&amp; bars, int i, int j, Pair&amp; pair) {
+    const Bar&amp; a = bars[i];
+    const Bar&amp; b = bars[j];
+    const float dir = dot(a.axis, b.axis);
+    if (dir &lt; 0.0f) {
+        return false;
+    }
+    const double angle_error = std::acos(std::min(1.0f, std::max(-1.0f, dir))) *
+                               180.0 / CV_PI;
+    if (angle_error &gt; 8.0) {
+        return false;
+    }
+    const cv::Point2f axis = normalize(a.axis + b.axis);
+    const cv::Point2f normal(axis.y, -axis.x);
+    const float dx = dot(b.center - a.center, normal);
+    const float dy = dot(b.center - a.center, axis);
+    const float mean_len = 0.5f * (a.half_len + b.half_len);
+    const float full_len = 2.0f * mean_len;
+    if (dx &lt;= 0.0f || dx &lt; 0.8f * full_len || dx &gt; 2.5f * full_len) {
+        return false;
+    }
+    if (std::fabs(dy) &gt; 0.25f * full_len) {
+        return false;
+    }
+    const double length_ratio = std::min(a.half_len, b.half_len) /
+                                std::max(a.half_len, b.half_len);
+    if (length_ratio &lt; 0.8) {
+        return false;
+    }
+
+    pair.left = i;
+    pair.right = j;
+    pair.angle_error = angle_error;
+    pair.center_error = std::fabs(dy) / full_len;
+    pair.length_ratio = length_ratio;
+    pair.score = angle_error / 8.0 + pair.center_error / 0.25 +
+                 (1.0 - length_ratio) / 0.2;
+
+    pair.corners[0] = a.center - axis * a.half_len + normal * a.half_wid;
+    pair.corners[1] = b.center - axis * b.half_len - normal * b.half_wid;
+    pair.corners[2] = b.center + axis * b.half_len - normal * b.half_wid;
+    pair.corners[3] = a.center + axis * a.half_len + normal * a.half_wid;
+    return true;
+}
+
+cv::Mat warpPair(const cv::Mat&amp; frame, const Pair&amp; pair) {
+    const cv::Point2f dst[4] = {
+        cv::Point2f(0.0f, 0.0f), cv::Point2f(139.0f, 0.0f),
+        cv::Point2f(139.0f, 79.0f), cv::Point2f(0.0f, 79.0f)};
+    const cv::Mat transform = cv::getPerspectiveTransform(pair.corners, dst);
+    cv::Mat plate;
+    cv::warpPerspective(frame, plate, transform, cv::Size(140, 80),
+                        cv::INTER_LINEAR);
+    return plate;
+}
+
+}  // namespace
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 synth_armor.mp4\n";
+        return 1;
+    }
+    const int width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+
+    cv::VideoWriter writer("../素材/out_armor_state.mp4",
+                           cv::VideoWriter::fourcc('m', 'p', '4', 'v'), fps,
+                           cv::Size(width, height));
+    if (!writer.isOpened()) {
+        std::cout &lt;&lt; "无法创建 out_armor_state.mp4\n";
+        return 1;
+    }
+
+    enum State { kCandidate, kConfirmed, kLost };
+    State state = kCandidate;
+    int hits = 0;
+    int recapture_hits = 0;
+    int misses = 0;
+    int frame_index = 0;
+    int detections = 0;
+    int confirmed_frames = 0;
+    int lost_events = 0;
+    int recaptures = 0;
+    std::string last_color = "-";
+
+    cv::Mat frame;
+    while (cap.read(frame)) {
+        if (frame.empty()) {
+            break;
+        }
+        cv::Mat gray;
+        cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+        const std::vector&lt;Bar&gt; bars = findBars(gray);
+        std::vector&lt;Pair&gt; pairs;
+        for (std::size_t i = 0; i &lt; bars.size(); ++i) {
+            for (std::size_t j = i + 1; j &lt; bars.size(); ++j) {
+                Pair pair;
+                if (buildPair(bars, static_cast&lt;int&gt;(i),
+                              static_cast&lt;int&gt;(j), pair)) {
+                    pair.plate = warpPair(frame, pair);
+                    classifyColor(pair);
+                    pairs.push_back(pair);
+                }
+            }
+        }
+        std::sort(pairs.begin(), pairs.end(),
+                  [](const Pair&amp; a, const Pair&amp; b) {
+                      return a.score &lt; b.score;
+                  });
+        const bool detected = !pairs.empty();
+
+        if (detected) {
+            ++detections;
+            const Pair&amp; best = pairs.front();
+            if (state == kLost) {
+                ++recapture_hits;
+                if (recapture_hits &gt;= 3) {
+                    state = kConfirmed;
+                    hits = 3;
+                    recapture_hits = 0;
+                    ++recaptures;
+                    std::cout &lt;&lt; "frame=" &lt;&lt; frame_index
+                              &lt;&lt; " state=lost-&gt;confirmed color=" &lt;&lt; best.color
+                              &lt;&lt; '\n';
+                }
+            } else {
+                ++hits;
+                if (state == kCandidate &amp;&amp; hits &gt;= 3) {
+                    state = kConfirmed;
+                    std::cout &lt;&lt; "frame=" &lt;&lt; frame_index
+                              &lt;&lt; " state=candidate-&gt;confirmed color="
+                              &lt;&lt; best.color &lt;&lt; '\n';
+                }
+            }
+            if (best.color != last_color) {
+                std::cout &lt;&lt; "frame=" &lt;&lt; frame_index &lt;&lt; " color=" &lt;&lt; last_color
+                          &lt;&lt; "-&gt;" &lt;&lt; best.color &lt;&lt; '\n';
+                last_color = best.color;
+            }
+            misses = 0;
+        } else {
+            hits = 0;
+            recapture_hits = 0;
+            if (state == kConfirmed) {
+                ++misses;
+                if (misses &gt;= 5) {
+                    state = kLost;
+                    recapture_hits = 0;
+                    ++lost_events;
+                    std::cout &lt;&lt; "frame=" &lt;&lt; frame_index
+                              &lt;&lt; " state=confirmed-&gt;lost\n";
+                }
+            }
+        }
+
+        if (state == kConfirmed) {
+            ++confirmed_frames;
+        }
+
+        cv::Mat shown = frame.clone();
+        if (detected) {
+            const Pair&amp; best = pairs.front();
+            for (int k = 0; k &lt; 4; ++k) {
+                cv::line(shown,
+                         cv::Point(cvRound(best.corners[k].x),
+                                   cvRound(best.corners[k].y)),
+                         cv::Point(cvRound(best.corners[(k + 1) % 4].x),
+                                   cvRound(best.corners[(k + 1) % 4].y)),
+                         cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+            }
+            cv::putText(shown, best.color, cv::Point(20, 32),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.75,
+                        cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+        }
+        const char* state_text = "candidate";
+        if (state == kConfirmed) {
+            state_text = "confirmed";
+        } else if (state == kLost) {
+            state_text = "lost";
+        }
+        cv::putText(shown, state_text, cv::Point(20, 64),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(40, 220, 255),
+                    2, cv::LINE_AA);
+        cv::putText(shown, cv::format("frame %d", frame_index),
+                    cv::Point(20, 96), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                    cv::Scalar(230, 230, 230), 1, cv::LINE_AA);
+        if (frame_index == 200) {
+            cv::imwrite("../素材/out_armor_state.png", shown);
+        }
+        writer.write(shown);
+        ++frame_index;
+    }
+    writer.release();
+
+    cv::VideoCapture reader("../素材/out_armor_state.mp4");
+    const int readback = reader.isOpened()
+                             ? cvRound(reader.get(cv::CAP_PROP_FRAME_COUNT))
+                             : 0;
+    std::cout &lt;&lt; "frames = " &lt;&lt; frame_index &lt;&lt; '\n';
+    std::cout &lt;&lt; "detections = " &lt;&lt; detections
+              &lt;&lt; " confirmed_frames = " &lt;&lt; confirmed_frames &lt;&lt; '\n';
+    std::cout &lt;&lt; "lost_events = " &lt;&lt; lost_events
+              &lt;&lt; " recaptures = " &lt;&lt; recaptures &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_armor_state.mp4 " &lt;&lt; width &lt;&lt; "x" &lt;&lt; height
+              &lt;&lt; " frames=" &lt;&lt; readback &lt;&lt; ": "
+              &lt;&lt; (readback == frame_index ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 9.5-state_machine.cpp -o armor_state \
+    $(pkg-config --cflags --libs opencv4)
+./armor_state</code></pre>
+<pre class="out" data-label="真实输出">frame=0 color=--&gt;red
+frame=4 state=candidate-&gt;confirmed color=red
+frame=75 color=red-&gt;blue
+frame=134 state=confirmed-&gt;lost
+frame=170 color=blue-&gt;red
+frame=172 state=lost-&gt;confirmed color=red
+frame=240 color=red-&gt;blue
+frames = 300
+detections = 251 confirmed_frames = 258
+lost_events = 1 recaptures = 1
+saved out_armor_state.mp4 640x480 frames=300: yes</pre>
+  <p>
+    第 0 帧检测到红色板面，状态仍是候选；第 4 帧连续命中达到 3 次，
+    进入确认。第 75 帧颜色从红变蓝，第 240 帧从红变蓝；颜色变化不改变
+    确认状态。第 130–169 帧目标离开画面，连续 5 帧漏检后在第 134 帧
+    进入丢失；第 170 帧重新检测到，连续 3 帧后在 172 帧回到确认，并记为
+    一次重捕。
+  </p>
+  <p>
+    300 帧中共有 <code>251</code> 帧检测到候选，<code>258</code> 帧处于
+    确认状态。确认帧数大于检测帧数，是因为确认后允许短暂漏检，漏检期间
+    状态仍是确认；这也说明“检测到”和“处于确认状态”不是同一个计数。
+    丢失事件 <code>1</code> 次，重捕 <code>1</code> 次，与视频中目标离开
+    一次的设计一致。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_state.png" alt="状态机输出视频的第 200 帧：确认状态与绿色候选框" width="640" height="480">
+    <figcaption>
+      第 200 帧的标注结果：绿色四边形是当前最佳配对，左上角显示颜色
+      <code>red</code>、状态 <code>confirmed</code> 与帧号。方块边框来自
+      原始画面，不属于检测结果。
+    </figcaption>
+  </figure>
+</div>
+
+<h3 id="s9-5-2">日志与视频输出</h3>
+
+<p>
+  日志只打印状态切换与颜色变化，不逐帧打印候选表。状态切换包括
+  <code>candidate-&gt;confirmed</code>、<code>confirmed-&gt;lost</code>、
+  <code>lost-&gt;confirmed</code>；颜色变化单独记录。日志行带帧号，
+  可以直接跳到对应帧检查画面。若每帧都打印，输出会被大量重复行占满，
+  反而看不到关键事件。
+</p>
+
+<p>
+  <code>VideoWriter</code> 的尺寸必须与写入帧一致。程序从
+  <code>VideoCapture</code> 读取宽高与帧率，再用同一组参数构造写入器；
+  标注画在 <code>frame.clone()</code> 上，不修改原始帧。写完后释放
+  <code>VideoWriter</code>，再用 <code>VideoCapture</code> 回读帧数，
+  确认文件完整。
+</p>
+
+<h3 id="s9-5-3">常见错误</h3>
+
+<p>
+  <b>单帧抖动导致状态频繁切换。</b>确认与丢失阈值都取 1 帧时，任何
+  一次漏检或误检都会改变状态，日志被大量切换占满。应保留连续帧计数，
+  让状态对单帧异常不敏感。
+</p>
+
+<p>
+  <b>丢失后没有重捕条件。</b>丢失状态若一检测到就立即确认，误检会直接
+  变成目标；若永远不回到确认，真实目标回来也无法恢复。重捕需要独立的
+  连续命中计数，并与首次确认分开统计。
+</p>
+
+<p>
+  <b>写入尺寸不一致。</b>把检测结果画到缩放后的图上，却用原始尺寸构造
+  <code>VideoWriter</code>，写入会失败或得到花屏。标注前后保持同一
+  尺寸；若必须缩放，写入器也要使用缩放后的尺寸。
+</p>
+
+<p>
+  <b>丢失期间继续使用旧框。</b>目标已经离开，仍按上一帧中心画框，会
+  让画面看起来“还在跟踪”。丢失状态应明确标注，或只画预测位置并注明
+  是预测；不要把旧检测框当成当前检测。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 9-5</div>
+  <p>
+    初始状态为确认，检测序列为
+    <code>1,1,1,0,0,0,0,0,1,1,1,1</code>。按“连续 5 帧漏检进入丢失、
+    连续 3 帧命中回到确认”的规则，打印每一帧的状态与切换次数。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">frames = 12
+state[0] = confirmed
+state[1] = confirmed
+state[2] = confirmed
+state[3] = confirmed
+state[4] = confirmed
+state[5] = confirmed
+state[6] = confirmed
+state[7] = lost
+state[8] = lost
+state[9] = lost
+state[10] = confirmed
+state[11] = confirmed
+transitions = 2</pre>
+  <details class="ans" data-run="示例代码/答案/9-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        前 7 帧保持确认；第 7 帧时已连续 5 帧漏检，进入丢失；第 8、9
+        帧仍在丢失；第 10 帧连续命中达到 3 次，回到确认。切换共
+        <code>2</code> 次：确认到丢失、丢失到确认。序列中的前三个 1
+        不会触发切换，因为初始状态已经是确认。
+      </p>
+<pre data-lang="C++" data-name="答案/9-5.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    const std::vector&lt;int&gt; detections = {1, 1, 1, 0, 0, 0,
+                                         0, 0, 1, 1, 1, 1};
+    bool confirmed = true;
+    bool lost = false;
+    int misses = 0;
+    int recapture = 0;
+    int transitions = 0;
+    std::vector&lt;std::string&gt; states;
+
+    for (int detected : detections) {
+        if (detected) {
+            ++recapture;
+            if (lost &amp;&amp; recapture &gt;= 3) {
+                lost = false;
+                confirmed = true;
+                recapture = 0;
+                ++transitions;
+            }
+            misses = 0;
+        } else {
+            ++misses;
+            recapture = 0;
+            if (confirmed &amp;&amp; misses &gt;= 5) {
+                confirmed = false;
+                lost = true;
+                ++transitions;
+                misses = 0;
+            }
+        }
+        states.push_back(lost ? "lost" : "confirmed");
+    }
+
+    std::cout &lt;&lt; "frames = " &lt;&lt; states.size() &lt;&lt; '\n';
+    for (std::size_t i = 0; i &lt; states.size(); ++i) {
+        std::cout &lt;&lt; "state[" &lt;&lt; i &lt;&lt; "] = " &lt;&lt; states[i] &lt;&lt; '\n';
+    }
+    std::cout &lt;&lt; "transitions = " &lt;&lt; transitions &lt;&lt; '\n';
+    return 0;
+}
+</code></pre>
+<pre class="out" data-label="真实输出">frames = 12
+state[0] = confirmed
+state[1] = confirmed
+state[2] = confirmed
+state[3] = confirmed
+state[4] = confirmed
+state[5] = confirmed
+state[6] = confirmed
+state[7] = lost
+state[8] = lost
+state[9] = lost
+state[10] = confirmed
+state[11] = confirmed
+transitions = 2</pre>
+    </div>
+  </details>
+</div>
+</section>
+
+<section class="lesson" id="l9-6">
+<h2><span class="no">9.6</span>性能、调试与参数</h2>
+
+<p>
+  流程能运行通过之后，下一步是知道时间花在哪里、参数在哪里改、坐标在哪一层
+  换算。本课对每三段取一帧，共 100 个样本，分别统计灰度、掩码、轮廓与
+  配对四段的平均耗时；把阈值与几何条件收进 <code>Params</code>；并在
+  车辆 ROI 内检测，再把局部坐标加回全图坐标。最后用一段实拍视频做
+  观察对照，比较合成画面与真实相机画面的差异。示例只要求看懂结构与
+  输出，不要求从零实现。
+</p>
+
+<h3 id="s9-6-1">分段计时</h3>
+
+<p>
+  <code>cv::getTickCount()</code> 返回当前 tick 数，
+  <code>cv::getTickFrequency()</code> 返回每秒 tick 数。两数相减再除以
+  频率，就是秒数；乘 <code>1000</code> 得到毫秒。计时点放在每段处理
+  前后，累计后除以样本数，得到平均耗时。示例把耗时行写成
+  <code>time 名称=数值 ms</code>，名称只用小写字母与下划线，便于脚本
+  识别。
+</p>
+
+<p>
+  计时要包含真正要比较的工作，不能把读视频、解码与等待也算进算法段。
+  示例先 <code>cap.set</code> 与 <code>cap &gt;&gt; frame</code>，再用
+  <code>getTickCount</code> 开始计时；解码时间不计入四段。若比较不同
+  实现，应固定采样帧、ROI 与编译选项，只改被测代码。开启
+  <code>-O2</code> 后，简单的灰度与阈值通常只需零点几毫秒；关闭优化
+  可能相差数倍，所以比较前要确认编译命令一致。
+</p>
+
+<p>
+  输出中的毫秒数随机器负载变化，页面上的数值是某一台机器的一次运行，
+  不应逐字照抄到结论里。看比例：若配对段远大于其他段，应先优化候选
+  数量或减少重复的透视变换；若掩码段占比高，再检查图像尺寸与形态学核
+  大小。绝对数值只有在同一台机器、同一编译选项下才有比较意义。
+</p>
+
+<h3 id="s9-6-2">参数结构与 ROI</h3>
+
+<p>
+  <code>Params</code> 集中保存阈值、面积范围、宽高比、填充率、倾角、
+  配对夹角、间距比例、中心偏移与长度比。每项都有默认值，改动时只改
+  结构体，不在函数里散落数字。打印参数表可以让日志与结果对应；同一段
+  视频换参数后，先比较候选数与状态日志，再比较最终画面。
+</p>
+
+<p>
+  车辆 ROI 是整帧中的一个矩形。程序在 ROI 上检测，得到的中心、角点与
+  轮廓坐标都是 ROI 局部坐标；画到全图或与全图坐标比较前，必须加上
+  ROI 的左上角偏移。示例的 ROI 为 <code>(60,120,520,300)</code>，第 39
+  帧局部中心 <code>(368.578,157.865)</code>，加偏移后全图中心
+  <code>(428.578,277.865)</code>。忘记加偏移，框会整体左上错位，且
+  误差恰好等于 ROI 原点。
+</p>
+
+<div class="eg" id="e9-6">
+  <div class="eg-h">例题 · 计时与重映射</div>
+  <p>
+    程序每 3 帧取一帧，在车辆 ROI 内完成灰度、掩码、轮廓筛选、配对与
+    颜色判别，累计四段耗时；对第 39 帧额外打印局部中心与全图中心，并
+    保存带 ROI 边框与候选框的画面。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.6-timing.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+struct Bar {
+    cv::Point2f center;
+    cv::Point2f axis;
+    cv::Point2f normal;
+    float half_len = 0.0f;
+    float half_wid = 0.0f;
+    double area = 0.0;
+    double angle = 0.0;
+};
+
+
+struct Params {
+    double threshold = 190.0;
+    double min_area = 500.0;
+    double max_area = 10000.0;
+    double min_aspect = 2.5;
+    double max_aspect = 12.0;
+    double min_fill = 0.45;
+    double max_tilt = 30.0;
+    double max_pair_angle = 8.0;
+    double min_gap_ratio = 0.8;
+    double max_gap_ratio = 2.5;
+    double max_center_offset = 0.25;
+    double min_length_ratio = 0.8;
+};
+
+struct Pair {
+    int left = -1;
+    int right = -1;
+    double score = 0.0;
+    double angle_error = 0.0;
+    double center_error = 0.0;
+    double length_ratio = 1.0;
+    cv::Point2f corners[4];
+    cv::Mat plate;
+    std::string color;
+    int red_pixels = 0;
+    int blue_pixels = 0;
+};
+
+float dot(const cv::Point2f&amp; a, const cv::Point2f&amp; b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+cv::Point2f normalize(const cv::Point2f&amp; v) {
+    const float n = std::sqrt(v.x * v.x + v.y * v.y);
+    if (n &lt; 1e-6f) {
+        return cv::Point2f(0.0f, 1.0f);
+    }
+    return cv::Point2f(v.x / n, v.y / n);
+}
+
+Bar makeBar(const std::vector&lt;cv::Point&gt;&amp; contour) {
+    cv::Mat samples(static_cast&lt;int&gt;(contour.size()), 2, CV_64F);
+    for (int i = 0; i &lt; samples.rows; ++i) {
+        samples.at&lt;double&gt;(i, 0) = contour[i].x;
+        samples.at&lt;double&gt;(i, 1) = contour[i].y;
+    }
+    cv::PCA pca(samples, cv::Mat(), cv::PCA::DATA_AS_ROW);
+    Bar bar;
+    bar.center = cv::Point2f(
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.mean.at&lt;double&gt;(0, 1)));
+    bar.axis = normalize(cv::Point2f(
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 0)),
+        static_cast&lt;float&gt;(pca.eigenvectors.at&lt;double&gt;(0, 1))));
+    if (bar.axis.y &lt; 0.0f) {
+        bar.axis.x = -bar.axis.x;
+        bar.axis.y = -bar.axis.y;
+    }
+    bar.normal = cv::Point2f(bar.axis.y, -bar.axis.x);
+    float min_a = 1e9f;
+    float max_a = -1e9f;
+    float min_n = 1e9f;
+    float max_n = -1e9f;
+    for (const auto&amp; p : contour) {
+        const cv::Point2f q = cv::Point2f(p) - bar.center;
+        const float a = dot(q, bar.axis);
+        const float n = dot(q, bar.normal);
+        min_a = std::min(min_a, a);
+        max_a = std::max(max_a, a);
+        min_n = std::min(min_n, n);
+        max_n = std::max(max_n, n);
+    }
+    bar.half_len = 0.5f * (max_a - min_a);
+    bar.half_wid = 0.5f * (max_n - min_n);
+    bar.area = cv::contourArea(contour);
+    bar.angle = std::atan2(bar.axis.y, bar.axis.x) * 180.0 / CV_PI;
+    return bar;
+}
+
+void classifyColor(Pair&amp; pair) {
+    cv::Mat hsv;
+    cv::cvtColor(pair.plate, hsv, cv::COLOR_BGR2HSV);
+    const cv::Rect roi(20, 15, 100, 50);
+    for (int y = roi.y; y &lt; roi.y + roi.height; ++y) {
+        const cv::Vec3b* row = hsv.ptr&lt;cv::Vec3b&gt;(y);
+        for (int x = roi.x; x &lt; roi.x + roi.width; ++x) {
+            const int h = row[x][0];
+            const int s = row[x][1];
+            const int v = row[x][2];
+            if (s &lt; 100 || v &lt; 60) {
+                continue;
+            }
+            if (h &lt; 10 || h &gt; 170) {
+                ++pair.red_pixels;
+            } else if (h &gt; 100 &amp;&amp; h &lt; 130) {
+                ++pair.blue_pixels;
+            }
+        }
+    }
+    pair.color = pair.red_pixels &gt;= pair.blue_pixels ? "red" : "blue";
+}
+
+bool buildPair(const std::vector&lt;Bar&gt;&amp; bars, int i, int j,
+               const Params&amp; p, Pair&amp; pair) {
+    const Bar&amp; a = bars[i];
+    const Bar&amp; b = bars[j];
+    const float dir = dot(a.axis, b.axis);
+    if (dir &lt; 0.0f) {
+        return false;
+    }
+    const double angle_error = std::acos(std::min(1.0f, std::max(-1.0f, dir))) *
+                               180.0 / CV_PI;
+    if (angle_error &gt; p.max_pair_angle) {
+        return false;
+    }
+    const cv::Point2f axis = normalize(a.axis + b.axis);
+    const cv::Point2f normal(axis.y, -axis.x);
+    const float dx = dot(b.center - a.center, normal);
+    const float dy = dot(b.center - a.center, axis);
+    const float mean_len = 0.5f * (a.half_len + b.half_len);
+    const float full_len = 2.0f * mean_len;
+    if (dx &lt;= 0.0f || dx &lt; p.min_gap_ratio * full_len ||
+        dx &gt; p.max_gap_ratio * full_len) {
+        return false;
+    }
+    if (std::fabs(dy) &gt; p.max_center_offset * full_len) {
+        return false;
+    }
+    const double length_ratio = std::min(a.half_len, b.half_len) /
+                                std::max(a.half_len, b.half_len);
+    if (length_ratio &lt; p.min_length_ratio) {
+        return false;
+    }
+
+    pair.left = i;
+    pair.right = j;
+    pair.angle_error = angle_error;
+    pair.center_error = std::fabs(dy) / full_len;
+    pair.length_ratio = length_ratio;
+    pair.score = angle_error / p.max_pair_angle +
+                 pair.center_error / p.max_center_offset +
+                 (1.0 - length_ratio) / (1.0 - p.min_length_ratio);
+
+    pair.corners[0] = a.center - axis * a.half_len + normal * a.half_wid;
+    pair.corners[1] = b.center - axis * b.half_len - normal * b.half_wid;
+    pair.corners[2] = b.center + axis * b.half_len - normal * b.half_wid;
+    pair.corners[3] = a.center + axis * a.half_len + normal * a.half_wid;
+    return true;
+}
+
+cv::Mat warpPair(const cv::Mat&amp; frame, const Pair&amp; pair) {
+    const cv::Point2f dst[4] = {
+        cv::Point2f(0.0f, 0.0f), cv::Point2f(139.0f, 0.0f),
+        cv::Point2f(139.0f, 79.0f), cv::Point2f(0.0f, 79.0f)};
+    const cv::Mat transform = cv::getPerspectiveTransform(pair.corners, dst);
+    cv::Mat plate;
+    cv::warpPerspective(frame, plate, transform, cv::Size(140, 80),
+                        cv::INTER_LINEAR);
+    return plate;
+}
+
+}  // namespace
+
+cv::Point2f pairCenter(const Pair&amp; pair) {
+    cv::Point2f center(0.0f, 0.0f);
+    for (int k = 0; k &lt; 4; ++k) {
+        center += pair.corners[k];
+    }
+    return center * 0.25f;
+}
+
+int main() {
+    cv::VideoCapture cap("../素材/synth_armor.mp4");
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 synth_armor.mp4\n";
+        return 1;
+    }
+    const int total = cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+    const Params params;
+    const cv::Rect vehicle_roi(60, 120, 520, 300);
+
+    double gray_ms = 0.0;
+    double mask_ms = 0.0;
+    double contour_ms = 0.0;
+    double pair_ms = 0.0;
+    double total_ms = 0.0;
+    int samples = 0;
+    int detections = 0;
+    cv::Mat sample_frame;
+    cv::Point2f sample_local;
+    cv::Point2f sample_full;
+    int sample_index = -1;
+
+    for (int index = 0; index &lt; total; index += 3) {
+        cap.set(cv::CAP_PROP_POS_FRAMES, index);
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            continue;
+        }
+        const cv::Mat roi = frame(vehicle_roi);
+        const int64 start = cv::getTickCount();
+
+        cv::Mat gray;
+        cv::cvtColor(roi, gray, cv::COLOR_BGR2GRAY);
+        const int64 after_gray = cv::getTickCount();
+
+        cv::Mat mask;
+        cv::threshold(gray, mask, params.threshold, 255, cv::THRESH_BINARY);
+        const cv::Mat kernel = cv::getStructuringElement(
+            cv::MORPH_RECT, cv::Size(3, 3));
+        cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+        cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+        const int64 after_mask = cv::getTickCount();
+
+        std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+        cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                         cv::CHAIN_APPROX_SIMPLE);
+        std::vector&lt;Bar&gt; bars;
+        for (const auto&amp; contour : contours) {
+            const double area = cv::contourArea(contour);
+            if (area &lt; params.min_area || area &gt; params.max_area) {
+                continue;
+            }
+            const Bar bar = makeBar(contour);
+            if (bar.half_wid &lt; 1.0f) {
+                continue;
+            }
+            const double aspect = bar.half_len / bar.half_wid;
+            const double fill =
+                area / (4.0 * bar.half_len * bar.half_wid);
+            if (aspect &lt; params.min_aspect ||
+                aspect &gt; params.max_aspect || fill &lt; params.min_fill ||
+                std::fabs(std::fabs(bar.angle) - 90.0) &gt; params.max_tilt) {
+                continue;
+            }
+            bars.push_back(bar);
+        }
+        std::sort(bars.begin(), bars.end(), [](const Bar&amp; a, const Bar&amp; b) {
+            return a.center.x &lt; b.center.x;
+        });
+        const int64 after_contour = cv::getTickCount();
+
+        std::vector&lt;Pair&gt; pairs;
+        for (std::size_t i = 0; i &lt; bars.size(); ++i) {
+            for (std::size_t j = i + 1; j &lt; bars.size(); ++j) {
+                Pair pair;
+                if (buildPair(bars, static_cast&lt;int&gt;(i), static_cast&lt;int&gt;(j),
+                              params, pair)) {
+                    pair.plate = warpPair(roi, pair);
+                    classifyColor(pair);
+                    pairs.push_back(pair);
+                }
+            }
+        }
+        std::sort(pairs.begin(), pairs.end(),
+                  [](const Pair&amp; a, const Pair&amp; b) {
+                      return a.score &lt; b.score;
+                  });
+        const int64 after_pair = cv::getTickCount();
+        if (!pairs.empty()) {
+            ++detections;
+            if (index == 39) {
+                sample_index = index;
+                sample_local = pairCenter(pairs.front());
+                sample_full = sample_local + cv::Point2f(
+                    static_cast&lt;float&gt;(vehicle_roi.x),
+                    static_cast&lt;float&gt;(vehicle_roi.y));
+                sample_frame = frame.clone();
+                for (int k = 0; k &lt; 4; ++k) {
+                    const cv::Point2f a =
+                        pairs.front().corners[k] +
+                        cv::Point2f(static_cast&lt;float&gt;(vehicle_roi.x),
+                                    static_cast&lt;float&gt;(vehicle_roi.y));
+                    const cv::Point2f b =
+                        pairs.front().corners[(k + 1) % 4] +
+                        cv::Point2f(static_cast&lt;float&gt;(vehicle_roi.x),
+                                    static_cast&lt;float&gt;(vehicle_roi.y));
+                    cv::line(sample_frame, cv::Point(cvRound(a.x), cvRound(a.y)),
+                             cv::Point(cvRound(b.x), cvRound(b.y)),
+                             cv::Scalar(40, 220, 40), 2, cv::LINE_AA);
+                }
+                cv::rectangle(sample_frame, vehicle_roi,
+                              cv::Scalar(40, 180, 255), 2, cv::LINE_AA);
+            }
+        }
+
+        const double tick = cv::getTickFrequency();
+        gray_ms += (after_gray - start) * 1000.0 / tick;
+        mask_ms += (after_mask - after_gray) * 1000.0 / tick;
+        contour_ms += (after_contour - after_mask) * 1000.0 / tick;
+        pair_ms += (after_pair - after_contour) * 1000.0 / tick;
+        total_ms += (after_pair - start) * 1000.0 / tick;
+        ++samples;
+    }
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "video_frames = " &lt;&lt; total &lt;&lt; " samples = " &lt;&lt; samples
+              &lt;&lt; " detections = " &lt;&lt; detections &lt;&lt; '\n';
+    std::cout &lt;&lt; "params: threshold=" &lt;&lt; params.threshold
+              &lt;&lt; " min_area=" &lt;&lt; params.min_area
+              &lt;&lt; " max_area=" &lt;&lt; params.max_area &lt;&lt; '\n';
+    std::cout &lt;&lt; "params: aspect=[" &lt;&lt; params.min_aspect &lt;&lt; ','
+              &lt;&lt; params.max_aspect &lt;&lt; "] fill=" &lt;&lt; params.min_fill &lt;&lt; '\n';
+    std::cout &lt;&lt; "roi = (" &lt;&lt; vehicle_roi.x &lt;&lt; ", " &lt;&lt; vehicle_roi.y &lt;&lt; ", "
+              &lt;&lt; vehicle_roi.width &lt;&lt; ", " &lt;&lt; vehicle_roi.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "sample_frame = " &lt;&lt; sample_index &lt;&lt; '\n';
+    std::cout &lt;&lt; "local_center = (" &lt;&lt; sample_local.x &lt;&lt; ", "
+              &lt;&lt; sample_local.y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "full_center = (" &lt;&lt; sample_full.x &lt;&lt; ", "
+              &lt;&lt; sample_full.y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "time gray=" &lt;&lt; gray_ms / samples &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time mask=" &lt;&lt; mask_ms / samples &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time contours=" &lt;&lt; contour_ms / samples &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time pairing=" &lt;&lt; pair_ms / samples &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time total=" &lt;&lt; total_ms / samples &lt;&lt; " ms\n";
+    if (!sample_frame.empty()) {
+        cv::putText(sample_frame, "vehicle roi", cv::Point(70, 150),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(40, 180, 255),
+                    2, cv::LINE_AA);
+        const bool saved = cv::imwrite("../素材/out_armor_roi.png",
+                                       sample_frame);
+        std::cout &lt;&lt; "saved out_armor_roi.png " &lt;&lt; sample_frame.cols &lt;&lt; "x"
+                  &lt;&lt; sample_frame.rows &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no")
+                  &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra -O2 9.6-timing.cpp -o armor_timing \
+    $(pkg-config --cflags --libs opencv4)
+./armor_timing</code></pre>
+<pre class="out" data-label="真实输出">video_frames = 300 samples = 100 detections = 85
+params: threshold=190.000 min_area=500.000 max_area=10000.000
+params: aspect=[2.500,12.000] fill=0.450
+roi = (60, 120, 520, 300)
+sample_frame = 39
+local_center = (368.578, 157.865)
+full_center = (428.578, 277.865)
+time gray=0.065 ms
+time mask=0.097 ms
+time contours=0.054 ms
+time pairing=0.105 ms
+time total=0.321 ms
+saved out_armor_roi.png 640x480: yes</pre>
+  <p>
+    100 个样本中检测到 <code>85</code> 帧候选，其余样本落在目标离开
+    画面的区间，或出现短暂漏检。四段平均耗时依次为灰度、掩码、轮廓、
+    配对，合计不到 <code>1 ms</code>；这是合成画面与较小 ROI 的结果，
+    不能直接外推到高分辨率真实相机。参数表与源码默认值一致，ROI 为
+    <code>(60,120,520,300)</code>。
+  </p>
+  <p>
+    第 39 帧的局部中心为 <code>(368.578,157.865)</code>，全图中心为
+    <code>(428.578,277.865)</code>，两者相差正好是 ROI 原点
+    <code>(60,120)</code>。输出中的时间行会随机器变化；检查脚本对这类
+    行有容差，页面数值只用于说明量级。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_roi.png" alt="车辆 ROI 与局部检测结果" width="640" height="480">
+    <figcaption>
+      橙色矩形是车辆 ROI，绿色四边形是在 ROI 内检测到的装甲板。候选框
+      已加回 ROI 偏移后画到全图；若不加偏移，绿框会整体向左上移动
+      <code>(60,120)</code>。
+    </figcaption>
+  </figure>
+</div>
+
+<h3 id="s9-6-3">实拍视频观察</h3>
+
+<p>
+  合成视频的光照、颜色与数字都由程序控制，适合逐段核对算法；真实相机
+  画面不会保持这些条件。环境光偏蓝或偏红、灯条过曝、目标快速运动、
+  地面与装甲板反光、其他机器人进入画面，都会改变阈值、轮廓与配对的
+  结果。这一节读取一段 640×480、90 帧每秒、123 秒的实拍视频，抽取
+  四个时刻的画面，作为参数检查的对照材料。
+</p>
+
+<p>
+  程序打印的属性为：分辨率 <code>640×480</code>，帧率
+  <code>90</code> 帧每秒，总帧数 <code>11071</code>，时长约
+  <code>123.011</code> 秒。高帧率有利于观察快速运动，但每一帧的曝光
+  时间与运动模糊仍不同；定位画面时按时间或帧号计算，不能按处理耗时
+  推算视频时间。
+</p>
+
+<div class="eg" id="e9-6-real">
+  <div class="eg-h">例题 · 读取实拍视频</div>
+  <p>
+    程序读取视频属性，按时间抽取第 25、50、80、105 秒的画面，在每格
+    左上角标注时刻，拼成 2×2 对照图。抽帧按顺序解码，不依赖关键帧
+    定位，因此同一份视频在不同机器上取到的是同一批帧。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="9.6-real_video.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+void put_label(cv::Mat&amp; tile, const std::string&amp; text) {
+    cv::putText(tile, text, cv::Point(14, 36), cv::FONT_HERSHEY_SIMPLEX,
+                0.9, cv::Scalar(0, 0, 0), 5, cv::LINE_AA);
+    cv::putText(tile, text, cv::Point(12, 34), cv::FONT_HERSHEY_SIMPLEX,
+                0.9, cv::Scalar(255, 255, 255), 2, cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/real_armor.mp4";
+    cv::VideoCapture cap(path);
+    if (!cap.isOpened()) {
+        std::cerr &lt;&lt; "无法打开 real_armor.mp4\n";
+        return 1;
+    }
+
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const double count = cap.get(cv::CAP_PROP_FRAME_COUNT);
+    const int width = static_cast&lt;int&gt;(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = static_cast&lt;int&gt;(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    if (fps &lt;= 0.0 || count &lt;= 0.0) {
+        std::cerr &lt;&lt; "视频属性无效\n";
+        return 1;
+    }
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "size = " &lt;&lt; width &lt;&lt; 'x' &lt;&lt; height &lt;&lt; '\n';
+    std::cout &lt;&lt; "fps = " &lt;&lt; fps &lt;&lt; '\n';
+    std::cout &lt;&lt; "frames = " &lt;&lt; static_cast&lt;int&gt;(count) &lt;&lt; '\n';
+    std::cout &lt;&lt; "duration = " &lt;&lt; count / fps &lt;&lt; " s\n";
+
+    const double seconds[] = {25.0, 50.0, 80.0, 105.0};
+    std::vector&lt;int&gt; targets;
+    for (double s : seconds) {
+        targets.push_back(static_cast&lt;int&gt;(std::lround(s * fps)));
+    }
+
+    std::vector&lt;cv::Mat&gt; tiles;
+    cv::Mat frame;
+    std::size_t next = 0;
+    for (int index = 0; index &lt;= targets.back() &amp;&amp; cap.read(frame); ++index) {
+        if (next &lt; targets.size() &amp;&amp; index == targets[next]) {
+            cv::Mat tile = frame.clone();
+            put_label(tile, std::to_string(static_cast&lt;int&gt;(seconds[next])) +
+                                 " s");
+            tiles.push_back(tile);
+            ++next;
+        }
+    }
+    if (tiles.size() != 4) {
+        std::cerr &lt;&lt; "抽取的帧数不足\n";
+        return 1;
+    }
+
+    cv::Mat top;
+    cv::Mat bottom;
+    cv::Mat panel;
+    cv::hconcat(tiles[0], tiles[1], top);
+    cv::hconcat(tiles[2], tiles[3], bottom);
+    cv::vconcat(top, bottom, panel);
+
+    const bool saved = cv::imwrite("../素材/out_armor_real.png", panel);
+    std::cout &lt;&lt; "saved out_armor_real.png " &lt;&lt; panel.cols &lt;&lt; 'x'
+              &lt;&lt; panel.rows &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return saved ? 0 : 1;
+}
+</code></pre>
+<pre class="out" data-label="真实输出">size = 640x480
+fps = 90.000
+frames = 11071
+duration = 123.011 s
+saved out_armor_real.png 1280x960: yes</pre>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_armor_real.png" alt="实拍视频第 25、50、80、105 秒的画面" width="1280" height="960">
+    <figcaption>
+      四个时刻依次为近处红色装甲、蓝色环境光下的红色灯条、远处蓝色
+      装甲与近处红色装甲。灯条颜色、数字与环境光颜色并不总是一致；
+      实拍视频中，颜色判别应取灯条附近的像素，不能只用整块板面的
+      平均色；9.3 的合成板面颜色均匀，取板中心区域即可。
+    </figcaption>
+  </figure>
+</div>
+
+<p>
+  观察时把现象对应到处理阶段，比直接调参数更有用。下表列出四类常见
+  差异，以及它们最先影响的那一段。
+</p>
+
+<table class="compare">
+  <thead>
+    <tr><th>现象</th><th>最先影响</th><th>检查点</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>环境光色偏</td>
+      <td>颜色掩码、灰度阈值</td>
+      <td>灯条局部取色；固定曝光与白平衡，或用通道差</td>
+    </tr>
+    <tr>
+      <td>灯条过曝</td>
+      <td>阈值、面积与宽高比</td>
+      <td>降低曝光；保留灯条核心；形态学核不要过大</td>
+    </tr>
+    <tr>
+      <td>快速运动</td>
+      <td>边缘、轮廓与配对</td>
+      <td>提高快门；放宽长宽比；连续帧确认</td>
+    </tr>
+    <tr>
+      <td>背景反光与干扰</td>
+      <td>配对、状态机</td>
+      <td>限定 ROI；加几何与时间约束；核对候选数</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  按下面四项记录观察结果；检测程序由读者使用前面的流程自行完成。
+</p>
+
+<ol>
+  <li>在四个时刻各选一块装甲板，记录灯条颜色、板面数字与灯条的像素高度。</li>
+  <li>比较第 50 秒附近的环境光颜色与灯条颜色，说明整块板面的平均色会偏向哪一侧。</li>
+  <li>比较第 80 秒与第 105 秒的目标像素高度，判断当前面积下限与配对间距是否仍能覆盖两端。</li>
+  <li>选一个时刻，列出会先调整的三个参数，并说明先看哪一张中间图。</li>
+</ol>
+
+<p>
+  合成视频用于建立流程与核对坐标，实拍视频用于暴露边界。两者放在一起
+  看，才能区分算法错误与素材差异。调整参数时先固定一组实拍帧，记录
+  灯条候选数、配对候选数与状态变化，再回到整段视频验证；不要只凭一张
+  画面调参。
+</p>
+
+<h3 id="s9-6-4">检查清单</h3>
+
+<p>
+  <b>负宽高与空矩形。</b><code>Rect</code> 的宽高必须为正；轮廓包围盒
+  可能为零，除面积或宽高比之前先检查。ROI 越界要在取图前裁剪，不能
+  假设检测到的框一定落在图像内。
+</p>
+
+<p>
+  <b>除以零。</b>宽高比、填充率、长度比都要检查分母；灯条宽度为零、
+  两根灯条长度为零时，直接跳过该候选。浮点除零不会崩溃，但会得到
+  <code>inf</code> 或 <code>nan</code>，后续比较全部失效。
+</p>
+
+<p>
+  <b>无效点与坐标层。</b>透视变换的四个点顺序必须一致，点不能在图像
+  外；ROI 内坐标与全图坐标不能混用。画框、写日志、与真值比较时，统一
+  使用同一层坐标，并在变量名中注明 <code>local</code> 或
+  <code>full</code>。
+</p>
+
+<p>
+  <b>整数累加与时间同步。</b>面积、坐标用浮点累计，避免整数截断；视频
+  时间用帧号除以帧率，不要用处理耗时累加。丢帧时按时间戳计算间隔，
+  状态机的帧计数才不会随处理速度变化。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 9-6</div>
+  <p>
+    ROI 原点为 <code>(60,120)</code>，局部中心为
+    <code>(368.578,157.865)</code>，打印全图中心；同时打印
+    <code>min_area</code> 的默认值 <code>500</code>，保留三位小数。
+  </p>
+  <p>预期输出：</p>
+<pre class="out" data-label="预期输出">roi = (60, 120, 520, 300)
+local_center = (368.578, 157.865)
+full_center = (428.578, 277.865)
+min_area = 500.000</pre>
+  <details class="ans" data-run="示例代码/答案/9-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        全图坐标等于局部坐标加 ROI 原点：
+        <code>368.578+60=428.578</code>，
+        <code>157.865+120=277.865</code>。这类换算只涉及加法，但坐标层
+        混用后错误很难从画面看出，变量命名与日志要明确标注。
+      </p>
+<pre data-lang="C++" data-name="答案/9-6.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    const int roi_x = 60;
+    const int roi_y = 120;
+    const double local_x = 368.578;
+    const double local_y = 157.865;
+    const double full_x = local_x + roi_x;
+    const double full_y = local_y + roi_y;
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "roi = (60, 120, 520, 300)\n";
+    std::cout &lt;&lt; "local_center = (" &lt;&lt; local_x &lt;&lt; ", " &lt;&lt; local_y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "full_center = (" &lt;&lt; full_x &lt;&lt; ", " &lt;&lt; full_y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "min_area = 500.000\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">roi = (60, 120, 520, 300)
+local_center = (368.578, 157.865)
+full_center = (428.578, 277.865)
+min_area = 500.000</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>读取视频并约定中间图；用灰度或通道差、阈值与
+  形态学提取灯条；按面积、宽高比、填充率与倾角筛选；用几何约束配对并
+  计算分数；做四点透视矫正与 HSV 颜色判别；提取数字掩码并用模板匹配
+  给出类别与置信度；用连续帧计数维护候选、确认、丢失与重捕；分段计时、
+  集中参数并正确换算 ROI 坐标；读取视频属性并抽取对照帧，记录实拍画面
+  的边界条件。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="08-卡尔曼滤波与跟踪.html">← 第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <span class="spacer"></span>
+  <a href="10-检测题.html">第 10 部分 · 检测题 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

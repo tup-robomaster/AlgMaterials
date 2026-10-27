@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 部分 · 轮廓与形状 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a class="active" href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" aria-current="page" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 3 部分 · 轮廓与形状</div>
+  <a class="toc-l" href="#l3-1"><span class="n">3.1</span>轮廓提取：findContours</a>
+  <a class="toc-sub" href="#s3-1-1">从掩码到轮廓</a>
+  <a class="toc-sub" href="#s3-1-2">检索模式与层级</a>
+  <a class="toc-sub" href="#s3-1-3">完整例子：绿色掩码的外轮廓与孔洞</a>
+  <a class="toc-sub" href="#s3-1-4">绘制与输入错误</a>
+  <a class="toc-sub" href="#e3-1">例题：层级从哪来</a>
+  <a class="toc-l" href="#l3-2"><span class="n">3.2</span>面积、周长与外接矩形</a>
+  <a class="toc-sub" href="#s3-2-1">面积、周长与有向性</a>
+  <a class="toc-sub" href="#s3-2-2">外接矩形与填充率</a>
+  <a class="toc-sub" href="#s3-2-3">完整例子：面积与外接矩形筛选</a>
+  <a class="toc-sub" href="#s3-2-4">尺寸、分辨率与阈值换算</a>
+  <a class="toc-sub" href="#e3-2">例题：4×4 方块到底多大</a>
+  <a class="toc-l" href="#l3-3"><span class="n">3.3</span>旋转矩形、外接圆与多边形逼近</a>
+  <a class="toc-sub" href="#s3-3-1">minAreaRect 与 boxPoints</a>
+  <a class="toc-sub" href="#s3-3-2">外接圆与 approxPolyDP</a>
+  <a class="toc-sub" href="#s3-3-3">完整例子：色块的旋转矩形与顶点</a>
+  <a class="toc-sub" href="#s3-3-4">直角、边长比与判据</a>
+  <a class="toc-sub" href="#e3-3">例题：旋转 8×4 矩形</a>
+  <a class="toc-l" href="#l3-4"><span class="n">3.4</span>矩、重心与形状特征</a>
+  <a class="toc-sub" href="#s3-4-1">矩与重心</a>
+  <a class="toc-sub" href="#s3-4-2">圆形度、填充率与凸性</a>
+  <a class="toc-sub" href="#s3-4-3">完整例子：绿球的重心与圆形度</a>
+  <a class="toc-sub" href="#s3-4-4">哪些特征稳定</a>
+  <a class="toc-sub" href="#e3-4">例题：方块的矩</a>
+  <a class="toc-l" href="#l3-5"><span class="n">3.5</span>轮廓筛选与去重</a>
+  <a class="toc-sub" href="#s3-5-1">组合特征与阈值表</a>
+  <a class="toc-sub" href="#s3-5-2">排序、IoU 与非极大值抑制</a>
+  <a class="toc-sub" href="#s3-5-3">完整例子：四张图上的候选与去重</a>
+  <a class="toc-sub" href="#s3-5-4">调试顺序与参数维护</a>
+  <a class="toc-sub" href="#e3-5">例题：两个框的 IoU</a>
+  <a class="toc-l" href="#l3-6"><span class="n">3.6</span>距离变换、分水岭与漫水填充（选学）</a>
+  <a class="toc-sub" href="#s3-6-1">距离变换</a>
+  <a class="toc-sub" href="#s3-6-2">连通分量与分水岭</a>
+  <a class="toc-sub" href="#s3-6-3">完整例子：把接触的球分开</a>
+  <a class="toc-sub" href="#s3-6-4">漫水填充与适用边界</a>
+  <a class="toc-sub" href="#e3-6">例题：小方块的距离峰值</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 3 部分</div>
+  <h1>轮廓与形状</h1>
+  <p class="part-lead">
+    这一部分从二值掩码出发：先把目标边界提取成轮廓，再计算面积、周长、
+    外接矩形、旋转矩形、重心与圆形度，最后组合这些特征筛选候选并去重。
+    3.1–3.5 需要掌握，3.6 为选学。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l2-2 l2-3">
+  <b>读这一部分之前</b>
+  <p>
+    需要先读 <a href="01-图像与Mat.html#l1-1">1.1</a>、
+    <a href="01-图像与Mat.html#l1-2">1.2</a>、
+    <a href="01-图像与Mat.html#l1-3">1.3</a>，知道 <code>Mat</code> 的通道、
+    像素访问、ROI 与深浅拷贝；读
+    <a href="01-图像与Mat.html#l1-4">1.4</a> 与
+    <a href="01-图像与Mat.html#l1-5">1.5</a>，会做 HSV 转换、生成掩码并绘制标注；
+    还需要读 <a href="02-图像处理.html#l2-2">2.2</a> 与
+    <a href="02-图像处理.html#l2-3">2.3</a>，会从灰度图或 HSV 图得到二值掩码，
+    并会用开闭运算清理掩码。本部分默认这些步骤已经会写。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l3-1">
+<h2><span class="no">3.1</span>轮廓提取：findContours</h2>
+
+<p>
+  轮廓是二值掩码中前景区域边界的点序列。拿到轮廓以后，才能计算面积、
+  外接矩形、重心，或者把目标画出来交给后续步骤。本课只做一件事：
+  从干净的掩码得到轮廓，并读懂返回的层级关系。
+</p>
+
+<h3 id="s3-1-1">从掩码到轮廓</h3>
+
+<p>
+  <code>cv::findContours(image, contours, hierarchy, mode, method)</code>
+  的输入必须是 8 位单通道图：类型 <code>CV_8UC1</code>。彩色图
+  <code>CV_8UC3</code> 直接传入会触发断言，要先转灰度，或在 HSV 空间做
+  <code>inRange</code>。灰度图可以是阈值或边缘处理的结果，也可以是普通灰度图；
+  输入不是二值图时，函数仍可能运行，但按“零与非零”划分区域，
+  结果只反映非零区域，通常没有形状意义。非零像素视为前景，零像素视为背景。
+</p>
+
+<p>
+  旧版本会改变输入缓冲区的内容；OpenCV 4 的当前实现不修改调用者传入的
+  <code>Mat</code>，但接口没有承诺这一点。实际写法是传入
+  <code>mask.clone()</code>，这样后续还要用原掩码时，不依赖实现细节：
+</p>
+
+<pre data-lang="C++"><code>std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+std::vector&lt;cv::Vec4i&gt; hierarchy;
+cv::findContours(mask.clone(), contours, hierarchy,
+                 cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);</code></pre>
+
+<p>
+  <code>contours</code> 的每个元素是一条轮廓，元素类型是
+  <code>std::vector&lt;cv::Point&gt;</code>。轮廓点是边界像素的坐标，
+  单位是像素。轮廓默认按闭合折线处理，最后一个点与第一个点之间的边不重复存储。
+</p>
+
+<p>
+  <code>CHAIN_APPROX_SIMPLE</code> 会压缩水平、垂直与 45° 方向的连续点，
+  只保留转折点；<code>CHAIN_APPROX_NONE</code> 保存边界上的每一个点。
+  做面积、外接矩形与多边形逼近时，前者已经足够，数据量也小得多。
+  只有在需要逐点检查边界像素时，才用后者。
+</p>
+
+<h3 id="s3-1-2">检索模式与层级</h3>
+
+<p>
+  第三个参数决定返回哪些轮廓，以及层级怎样组织：
+</p>
+
+<table>
+  <thead>
+    <tr><th>模式</th><th>返回的轮廓</th><th>层级</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>RETR_EXTERNAL</code></td>
+      <td>只返回最外层轮廓</td>
+      <td>所有轮廓的父与子都是 -1，孔洞不单独返回</td>
+    </tr>
+    <tr>
+      <td><code>RETR_LIST</code></td>
+      <td>返回所有轮廓</td>
+      <td>不建立父子关系，层级项基本不用</td>
+    </tr>
+    <tr>
+      <td><code>RETR_CCOMP</code></td>
+      <td>返回所有轮廓</td>
+      <td>组织成两层：外边界与孔洞</td>
+    </tr>
+    <tr>
+      <td><code>RETR_TREE</code></td>
+      <td>返回所有轮廓</td>
+      <td>完整的树，任意层嵌套都能表示</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  <code>hierarchy</code> 与 <code>contours</code> 一一对应，每一项是四个整数
+  <code>[next, previous, first_child, parent]</code>。它们都是轮廓数组的下标，
+  没有对应项时写 -1。例如 <code>hierarchy[i][3]</code> 是第 i 条轮廓的父轮廓，
+  <code>hierarchy[i][2]</code> 是它的第一条子轮廓，<code>hierarchy[i][0]</code>
+  是同层的下一条轮廓。孔洞在树中表现为外轮廓的子轮廓。
+</p>
+
+<p>
+  选哪种模式由任务决定。只数目标个数、不关心目标内部是否有孔时，用
+  <code>RETR_EXTERNAL</code>；要区分外轮廓与孔洞，或者要按嵌套层级过滤时，
+  用 <code>RETR_TREE</code>。先选错模式，再在结果里找补，通常会把孔洞
+  当成额外目标，或者把外轮廓数错。
+</p>
+
+<h3 id="s3-1-3">完整例子：绿色掩码的外轮廓与孔洞</h3>
+
+<p>
+  下面的程序读取一张绿球图，用 HSV 范围得到绿色掩码，做 3×3 开运算去掉
+  零星噪点，然后分别用 <code>RETR_EXTERNAL</code> 与 <code>RETR_TREE</code>
+  提取轮廓。图像里有 20 个绿球，其中 7 个球带白色高光。高光不是绿色，
+  在掩码中是孔洞，因此树状轮廓比外轮廓多 7 条。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.1-contours.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_balls_3.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255), mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+    std::cout &lt;&lt; "mask nonzero=" &lt;&lt; cv::countNonZero(mask) &lt;&lt; '\n';
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; external;
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; tree;
+    std::vector&lt;cv::Vec4i&gt; external_hierarchy;
+    std::vector&lt;cv::Vec4i&gt; hierarchy;
+    cv::findContours(mask.clone(), external, external_hierarchy,
+                     cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(mask.clone(), tree, hierarchy, cv::RETR_TREE,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::cout &lt;&lt; "external contours=" &lt;&lt; external.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "tree contours=" &lt;&lt; tree.size() &lt;&lt; '\n';
+    for (std::size_t i = 0; i &lt; tree.size(); ++i) {
+        if (hierarchy[i][3] &gt;= 0) {
+            std::cout &lt;&lt; "nested i=" &lt;&lt; i &lt;&lt; " parent=" &lt;&lt; hierarchy[i][3]
+                      &lt;&lt; " first=(" &lt;&lt; tree[i].front().x &lt;&lt; ", "
+                      &lt;&lt; tree[i].front().y &lt;&lt; ")\n";
+        }
+    }
+
+    cv::Mat overlay = image.clone();
+    cv::drawContours(overlay, external, -1, cv::Scalar(0, 220, 0), 2);
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; holes;
+    for (std::size_t i = 0; i &lt; tree.size(); ++i) {
+        if (hierarchy[i][3] &gt;= 0) {
+            holes.push_back(tree[i]);
+        }
+    }
+    cv::drawContours(overlay, holes, -1, cv::Scalar(0, 0, 255), 2);
+
+    cv::Mat mask_color;
+    cv::cvtColor(mask, mask_color, cv::COLOR_GRAY2BGR);
+    const int cell_width = 380;
+    const int cell_height = 460;
+    cv::Mat panel(cell_height, 3 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    place(panel, image, 0, 0, cell_width, cell_height, "original");
+    place(panel, mask_color, cell_width, 0, cell_width, cell_height,
+          "green mask");
+    place(panel, overlay, 2 * cell_width, 0, cell_width, cell_height,
+          "external + holes");
+    const bool saved = cv::imwrite("out_contours.png", panel);
+    std::cout &lt;&lt; "saved out_contours.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.1-contours.cpp -o contours \
+    $(pkg-config --cflags --libs opencv4)
+./contours</code></pre>
+
+<pre class="out" data-label="真实输出">mask nonzero=102663
+external contours=20
+tree contours=27
+nested i=2 parent=1 first=(594, 829)
+nested i=6 parent=5 first=(84, 829)
+nested i=10 parent=9 first=(424, 589)
+nested i=14 parent=13 first=(764, 349)
+nested i=18 parent=17 first=(254, 349)
+nested i=22 parent=21 first=(594, 109)
+nested i=26 parent=25 first=(84, 109)
+saved out_contours.png: yes</pre>
+
+<p>
+  输出的 <code>mask nonzero=102663</code> 是掩码中非零像素数；
+  <code>external contours=20</code> 对应 20 个球的外边界；
+  <code>tree contours=27</code> 多出的 7 条就是白色高光形成的孔洞。
+  程序打印了每条孔洞的父轮廓下标与第一个点，用来核对层级：
+  同一个球的外轮廓是父，孔洞是子。红色干扰块不是绿色，没有进入掩码。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_contours.png" alt="轮廓提取结果：原图、绿色掩码，以及外轮廓与孔洞叠加图" width="1140" height="460">
+  <figcaption>
+    左图是原图；中图是 HSV 绿色掩码；右图把外轮廓画成绿色，
+    把孔洞画成红色。外轮廓包围整个球，孔洞只包围白色高光。
+  </figcaption>
+</figure>
+
+<h3 id="s3-1-4">绘制与输入错误</h3>
+
+<p>
+  <code>cv::drawContours(image, contours, contourIdx, color, thickness)</code>
+  把轮廓画到三通道图上。<code>contourIdx=-1</code> 表示画全部轮廓；
+  指定下标时只画那一条。<code>thickness</code> 为正数时画线，为负数时填充
+  轮廓内部。<code>color</code> 是 BGR 三元组。目标画布必须有三个通道，
+  把彩色线画到单通道掩码上不会得到彩色结果。
+</p>
+
+<p>
+  轮廓下标不是稳定标识。不同图像、不同检索模式下，同一条轮廓可能落在
+  不同下标；排序、去重与参数筛选都不要依赖固定下标。需要稳定顺序时，
+  按外接矩形的 x、y 或按面积排序，再处理。
+</p>
+
+<p>
+  常见的输入错误有三类。第一，把彩色图或灰度图直接传给
+  <code>findContours</code>，函数按非零值划分，结果没有形状意义。
+  第二，掩码极性反了：目标黑、背景白，得到的是背景的轮廓。
+  第三，把 <code>RETR_EXTERNAL</code> 的轮廓数当作全部轮廓数，
+  目标内部的孔洞被漏掉。遇到数量不对，先保存并查看掩码，再检查检索模式。
+</p>
+
+<div class="eg" id="e3-1">
+  <div class="eg-h">例题 · 层级从哪来</div>
+  <p>
+    题目：创建一个 16×16 的掩码，在 (2,2) 画一个 10×10 的白色方块，
+    在 (5,5) 挖一个 4×4 的黑色孔洞，再在 (13,13) 画一个独立的 2×2 白点。
+    分别用 <code>RETR_EXTERNAL</code> 与 <code>RETR_TREE</code> 提取轮廓，
+    打印两种模式的轮廓数，并打印树状模式下每条轮廓的 child 与 parent。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.1-eg-hierarchy.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(16, 16, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 10, 10), cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(5, 5, 4, 4), cv::Scalar(0), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(13, 13, 2, 2), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; external;
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; tree;
+    std::vector&lt;cv::Vec4i&gt; external_hierarchy;
+    std::vector&lt;cv::Vec4i&gt; hierarchy;
+    cv::findContours(mask.clone(), external, external_hierarchy,
+                     cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(mask.clone(), tree, hierarchy, cv::RETR_TREE,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::cout &lt;&lt; "external=" &lt;&lt; external.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "tree=" &lt;&lt; tree.size() &lt;&lt; '\n';
+    for (std::size_t i = 0; i &lt; tree.size(); ++i) {
+        std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " child=" &lt;&lt; hierarchy[i][2]
+                  &lt;&lt; " parent=" &lt;&lt; hierarchy[i][3] &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.1-eg-hierarchy.cpp -o eg_hierarchy \
+    $(pkg-config --cflags --libs opencv4)
+./eg_hierarchy</code></pre>
+  <pre class="out" data-label="真实输出">external=2
+tree=3
+i=0 child=-1 parent=-1
+i=1 child=2 parent=-1
+i=2 child=-1 parent=1</pre>
+  <p>
+    外轮廓只有两个：带孔的大方块与独立小点。树状模式多出孔洞这一条，
+    所以是三条。打印结果中下标 0 是小点，下标 1 是大方块，下标 2 是孔洞；
+    下标 2 的 parent 是 1，说明孔洞挂在大方块下面。独立小点没有父轮廓，
+    parent 为 -1。轮廓下标本身没有语义，这里只是为了看清层级关系。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-1</div>
+  <p>
+    创建一个 18×18 的掩码：在 (2,2) 画 8×8 白方块，在 (4,4) 挖 4×4
+    黑洞；再在 (13,2)、(2,13)、(12,12) 各画一个 4×4 白方块。
+    用 <code>RETR_EXTERNAL</code> 与 <code>RETR_TREE</code> 提取轮廓，
+    打印外轮廓数、树状轮廓数，以及 parent 不为 -1 的轮廓数。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">external=4
+tree=5
+nested=1</pre>
+  <details class="ans" data-run="示例代码/答案/3-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        四个独立的白区域给出四条外轮廓；大方形内部的黑洞只出现在树状模式中，
+        所以树状轮廓是五条、嵌套轮廓是一条。三个小方块与大方块之间至少隔一个
+        像素，8 邻域下不会连成一片。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-1.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(18, 18, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 8, 8), cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(4, 4, 4, 4), cv::Scalar(0), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(13, 2, 4, 4), cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(2, 13, 4, 4), cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(12, 12, 4, 4), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; external;
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; tree;
+    std::vector&lt;cv::Vec4i&gt; hierarchy;
+    cv::findContours(mask.clone(), external, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(mask.clone(), tree, hierarchy, cv::RETR_TREE,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    int nested = 0;
+    for (const cv::Vec4i&amp; item : hierarchy) {
+        if (item[3] &gt;= 0) {
+            ++nested;
+        }
+    }
+    std::cout &lt;&lt; "external=" &lt;&lt; external.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "tree=" &lt;&lt; tree.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "nested=" &lt;&lt; nested &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">external=4
+tree=5
+nested=1</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>把彩色图或灰度图先变成 8 位单通道掩码，再传入
+  <code>findContours</code>；在 <code>RETR_EXTERNAL</code> 与
+  <code>RETR_TREE</code> 之间按任务选择；读懂 hierarchy 的 next、previous、
+  first_child、parent；用 <code>drawContours</code> 把外轮廓与孔洞分别画出。
+</p>
+</section>
+
+<section class="lesson" id="l3-2">
+<h2><span class="no">3.2</span>面积、周长与外接矩形</h2>
+
+<p>
+  轮廓提取之后，最先要回答的是“这块区域多大、在哪里”。本课讲三个基础量：
+  轮廓面积、轮廓周长、轴对齐外接矩形。它们计算简单，但对像素边界、
+  分辨率和目标旋转都很敏感，参数不能脱离图像尺寸直接照搬。
+</p>
+
+<h3 id="s3-2-1">面积、周长与有向性</h3>
+
+<p>
+  <code>cv::contourArea(contour)</code> 按轮廓点围成的多边形计算面积，
+  默认返回绝对值（<code>oriented=false</code>）。需要判断轮廓方向时，
+  调用 <code>contourArea(contour, true)</code>；此时返回有向面积，
+  符号由点的排列方向决定，顺时针与逆时针得到相反的正负号。
+  面积单位是像素²。
+</p>
+
+<p>
+  面积按多边形顶点计算，不按掩码里的白色像素个数计算。一个 4×4 的实心方块，
+  白色像素有 16 个，但轮廓点位于像素中心，四个角点围成的多边形只跨 3×3 个
+  像素间距，面积是 9。这个差别在目标很小时最明显；目标变大后，相对误差会下降，
+  但不会消失。需要精确的像素计数时，用 <code>countNonZero</code> 统计掩码，
+  不要拿轮廓面积代替。
+</p>
+
+<p>
+  <code>cv::arcLength(contour, closed)</code> 计算折线长度。
+  <code>closed=true</code> 时把最后一个点回到第一个点的边也算进去；
+  闭合轮廓要传 <code>true</code>。长度单位是像素。轮廓点越密，
+  折线越接近真实边界；<code>CHAIN_APPROX_SIMPLE</code> 只保留转折点，
+  对规则形状的周长影响不大，但在斜边上会少算一些细节。
+</p>
+
+<p>
+  面积与周长常一起用：圆形度 <code>4πA/P²</code> 就是两者的组合。
+  单独看面积只能筛大小，单独看周长只能筛边界长度；两者一起，
+  才能把细长目标与近似圆形目标区分开。
+</p>
+
+<h3 id="s3-2-2">外接矩形与填充率</h3>
+
+<p>
+  <code>cv::boundingRect(contour)</code> 返回
+  <code>cv::Rect(x, y, width, height)</code>，是包含整条轮廓的轴对齐矩形。
+  它的边平行于图像的 x、y 轴，不随目标旋转。目标倾斜时，矩形会明显大于目标本身。
+  矩形的面积是 <code>width*height</code>，不要把它当作轮廓面积。
+</p>
+
+<p>
+  轮廓面积与矩形面积之比称为填充率：
+  <code>extent = area / (width*height)</code>。轴对齐的实心矩形接近 1；
+  圆形接近 π/4≈0.785；细长目标、倾斜目标与凹形目标的填充率更低。
+  填充率可以用来排除“矩形框很大、实际目标很细”的候选，
+  但它同样受像素离散化影响，阈值要按实际图像标定。
+</p>
+
+<p>
+  矩形的位置与宽高适合直接用于裁剪、画框与排序。需要按目标真实朝向画框时，
+  用下一课的 <code>minAreaRect</code>；本节只处理轴对齐框。
+</p>
+
+<h3 id="s3-2-3">完整例子：面积与外接矩形筛选</h3>
+
+<p>
+  程序读取第一张绿球图，得到绿色掩码，提取外轮廓。每个球半径约 42 像素，
+  轮廓面积约 5600 像素²。程序保留面积在 1500 到 8000 之间、宽高比在
+  0.75 到 1.35 之间的轮廓，并打印面积、周长、外接矩形与填充率。
+  图中的红色干扰块在掩码阶段已经被排除，白色球也不是绿色，因此不会进入轮廓表。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.2-measure.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_balls_1.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255), mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    int kept = 0;
+    cv::Mat marked = image.clone();
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    for (std::size_t i = 0; i &lt; contours.size(); ++i) {
+        const double area = cv::contourArea(contours[i]);
+        const double perimeter = cv::arcLength(contours[i], true);
+        const cv::Rect box = cv::boundingRect(contours[i]);
+        const double aspect =
+            static_cast&lt;double&gt;(box.width) / std::max(1, box.height);
+        if (area &lt; 1500.0 || area &gt; 8000.0 || aspect &lt; 0.75 || aspect &gt; 1.35) {
+            continue;
+        }
+        const double extent =
+            area / static_cast&lt;double&gt;(std::max(1, box.width * box.height));
+        std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " area=" &lt;&lt; area
+                  &lt;&lt; " perim=" &lt;&lt; perimeter &lt;&lt; " box=(" &lt;&lt; box.x &lt;&lt; ", "
+                  &lt;&lt; box.y &lt;&lt; ", " &lt;&lt; box.width &lt;&lt; ", " &lt;&lt; box.height
+                  &lt;&lt; ") extent=" &lt;&lt; extent &lt;&lt; '\n';
+        cv::rectangle(marked, box, cv::Scalar(0, 0, 255), 2);
+        ++kept;
+    }
+    std::cout &lt;&lt; "kept=" &lt;&lt; kept &lt;&lt; " of " &lt;&lt; contours.size() &lt;&lt; '\n';
+
+    const int cell_width = 430;
+    const int cell_height = 500;
+    cv::Mat panel(cell_height, 2 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    place(panel, image, 0, 0, cell_width, cell_height, "original");
+    place(panel, marked, cell_width, 0, cell_width, cell_height,
+          "area + aspect filter");
+    const bool saved = cv::imwrite("out_measure.png", panel);
+    std::cout &lt;&lt; "saved out_measure.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.2-measure.cpp -o measure \
+    $(pkg-config --cflags --libs opencv4)
+./measure</code></pre>
+
+<pre class="out" data-label="真实输出">i=0 area=5628.000 perim=279.764 box=(758, 758, 85, 85) extent=0.779
+i=1 area=5624.000 perim=279.764 box=(618, 758, 85, 85) extent=0.778
+i=2 area=5632.000 perim=279.764 box=(478, 758, 85, 85) extent=0.780
+i=3 area=5632.000 perim=279.764 box=(338, 758, 85, 85) extent=0.780
+i=4 area=5628.000 perim=279.764 box=(198, 758, 85, 85) extent=0.779
+i=5 area=5632.000 perim=279.764 box=(58, 758, 85, 85) extent=0.780
+i=6 area=5624.000 perim=279.764 box=(758, 428, 85, 85) extent=0.778
+i=7 area=5628.000 perim=279.764 box=(618, 428, 85, 85) extent=0.779
+i=8 area=5628.000 perim=279.764 box=(478, 428, 85, 85) extent=0.779
+i=9 area=5628.000 perim=279.764 box=(338, 428, 85, 85) extent=0.779
+i=10 area=5632.000 perim=279.764 box=(198, 428, 85, 85) extent=0.780
+i=11 area=5632.000 perim=279.764 box=(58, 428, 85, 85) extent=0.780
+i=12 area=5624.000 perim=279.764 box=(758, 98, 85, 85) extent=0.778
+i=13 area=5630.000 perim=279.764 box=(618, 98, 85, 85) extent=0.779
+i=14 area=5624.000 perim=279.764 box=(478, 98, 85, 85) extent=0.778
+i=15 area=5632.000 perim=279.764 box=(338, 98, 85, 85) extent=0.780
+i=16 area=5630.000 perim=279.764 box=(198, 98, 85, 85) extent=0.779
+i=17 area=5632.000 perim=279.764 box=(58, 98, 85, 85) extent=0.780
+kept=18 of 18
+saved out_measure.png: yes</pre>
+
+<p>
+  18 条轮廓全部通过筛选。面积在 5624 到 5632 之间，外接矩形都是 85×85，
+  填充率约 0.78，接近圆的 π/4。周长 279.764 是按折线累加得到的，
+  比连续圆的 2πr 略大，这是栅格边界带来的误差。外接矩形尺寸相同，
+  说明这些球的半径一致，筛选条件没有误删。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_measure.png" alt="面积与外接矩形筛选：原图与画上红色矩形框的结果" width="860" height="500">
+  <figcaption>
+    左图是原图；右图给每个通过面积与宽高比筛选的轮廓画轴对齐红框。
+    红块与白球没有框，因为它们不在绿色掩码中。
+  </figcaption>
+</figure>
+
+<h3 id="s3-2-4">尺寸、分辨率与阈值换算</h3>
+
+<p>
+  面积随图像尺寸的平方变化，周长随尺寸线性变化。同一目标在 1280×720 与
+  640×360 两张图中，面积会相差约 4 倍，周长相差约 2 倍。把某一分辨率下调好的
+  面积阈值直接搬到另一分辨率，筛选结果一定改变。
+</p>
+
+<p>
+  可靠的写法是先确定目标的物理尺寸或像素直径，再按比例换算阈值。
+  例如已知球在图中直径约 84 像素，面积下限取
+  <code>0.3 × π × 42²</code>，上限取 <code>1.5 × π × 42²</code>，
+  比直接写 1500 与 8000 更容易解释。若相机距离会变化，应把面积阈值与
+  外接矩形尺寸绑定，或者先做尺度归一化。
+</p>
+
+<p>
+  宽高比也受旋转影响：轴对齐外接矩形对 45° 的目标会给出接近 1 的宽高比，
+  对细长目标则接近短边/长边。用宽高比筛选时，要确认目标在图像中的朝向范围；
+  朝向不固定时，改用旋转矩形或面积与周长的组合。
+</p>
+
+<div class="eg" id="e3-2">
+  <div class="eg-h">例题 · 4×4 方块到底多大</div>
+  <p>
+    题目：创建一个 12×12 的掩码，在 (2,2) 画一个 4×4 的实心白方块。
+    提取外轮廓，打印掩码非零像素数、轮廓面积、闭合周长、外接矩形与填充率。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.2-eg-area.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(12, 12, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 4, 4), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const double area = cv::contourArea(contours.front());
+    const double perimeter = cv::arcLength(contours.front(), true);
+    const cv::Rect box = cv::boundingRect(contours.front());
+    const double extent = area / static_cast&lt;double&gt;(box.width * box.height);
+
+    std::cout &lt;&lt; "pixels=" &lt;&lt; cv::countNonZero(mask) &lt;&lt; '\n';
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "area=" &lt;&lt; area &lt;&lt; " perimeter=" &lt;&lt; perimeter &lt;&lt; '\n';
+    std::cout &lt;&lt; "box=(" &lt;&lt; box.x &lt;&lt; ", " &lt;&lt; box.y &lt;&lt; ", " &lt;&lt; box.width
+              &lt;&lt; ", " &lt;&lt; box.height &lt;&lt; ") extent=" &lt;&lt; extent &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.2-eg-area.cpp -o eg_area \
+    $(pkg-config --cflags --libs opencv4)
+./eg_area</code></pre>
+  <pre class="out" data-label="真实输出">pixels=16
+area=9.000 perimeter=12.000
+box=(2, 2, 4, 4) extent=0.562</pre>
+  <p>
+    非零像素是 16，轮廓面积却是 9。原因不是算错：轮廓的四个角点位于像素中心，
+    横向与纵向各跨 3 个像素间距，围成的多边形是 3×3。闭合周长同样是
+    <code>2×(3+3)=12</code>，不是按 16 个像素的外轮廓逐边计数得到的值。
+    填充率 0.562 也因此低于 1。目标越小，这种离散化差异占比越大；
+    做小目标筛选时，直接用掩码像素数往往更可靠。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-2</div>
+  <p>
+    创建一个 12×12 的掩码，在 (2,2) 画一个 6×2 的实心白方块。
+    提取外轮廓，按顺序打印非零像素数、轮廓面积、闭合周长、
+    外接矩形的 x、y、宽、高，以及填充率。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">pixels=12
+area=5.000 perimeter=12.000
+box=(2, 2, 6, 2)
+extent=0.417</pre>
+  <details class="ans" data-run="示例代码/答案/3-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        6×2 个像素共有 12 个非零值；轮廓点横向跨 5 个间距、纵向跨 1 个间距，
+        多边形面积是 5，闭合周长是 <code>2×(5+1)=12</code>。
+        外接矩形仍是 6×2，填充率为 5/12≈0.417。这个例子说明，
+        小目标的轮廓面积可以明显小于像素个数，阈值不能按像素个数直接写。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-2.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(12, 12, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 6, 2), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const double area = cv::contourArea(contours.front());
+    const double perimeter = cv::arcLength(contours.front(), true);
+    const cv::Rect box = cv::boundingRect(contours.front());
+
+    std::cout &lt;&lt; "pixels=" &lt;&lt; cv::countNonZero(mask) &lt;&lt; '\n';
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "area=" &lt;&lt; area &lt;&lt; " perimeter=" &lt;&lt; perimeter &lt;&lt; '\n';
+    std::cout &lt;&lt; "box=(" &lt;&lt; box.x &lt;&lt; ", " &lt;&lt; box.y &lt;&lt; ", " &lt;&lt; box.width
+              &lt;&lt; ", " &lt;&lt; box.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "extent="
+              &lt;&lt; area / static_cast&lt;double&gt;(box.width * box.height) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">pixels=12
+area=5.000 perimeter=12.000
+box=(2, 2, 6, 2)
+extent=0.417</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>contourArea</code> 与
+  <code>arcLength</code> 计算轮廓面积和闭合周长；用 <code>boundingRect</code>
+  得到轴对齐框并按面积、宽高比筛选；计算填充率并解释它为什么不是 1；
+  把像素阈值按分辨率换算，而不是在不同图像之间直接照搬。
+</p>
+</section>
+
+<section class="lesson" id="l3-3">
+<h2><span class="no">3.3</span>旋转矩形、外接圆与多边形逼近</h2>
+
+<p>
+  轴对齐矩形无法表示目标的朝向。本课用三个工具描述形状：最小面积旋转矩形
+  <code>minAreaRect</code>、最小外接圆 <code>minEnclosingCircle</code>、
+  多边形逼近 <code>approxPolyDP</code>。它们分别回答“目标朝哪、外接圆多大、
+  能不能用几条边代表”。
+</p>
+
+<h3 id="s3-3-1">minAreaRect 与 boxPoints</h3>
+
+<p>
+  <code>cv::minAreaRect(contour)</code> 返回 <code>cv::RotatedRect</code>，
+  包含中心 <code>center</code>、尺寸 <code>size</code> 与角度 <code>angle</code>。
+  它寻找面积最小的旋转矩形，不要求边平行于图像轴。尺寸的两个分量分别对应
+  矩形的两条边，但不保证第一个分量是长边；需要长短边时自己比较大小。
+</p>
+
+<p>
+  角度范围随 OpenCV 版本变化：OpenCV 4.9 的常见输出是 [0°, 90°]，
+  轴对齐的矩形会出现 90°；旧版本可能是 [-90°, 0°]。
+  不要假设角度一定落在某个开区间，也不要用角度直接判断“顺时针 30°”；
+  先确认当前版本的行为，再把角度归一化到自己的表示。跨版本复用代码时，
+  这一点尤其容易出错。
+</p>
+
+<p>
+  <code>cv::boxPoints(rect, points)</code> 把旋转矩形的四个角写入
+  <code>std::vector&lt;cv::Point2f&gt;</code> 或定长数组。点的顺序不保证
+  从左上角开始，也不保证顺时针。需要按固定顺序使用时，先按 y 再按 x 排序，
+  或者用中心点计算每个角的角度后排序。透视变换、四边形配对都依赖点序，
+  不能拿到四个点就直接代入。
+</p>
+
+<h3 id="s3-3-2">外接圆与 approxPolyDP</h3>
+
+<p>
+  <code>cv::minEnclosingCircle(contour, center, radius)</code> 返回能包住
+  整条轮廓的最小圆。圆心是 <code>cv::Point2f</code>，半径是
+  <code>float</code>。它适合圆形目标的粗略定位与尺寸估计，不适合判断形状：
+  正方形、三角形也都有外接圆。
+</p>
+
+<p>
+  <code>cv::approxPolyDP(contour, approx, epsilon, closed)</code> 用
+  Douglas–Peucker 算法把轮廓简化成折线。<code>epsilon</code> 是允许的
+  最大偏差，单位是像素；<code>closed=true</code> 表示轮廓闭合。
+  epsilon 越大，保留的顶点越少；epsilon 过大时，相邻的边会被合并，
+  正方形可能退化成三角形，圆形可能退化成很少的边。
+</p>
+
+<p>
+  epsilon 常按周长取比例，例如 <code>0.02 * arcLength(contour, true)</code>。
+  比例没有通用最优值：目标边界越不规则，epsilon 应越小；只想判断
+  “是不是四边形”时，可以适当放大，但要用一组真实样本检查顶点数分布。
+  逼近后的顶点顺序沿原轮廓方向，闭合标志要与后续的边、角计算保持一致。
+</p>
+
+<h3 id="s3-3-3">完整例子：色块的旋转矩形与顶点</h3>
+
+<p>
+  程序读取一张包含正方形、长方形与圆的合成图，用灰度阈值得到前景掩码，
+  提取 9 条外轮廓。对每条轮廓计算最小面积旋转矩形、按周长 3% 做多边形逼近，
+  统计逼近后的顶点数与直角数，并用顶点数为 4、长短边比不超过 1.12、
+  直角数为 4 判断正方形。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.3-shapes.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+double side_ratio(const cv::RotatedRect&amp; rect) {
+    const double long_side = std::max(rect.size.width, rect.size.height);
+    const double short_side = std::max(1.0, std::min(
+        static_cast&lt;double&gt;(rect.size.width),
+        static_cast&lt;double&gt;(rect.size.height)));
+    return long_side / short_side;
+}
+
+int count_right_angles(const std::vector&lt;cv::Point&gt;&amp; polygon) {
+    int count = 0;
+    const std::size_t n = polygon.size();
+    for (std::size_t i = 0; i &lt; n; ++i) {
+        const cv::Point2d before(polygon[(i + n - 1) % n] - polygon[i]);
+        const cv::Point2d after(polygon[(i + 1) % n] - polygon[i]);
+        const double length = std::max(1e-6,
+                                       std::sqrt(before.dot(before)) *
+                                       std::sqrt(after.dot(after)));
+        if (std::abs(before.dot(after)) / length &lt; 0.15) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_blocks.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::Mat mask;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    cv::threshold(gray, mask, 160, 255, cv::THRESH_BINARY_INV);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    cv::Mat marked_rect = image.clone();
+    cv::Mat marked_poly = image.clone();
+    int squares = 0;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    for (std::size_t i = 0; i &lt; contours.size(); ++i) {
+        const cv::RotatedRect rect = cv::minAreaRect(contours[i]);
+        const double perimeter = cv::arcLength(contours[i], true);
+        std::vector&lt;cv::Point&gt; polygon;
+        cv::approxPolyDP(contours[i], polygon, 0.03 * perimeter, true);
+        const int right_angles = count_right_angles(polygon);
+        const bool square = polygon.size() == 4 &amp;&amp; side_ratio(rect) &lt;= 1.12
+                            &amp;&amp; right_angles == 4;
+        if (square) {
+            ++squares;
+        }
+        std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " center=(" &lt;&lt; rect.center.x &lt;&lt; ", "
+                  &lt;&lt; rect.center.y &lt;&lt; ") size=" &lt;&lt; rect.size.width &lt;&lt; "x"
+                  &lt;&lt; rect.size.height &lt;&lt; " angle=" &lt;&lt; rect.angle
+                  &lt;&lt; " approx=" &lt;&lt; polygon.size()
+                  &lt;&lt; " right=" &lt;&lt; right_angles
+                  &lt;&lt; " square=" &lt;&lt; (square ? "yes" : "no") &lt;&lt; '\n';
+
+        cv::Point2f corners[4];
+        rect.points(corners);
+        for (int k = 0; k &lt; 4; ++k) {
+            cv::line(marked_rect, corners[k], corners[(k + 1) % 4],
+                     cv::Scalar(0, 200, 0), 2);
+        }
+        std::vector&lt;std::vector&lt;cv::Point&gt;&gt; one{polygon};
+        cv::drawContours(marked_poly, one, -1, cv::Scalar(0, 0, 255), 2);
+        for (cv::Mat* canvas : {&amp;marked_rect, &amp;marked_poly}) {
+            cv::putText(*canvas, std::to_string(i),
+                        cv::Point(cvRound(rect.center.x) - 8,
+                                  cvRound(rect.center.y) + 8),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.65,
+                        cv::Scalar(255, 255, 255), 2, cv::LINE_AA);
+        }
+    }
+    std::cout &lt;&lt; "squares=" &lt;&lt; squares &lt;&lt; " of " &lt;&lt; contours.size() &lt;&lt; '\n';
+
+    cv::Mat panel(image.rows + 40, 2 * image.cols, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    marked_rect.copyTo(panel(cv::Rect(0, 40, image.cols, image.rows)));
+    marked_poly.copyTo(
+        panel(cv::Rect(image.cols, 40, image.cols, image.rows)));
+    cv::putText(panel, "minAreaRect", cv::Point(12, 27),
+                cv::FONT_HERSHEY_SIMPLEX, 0.65, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+    cv::putText(panel, "approxPolyDP (4 squares)",
+                cv::Point(image.cols + 12, 27), cv::FONT_HERSHEY_SIMPLEX,
+                0.65, cv::Scalar(30, 30, 30), 1, cv::LINE_AA);
+    const bool saved = cv::imwrite("out_shapes.png", panel);
+    std::cout &lt;&lt; "saved out_shapes.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.3-shapes.cpp -o shapes \
+    $(pkg-config --cflags --libs opencv4)
+./shapes</code></pre>
+
+<pre class="out" data-label="真实输出">i=0 center=(160.00, 600.00) size=110.00x110.00 angle=90.00 approx=8 right=0 square=no
+i=1 center=(430.00, 600.00) size=60.89x131.42 angle=35.27 approx=4 right=4 square=no
+i=2 center=(700.00, 600.00) size=162.02x90.84 angle=79.94 approx=4 right=4 square=no
+i=3 center=(720.00, 400.00) size=141.46x82.00 angle=69.90 approx=4 right=4 square=no
+i=4 center=(200.00, 380.00) size=94.75x94.75 angle=45.00 approx=4 right=4 square=yes
+i=5 center=(450.00, 380.00) size=70.51x151.70 angle=9.96 approx=4 right=4 square=no
+i=6 center=(140.00, 140.00) size=90.00x90.00 angle=90.00 approx=4 right=4 square=yes
+i=7 center=(650.00, 150.00) size=86.40x86.40 angle=29.58 approx=4 right=4 square=yes
+i=8 center=(380.00, 140.00) size=100.83x100.83 angle=15.15 approx=4 right=4 square=yes
+squares=4 of 9
+saved out_shapes.png: yes</pre>
+
+<p>
+  9 条轮廓里有 4 个正方形：下标 4、6、7、8。下标 0 是圆，最小外接旋转矩形
+  是 110×110，长短边比等于 1，但逼近后有 8 个顶点，不满足“四边形”条件，
+  因此没有被判成正方形。这说明只看向外接矩形的边长比不够，还要同时检查
+  顶点数与直角数。其余长方形都是 4 个顶点、4 个直角，但长短边比超过 1.12。
+</p>
+
+<p>
+  角度列中，轴对齐的方形显示 90.00°，倾斜方形显示 45.00°、29.58°、
+  15.15°。这些数值与 OpenCV 当前版本的 <code>RotatedRect</code> 约定有关，
+  不适合直接当作目标的物理角度；若要比较朝向，先把尺寸分量与角度一起归一化，
+  或者用四个角点计算边长与方向向量。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_shapes.png" alt="形状分析结果：左图最小面积旋转矩形，右图多边形逼近结果" width="1800" height="740">
+  <figcaption>
+    左图给每个色块画最小面积旋转矩形，右图画多边形逼近后的折线。
+    两条结果都标了轮廓下标；圆在右图中保留 8 个顶点，方形与长方形保留 4 个。
+  </figcaption>
+</figure>
+
+<h3 id="s3-3-4">直角、边长比与判据</h3>
+
+<p>
+  两条边是否垂直，用相邻边向量的点积判断。设顶点为 A、B、C，向量
+  <code>u=A-B</code>、<code>v=C-B</code>，夹角余弦为
+  <code>u·v/(|u||v|)</code>；绝对值小于 0.15 时，夹角约在 81° 到 99° 之间，
+  可以视为直角。阈值放宽会接受更多倾斜形状，收紧会漏掉被栅格化削角的方形。
+</p>
+
+<p>
+  边长比用旋转矩形的长边除以短边。正方形判据通常写成
+  “顶点数为 4、边长比接近 1、直角数为 4”。三个条件缺一不可：
+  圆的外接矩形边长比为 1，但没有 4 个顶点；长方形的顶点数与直角数都满足，
+  边长比不满足；被遮挡的方形可能只剩 4 个顶点但边长比偏离。
+</p>
+
+<p>
+  遮挡、透视与噪声都会改变顶点数与边长比。透视下，正方形的边不再等长，
+  直角也会变成锐角或钝角；此时应先用单应性矫正，再做形状判断。
+  参数要在包含遮挡与倾斜的样本上检查，不能只看一张正对相机的图。
+</p>
+
+<div class="eg" id="e3-3">
+  <div class="eg-h">例题 · 旋转 8×4 矩形</div>
+  <p>
+    题目：创建一个 20×20 的掩码，以 (10,10) 为中心、8×4 大小、旋转 30°
+    画一个实心矩形。提取外轮廓，计算最小面积旋转矩形，按长短边排序后
+    打印中心与尺寸；再用周长 2% 的 epsilon 做多边形逼近，打印顶点数。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.3-eg-minrect.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(20, 20, CV_8UC1);
+    const cv::RotatedRect source(cv::Point2f(10.0F, 10.0F),
+                                 cv::Size2f(8.0F, 4.0F), 30.0F);
+    cv::Point2f points[4];
+    source.points(points);
+    std::vector&lt;cv::Point&gt; polygon;
+    for (const cv::Point2f&amp; point : points) {
+        polygon.emplace_back(cvRound(point.x), cvRound(point.y));
+    }
+    cv::fillConvexPoly(mask, polygon, cv::Scalar(255), cv::LINE_8);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const cv::RotatedRect rect = cv::minAreaRect(contours.front());
+    const double long_side = std::max(rect.size.width, rect.size.height);
+    const double short_side = std::min(rect.size.width, rect.size.height);
+    const double perimeter = cv::arcLength(contours.front(), true);
+    std::vector&lt;cv::Point&gt; approx;
+    cv::approxPolyDP(contours.front(), approx, 0.02 * perimeter, true);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; "center=(" &lt;&lt; rect.center.x &lt;&lt; ", " &lt;&lt; rect.center.y
+              &lt;&lt; ") size=" &lt;&lt; long_side &lt;&lt; "x" &lt;&lt; short_side &lt;&lt; '\n';
+    std::cout &lt;&lt; "approx=" &lt;&lt; approx.size() &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.3-eg-minrect.cpp -o eg_minrect \
+    $(pkg-config --cflags --libs opencv4)
+./eg_minrect</code></pre>
+  <pre class="out" data-label="真实输出">center=(10.00, 10.00) size=8.32x4.99
+approx=4</pre>
+  <p>
+    旋转矩形回到 8.32×4.99，中心仍是 (10.00, 10.00)，逼近后保留 4 个顶点。
+    尺寸比原始的 8×4 略大，是因为绘制时四个角点被四舍五入到整数像素，
+    边界再按像素栅格化；最小外接矩形只能包住这些像素，不能恢复到连续坐标。
+    角度没有打印，因为不同版本的 <code>RotatedRect</code> 对角度的定义不同，
+    这里只需要尺寸与中心。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-3</div>
+  <p>
+    创建一个 18×18 的掩码，在 (3,3) 画一个 10×4 的实心白矩形。
+    提取外轮廓，计算最小面积旋转矩形，按长短边排序后打印中心与尺寸；
+    再用周长 2% 的 epsilon 做多边形逼近，打印顶点数。运行前先估计：
+    轮廓点位于像素中心，尺寸会比 10×4 小多少？
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">center=(7.50, 4.50) size=9.00x3.00
+approx=4</pre>
+  <details class="ans" data-run="示例代码/答案/3-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        10×4 个像素的轮廓点横向跨 9 个间距、纵向跨 3 个间距，
+        所以最小外接矩形是 9×3，中心在 (7.5, 4.5)。逼近后是 4 个顶点。
+        如果按 10×4 写死阈值，边界像素的离散化会带来约一个像素的系统偏差。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-3.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(18, 18, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(3, 3, 10, 4), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const cv::RotatedRect rect = cv::minAreaRect(contours.front());
+    const double long_side = std::max(rect.size.width, rect.size.height);
+    const double short_side = std::min(rect.size.width, rect.size.height);
+    const double perimeter = cv::arcLength(contours.front(), true);
+    std::vector&lt;cv::Point&gt; approx;
+    cv::approxPolyDP(contours.front(), approx, 0.02 * perimeter, true);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; "center=(" &lt;&lt; rect.center.x &lt;&lt; ", " &lt;&lt; rect.center.y
+              &lt;&lt; ") size=" &lt;&lt; long_side &lt;&lt; "x" &lt;&lt; short_side &lt;&lt; '\n';
+    std::cout &lt;&lt; "approx=" &lt;&lt; approx.size() &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">center=(7.50, 4.50) size=9.00x3.00
+approx=4</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>minAreaRect</code> 得到旋转矩形的中心、
+  尺寸与角度，用 <code>boxPoints</code> 取四个角；用
+  <code>minEnclosingCircle</code> 估计圆形目标的位置与半径；用
+  <code>approxPolyDP</code> 控制顶点数；用边长比、顶点数与点积判断正方形与直角，
+  并说明角度约定与遮挡对判据的影响。
+</p>
+</section>
+
+<section class="lesson" id="l3-4">
+<h2><span class="no">3.4</span>矩、重心与形状特征</h2>
+
+<p>
+  面积与矩形描述目标的尺度，矩与重心描述目标的位置和质量分布。
+  本课从轮廓矩计算重心，再用面积与周长组合出圆形度，最后用这些特征
+  把圆形目标与非圆形目标分开。
+</p>
+
+<h3 id="s3-4-1">矩与重心</h3>
+
+<p>
+  <code>cv::moments(contour)</code> 返回轮廓的矩。<code>m00</code> 是零阶矩，
+  对二值轮廓来说等于轮廓面积；<code>m10</code> 与 <code>m01</code> 是一阶矩。
+  重心坐标由
+  <code>cx = m10/m00</code>、<code>cy = m01/m00</code> 得到。
+  重心是轮廓点的面积加权中心，不是外接矩形的中心。
+</p>
+
+<p>
+  <code>m00</code> 为 0 时不能做除法。空轮廓、只有一个点的轮廓、
+  退化成一条线的轮廓都可能出现这种情况。计算重心前先检查
+  <code>m00 &gt; 0</code>，否则跳过该轮廓。
+</p>
+
+<p>
+  重心适合做目标定位与轨迹输入。它对轮廓边界的小缺口不敏感，
+  但会受遮挡影响而偏移：目标被挡住一部分时，剩下的可见区域重心会偏离真实中心。
+  需要更稳健的中心时，可以结合外接矩形中心、拟合圆圆心或上一帧的预测位置。
+</p>
+
+<h3 id="s3-4-2">圆形度、填充率与凸性</h3>
+
+<p>
+  圆形度定义为 <code>4πA/P²</code>。理想圆的值为 1；正方形约为 0.785；
+  细长目标显著小于 1。实际图像中，栅格边界让周长偏大，圆的圆形度通常低于 1。
+  本课的球半径约 42 像素，圆形度约 0.904；目标越小，偏离 1 越多。
+  因此阈值不能写成“0.95 以上才算圆”，要按分辨率和目标尺寸标定。
+</p>
+
+<p>
+  填充率 <code>A/(w·h)</code> 使用轴对齐外接矩形，圆形约为 0.785，
+  方形接近 1，细长或倾斜目标更低。它与圆形度互补：圆形度看边界是否接近圆，
+  填充率看目标占矩形框的比例。两者都低时，目标通常既不是圆也不是正放的矩形。
+</p>
+
+<p>
+  凸性用凸包衡量。<code>cv::convexHull(contour, hull)</code> 返回包住轮廓的
+  最小凸多边形；<code>convexityDefects</code> 给出凹进去的段。
+  实心度 <code>area / hullArea</code> 接近 1 表示轮廓接近凸形，
+  明显小于 1 表示有凹口。圆、正方形、实心矩形的实心度都接近 1，
+  凹形目标与带缺口的目标更低。
+</p>
+
+<h3 id="s3-4-3">完整例子：绿球的重心与圆形度</h3>
+
+<p>
+  程序在绿色掩码上提取 18 条外轮廓，对每条计算矩、重心、面积、闭合周长与
+  圆形度。保留面积在 1500 到 8000、圆形度在 0.72 到 1.10 的轮廓，
+  并在原图上标出重心。红色干扰块与白色球不在绿色掩码中，不参与计算。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.4-features.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_balls_1.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255), mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    cv::Mat marked = image.clone();
+    int kept = 0;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    for (std::size_t i = 0; i &lt; contours.size(); ++i) {
+        const cv::Moments moments = cv::moments(contours[i]);
+        if (moments.m00 &lt;= 0.0) {
+            continue;
+        }
+        const double area = cv::contourArea(contours[i]);
+        const double perimeter = cv::arcLength(contours[i], true);
+        const double circularity =
+            4.0 * CV_PI * area / (perimeter * perimeter);
+        const cv::Point2d center(moments.m10 / moments.m00,
+                                 moments.m01 / moments.m00);
+        std::cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " center=(" &lt;&lt; center.x &lt;&lt; ", "
+                  &lt;&lt; center.y &lt;&lt; ") area=" &lt;&lt; area
+                  &lt;&lt; " circularity=" &lt;&lt; circularity;
+        if (area &gt;= 1500.0 &amp;&amp; area &lt;= 8000.0 &amp;&amp;
+            circularity &gt;= 0.72 &amp;&amp; circularity &lt;= 1.10) {
+            std::cout &lt;&lt; " keep\n";
+            cv::circle(marked, cv::Point(cvRound(center.x),
+                                         cvRound(center.y)),
+                       3, cv::Scalar(0, 0, 255), cv::FILLED);
+            cv::drawMarker(marked, cv::Point(cvRound(center.x),
+                                             cvRound(center.y)),
+                           cv::Scalar(255, 0, 0), cv::MARKER_CROSS, 16, 1);
+            ++kept;
+        } else {
+            std::cout &lt;&lt; " drop\n";
+        }
+    }
+    std::cout &lt;&lt; "kept=" &lt;&lt; kept &lt;&lt; " of " &lt;&lt; contours.size() &lt;&lt; '\n';
+
+    const int cell_width = 430;
+    const int cell_height = 500;
+    cv::Mat panel(cell_height, 2 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    place(panel, image, 0, 0, cell_width, cell_height, "original");
+    place(panel, marked, cell_width, 0, cell_width, cell_height,
+          "centroid + circularity");
+    const bool saved = cv::imwrite("out_features.png", panel);
+    std::cout &lt;&lt; "saved out_features.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.4-features.cpp -o features \
+    $(pkg-config --cflags --libs opencv4)
+./features</code></pre>
+
+<pre class="out" data-label="真实输出">i=0 center=(800.021, 800.000) area=5628.000 circularity=0.904 keep
+i=1 center=(660.000, 800.000) area=5624.000 circularity=0.903 keep
+i=2 center=(520.000, 800.000) area=5632.000 circularity=0.904 keep
+i=3 center=(380.000, 800.000) area=5632.000 circularity=0.904 keep
+i=4 center=(240.021, 800.000) area=5628.000 circularity=0.904 keep
+i=5 center=(100.000, 800.000) area=5632.000 circularity=0.904 keep
+i=6 center=(800.000, 470.000) area=5624.000 circularity=0.903 keep
+i=7 center=(660.021, 470.000) area=5628.000 circularity=0.904 keep
+i=8 center=(519.979, 470.000) area=5628.000 circularity=0.904 keep
+i=9 center=(379.979, 470.000) area=5628.000 circularity=0.904 keep
+i=10 center=(240.000, 470.000) area=5632.000 circularity=0.904 keep
+i=11 center=(100.000, 470.000) area=5632.000 circularity=0.904 keep
+i=12 center=(800.000, 140.000) area=5624.000 circularity=0.903 keep
+i=13 center=(659.987, 140.000) area=5630.000 circularity=0.904 keep
+i=14 center=(520.000, 140.000) area=5624.000 circularity=0.903 keep
+i=15 center=(380.000, 140.000) area=5632.000 circularity=0.904 keep
+i=16 center=(239.987, 140.000) area=5630.000 circularity=0.904 keep
+i=17 center=(100.000, 140.000) area=5632.000 circularity=0.904 keep
+kept=18 of 18
+saved out_features.png: yes</pre>
+
+<p>
+  18 条轮廓全部保留。面积仍在 5624 到 5632 之间，圆形度在 0.903 到 0.904
+  之间，重心与球心基本重合。少数重心的小数部分是 0.021 或 -0.021，
+  这是轮廓点离散化与掩码边界造成的，不代表球心真的偏了 0.02 像素。
+  圆形度阈值 0.72 给栅格误差留出了余量，同时仍能排除细长目标。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_features.png" alt="重心与圆形度结果：原图与标出每个球重心的结果" width="860" height="500">
+  <figcaption>
+    左图是原图；右图在每个通过面积与圆形度筛选的球心画红色圆点与蓝色十字。
+    18 个球全部保留，红块与白球没有标记。
+  </figcaption>
+</figure>
+
+<h3 id="s3-4-4">哪些特征稳定</h3>
+
+<p>
+  重心与面积对小幅边界噪声不敏感，适合做定位与尺度筛选；圆形度对周长计算
+  方式敏感，<code>CHAIN_APPROX_SIMPLE</code> 与 <code>CHAIN_APPROX_NONE</code>
+  得到的周长不同，圆形度也会不同。同一套阈值不能在两套链码之间直接比较。
+  外接矩形的宽高比在目标旋转时变化明显，只适合朝向受限的场景。
+</p>
+
+<p>
+  遮挡会同时改变面积、圆形度与重心：可见面积变小，边界出现直线缺口，
+  圆形度下降，重心向可见部分偏移。需要处理遮挡时，不要把圆形度阈值收得过紧，
+  也不要把单帧重心当作真实中心；应结合多帧信息或几何拟合。
+</p>
+
+<p>
+  参数表应记录每个特征的计算方式、链码类型、图像分辨率与阈值来源。
+  只记录“圆形度大于 0.7”而不记录这些条件，换一张图或换一个分辨率后，
+  其他人无法判断阈值是否仍然适用。
+</p>
+
+<div class="eg" id="e3-4">
+  <div class="eg-h">例题 · 方块的矩</div>
+  <p>
+    题目：创建一个 12×12 的掩码，在 (3,3) 画一个 6×6 的实心白方块。
+    提取外轮廓，打印 <code>m00</code>、重心、轮廓面积与圆形度。
+    先估计 <code>m00</code> 会等于 36 还是 25，再运行核对。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.4-eg-moments.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(12, 12, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(3, 3, 6, 6), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const cv::Moments moments = cv::moments(contours.front());
+    const double area = cv::contourArea(contours.front());
+    const double perimeter = cv::arcLength(contours.front(), true);
+    const double circularity =
+        4.0 * CV_PI * area / (perimeter * perimeter);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "m00=" &lt;&lt; moments.m00 &lt;&lt; '\n';
+    std::cout &lt;&lt; "centroid=(" &lt;&lt; moments.m10 / moments.m00 &lt;&lt; ", "
+              &lt;&lt; moments.m01 / moments.m00 &lt;&lt; ")\n";
+    std::cout &lt;&lt; "area=" &lt;&lt; area &lt;&lt; " circularity=" &lt;&lt; circularity &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.4-eg-moments.cpp -o eg_moments \
+    $(pkg-config --cflags --libs opencv4)
+./eg_moments</code></pre>
+  <pre class="out" data-label="真实输出">m00=25.000
+centroid=(5.500, 5.500)
+area=25.000 circularity=0.785</pre>
+  <p>
+    <code>m00</code> 是 25，不是像素个数 36。轮廓点跨 5×5 个像素间距，
+    多边形面积是 25；重心在 (5.5, 5.5)，正好是轮廓的几何中心。
+    圆形度 0.785 接近正方形的理论值 4π×25/20²=0.785，而不是 1。
+    这三个数都与轮廓的几何定义一致，与像素个数是两套口径。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-4</div>
+  <p>
+    创建一个 12×12 的掩码，在 (2,2) 画一个 4×6 的实心白方块。
+    提取外轮廓，打印 <code>m00</code>、重心坐标与圆形度。
+    判断这个目标是否接近圆，并说明理由。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">m00=15.000
+centroid=(3.500, 4.500)
+circularity=0.736</pre>
+  <details class="ans" data-run="示例代码/答案/3-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        4×6 个像素的轮廓点跨 3×5 个间距，<code>m00</code> 是 15，
+        重心在 (3.5, 4.5)。圆形度 0.736，明显低于圆的 0.90 左右，
+        更接近长方形的理论值。它不接近圆，长宽比也不接近 1。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-4.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(12, 12, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 4, 6), cv::Scalar(255), cv::FILLED);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    const cv::Moments moments = cv::moments(contours.front());
+    const double area = cv::contourArea(contours.front());
+    const double perimeter = cv::arcLength(contours.front(), true);
+    const double circularity =
+        4.0 * CV_PI * area / (perimeter * perimeter);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "m00=" &lt;&lt; moments.m00 &lt;&lt; '\n';
+    std::cout &lt;&lt; "centroid=(" &lt;&lt; moments.m10 / moments.m00 &lt;&lt; ", "
+              &lt;&lt; moments.m01 / moments.m00 &lt;&lt; ")\n";
+    std::cout &lt;&lt; "circularity=" &lt;&lt; circularity &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">m00=15.000
+centroid=(3.500, 4.500)
+circularity=0.736</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>moments</code> 计算 <code>m00</code> 与重心，
+  并在 <code>m00</code> 为 0 时安全跳过；用面积与闭合周长计算圆形度；
+  用填充率与凸包实心度描述形状；解释栅格化、链码方式与遮挡对特征的影响；
+  按面积与圆形度组合筛选圆形目标。
+</p>
+</section>
+
+<section class="lesson" id="l3-5">
+<h2><span class="no">3.5</span>轮廓筛选与去重</h2>
+
+<p>
+  前四课得到的是单个轮廓的特征。实际检测要在同一帧里保留真正的目标、
+  去掉噪声与干扰，并避免同一个目标被重复计数。本课把面积、宽高比、圆形度
+  组合成筛选条件，再用 IoU 去重，最后在四张不同光照与干扰的图上检查结果。
+</p>
+
+<h3 id="s3-5-1">组合特征与阈值表</h3>
+
+<p>
+  一个特征很少足够。面积可以去掉噪点与大块粘连，但不能区分面积相同的
+  球与方块；圆形度可以排除细长目标，但小目标的圆形度波动大；宽高比可以
+  排除长条，但目标旋转后轴对齐框的宽高比会变化。把几个特征串联，
+  每个条件只负责排除一类干扰，比单独调一个阈值稳定。
+</p>
+
+<table>
+  <thead>
+    <tr><th>特征</th><th>作用</th><th>本例取值</th><th>主要影响因素</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>面积</td><td>去掉噪点、过大的粘连块</td>
+      <td>900–9000 像素²</td><td>分辨率、相机距离、掩码是否完整</td>
+    </tr>
+    <tr>
+      <td>宽高比</td><td>排除长条与横向粘连</td>
+      <td>0.70–1.40</td><td>目标旋转、轴对齐框的选取</td>
+    </tr>
+    <tr>
+      <td>圆形度</td><td>排除方形、长条与缺口目标</td>
+      <td>≥0.68</td><td>分辨率、周长计算方式、遮挡</td>
+    </tr>
+    <tr>
+      <td>IoU</td><td>合并重复候选</td>
+      <td>&gt;0.40 视为重复</td>
+      <td>两个框的重叠程度、候选来源</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  表中的数值只对应本课的 900×1000 合成图与 42 像素半径的球。换分辨率、
+  换镜头或换目标尺寸后，面积要按平方缩放，圆形度阈值要重新统计。
+  把这张表连同图像尺寸、掩码范围一起记录，才是可复现的参数。
+</p>
+
+<h3 id="s3-5-2">排序、IoU 与非极大值抑制</h3>
+
+<p>
+  同一目标可能被多次检出：不同颜色阈值、不同掩码清理步骤、不同特征组合
+  都可能给出位置相近的框。去重的常用量是交并比：
+  <code>IoU = 交集面积 / 并集面积</code>。两个框完全重合时为 1，
+  完全不相交时为 0。IoU 大于阈值时，认为它们描述同一个目标，只保留一个。
+</p>
+
+<p>
+  非极大值抑制（NMS）先按某个分数排序，再依次保留分数最高的框，
+  删除与已保留框 IoU 超过阈值的候选。本课没有检测分数，按外接矩形面积
+  从大到小排序；面积相等时，保留哪一个由排序实现决定，不应依赖出现顺序。
+  排序规则会影响保留哪一个框，但对“最终保留几个”通常影响不大。
+  IoU 阈值越小，去重越激进，相邻但不同的目标也可能被合并。
+</p>
+
+<p>
+  去重前要先确认候选框确实来自同一个目标。两个球靠得很近时，它们的框可能
+  有小幅重叠；如果 IoU 阈值过低，会把两个真实目标合成一个。去重阈值应与
+  目标尺寸、目标间距一起标定，不能只看一张图。
+</p>
+
+<h3 id="s3-5-3">完整例子：四张图上的候选与去重</h3>
+
+<p>
+  程序读取四张绿球图，每张图用两套 HSV 下限各生成一次掩码：宽松范围
+  <code>(30,35,35)</code> 尽量不漏球，严格范围 <code>(45,120,110)</code>
+  尽量少收暗球。两套掩码各自提取外轮廓，按面积、宽高比与圆形度筛选，
+  把两组候选合并，再按面积排序并用 IoU 0.40 去重。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.5-filter.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+double iou(const cv::Rect&amp; a, const cv::Rect&amp; b) {
+    const int left = std::max(a.x, b.x);
+    const int top = std::max(a.y, b.y);
+    const int right = std::min(a.x + a.width, b.x + b.width);
+    const int bottom = std::min(a.y + a.height, b.y + b.height);
+    const int overlap = std::max(0, right - left) * std::max(0, bottom - top);
+    const int area = a.area() + b.area() - overlap;
+    return area &gt; 0 ? static_cast&lt;double&gt;(overlap) / area : 0.0;
+}
+
+std::vector&lt;cv::Rect&gt; candidates(const cv::Mat&amp; image, int low_h,
+                                 int low_s, int low_v) {
+    cv::Mat hsv;
+    cv::Mat mask;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv, cv::Scalar(low_h, low_s, low_v),
+                cv::Scalar(90, 255, 255), mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;cv::Rect&gt; found;
+    for (const std::vector&lt;cv::Point&gt;&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        const double perimeter = cv::arcLength(contour, true);
+        if (perimeter &lt;= 0.0) {
+            continue;
+        }
+        const double circularity =
+            4.0 * CV_PI * area / (perimeter * perimeter);
+        const cv::Rect box = cv::boundingRect(contour);
+        const double aspect =
+            static_cast&lt;double&gt;(box.width) / std::max(1, box.height);
+        if (area &gt;= 900.0 &amp;&amp; area &lt;= 9000.0 &amp;&amp; aspect &gt;= 0.70 &amp;&amp;
+            aspect &lt;= 1.40 &amp;&amp; circularity &gt;= 0.68) {
+            found.push_back(box);
+        }
+    }
+    return found;
+}
+
+std::vector&lt;cv::Rect&gt; deduplicate(std::vector&lt;cv::Rect&gt; boxes) {
+    std::sort(boxes.begin(), boxes.end(), [](const cv::Rect&amp; a,
+                                             const cv::Rect&amp; b) {
+        return a.area() &gt; b.area();
+    });
+    std::vector&lt;cv::Rect&gt; kept;
+    for (const cv::Rect&amp; box : boxes) {
+        bool duplicate = false;
+        for (const cv::Rect&amp; other : kept) {
+            if (iou(box, other) &gt; 0.40) {
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            kept.push_back(box);
+        }
+    }
+    return kept;
+}
+
+void annotate(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+              int height, const std::string&amp; label,
+              const std::vector&lt;cv::Rect&gt;&amp; boxes) {
+    const int label_height = 28;
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+    for (std::size_t i = 0; i &lt; boxes.size(); ++i) {
+        const cv::Rect scaled(cvRound(boxes[i].x * scale),
+                              cvRound(boxes[i].y * scale),
+                              std::max(1, cvRound(boxes[i].width * scale)),
+                              std::max(1, cvRound(boxes[i].height * scale)));
+        cv::rectangle(shown, scaled, cv::Scalar(0, 0, 255), 2);
+        cv::putText(shown, std::to_string(i + 1),
+                    cv::Point(scaled.x + 2, scaled.y + 14),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.45, cv::Scalar(255, 0, 0), 1,
+                    cv::LINE_AA);
+    }
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    const std::string names[4] = {
+        "synth_balls_1.png", "synth_balls_2.png",
+        "synth_balls_3.png", "synth_balls_4.png"};
+    cv::Mat panel(2 * 500, 2 * 450, CV_8UC3, cv::Scalar(255, 255, 255));
+    for (int k = 0; k &lt; 4; ++k) {
+        cv::Mat image = cv::imread("../素材/" + names[k], cv::IMREAD_COLOR);
+        if (image.empty()) {
+            std::cout &lt;&lt; "无法读取素材: " &lt;&lt; names[k] &lt;&lt; '\n';
+            return 1;
+        }
+        const std::vector&lt;cv::Rect&gt; loose = candidates(image, 30, 35, 35);
+        const std::vector&lt;cv::Rect&gt; tight = candidates(image, 45, 120, 110);
+        std::vector&lt;cv::Rect&gt; merged = loose;
+        merged.insert(merged.end(), tight.begin(), tight.end());
+        const std::vector&lt;cv::Rect&gt; kept = deduplicate(merged);
+        std::cout &lt;&lt; names[k] &lt;&lt; ": loose=" &lt;&lt; loose.size()
+                  &lt;&lt; " tight=" &lt;&lt; tight.size() &lt;&lt; " raw=" &lt;&lt; merged.size()
+                  &lt;&lt; " kept=" &lt;&lt; kept.size() &lt;&lt; '\n';
+        annotate(panel, image, (k % 2) * 450, (k / 2) * 500, 450, 500,
+                 names[k] + " kept=" + std::to_string(kept.size()), kept);
+    }
+    const bool saved = cv::imwrite("out_filter.png", panel);
+    std::cout &lt;&lt; "saved out_filter.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.5-filter.cpp -o filter \
+    $(pkg-config --cflags --libs opencv4)
+./filter</code></pre>
+
+<pre class="out" data-label="真实输出">synth_balls_1.png: loose=18 tight=11 raw=29 kept=18
+synth_balls_2.png: loose=14 tight=11 raw=25 kept=14
+synth_balls_3.png: loose=20 tight=5 raw=25 kept=20
+synth_balls_4.png: loose=12 tight=12 raw=24 kept=12
+saved out_filter.png: yes</pre>
+
+<p>
+  四张图的保留数分别是 18、14、20、12。第一张图宽松掩码 18 条、
+  严格掩码 11 条，合并后 29 条，去重后 18 条：严格掩码漏掉的暗球由宽松掩码
+  补回，重复的 11 条被 IoU 去掉。第二张图有 14 个绿球，宽松 14、严格 11，
+  去重后 14。第三张图背景很亮，球的饱和度低，严格掩码只留下 5 条，
+  宽松掩码 20 条，去重后 20。第四张图有 12 个独立球，接触的球对面积超过上限，
+  被面积条件排除；绿色长条被宽高比排除；白球与红块不在绿色掩码中。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_filter.png" alt="四张绿球图的筛选与去重结果，每张图标注保留的候选框与数量" width="900" height="1000">
+  <figcaption>
+    四张图分别是不同亮度、不同干扰与不同粘连情况的场景。红框是去重后保留的
+    候选，编号按面积从大到小排列。图题中的 kept 是最终数量。
+  </figcaption>
+</figure>
+
+<h3 id="s3-5-4">调试顺序与参数维护</h3>
+
+<p>
+  结果不对时，按固定顺序检查，比反复改阈值更快。先看掩码：目标是否完整、
+  干扰是否被排除、孔洞是否被填上。再看轮廓：数量是否与掩码中的连通区域一致，
+  有没有把孔洞当目标。然后看特征表：被误删的目标落在哪个条件之外，
+  被误收的干扰落在哪个条件之内。最后才调去重阈值，因为去重只能处理重复框，
+  不能补救前面的漏检。
+</p>
+
+<p>
+  保存中间结果是最有效的调试手段。把掩码、轮廓叠加图、特征表分别写成文件或
+  打印出来，才能判断问题出在哪一步。只把最终标注图画出来，误删与重复计数
+  往往混在一起，难以定位。
+</p>
+
+<p>
+  参数维护方面，固定写死的像素阈值只适用于固定分辨率与固定相机距离。
+  如果图像会缩放，先按比例换算面积与长度；如果曝光会变化，先固定 HSV 范围
+  的标定流程，再谈形状阈值。参数表要写明每个值的来源与适用条件，
+  不要只留下一个数字。
+</p>
+
+<div class="eg" id="e3-5">
+  <div class="eg-h">例题 · 两个框的 IoU</div>
+  <p>
+    题目：给定三个 10×10 的框：<code>(5,5,10,10)</code>、
+    <code>(8,5,10,10)</code>、<code>(20,5,10,10)</code>。
+    计算第一个框与另外两个框的 IoU，并按阈值 0.40 判断是否应抑制。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.5-eg-iou.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+double iou(const cv::Rect&amp; a, const cv::Rect&amp; b) {
+    const int left = std::max(a.x, b.x);
+    const int top = std::max(a.y, b.y);
+    const int right = std::min(a.x + a.width, b.x + b.width);
+    const int bottom = std::min(a.y + a.height, b.y + b.height);
+    const int overlap = std::max(0, right - left) * std::max(0, bottom - top);
+    const int area = a.area() + b.area() - overlap;
+    return area &gt; 0 ? static_cast&lt;double&gt;(overlap) / area : 0.0;
+}
+
+int main() {
+    const cv::Rect first(5, 5, 10, 10);
+    const cv::Rect overlap(8, 5, 10, 10);
+    const cv::Rect apart(20, 5, 10, 10);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "iou overlap=" &lt;&lt; iou(first, overlap) &lt;&lt; '\n';
+    std::cout &lt;&lt; "iou apart=" &lt;&lt; iou(first, apart) &lt;&lt; '\n';
+    std::cout &lt;&lt; "suppress overlap="
+              &lt;&lt; (iou(first, overlap) &gt; 0.40 ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "suppress apart="
+              &lt;&lt; (iou(first, apart) &gt; 0.40 ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.5-eg-iou.cpp -o eg_iou \
+    $(pkg-config --cflags --libs opencv4)
+./eg_iou</code></pre>
+  <pre class="out" data-label="真实输出">iou overlap=0.538
+iou apart=0.000
+suppress overlap=yes
+suppress apart=no</pre>
+  <p>
+    第一个框与第二个框横向重叠 7 列、纵向重叠 10 行，交集 70，并集
+    <code>100+100-70=130</code>，IoU 约 0.538，超过 0.40，应当抑制。
+    第三个框不相交，IoU 为 0，保留。这个计算只依赖框的位置与大小，
+    与图像内容无关；实际去重时，框来自轮廓，IoU 阈值要结合目标间距设定。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-5</div>
+  <p>
+    给定基准框 <code>(0,0,10,10)</code>，分别与
+    <code>(5,0,10,10)</code> 和 <code>(4,0,10,10)</code> 计算 IoU，
+    按阈值 0.40 判断是否抑制，并打印两个 IoU 与判断结果。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">iou near=0.333
+suppress near=no
+iou closer=0.429
+suppress closer=yes</pre>
+  <details class="ans" data-run="示例代码/答案/3-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        偏移 5 时交集 50、并集 150，IoU 为 0.333，低于 0.40，保留；
+        偏移 4 时交集 60、并集 140，IoU 为 0.429，超过阈值，抑制。
+        两个目标只差一个像素的偏移，去重结果就变了，因此阈值不能取得太接近
+        常见重叠值，必须留出余量。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-5.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+double iou(const cv::Rect&amp; a, const cv::Rect&amp; b) {
+    const int left = std::max(a.x, b.x);
+    const int top = std::max(a.y, b.y);
+    const int right = std::min(a.x + a.width, b.x + b.width);
+    const int bottom = std::min(a.y + a.height, b.y + b.height);
+    const int overlap = std::max(0, right - left) * std::max(0, bottom - top);
+    const int area = a.area() + b.area() - overlap;
+    return area &gt; 0 ? static_cast&lt;double&gt;(overlap) / area : 0.0;
+}
+
+int main() {
+    const cv::Rect box(0, 0, 10, 10);
+    const cv::Rect near_box(5, 0, 10, 10);
+    const cv::Rect closer(4, 0, 10, 10);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "iou near=" &lt;&lt; iou(box, near_box) &lt;&lt; '\n';
+    std::cout &lt;&lt; "suppress near="
+              &lt;&lt; (iou(box, near_box) &gt; 0.40 ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "iou closer=" &lt;&lt; iou(box, closer) &lt;&lt; '\n';
+    std::cout &lt;&lt; "suppress closer="
+              &lt;&lt; (iou(box, closer) &gt; 0.40 ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">iou near=0.333
+suppress near=no
+iou closer=0.429
+suppress closer=yes</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>把面积、宽高比、圆形度组合成筛选链；
+  用 IoU 与非极大值抑制合并重复候选；在多张不同光照与干扰的图上统计
+  保留数与被误删数；按“掩码、轮廓、特征、去重”的顺序定位问题；
+  把像素阈值连同分辨率与适用条件记录成参数表。
+</p>
+</section>
+
+<section class="lesson" id="l3-6">
+<h2><span class="no">3.6</span>距离变换、分水岭与漫水填充（选学）</h2>
+
+<p>
+  这一课为选学内容，不进入后续部分的前置要求。前面用外轮廓数目标个数，
+  目标接触时两个球会连成一条轮廓，数量就会少算。本课用距离变换找到每个球的
+  内部峰值，用连通分量生成标记，再用分水岭把接触的区域分开；最后用漫水填充
+  处理背景，并说明这些方法的适用边界。
+</p>
+
+<h3 id="s3-6-1">距离变换</h3>
+
+<p>
+  <code>cv::distanceTransform(mask, distance, cv::DIST_L2, 5)</code>
+  为每个前景像素计算它到最近背景像素的距离。距离图是浮点图，目标内部越深，
+  值越大；圆的中心接近半径，细长区域的最大值受短边限制。本课的球半径约
+  42 像素，距离峰值是 40.544，略小于半径，这是栅格距离的离散误差。
+</p>
+
+<p>
+  第三个参数是距离类型，<code>DIST_L2</code> 使用欧氏距离；
+  <code>DIST_L1</code> 与 <code>DIST_C</code> 计算更快但形状不同。
+  第四个参数是距离变换掩码的尺寸，常用 3 或 5；尺寸越大，近似越精确，
+  计算也越慢。做种子检测时，5 已经足够，不必追求更高精度。
+</p>
+
+<p>
+  距离图的峰值可以作为目标中心的候选。对接触的球，两个球的中心各自形成
+  一个局部峰值，中间接触处的距离较小；在峰值附近取阈值，就能得到分开的种子。
+  阈值取最大距离的固定比例是常用做法，本课取 0.55 倍，得到 12 个种子。
+  比例过大时种子消失，过小时种子连成一片，两个球又会被当成一个。
+</p>
+
+<h3 id="s3-6-2">连通分量与分水岭</h3>
+
+<p>
+  <code>cv::connectedComponentsWithStats(binary, labels, stats, centroids, 8)</code>
+  给每个连通区域分配一个整数标号，背景为 0。返回的
+  <code>stats</code> 每行是 <code>[x, y, width, height, area]</code>，
+  <code>centroids</code> 是每个区域的中心。它适合统计种子个数、过滤面积极小的
+  种子，也适合在分水岭之前生成标记。
+</p>
+
+<p>
+  <code>cv::watershed(image, markers)</code> 要求 <code>markers</code> 是
+  <code>CV_32S</code> 单通道图。正数表示已知区域，0 表示未知区域；
+  函数会把未知像素分配给某个标记，并在区域边界写入 -1。标记必须覆盖每个
+  希望保留的目标，否则目标会被相邻标记吞并；背景也要有标记，否则背景会被
+  分配给最近的目标。
+</p>
+
+<p>
+  本课把 12 个种子标为 1 到 12，把掩码之外的背景标为 13，再调用分水岭。
+  输出中标记最大值是 13，球区域有 12 个。分水岭只负责按标记扩张，
+  它不会自动判断“应该有几个球”；种子质量决定分割质量。
+</p>
+
+<h3 id="s3-6-3">完整例子：把接触的球分开</h3>
+
+<p>
+  程序读取一张包含五对接触球与两个独立球的合成图，得到绿色掩码，
+  计算距离图，按最大距离的 0.55 倍取种子，用连通分量统计种子数，
+  再把种子与背景写入标记图，调用分水岭。最后从左上角对掩码做漫水填充，
+  统计背景像素数。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="3.6-segment.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_touching.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::Mat mask;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255), mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(3, 3)));
+    const int foreground = cv::countNonZero(mask);
+    std::cout &lt;&lt; "mask nonzero=" &lt;&lt; foreground &lt;&lt; '\n';
+
+    cv::Mat distance;
+    cv::distanceTransform(mask, distance, cv::DIST_L2, 5);
+    double min_distance = 0.0;
+    double max_distance = 0.0;
+    cv::minMaxLoc(distance, &amp;min_distance, &amp;max_distance);
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "distance max=" &lt;&lt; max_distance &lt;&lt; '\n';
+
+    cv::Mat seeds;
+    cv::threshold(distance, seeds, 0.55 * max_distance, 255.0,
+                  cv::THRESH_BINARY);
+    seeds.convertTo(seeds, CV_8U);
+    cv::Mat labels;
+    cv::Mat stats;
+    cv::Mat centroids;
+    const int seed_count = cv::connectedComponentsWithStats(
+        seeds, labels, stats, centroids, 8) - 1;
+    std::cout &lt;&lt; "seeds=" &lt;&lt; seed_count &lt;&lt; '\n';
+
+    cv::Mat markers(mask.size(), CV_32S, cv::Scalar(0));
+    for (int y = 0; y &lt; labels.rows; ++y) {
+        for (int x = 0; x &lt; labels.cols; ++x) {
+            if (labels.at&lt;int&gt;(y, x) &gt; 0) {
+                markers.at&lt;int&gt;(y, x) = labels.at&lt;int&gt;(y, x);
+            }
+        }
+    }
+    markers.setTo(seed_count + 1, mask == 0);
+    cv::watershed(image, markers);
+    double marker_min = 0.0;
+    double marker_max = 0.0;
+    cv::minMaxLoc(markers, &amp;marker_min, &amp;marker_max);
+    std::cout &lt;&lt; "watershed labels=" &lt;&lt; static_cast&lt;int&gt;(marker_max) &lt;&lt; '\n';
+
+    std::vector&lt;bool&gt; present(static_cast&lt;std::size_t&gt;(marker_max) + 1, false);
+    for (int y = 0; y &lt; markers.rows; ++y) {
+        for (int x = 0; x &lt; markers.cols; ++x) {
+            const int value = markers.at&lt;int&gt;(y, x);
+            if (value &gt; 0 &amp;&amp; value &lt;= seed_count) {
+                present[static_cast&lt;std::size_t&gt;(value)] = true;
+            }
+        }
+    }
+    int ball_regions = 0;
+    for (int i = 1; i &lt;= seed_count; ++i) {
+        if (present[static_cast&lt;std::size_t&gt;(i)]) {
+            ++ball_regions;
+        }
+    }
+    std::cout &lt;&lt; "ball regions=" &lt;&lt; ball_regions &lt;&lt; '\n';
+
+    cv::Mat background = mask.clone();
+    const int flood_area = cv::floodFill(background, cv::Point(0, 0),
+                                         cv::Scalar(128));
+    std::cout &lt;&lt; "flood background=" &lt;&lt; flood_area &lt;&lt; '\n';
+
+    cv::Mat distance_view;
+    cv::normalize(distance, distance_view, 0, 255, cv::NORM_MINMAX, CV_8U);
+    cv::applyColorMap(distance_view, distance_view, cv::COLORMAP_JET);
+
+    const cv::Scalar palette[12] = {
+        cv::Scalar(60, 60, 220), cv::Scalar(60, 180, 240),
+        cv::Scalar(60, 200, 60), cv::Scalar(220, 180, 60),
+        cv::Scalar(220, 80, 200), cv::Scalar(180, 120, 60),
+        cv::Scalar(200, 220, 60), cv::Scalar(60, 220, 200),
+        cv::Scalar(240, 140, 140), cv::Scalar(140, 240, 140),
+        cv::Scalar(140, 140, 240), cv::Scalar(180, 180, 180)};
+    cv::Mat segments(mask.size(), CV_8UC3, cv::Scalar(245, 245, 245));
+    for (int y = 0; y &lt; markers.rows; ++y) {
+        for (int x = 0; x &lt; markers.cols; ++x) {
+            const int value = markers.at&lt;int&gt;(y, x);
+            if (value &gt;= 1 &amp;&amp; value &lt;= seed_count) {
+                segments.at&lt;cv::Vec3b&gt;(y, x) = cv::Vec3b(
+                    palette[(value - 1) % 12][0], palette[(value - 1) % 12][1],
+                    palette[(value - 1) % 12][2]);
+            }
+        }
+    }
+
+    cv::Mat mask_color;
+    cv::cvtColor(mask, mask_color, cv::COLOR_GRAY2BGR);
+
+    const int cell_width = 320;
+    const int cell_height = 360;
+    cv::Mat panel(cell_height, 4 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    place(panel, image, 0, 0, cell_width, cell_height, "original");
+    place(panel, mask_color, cell_width, 0, cell_width, cell_height, "mask");
+    place(panel, distance_view, 2 * cell_width, 0, cell_width, cell_height,
+          "distance");
+    place(panel, segments, 3 * cell_width, 0, cell_width, cell_height,
+          "watershed");
+    const bool saved = cv::imwrite("out_segment.png", panel);
+    std::cout &lt;&lt; "saved out_segment.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.6-segment.cpp -o segment \
+    $(pkg-config --cflags --libs opencv4)
+./segment</code></pre>
+
+<pre class="out" data-label="真实输出">mask nonzero=60979
+distance max=40.544
+seeds=12
+watershed labels=13
+ball regions=12
+flood background=419021
+saved out_segment.png: yes</pre>
+
+<p>
+  掩码有 60979 个前景像素，距离峰值 40.544；阈值 0.55 倍后得到 12 个种子，
+  与图中 12 个球一致。分水岭标记最大值为 13，其中 1 到 12 是球，
+  13 是背景；12 个球区域都保留下来。漫水填充从 (0,0) 出发，填掉 419021 个
+  背景像素；图像共 800×600=480000 像素，前景 60979，两者相加正好是总数。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_segment.png" alt="接触球分割：原图、掩码、距离图与分水岭分割结果" width="1280" height="360">
+  <figcaption>
+    从左到右依次是原图、绿色掩码、距离图与分水岭结果。距离图中每个球的中心
+    最亮，接触处较暗；分水岭用不同颜色区分相邻的球，接触的一对也被分开。
+  </figcaption>
+</figure>
+
+<h3 id="s3-6-4">漫水填充与适用边界</h3>
+
+<p>
+  <code>cv::floodFill(image, seedPoint, newVal, rect, loDiff, upDiff, flags)</code>
+  从种子点出发，把与种子颜色相近且连通的像素染成新值。默认
+  <code>loDiff</code> 与 <code>upDiff</code> 为 0，只扩展与种子值完全相同的
+  区域；在二值掩码上，这正好等于整个背景连通区域。若图像背景有渐变，
+  需要给出容差，否则填充会在亮度变化处停止。
+</p>
+
+<p>
+  漫水填充适合去除与边界连通的背景、统计背景面积、给封闭区域染色。
+  它不适合直接分割相互接触的目标：从背景出发只能得到背景，从目标内部出发
+  会把整块接触区域染成一色。分水岭也需要可靠的种子，种子错了，分割结果不会
+  自动纠正。
+</p>
+
+<p>
+  这些方法对参数敏感。距离峰值阈值、形态学核大小、掩码的孔洞都会改变种子数；
+  目标尺寸差异大时，一个固定比例可能只适合其中一部分。使用前先用一组
+  包含单球、接触球、遮挡球的图像检查种子数，再决定是否采用。若目标形状稳定、
+  接触较少，外轮廓加面积筛选更简单；分水岭适合接触频繁、必须分开计数的场景。
+</p>
+
+<div class="eg" id="e3-6">
+  <div class="eg-h">例题 · 小方块的距离峰值</div>
+  <p>
+    题目：创建一个 11×11 的掩码，在 (3,3) 画一个 5×5 的实心白方块。
+    计算距离变换，打印最大距离及其位置；按阈值 2.0 生成种子，
+    打印种子数；再从 (0,0) 漫水填充，打印背景像素数。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="3.6-eg-distance.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(11, 11, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(3, 3, 5, 5), cv::Scalar(255), cv::FILLED);
+
+    cv::Mat distance;
+    cv::distanceTransform(mask, distance, cv::DIST_L2, 5);
+    double low = 0.0;
+    double high = 0.0;
+    cv::Point high_at;
+    cv::minMaxLoc(distance, &amp;low, &amp;high, nullptr, &amp;high_at);
+
+    cv::Mat seeds;
+    cv::threshold(distance, seeds, 2.0, 255.0, cv::THRESH_BINARY);
+    seeds.convertTo(seeds, CV_8U);
+    cv::Mat labels;
+    cv::Mat stats;
+    cv::Mat centroids;
+    const int count =
+        cv::connectedComponentsWithStats(seeds, labels, stats, centroids, 8) - 1;
+
+    cv::Mat background = mask.clone();
+    const int flood_area =
+        cv::floodFill(background, cv::Point(0, 0), cv::Scalar(128));
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; "distance max=" &lt;&lt; high &lt;&lt; " at=(" &lt;&lt; high_at.x &lt;&lt; ", "
+              &lt;&lt; high_at.y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "seeds=" &lt;&lt; count &lt;&lt; '\n';
+    std::cout &lt;&lt; "flood background=" &lt;&lt; flood_area &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 3.6-eg-distance.cpp -o eg_distance \
+    $(pkg-config --cflags --libs opencv4)
+./eg_distance</code></pre>
+  <pre class="out" data-label="真实输出">distance max=3.00 at=(5, 5)
+seeds=1
+flood background=96</pre>
+  <p>
+    5×5 方块的中心到最近背景像素的距离是 3，峰值出现在 (5,5)。
+    阈值 2.0 只保留中心附近的一块，因此种子数为 1。掩码共 121 个像素，
+    前景 25 个，背景 96 个；从 (0,0) 漫水填充得到的正是这 96 个背景像素。
+    如果把阈值提高到 3.0，种子会缩成一个点；降到 1.0，种子会扩大，
+    但仍是一个连通区域。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-6</div>
+  <p>
+    创建一个 9×9 的掩码，在 (2,2) 画一个 5×5 的实心白方块。
+    计算距离变换，打印最大距离及位置；按阈值 2.0 生成种子并打印种子数；
+    再从 (0,0) 漫水填充，打印背景像素数。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">distance max=3.00 at=(4, 4)
+seeds=1
+flood background=56</pre>
+  <details class="ans" data-run="示例代码/答案/3-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        5×5 方块的中心 (4,4) 到最近背景的距离是 3，所以最大距离为 3.00；
+        阈值 2.0 保留中心一个连通块，种子数为 1。9×9 共 81 个像素，
+        前景 25 个，背景 56 个，漫水填充从 (0,0) 得到 56。
+      </p>
+      <pre data-lang="C++" data-name="答案/3-6.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(9, 9, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 5, 5), cv::Scalar(255), cv::FILLED);
+
+    cv::Mat distance;
+    cv::distanceTransform(mask, distance, cv::DIST_L2, 5);
+    double low = 0.0;
+    double high = 0.0;
+    cv::Point high_at;
+    cv::minMaxLoc(distance, &amp;low, &amp;high, nullptr, &amp;high_at);
+
+    cv::Mat seeds;
+    cv::threshold(distance, seeds, 2.0, 255.0, cv::THRESH_BINARY);
+    seeds.convertTo(seeds, CV_8U);
+    cv::Mat labels;
+    cv::Mat stats;
+    cv::Mat centroids;
+    const int count =
+        cv::connectedComponentsWithStats(seeds, labels, stats, centroids, 8) - 1;
+
+    cv::Mat background = mask.clone();
+    const int flood_area =
+        cv::floodFill(background, cv::Point(0, 0), cv::Scalar(128));
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; "distance max=" &lt;&lt; high &lt;&lt; " at=(" &lt;&lt; high_at.x &lt;&lt; ", "
+              &lt;&lt; high_at.y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "seeds=" &lt;&lt; count &lt;&lt; '\n';
+    std::cout &lt;&lt; "flood background=" &lt;&lt; flood_area &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">distance max=3.00 at=(4, 4)
+seeds=1
+flood background=56</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>distanceTransform</code> 得到距离图并读取峰值；
+  用阈值和 <code>connectedComponentsWithStats</code> 生成种子；
+  按标记规则调用 <code>watershed</code> 分开接触的目标；
+  用 <code>floodFill</code> 统计或去除连通背景；说明种子阈值、背景标记与
+  目标尺寸差异对结果的影响。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="02-图像处理.html">← 第 2 部分 · 图像处理</a>
+  <span class="spacer"></span>
+  <a href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

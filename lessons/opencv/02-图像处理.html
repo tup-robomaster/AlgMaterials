@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · 图像处理 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a class="active" href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" aria-current="page" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · 图像处理</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>平滑与去噪</a>
+  <a class="toc-sub" href="#s2-1-1">四种滤波器的分工</a>
+  <a class="toc-sub" href="#s2-1-2">噪声类型与选择</a>
+  <a class="toc-sub" href="#s2-1-3">完整例子：加噪与比较</a>
+  <a class="toc-sub" href="#s2-1-4">速度、参数与副作用</a>
+  <a class="toc-sub" href="#e2-1">例题：单个脉冲</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>阈值：固定、Otsu、自适应</a>
+  <a class="toc-sub" href="#s2-2-1">五种阈值类型</a>
+  <a class="toc-sub" href="#s2-2-2">Otsu 与自适应阈值</a>
+  <a class="toc-sub" href="#s2-2-3">完整例子：五种类型与光照不均</a>
+  <a class="toc-sub" href="#s2-2-4">参数与常见错误</a>
+  <a class="toc-sub" href="#e2-2">例题：阈值表</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>形态学：腐蚀、膨胀、开、闭</a>
+  <a class="toc-sub" href="#s2-3-1">结构元、腐蚀与膨胀</a>
+  <a class="toc-sub" href="#s2-3-2">开、闭与派生运算</a>
+  <a class="toc-sub" href="#s2-3-3">完整例子：清理噪声掩码</a>
+  <a class="toc-sub" href="#s2-3-4">核大小与运算顺序</a>
+  <a class="toc-sub" href="#e2-3">例题：开运算去掉孤立点</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>边缘：Sobel、Laplacian、Canny</a>
+  <a class="toc-sub" href="#s2-4-1">Sobel 与梯度</a>
+  <a class="toc-sub" href="#s2-4-2">Laplacian 与 Canny</a>
+  <a class="toc-sub" href="#s2-4-3">完整例子：四种边缘图</a>
+  <a class="toc-sub" href="#s2-4-4">阈值与后续处理</a>
+  <a class="toc-sub" href="#e2-4">例题：阶跃边缘</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>直方图与曝光</a>
+  <a class="toc-sub" href="#s2-5-1">calcHist 与直方图</a>
+  <a class="toc-sub" href="#s2-5-2">equalizeHist 与 CLAHE</a>
+  <a class="toc-sub" href="#s2-5-3">完整例子：低对比度增强</a>
+  <a class="toc-sub" href="#s2-5-4">彩色图与归一化</a>
+  <a class="toc-sub" href="#e2-5">例题：小幅灰度拉伸</a>
+  <a class="toc-l" href="#l2-6"><span class="n">2.6</span>几何变换：缩放、旋转、透视</a>
+  <a class="toc-sub" href="#s2-6-1">resize 与插值</a>
+  <a class="toc-sub" href="#s2-6-2">旋转与仿射</a>
+  <a class="toc-sub" href="#s2-6-3">透视变换与四点顺序</a>
+  <a class="toc-sub" href="#s2-6-4">完整例子：缩放、旋转、卡片矫正</a>
+  <a class="toc-sub" href="#s2-6-5">参数与错误</a>
+  <a class="toc-sub" href="#e2-6">例题：缩放与旋转矩阵</a>
+  <a class="toc-l" href="#l2-7"><span class="n">2.7</span>图像金字塔（选学）</a>
+  <a class="toc-sub" href="#s2-7-1">pyrDown 与 pyrUp</a>
+  <a class="toc-sub" href="#s2-7-2">尺度空间与多尺度匹配</a>
+  <a class="toc-sub" href="#s2-7-3">完整例子：三层金字塔与两档匹配</a>
+  <a class="toc-sub" href="#s2-7-4">匹配的边界</a>
+  <a class="toc-sub" href="#e2-7">例题：小场景匹配</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>图像处理</h1>
+  <p class="part-lead">
+    这一部分处理颜色检测之前最常见的图像处理步骤：先抑制噪声，再把目标与背景分开，
+    清理掩码，提取边缘，判断曝光，最后对图像做缩放、旋转与透视矫正。
+    每一课给出完整程序、真实输出与结果图，并说明参数改变后结果如何变化。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5">
+  <b>读这一部分之前</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="01-图像与Mat.html#l1-1">1.1</a>（Mat 的内存模型）、
+    <a href="01-图像与Mat.html#l1-2">1.2</a>（读、写、显示与错误处理）、
+    <a href="01-图像与Mat.html#l1-3">1.3</a>（像素、ROI 与克隆）、
+    <a href="01-图像与Mat.html#l1-4">1.4</a>（颜色空间：BGR、灰度、HSV）与
+    <a href="01-图像与Mat.html#l1-5">1.5</a>（绘制、掩码与标注）。
+    例子在 <code>示例代码</code> 目录中运行，读写的素材在 <code>素材</code> 目录下。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>平滑与去噪</h2>
+
+<p>
+  图像在采集和传输中会混入噪声。滤波用邻域像素的加权结果或排序结果替换中心像素，
+  从而降低噪声的随机波动。不同滤波器对噪声类型、边缘和细节的保留程度不同，
+  选择依据是噪声分布与后续任务，而不是只看画面是否变平滑。
+</p>
+
+<h3 id="s2-1-1">四种滤波器的分工</h3>
+
+<p>
+  <code>cv::blur</code> 做方框平均，邻域内每个像素权重相同；
+  <code>cv::GaussianBlur</code> 按二维高斯权重加权，中心权重最大；
+  <code>cv::medianBlur</code> 取邻域像素的中值，不产生新的灰度值；
+  <code>cv::bilateralFilter</code> 同时考虑空间距离与灰度差，灰度差大的邻域像素权重小。
+  <code>GaussianBlur</code> 与 <code>medianBlur</code> 的核大小必须为奇数；
+  <code>blur</code> 可以接受偶数核。本课统一用 3、5、7，便于对照。
+</p>
+
+<pre data-lang="C++"><code>cv::blur(src, dst, cv::Size(5, 5));
+cv::GaussianBlur(src, dst, cv::Size(5, 5), 0);
+cv::medianBlur(src, dst, 5);
+cv::bilateralFilter(src, dst, 9, 50, 50);</code></pre>
+
+<p>
+  <code>GaussianBlur</code> 的第四个参数是 <code>sigmaX</code>；写成 0 时，
+  OpenCV 按核大小推导一个标准差。<code>bilateralFilter</code> 的第二个参数
+  <code>d</code> 是邻域直径，后两个参数分别是灰度差与空间距离的标准差。
+  <code>d</code> 不大于 0 时，邻域直径由 <code>sigmaSpace</code> 推导。
+</p>
+
+<h3 id="s2-1-2">噪声类型与选择</h3>
+
+<p>
+  高斯噪声给每个像素叠加一个近似正态分布的随机量，噪声遍布整幅图；
+  椒盐噪声把少量像素替换成 0 或 255，表现为孤立的黑点与白点。
+  方框平均与高斯滤波对高斯噪声有效，但会把椒盐点摊开成小斑；
+  中值滤波对椒盐噪声最有效，因为孤立的极值在排序后落到中间值之外。
+  双边滤波在平滑的同时保留强边缘，代价是计算量明显增加。
+</p>
+
+<p>
+  滤波通常放在阈值、边缘与轮廓之前，用于降低噪声引起的假目标与断裂。
+  滤波也会削弱细节，核越大，边缘越模糊。若后续需要精确的边沿位置，
+  应先在低分辨率或滤波后的图上搜索，再回到原图局部计算。
+</p>
+
+<h3 id="s2-1-3">完整例子：加噪与比较</h3>
+
+<p>
+  程序读入合成小球图，分别叠加固定种子的高斯噪声与椒盐噪声，
+  再对高斯噪声图做方框、高斯与双边滤波，对椒盐图做中值滤波。
+  平均绝对误差（MAE）先求两幅图的逐像素绝对差，再转成灰度求均值；
+  MAE 越小表示结果越接近无噪声原图。耗时对每种滤波重复五次取平均。
+</p>
+
+<pre data-lang="C++" data-name="2.1-smooth_denoise.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+cv::Mat add_gaussian_noise(const cv::Mat&amp; source, double sigma) {
+    cv::Mat noisy = source.clone();
+    cv::RNG rng(20261021);
+    for (int y = 0; y &lt; noisy.rows; ++y) {
+        for (int x = 0; x &lt; noisy.cols; ++x) {
+            cv::Vec3b&amp; pixel = noisy.at&lt;cv::Vec3b&gt;(y, x);
+            for (int c = 0; c &lt; 3; ++c) {
+                pixel[c] = cv::saturate_cast&lt;uchar&gt;(
+                    static_cast&lt;double&gt;(pixel[c]) + rng.gaussian(sigma));
+            }
+        }
+    }
+    return noisy;
+}
+
+cv::Mat add_salt_pepper(const cv::Mat&amp; source, int count) {
+    cv::Mat noisy = source.clone();
+    cv::RNG rng(20261022);
+    for (int i = 0; i &lt; count; ++i) {
+        const int x = rng.uniform(1, noisy.cols - 1);
+        const int y = rng.uniform(1, noisy.rows - 1);
+        const cv::Scalar color =
+            (i % 2 == 0) ? cv::Scalar(0, 0, 0) : cv::Scalar(255, 255, 255);
+        cv::rectangle(noisy, cv::Rect(x - 1, y - 1, 3, 3), color,
+                      cv::FILLED);
+    }
+    return noisy;
+}
+
+double mean_abs_diff(const cv::Mat&amp; a, const cv::Mat&amp; b) {
+    cv::Mat diff;
+    cv::absdiff(a, b, diff);
+    cv::Mat gray;
+    cv::cvtColor(diff, gray, cv::COLOR_BGR2GRAY);
+    return cv::mean(gray)[0];
+}
+
+double measure_ms(const cv::Mat&amp; input, int mode) {
+    cv::Mat output;
+    const int repeats = 5;
+    const int64 start = cv::getTickCount();
+    for (int i = 0; i &lt; repeats; ++i) {
+        if (mode == 0) {
+            cv::blur(input, output, cv::Size(5, 5));
+        } else if (mode == 1) {
+            cv::GaussianBlur(input, output, cv::Size(5, 5), 0);
+        } else if (mode == 2) {
+            cv::medianBlur(input, output, 5);
+        } else {
+            cv::bilateralFilter(input, output, 9, 50, 50);
+        }
+    }
+    const double ticks = static_cast&lt;double&gt;(cv::getTickCount() - start);
+    return ticks * 1000.0 / cv::getTickFrequency() / repeats;
+}
+
+void put_label(cv::Mat&amp; panel, const cv::Mat&amp; cell, int col, int row,
+               const std::string&amp; text) {
+    const int cell_width = 300;
+    const int cell_height = 340;
+    const int label_height = 28;
+    const int x = col * cell_width;
+    const int y = row * (cell_height + label_height);
+    cv::Mat resized;
+    cv::resize(cell, resized, cv::Size(cell_width, cell_height), 0, 0,
+               cv::INTER_AREA);
+    resized.copyTo(panel(cv::Rect(x, y + label_height, cell_width,
+                                  cell_height)));
+    cv::rectangle(panel, cv::Rect(x, y, cell_width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, text, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat clean = cv::imread(path, cv::IMREAD_COLOR);
+    if (clean.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    const cv::Mat gaussian_noise = add_gaussian_noise(clean, 14.0);
+    const cv::Mat salt_pepper =
+        add_salt_pepper(clean, clean.rows * clean.cols / 300);
+
+    cv::Mat blur;
+    cv::Mat gaussian;
+    cv::Mat median;
+    cv::Mat bilateral;
+    cv::blur(gaussian_noise, blur, cv::Size(5, 5));
+    cv::GaussianBlur(gaussian_noise, gaussian, cv::Size(5, 5), 0);
+    cv::medianBlur(salt_pepper, median, 5);
+    cv::bilateralFilter(gaussian_noise, bilateral, 9, 50, 50);
+
+    std::cout &lt;&lt; "clean to gaussian noise mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, gaussian_noise))
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "clean to salt&amp;pepper mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, salt_pepper))
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "blur mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, blur)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "gaussian mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, gaussian)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "median on salt&amp;pepper mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, median)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "bilateral mae="
+              &lt;&lt; cv::format("%.2f", mean_abs_diff(clean, bilateral)) &lt;&lt; '\n';
+
+    std::cout &lt;&lt; "time blur="
+              &lt;&lt; cv::format("%.2f", measure_ms(gaussian_noise, 0)) &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time gaussian="
+              &lt;&lt; cv::format("%.2f", measure_ms(gaussian_noise, 1)) &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time median="
+              &lt;&lt; cv::format("%.2f", measure_ms(salt_pepper, 2)) &lt;&lt; " ms\n";
+    std::cout &lt;&lt; "time bilateral="
+              &lt;&lt; cv::format("%.2f", measure_ms(gaussian_noise, 3))
+              &lt;&lt; " ms\n";
+
+    cv::Mat panel(2 * (340 + 28), 4 * 300, CV_8UC3, cv::Scalar(255, 255, 255));
+    put_label(panel, clean, 0, 0, "clean");
+    put_label(panel, gaussian_noise, 1, 0, "gaussian noise");
+    put_label(panel, salt_pepper, 2, 0, "salt &amp; pepper");
+    put_label(panel, blur, 3, 0, "blur 5x5");
+    put_label(panel, gaussian, 0, 1, "gaussian 5x5");
+    put_label(panel, median, 1, 1, "median 5 on salt");
+    put_label(panel, bilateral, 2, 1, "bilateral 9");
+    put_label(panel, clean, 3, 1, "clean (reference)");
+
+    const bool saved = cv::imwrite("out_smooth.png", panel);
+    std::cout &lt;&lt; "saved out_smooth.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.1-smooth_denoise.cpp -o smooth_denoise \
+    $(pkg-config --cflags --libs opencv4)
+./smooth_denoise</code></pre>
+
+<pre class="out" data-label="真实输出">clean to gaussian noise mae=11.16
+clean to salt&amp;pepper mae=3.77
+blur mae=2.36
+gaussian mae=3.11
+median on salt&amp;pepper mae=0.11
+bilateral mae=2.48
+time blur=1.43 ms
+time gaussian=0.23 ms
+time median=8.60 ms
+time bilateral=6.83 ms
+saved out_smooth.png: yes</pre>
+
+<p>
+  两组噪声的 MAE 不能直接比较：高斯噪声图的 MAE 是 11.16，椒盐图的 MAE 是 3.77，
+  但椒盐图的噪声点更集中。滤波结果也只能与对应的噪声图比较：
+  方框、高斯与双边滤波处理的是高斯噪声图，MAE 分别为 2.36、3.11 与 2.48；
+  中值滤波处理的是椒盐图，MAE 为 0.11。中值滤波在这个孤点噪声上优势明显。
+</p>
+
+<p>
+  耗时分别为 1.43、0.23、8.60 与 6.83 毫秒。高斯滤波可以分解为两次一维卷积，
+  在这个尺寸上最快；中值滤波需要排序，双边滤波需要逐邻域计算灰度权重，
+  两者都明显慢于前两者。耗时与机器、编译选项和图像尺寸有关，
+  这里只用于比较同一次运行中的相对快慢。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_smooth.png" alt="平滑对比：无噪声图、高斯噪声图、椒盐噪声图、方框滤波、高斯滤波、中值滤波与双边滤波的八格拼图" width="1200" height="736">
+  <figcaption>
+    上排从左到右为无噪声图、高斯噪声图、椒盐噪声图与 5×5 方框滤波；
+    下排为 5×5 高斯滤波、5×5 中值滤波、9 邻域双边滤波与无噪声参考图。
+    中值滤波几乎去掉了椒盐点，双边滤波保留了球体边缘。
+  </figcaption>
+</figure>
+
+<h3 id="s2-1-4">速度、参数与副作用</h3>
+
+<p>
+  <code>GaussianBlur</code> 的核大小必须为奇数，<code>medianBlur</code> 还要求
+  核大小大于 1；把 <code>cv::Size(4, 4)</code> 传给 <code>GaussianBlur</code>
+  或把偶数传给 <code>medianBlur</code>，OpenCV 会抛出断言错误。
+  <code>blur</code> 可以接受偶数核，本课仍统一用奇数。
+  核越大，平滑越强，边缘与小球边界也越模糊。
+</p>
+
+<p>
+  双边滤波的 <code>sigmaColor</code> 控制“多大的灰度差仍被视为同一区域”。
+  该值过大时，双边滤波接近高斯滤波；过小时，噪声几乎不被平滑。
+  <code>sigmaSpace</code> 控制空间邻域的范围。中值滤波只适合椒盐类噪声，
+  对高斯噪声的效果通常不如高斯滤波。
+</p>
+
+<p>
+  滤波后再做精细定位会引入系统偏移：平滑会把边缘两侧的灰度平均，
+  使检测到的边沿向灰度较低的一侧移动。需要亚像素位置时，应在原图上做局部拟合，
+  或使用不改变边缘位置的检测方法。
+</p>
+
+<div class="eg" id="e2-1">
+  <div class="eg-h">例题 · 单个脉冲的两种处理</div>
+  <p>题目：创建一个 5×5 的灰度图，所有像素为 100，在中心 (2,2) 写入 255。分别做 3×3 中值滤波与 3×3 高斯滤波，打印中心与左上角 (0,0) 的结果。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.1-eg-impulse.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat image(5, 5, CV_8UC1, cv::Scalar(100));
+    image.at&lt;uchar&gt;(2, 2) = 255;
+
+    cv::Mat median;
+    cv::Mat gaussian;
+    cv::medianBlur(image, median, 3);
+    cv::GaussianBlur(image, gaussian, cv::Size(3, 3), 0);
+
+    std::cout &lt;&lt; "median center="
+              &lt;&lt; static_cast&lt;int&gt;(median.at&lt;uchar&gt;(2, 2)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "gaussian center="
+              &lt;&lt; static_cast&lt;int&gt;(gaussian.at&lt;uchar&gt;(2, 2)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "median corner="
+              &lt;&lt; static_cast&lt;int&gt;(median.at&lt;uchar&gt;(0, 0)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "gaussian corner="
+              &lt;&lt; static_cast&lt;int&gt;(gaussian.at&lt;uchar&gt;(0, 0)) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.1-eg-impulse.cpp -o impulse \
+    $(pkg-config --cflags --libs opencv4)
+./impulse</code></pre>
+  <pre class="out" data-label="真实输出">median center=100
+gaussian center=139
+median corner=100
+gaussian corner=100</pre>
+  <p>3×3 邻域里有 8 个 100 和 1 个 255，排序后中值是 100，所以中值滤波把脉冲完全去掉；高斯滤波给中心像素较大的权重，中心变成 139。左上角的 3×3 邻域不包含 (2,2)，因此两种滤波都保持 100。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-1</div>
+  <p>创建一个 7×7 的灰度图，所有像素为 80；把 (3,3) 写成 0，把 (3,4) 写成 255。分别做 3×3 中值滤波与 3×3 高斯滤波，按顺序打印这两个位置在两种结果中的值。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">median pair: [80, 80]
+gaussian pair: [82, 114]</pre>
+  <details class="ans" data-run="示例代码/答案/2-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>中值滤波在每个 3×3 邻域内排序，0 与 255 都落在中间值之外，两个中心都回到 80；高斯滤波按距离加权，0 与 255 会互相影响，分别得到 82 与 114。</p>
+      <pre data-lang="C++" data-name="答案/2-1.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat image(7, 7, CV_8UC1, cv::Scalar(80));
+    image.at&lt;uchar&gt;(3, 3) = 0;
+    image.at&lt;uchar&gt;(3, 4) = 255;
+
+    cv::Mat median;
+    cv::Mat gaussian;
+    cv::medianBlur(image, median, 3);
+    cv::GaussianBlur(image, gaussian, cv::Size(3, 3), 0);
+
+    std::cout &lt;&lt; "median pair: ["
+              &lt;&lt; static_cast&lt;int&gt;(median.at&lt;uchar&gt;(3, 3)) &lt;&lt; ", "
+              &lt;&lt; static_cast&lt;int&gt;(median.at&lt;uchar&gt;(3, 4)) &lt;&lt; "]\n";
+    std::cout &lt;&lt; "gaussian pair: ["
+              &lt;&lt; static_cast&lt;int&gt;(gaussian.at&lt;uchar&gt;(3, 3)) &lt;&lt; ", "
+              &lt;&lt; static_cast&lt;int&gt;(gaussian.at&lt;uchar&gt;(3, 4)) &lt;&lt; "]\n";
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">median pair: [80, 80]
+gaussian pair: [82, 114]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>给图像叠加固定种子的高斯噪声或椒盐噪声；
+  按噪声类型选择方框、高斯、中值或双边滤波；解释中值滤波为什么能去掉孤立脉冲；
+  读懂 MAE 与耗时，并说明滤波对边缘定位的影响。
+</p>
+</section>
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>阈值：固定、Otsu、自适应</h2>
+
+<p>
+  阈值按像素值与阈值的比较结果生成输出。<code>BINARY</code> 与
+  <code>BINARY_INV</code> 得到二值掩码，其余类型保留一部分原灰度。
+  固定阈值适合光照稳定、目标与背景灰度差明显的图像；Otsu 从直方图自动选阈值；
+  自适应阈值在每个局部邻域内单独计算阈值，适合光照不均的图像。
+  三种方法的输入都必须是单通道图。
+</p>
+
+<h3 id="s2-2-1">五种阈值类型</h3>
+
+<p>
+  <code>cv::threshold(src, dst, thresh, maxval, type)</code> 对每个像素比较
+  <code>src</code> 与 <code>thresh</code>。五种类型的行为如下：
+</p>
+
+<table>
+  <thead>
+    <tr><th>类型</th><th>像素值大于阈值时</th><th>否则</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>THRESH_BINARY</code></td><td><code>maxval</code></td><td>0</td></tr>
+    <tr><td><code>THRESH_BINARY_INV</code></td><td>0</td><td><code>maxval</code></td></tr>
+    <tr><td><code>THRESH_TRUNC</code></td><td><code>thresh</code></td><td>原值</td></tr>
+    <tr><td><code>THRESH_TOZERO</code></td><td>原值</td><td>0</td></tr>
+    <tr><td><code>THRESH_TOZERO_INV</code></td><td>0</td><td>原值</td></tr>
+  </tbody>
+</table>
+
+<p>
+  “大于”是严格比较：像素值等于阈值时走“否则”一列。
+  <code>BINARY</code> 与 <code>BINARY_INV</code> 得到极性相反的掩码；
+  <code>TRUNC</code> 只截掉高亮部分；<code>TOZERO</code> 与
+  <code>TOZERO_INV</code> 保留一侧的原灰度。彩色图有三个通道，
+  直接传给 <code>threshold</code> 会触发断言错误，应先转成灰度，
+  或用 <code>inRange</code> 在 HSV 空间做颜色范围分割。
+</p>
+
+<h3 id="s2-2-2">Otsu 与自适应阈值</h3>
+
+<p>
+  Otsu 方法遍历所有候选阈值，选择使前景与背景类间方差最大的那个。
+  它适合直方图呈双峰的图像。调用时把阈值参数写成 0，并把
+  <code>THRESH_OTSU</code> 与 <code>THRESH_BINARY</code> 或
+  <code>THRESH_BINARY_INV</code> 按位或组合；函数返回实际选出的阈值。
+  Otsu 只支持 8 位单通道图，且假设整幅图的光照一致。
+</p>
+
+<p>
+  <code>adaptiveThreshold</code> 对每个像素取一个邻域，用邻域均值
+  （<code>ADAPTIVE_THRESH_MEAN_C</code>）或高斯加权均值
+  （<code>ADAPTIVE_THRESH_GAUSSIAN_C</code>）减去偏置 <code>C</code>
+  作为该像素的阈值。块大小必须是大于 1 的奇数。在
+  <code>THRESH_BINARY_INV</code> 下，偏置 <code>C</code> 越大，被判为前景的
+  像素越少；<code>THRESH_BINARY</code> 的方向相反。下面的例子用
+  <code>THRESH_BINARY_INV</code>，因为小球比局部背景暗。
+</p>
+
+<h3 id="s2-2-3">完整例子：五种类型与光照不均</h3>
+
+<p>
+  程序先对合成图做五种固定阈值，再用 Otsu 选阈值，用 HSV 的
+  <code>inRange</code> 分割绿色。随后把灰度图按从左到右的线性比例压暗，
+  模拟光照不均，比较固定阈值与自适应阈值。所有掩码的前景像素数都打印出来，
+  便于核对参数改变后的差异。
+</p>
+
+<pre data-lang="C++" data-name="2.2-threshold.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void add_cell(cv::Mat&amp; panel, const cv::Mat&amp; image, int index,
+              const std::string&amp; label, int columns, int cell_width,
+              int cell_height) {
+    const int label_height = 28;
+    const int col = index % columns;
+    const int row = index / columns;
+    const int x = col * cell_width;
+    const int y = row * (cell_height + label_height);
+    cv::Mat color;
+    if (image.channels() == 1) {
+        cv::cvtColor(image, color, cv::COLOR_GRAY2BGR);
+    } else {
+        color = image;
+    }
+    cv::Mat resized;
+    cv::resize(color, resized, cv::Size(cell_width, cell_height), 0, 0,
+               cv::INTER_AREA);
+    resized.copyTo(panel(cv::Rect(x, y + label_height, cell_width,
+                                  cell_height)));
+    cv::rectangle(panel, cv::Rect(x, y, cell_width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+    const char* names[] = {"BINARY", "BINARY_INV", "TRUNC", "TOZERO",
+                           "TOZERO_INV"};
+    const int types[] = {cv::THRESH_BINARY, cv::THRESH_BINARY_INV,
+                         cv::THRESH_TRUNC, cv::THRESH_TOZERO,
+                         cv::THRESH_TOZERO_INV};
+    cv::Mat masks[5];
+    for (int i = 0; i &lt; 5; ++i) {
+        cv::threshold(gray, masks[i], 190, 255, types[i]);
+        std::cout &lt;&lt; names[i] &lt;&lt; " nonzero=" &lt;&lt; cv::countNonZero(masks[i])
+                  &lt;&lt; '\n';
+    }
+
+    cv::Mat otsu_mask;
+    const double otsu = cv::threshold(gray, otsu_mask, 0, 255,
+                                      cv::THRESH_BINARY | cv::THRESH_OTSU);
+    std::cout &lt;&lt; "otsu threshold=" &lt;&lt; cv::format("%.1f", otsu)
+              &lt;&lt; " nonzero=" &lt;&lt; cv::countNonZero(otsu_mask) &lt;&lt; '\n';
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat green_mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255),
+                green_mask);
+    std::cout &lt;&lt; "green inRange nonzero=" &lt;&lt; cv::countNonZero(green_mask)
+              &lt;&lt; '\n';
+
+    cv::Mat uneven(gray.size(), CV_8UC1);
+    for (int y = 0; y &lt; gray.rows; ++y) {
+        for (int x = 0; x &lt; gray.cols; ++x) {
+            const double scale = 0.35 + 0.65 * x / (gray.cols - 1);
+            uneven.at&lt;uchar&gt;(y, x) = cv::saturate_cast&lt;uchar&gt;(
+                gray.at&lt;uchar&gt;(y, x) * scale);
+        }
+    }
+
+    cv::Mat uneven_fixed;
+    cv::threshold(uneven, uneven_fixed, 128, 255, cv::THRESH_BINARY);
+    std::cout &lt;&lt; "uneven fixed nonzero=" &lt;&lt; cv::countNonZero(uneven_fixed)
+              &lt;&lt; '\n';
+
+    cv::Mat adaptive_mask;
+    cv::adaptiveThreshold(uneven, adaptive_mask, 255,
+                          cv::ADAPTIVE_THRESH_MEAN_C,
+                          cv::THRESH_BINARY_INV, 151, 10);
+    std::cout &lt;&lt; "adaptive block=151 C=10 nonzero="
+              &lt;&lt; cv::countNonZero(adaptive_mask) &lt;&lt; '\n';
+
+    cv::Mat panel(3 * (340 + 28), 4 * 300, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    add_cell(panel, gray, 0, "gray", 4, 300, 340);
+    add_cell(panel, masks[0], 1, "BINARY 190", 4, 300, 340);
+    add_cell(panel, masks[1], 2, "BINARY_INV 190", 4, 300, 340);
+    add_cell(panel, masks[2], 3, "TRUNC 190", 4, 300, 340);
+    add_cell(panel, masks[3], 4, "TOZERO 190", 4, 300, 340);
+    add_cell(panel, masks[4], 5, "TOZERO_INV 190", 4, 300, 340);
+    add_cell(panel, otsu_mask, 6, "Otsu", 4, 300, 340);
+    add_cell(panel, green_mask, 7, "HSV green", 4, 300, 340);
+    add_cell(panel, uneven, 8, "uneven input", 4, 300, 340);
+    add_cell(panel, uneven_fixed, 9, "uneven fixed 128", 4, 300, 340);
+    add_cell(panel, adaptive_mask, 10, "uneven adaptive", 4, 300, 340);
+    add_cell(panel, gray, 11, "gray (reference)", 4, 300, 340);
+
+    const bool saved = cv::imwrite("out_threshold.png", panel);
+    std::cout &lt;&lt; "saved out_threshold.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.2-threshold.cpp -o threshold \
+    $(pkg-config --cflags --libs opencv4)
+./threshold</code></pre>
+
+<pre class="out" data-label="真实输出">BINARY nonzero=827022
+BINARY_INV nonzero=767119
+TRUNC nonzero=1594141
+TOZERO nonzero=827022
+TOZERO_INV nonzero=767119
+otsu threshold=191.0 nonzero=801525
+green inRange nonzero=176149
+uneven fixed nonzero=786336
+adaptive block=151 C=10 nonzero=109697
+saved out_threshold.png: yes</pre>
+
+<p>
+  固定阈值 190 下，<code>BINARY</code> 与 <code>TOZERO</code> 的前景像素数相同，
+  都是 827022，因为两者在大于阈值时都保留非零值；区别在于
+  <code>BINARY</code> 把前景统一成 255，<code>TOZERO</code> 保留原灰度。
+  <code>TRUNC</code> 的前景数是整幅图的像素总数 1594141，因为截断后所有像素都非零。
+  Otsu 选出的阈值是 191.0，前景数为 801525。
+</p>
+
+<p>
+  光照不均的输入上，固定阈值 128 得到 786336 个前景像素，右侧大面积背景被误判；
+  自适应阈值使用 151×151 的邻域与偏置 10，得到 109697 个前景像素，
+  更接近绿色小球的实际面积。151 是奇数，邻域足够覆盖一个小球及其周围背景。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_threshold.png" alt="阈值对比：灰度图、五种固定阈值、Otsu、HSV 绿色掩码，以及光照不均图的固定阈值与自适应阈值" width="1200" height="1104">
+  <figcaption>
+    十二格阈值结果。上两排是五种固定阈值与 Otsu、HSV 绿色掩码；
+    最下一排是光照不均输入、固定阈值 128 与自适应阈值的结果。
+    固定阈值在右侧亮背景下把大量背景判成前景，自适应阈值随局部亮度调整。
+  </figcaption>
+</figure>
+
+<h3 id="s2-2-4">参数与常见错误</h3>
+
+<p>
+  最常出现的错误是把三通道图直接传给 <code>threshold</code>。此时 OpenCV
+  报断言失败，程序终止；应先用 <code>cvtColor</code> 转灰度，或在 HSV 图上
+  用 <code>inRange</code>。第二个常见错误是掩码极性反了：
+  <code>BINARY</code> 让亮目标为白，<code>BINARY_INV</code> 让暗目标为白。
+  后续的形态学与轮廓默认把白色当作前景，极性反了会得到完全不同的结果。
+</p>
+
+<p>
+  自适应阈值的块大小写成偶数会触发断言；块太小会把球面纹理当背景，
+  块太大则接近全局阈值。在 <code>THRESH_BINARY_INV</code> 下，偏置
+  <code>C</code> 为负值时阈值升高、前景增多；为正值时阈值降低、前景减少。
+  <code>THRESH_BINARY</code> 的方向相反。Otsu 只在双峰直方图上可靠；
+  当背景亮度从一侧到另一侧连续变化时，直方图被摊平，Otsu 选出的单一阈值
+  无法同时适应两侧。
+</p>
+
+<div class="eg" id="e2-2">
+  <div class="eg-h">例题 · 阈值表</div>
+  <p>题目：创建一个 2×4 的灰度图，按行填入 0、60、120、180、240、255、100、200。以 128 为阈值，分别做 <code>THRESH_BINARY</code> 与 <code>THRESH_TRUNC</code>，按行打印结果。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.2-eg-threshold_table.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+void print_matrix(const cv::Mat&amp; image) {
+    for (int row = 0; row &lt; image.rows; ++row) {
+        std::cout &lt;&lt; '[';
+        for (int col = 0; col &lt; image.cols; ++col) {
+            if (col != 0) {
+                std::cout &lt;&lt; ", ";
+            }
+            std::cout &lt;&lt; static_cast&lt;int&gt;(image.at&lt;uchar&gt;(row, col));
+        }
+        std::cout &lt;&lt; "]\n";
+    }
+}
+
+}  // namespace
+
+int main() {
+    const unsigned char values[] = {0, 60, 120, 180, 240, 255, 100, 200};
+    cv::Mat image(2, 4, CV_8UC1);
+    std::copy(values, values + 8, image.ptr&lt;uchar&gt;(0));
+
+    cv::Mat binary;
+    cv::Mat truncated;
+    cv::threshold(image, binary, 128, 255, cv::THRESH_BINARY);
+    cv::threshold(image, truncated, 128, 255, cv::THRESH_TRUNC);
+
+    std::cout &lt;&lt; "BINARY 128:\n";
+    print_matrix(binary);
+    std::cout &lt;&lt; "TRUNC 128:\n";
+    print_matrix(truncated);
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.2-eg-threshold_table.cpp -o threshold_table \
+    $(pkg-config --cflags --libs opencv4)
+./threshold_table</code></pre>
+  <pre class="out" data-label="真实输出">BINARY 128:
+[0, 0, 0, 255]
+[255, 255, 0, 255]
+TRUNC 128:
+[0, 60, 120, 128]
+[128, 128, 100, 128]</pre>
+  <p>128 本身不大于 128，所以在 <code>BINARY</code> 中变成 0，在 <code>TRUNC</code> 中保留 128。小于阈值的像素在 <code>BINARY</code> 中变成 0；在 <code>TRUNC</code> 中保持原值。大于阈值的像素在 <code>BINARY</code> 中变成 255，在 <code>TRUNC</code> 中被压到 128。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-2</div>
+  <p>创建一个 2×4 的灰度图，按行填入 10、70、130、190、250、100、160、220。以 150 为阈值，分别做 <code>THRESH_BINARY_INV</code> 与 <code>THRESH_TOZERO</code>，按行打印结果。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">BINARY_INV 150:
+[255, 255, 255, 0]
+[0, 255, 0, 0]
+TOZERO 150:
+[0, 0, 0, 190]
+[250, 0, 160, 220]</pre>
+  <details class="ans" data-run="示例代码/答案/2-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p><code>BINARY_INV</code> 把大于 150 的像素置 0，其余置 255；<code>TOZERO</code> 把不大于 150 的像素置 0，其余保留原值。190、250、160、220 是保留下来的四个高值。</p>
+      <pre data-lang="C++" data-name="答案/2-2.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+void print_matrix(const cv::Mat&amp; image) {
+    for (int row = 0; row &lt; image.rows; ++row) {
+        std::cout &lt;&lt; '[';
+        for (int col = 0; col &lt; image.cols; ++col) {
+            if (col != 0) {
+                std::cout &lt;&lt; ", ";
+            }
+            std::cout &lt;&lt; static_cast&lt;int&gt;(image.at&lt;uchar&gt;(row, col));
+        }
+        std::cout &lt;&lt; "]\n";
+    }
+}
+
+}  // namespace
+
+int main() {
+    const unsigned char values[] = {10, 70, 130, 190,
+                                    250, 100, 160, 220};
+    cv::Mat image(2, 4, CV_8UC1);
+    std::copy(values, values + 8, image.ptr&lt;uchar&gt;(0));
+
+    cv::Mat inverted;
+    cv::Mat tozero;
+    cv::threshold(image, inverted, 150, 255, cv::THRESH_BINARY_INV);
+    cv::threshold(image, tozero, 150, 255, cv::THRESH_TOZERO);
+
+    std::cout &lt;&lt; "BINARY_INV 150:\n";
+    print_matrix(inverted);
+    std::cout &lt;&lt; "TOZERO 150:\n";
+    print_matrix(tozero);
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">BINARY_INV 150:
+[255, 255, 255, 0]
+[0, 255, 0, 0]
+TOZERO 150:
+[0, 0, 0, 190]
+[250, 0, 160, 220]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>对灰度图写出五种阈值；用 Otsu 自动选阈值并读出返回值；
+  在光照不均的图上选择自适应阈值并解释块大小与偏置的作用；
+  判断掩码极性是否与后续处理匹配。
+</p>
+</section>
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>形态学：腐蚀、膨胀、开、闭</h2>
+
+<p>
+  阈值得到的掩码常有小噪声、小孔与断裂。形态学用一个结构元在掩码上滑动，
+  按局部最小或最大值改写中心像素。腐蚀让白色区域收缩，膨胀让白色区域扩张；
+  把两者按不同顺序组合，就能去掉小噪声、填补小孔或连接邻近区域。
+</p>
+
+<h3 id="s2-3-1">结构元、腐蚀与膨胀</h3>
+
+<p>
+  <code>getStructuringElement</code> 生成结构元，形状可选矩形
+  <code>MORPH_RECT</code>、椭圆 <code>MORPH_ELLIPSE</code> 与十字
+  <code>MORPH_CROSS</code>。尺寸写成 <code>cv::Size(k, k)</code>，
+  <code>k</code> 为奇数时结构元有明确的中心。圆形目标通常用椭圆结构元，
+  水平和垂直结构用十字更合适。
+</p>
+
+<p>
+  <code>erode</code> 取结构元覆盖区域的最小值：白色前景中的小突起被削掉，
+  整体向内收缩。<code>dilate</code> 取最大值：白色区域向外扩张，
+  小孔与裂缝被填上。对二值掩码，腐蚀与膨胀也可以理解为“前景像素是否
+  全部/任一落在结构元内”。核越大，收缩或扩张越明显。
+</p>
+
+<h3 id="s2-3-2">开、闭与派生运算</h3>
+
+<p>
+  <code>morphologyEx</code> 组合基本运算：
+</p>
+
+<table>
+  <thead>
+    <tr><th>操作</th><th>等价过程</th><th>典型作用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>MORPH_OPEN</code></td><td>先腐蚀，再膨胀</td><td>去掉小白色噪声，保持大目标尺寸</td></tr>
+    <tr><td><code>MORPH_CLOSE</code></td><td>先膨胀，再腐蚀</td><td>填小孔，连接窄断裂</td></tr>
+    <tr><td><code>MORPH_GRADIENT</code></td><td>膨胀图减腐蚀图</td><td>得到目标边界带</td></tr>
+    <tr><td><code>MORPH_TOPHAT</code></td><td>原图减开运算</td><td>突出比核小的亮细节</td></tr>
+    <tr><td><code>MORPH_BLACKHAT</code></td><td>闭运算减原图</td><td>突出比核小的暗细节</td></tr>
+  </tbody>
+</table>
+
+<p>
+  开运算先腐蚀去掉小噪声，再膨胀恢复大目标的尺寸，因此大目标面积基本不变；
+  闭运算先膨胀填孔，再腐蚀恢复外轮廓。开运算不能填孔，闭运算不能去白噪声。
+  若先闭后开，闭运算可能先把相邻目标连成一片，开运算无法保证再把它们分开。
+</p>
+
+<h3 id="s2-3-3">完整例子：清理噪声掩码</h3>
+
+<p>
+  程序由绿色范围得到干净掩码，再向掩码中加入 400 个 3×3 白点和 400 个
+  5×5 黑点，模拟阈值后的小噪声与小孔。使用 7×7 椭圆结构元分别做腐蚀、
+  膨胀、开、闭、梯度、顶帽与黑帽，并统计每种结果的非零像素数与外部轮廓数。
+  其中外部轮廓数用 <code>findContours</code> 统计；这里只关心数量，
+  函数细节见第 3 部分。
+</p>
+
+<pre data-lang="C++" data-name="2.3-morphology.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void add_cell(cv::Mat&amp; panel, const cv::Mat&amp; image, int index,
+              const std::string&amp; label, int columns, int cell_width,
+              int cell_height) {
+    const int label_height = 28;
+    const int col = index % columns;
+    const int row = index / columns;
+    const int x = col * cell_width;
+    const int y = row * (cell_height + label_height);
+    cv::Mat color;
+    if (image.channels() == 1) {
+        cv::cvtColor(image, color, cv::COLOR_GRAY2BGR);
+    } else {
+        color = image;
+    }
+    cv::Mat resized;
+    cv::resize(color, resized, cv::Size(cell_width, cell_height), 0, 0,
+               cv::INTER_AREA);
+    resized.copyTo(panel(cv::Rect(x, y + label_height, cell_width,
+                                  cell_height)));
+    cv::rectangle(panel, cv::Rect(x, y, cell_width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+int contour_count(const cv::Mat&amp; mask) {
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    return static_cast&lt;int&gt;(contours.size());
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat clean_mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255),
+                clean_mask);
+
+    cv::Mat noisy = clean_mask.clone();
+    cv::RNG rng(20261023);
+    for (int i = 0; i &lt; 400; ++i) {
+        const int x = rng.uniform(0, noisy.cols - 3);
+        const int y = rng.uniform(0, noisy.rows - 3);
+        cv::rectangle(noisy, cv::Rect(x, y, 3, 3), cv::Scalar(255),
+                      cv::FILLED);
+    }
+    for (int i = 0; i &lt; 400; ++i) {
+        const int x = rng.uniform(0, noisy.cols - 5);
+        const int y = rng.uniform(0, noisy.rows - 5);
+        cv::rectangle(noisy, cv::Rect(x, y, 5, 5), cv::Scalar(0),
+                      cv::FILLED);
+    }
+
+    const cv::Mat kernel =
+        cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(7, 7));
+    cv::Mat eroded;
+    cv::Mat dilated;
+    cv::Mat opened;
+    cv::Mat closed;
+    cv::Mat gradient;
+    cv::Mat tophat;
+    cv::Mat blackhat;
+    cv::erode(noisy, eroded, kernel);
+    cv::dilate(noisy, dilated, kernel);
+    cv::morphologyEx(noisy, opened, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(noisy, closed, cv::MORPH_CLOSE, kernel);
+    cv::morphologyEx(noisy, gradient, cv::MORPH_GRADIENT, kernel);
+    cv::morphologyEx(noisy, tophat, cv::MORPH_TOPHAT, kernel);
+    cv::morphologyEx(noisy, blackhat, cv::MORPH_BLACKHAT, kernel);
+
+    struct Row {
+        const char* name;
+        const cv::Mat* mask;
+        bool binary;
+    };
+    const Row rows[] = {
+        {"noisy", &amp;noisy, true},     {"erode", &amp;eroded, true},
+        {"dilate", &amp;dilated, true},  {"open", &amp;opened, true},
+        {"close", &amp;closed, true},    {"gradient", &amp;gradient, false},
+        {"tophat", &amp;tophat, false},  {"blackhat", &amp;blackhat, false},
+        {"clean", &amp;clean_mask, true}};
+    for (const Row&amp; row : rows) {
+        std::cout &lt;&lt; row.name &lt;&lt; " nonzero="
+                  &lt;&lt; cv::countNonZero(*row.mask);
+        if (row.binary) {
+            std::cout &lt;&lt; " contours=" &lt;&lt; contour_count(*row.mask);
+        }
+        std::cout &lt;&lt; '\n';
+    }
+
+    cv::Mat panel(3 * (340 + 28), 3 * 300, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    add_cell(panel, noisy, 0, "noisy mask", 3, 300, 340);
+    add_cell(panel, eroded, 1, "erode 7x7", 3, 300, 340);
+    add_cell(panel, dilated, 2, "dilate 7x7", 3, 300, 340);
+    add_cell(panel, opened, 3, "open 7x7", 3, 300, 340);
+    add_cell(panel, closed, 4, "close 7x7", 3, 300, 340);
+    add_cell(panel, gradient, 5, "gradient", 3, 300, 340);
+    add_cell(panel, tophat, 6, "tophat", 3, 300, 340);
+    add_cell(panel, blackhat, 7, "blackhat", 3, 300, 340);
+    add_cell(panel, clean_mask, 8, "clean mask", 3, 300, 340);
+
+    const bool saved = cv::imwrite("out_morph.png", panel);
+    std::cout &lt;&lt; "saved out_morph.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.3-morphology.cpp -o morphology \
+    $(pkg-config --cflags --libs opencv4)
+./morphology</code></pre>
+
+<pre class="out" data-label="真实输出">noisy nonzero=178234 contours=379
+erode nonzero=152026 contours=22
+dilate nonzero=220322 contours=361
+open nonzero=174662 contours=22
+close nonzero=179463 contours=367
+gradient nonzero=68296
+tophat nonzero=3572
+blackhat nonzero=1229
+clean nonzero=176149 contours=22
+saved out_morph.png: yes</pre>
+
+<p>
+  噪声掩码有 178234 个非零像素与 379 个外部轮廓；干净掩码是 176149 个
+  非零像素与 22 个轮廓。开运算得到 174662 个非零像素与 22 个轮廓，
+  白点噪声基本被去掉，轮廓数回到目标数；闭运算得到 179463 个非零像素与
+  367 个轮廓，它填上了小球内部的黑孔，但没有去掉外面的白点，所以轮廓数仍然很多。
+  这说明开与闭针对的是两类不同噪声，不能互相替代。
+</p>
+
+<p>
+  腐蚀把非零像素降到 152026，轮廓数降到 22，但每个球都变小了；
+  膨胀把非零像素升到 220322，轮廓数仍有 361，因为白点也被放大。
+  梯度只保留边界带，非零像素为 68296；顶帽与黑帽分别突出亮细节与暗细节，
+  非零像素为 3572 与 1229。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_morph.png" alt="形态学对比：含噪掩码、腐蚀、膨胀、开、闭、梯度、顶帽、黑帽与干净掩码的九格拼图" width="900" height="1104">
+  <figcaption>
+    九格形态学结果。开运算去掉了白色小点并保持球的尺寸；
+    闭运算填上了球内的黑孔；梯度显示边界带；顶帽与黑帽只留下比结构元更小的亮暗细节。
+  </figcaption>
+</figure>
+
+<h3 id="s2-3-4">核大小与运算顺序</h3>
+
+<p>
+  核大小应相对于目标的像素尺寸选择，而不是固定写成 7×7。图像分辨率提高一倍时，
+  同一个物理目标占用的像素数也大约翻倍，核也应随之调整。核大于相邻目标的间距时，
+  膨胀或闭运算会把它们连成一个轮廓；核小于噪声尺寸时，开运算去不掉噪声。
+</p>
+
+<p>
+  清理掩码的常用顺序是先开运算去小白点，再闭运算填小黑孔。反过来先闭后开，
+  闭运算可能把靠近的目标连接起来，开运算只能缩小连接处，无法保证重新分开。
+  本课只把形态学用于单通道掩码。彩色图也能直接做形态学，但每个通道独立处理，
+  结果的彩色关系不再有明确意义。需要处理彩色图时，应先得到掩码，
+  再用掩码对原图做 <code>copyTo</code> 或 <code>bitwise_and</code>。
+</p>
+
+<div class="eg" id="e2-3">
+  <div class="eg-h">例题 · 开运算去掉孤立点</div>
+  <p>题目：创建一个 9×9 的二值掩码，在 <code>Rect(2, 2, 4, 4)</code> 内填白，再在 (7,7) 放一个孤立白点。用 3×3 矩形结构元分别做腐蚀与开运算，打印输入、腐蚀结果与开结果的非零像素数和外部轮廓数。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.3-eg-open_pixel.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+int count_contours(const cv::Mat&amp; mask) {
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    return static_cast&lt;int&gt;(contours.size());
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(9, 9, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(2, 2, 4, 4), cv::Scalar(255), cv::FILLED);
+    mask.at&lt;uchar&gt;(7, 7) = 255;
+
+    const cv::Mat kernel =
+        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    cv::Mat eroded;
+    cv::Mat opened;
+    cv::erode(mask, eroded, kernel);
+    cv::morphologyEx(mask, opened, cv::MORPH_OPEN, kernel);
+
+    std::cout &lt;&lt; "input nonzero=" &lt;&lt; cv::countNonZero(mask)
+              &lt;&lt; " contours=" &lt;&lt; count_contours(mask) &lt;&lt; '\n';
+    std::cout &lt;&lt; "erode nonzero=" &lt;&lt; cv::countNonZero(eroded)
+              &lt;&lt; " contours=" &lt;&lt; count_contours(eroded) &lt;&lt; '\n';
+    std::cout &lt;&lt; "open nonzero=" &lt;&lt; cv::countNonZero(opened)
+              &lt;&lt; " contours=" &lt;&lt; count_contours(opened) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.3-eg-open_pixel.cpp -o open_pixel \
+    $(pkg-config --cflags --libs opencv4)
+./open_pixel</code></pre>
+  <pre class="out" data-label="真实输出">input nonzero=17 contours=2
+erode nonzero=4 contours=1
+open nonzero=16 contours=1</pre>
+  <p>腐蚀把 4×4 方块缩成 2×2，同时去掉孤立点，非零像素从 17 降到 4；开运算再膨胀回 4×4，非零像素回到 16，孤立点没有恢复。输入有两个外部轮廓，腐蚀与开运算都只剩一个。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-3</div>
+  <p>创建一个 10×10 的二值掩码，在 <code>Rect(1, 3, 3, 3)</code> 与 <code>Rect(5, 3, 3, 3)</code> 各填一个 3×3 白方块，两块之间隔一列。用 3×3 矩形结构元做闭运算，打印处理前后的非零像素数与外部轮廓数。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">before nonzero=18 contours=2
+after nonzero=24 contours=1</pre>
+  <details class="ans" data-run="示例代码/答案/2-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>闭运算的膨胀先把两个方块在中间一列接上，随后的腐蚀保留连接处，两个外部轮廓合成一个。非零像素数从 18 增加到 24，轮廓数从 2 降到 1。</p>
+      <pre data-lang="C++" data-name="答案/2-3.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+int count_contours(const cv::Mat&amp; mask) {
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask.clone(), contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    return static_cast&lt;int&gt;(contours.size());
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat mask = cv::Mat::zeros(10, 10, CV_8UC1);
+    cv::rectangle(mask, cv::Rect(1, 3, 3, 3), cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(5, 3, 3, 3), cv::Scalar(255), cv::FILLED);
+
+    const cv::Mat kernel =
+        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    cv::Mat closed;
+    cv::morphologyEx(mask, closed, cv::MORPH_CLOSE, kernel);
+
+    std::cout &lt;&lt; "before nonzero=" &lt;&lt; cv::countNonZero(mask)
+              &lt;&lt; " contours=" &lt;&lt; count_contours(mask) &lt;&lt; '\n';
+    std::cout &lt;&lt; "after nonzero=" &lt;&lt; cv::countNonZero(closed)
+              &lt;&lt; " contours=" &lt;&lt; count_contours(closed) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">before nonzero=18 contours=2
+after nonzero=24 contours=1</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>按目标形状选择矩形、椭圆或十字结构元；
+  用腐蚀与膨胀改变掩码的尺寸；用开运算去小白点、闭运算填小黑孔；
+  统计处理前后的非零像素与轮廓数，并解释核大小与运算顺序的影响。
+</p>
+</section>
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>边缘：Sobel、Laplacian、Canny</h2>
+
+<p>
+  边缘是灰度变化明显的像素集合。Sobel 用一阶差分估计水平与垂直方向的梯度；
+  Laplacian 用二阶差分检测灰度变化；Canny 在梯度图上做非极大值抑制与双阈值连接，
+  得到细而连续的单像素边缘。边缘图常用于定位目标边界，也可作为轮廓提取的输入。
+</p>
+
+<h3 id="s2-4-1">Sobel 与梯度</h3>
+
+<p>
+  <code>cv::Sobel(src, dst, ddepth, dx, dy, ksize)</code> 的 <code>dx</code>
+  与 <code>dy</code> 指定求导方向。常用的组合是 <code>(1,0)</code> 求水平梯度、
+  <code>(0,1)</code> 求垂直梯度。输出深度用 <code>CV_16S</code> 保存负值，
+  再用 <code>convertScaleAbs</code> 取绝对值并转换为 8 位图。
+  <code>Sobel</code> 的 x 方向对垂直边缘响应强，y 方向对水平边缘响应强。
+</p>
+
+<p>
+  梯度幅值可以近似写成
+  <code>addWeighted(sobel_x, 0.5, sobel_y, 0.5, 0.0, magnitude)</code>；
+  它只是两个方向绝对值的加权和，不是严格的
+  <code>sqrt(gx² + gy²)</code>。梯度方向由
+  <code>atan2(gy, gx)</code> 得到，可用于描述边缘的法线方向。
+  对彩色图做 Sobel 会逐通道处理，通常先转灰度，避免三个通道的边缘互相干扰。
+</p>
+
+<h3 id="s2-4-2">Laplacian 与 Canny</h3>
+
+<p>
+  <code>cv::Laplacian</code> 计算二阶导数，对灰度变化的拐点敏感，
+  对噪声也更敏感。调用前通常先做 3×3 高斯平滑；输出同样用
+  <code>CV_16S</code> 保存，再 <code>convertScaleAbs</code>。
+  Laplacian 不区分方向，适合检测各方向的快速变化，但不适合直接作为目标轮廓。
+</p>
+
+<p>
+  Canny 的步骤是：高斯平滑、计算梯度幅值与方向、非极大值抑制、
+  双阈值滞后连接。低阈值决定哪些弱边缘被保留，高阈值决定强边缘的起点；
+  常用高低阈值比例约为 2:1 到 3:1。输出是 8 位单通道图，
+  边缘像素为 255，其余为 0。Canny 给出的是单像素宽的开曲线，
+  不保证闭合，不能直接当作轮廓使用。
+</p>
+
+<h3 id="s2-4-3">完整例子：四种边缘图</h3>
+
+<p>
+  程序转灰度后做 3×3 高斯平滑，分别计算 Sobel x、Sobel y、近似梯度幅值、
+  Laplacian 与两组 Canny 阈值。每个结果都统计大于 50 的像素数或非零像素数。
+  为了让缩略图中的单像素 Canny 线可见，面板里另外做了 3×3 膨胀，
+  但上面的计数仍使用膨胀前的图。
+</p>
+
+<pre data-lang="C++" data-name="2.4-edges.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void add_cell(cv::Mat&amp; panel, const cv::Mat&amp; image, int index,
+              const std::string&amp; label, int columns, int cell_width,
+              int cell_height) {
+    const int label_height = 28;
+    const int col = index % columns;
+    const int row = index / columns;
+    const int x = col * cell_width;
+    const int y = row * (cell_height + label_height);
+    cv::Mat color;
+    if (image.channels() == 1) {
+        cv::cvtColor(image, color, cv::COLOR_GRAY2BGR);
+    } else {
+        color = image;
+    }
+    cv::Mat resized;
+    cv::resize(color, resized, cv::Size(cell_width, cell_height), 0, 0,
+               cv::INTER_LINEAR);
+    resized.copyTo(panel(cv::Rect(x, y + label_height, cell_width,
+                                  cell_height)));
+    cv::rectangle(panel, cv::Rect(x, y, cell_width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+int count_above(const cv::Mat&amp; image, int value) {
+    cv::Mat binary;
+    cv::threshold(image, binary, value, 255, cv::THRESH_BINARY);
+    return cv::countNonZero(binary);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat blurred;
+    cv::GaussianBlur(gray, blurred, cv::Size(3, 3), 0);
+
+    cv::Mat sobel_x16;
+    cv::Mat sobel_y16;
+    cv::Sobel(blurred, sobel_x16, CV_16S, 1, 0, 3);
+    cv::Sobel(blurred, sobel_y16, CV_16S, 0, 1, 3);
+    cv::Mat sobel_x;
+    cv::Mat sobel_y;
+    cv::convertScaleAbs(sobel_x16, sobel_x);
+    cv::convertScaleAbs(sobel_y16, sobel_y);
+
+    cv::Mat magnitude;
+    cv::addWeighted(sobel_x, 0.5, sobel_y, 0.5, 0.0, magnitude);
+
+    cv::Mat laplacian16;
+    cv::Laplacian(blurred, laplacian16, CV_16S, 3);
+    cv::Mat laplacian;
+    cv::convertScaleAbs(laplacian16, laplacian);
+
+    cv::Mat canny_low;
+    cv::Mat canny_high;
+    cv::Canny(blurred, canny_low, 50, 150, 3);
+    cv::Canny(blurred, canny_high, 100, 200, 3);
+
+    std::cout &lt;&lt; "sobel x &gt;50=" &lt;&lt; count_above(sobel_x, 50) &lt;&lt; '\n';
+    std::cout &lt;&lt; "sobel y &gt;50=" &lt;&lt; count_above(sobel_y, 50) &lt;&lt; '\n';
+    std::cout &lt;&lt; "magnitude &gt;50=" &lt;&lt; count_above(magnitude, 50) &lt;&lt; '\n';
+    std::cout &lt;&lt; "laplacian &gt;50=" &lt;&lt; count_above(laplacian, 50) &lt;&lt; '\n';
+    std::cout &lt;&lt; "canny 50/150=" &lt;&lt; cv::countNonZero(canny_low) &lt;&lt; '\n';
+    std::cout &lt;&lt; "canny 100/200=" &lt;&lt; cv::countNonZero(canny_high) &lt;&lt; '\n';
+
+    // Canny 输出是单像素宽的线，缩到三分之一后会在缩略图里断开。
+    // 面板里用的副本先做 3x3 膨胀；上面的计数仍是膨胀前的。
+    const cv::Mat view_kernel =
+        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    cv::Mat canny_low_view;
+    cv::Mat canny_high_view;
+    cv::dilate(canny_low, canny_low_view, view_kernel);
+    cv::dilate(canny_high, canny_high_view, view_kernel);
+
+    cv::Mat panel(3 * (340 + 28), 3 * 300, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    add_cell(panel, gray, 0, "gray", 3, 300, 340);
+    add_cell(panel, sobel_x, 1, "sobel x", 3, 300, 340);
+    add_cell(panel, sobel_y, 2, "sobel y", 3, 300, 340);
+    add_cell(panel, magnitude, 3, "sobel magnitude", 3, 300, 340);
+    add_cell(panel, laplacian, 4, "laplacian", 3, 300, 340);
+    add_cell(panel, canny_low_view, 5, "canny 50/150 (3x3 view)", 3, 300,
+             340);
+    add_cell(panel, canny_high_view, 6, "canny 100/200 (3x3 view)", 3, 300,
+             340);
+    add_cell(panel, blurred, 7, "blurred input", 3, 300, 340);
+    add_cell(panel, gray, 8, "gray (reference)", 3, 300, 340);
+
+    const bool saved = cv::imwrite("out_edges.png", panel);
+    std::cout &lt;&lt; "saved out_edges.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.4-edges.cpp -o edges \
+    $(pkg-config --cflags --libs opencv4)
+./edges</code></pre>
+
+<pre class="out" data-label="真实输出">sobel x &gt;50=8508
+sobel y &gt;50=8482
+magnitude &gt;50=9549
+laplacian &gt;50=2986
+canny 50/150=4692
+canny 100/200=3199
+saved out_edges.png: yes</pre>
+
+<p>
+  Sobel x 与 y 的强响应像素数接近，分别为 8508 与 8482；近似幅值把两者合并，
+  得到 9549。Laplacian 的强响应为 2986，数量少于 Sobel，因为二阶差分只在
+  灰度变化的拐点附近响应。Canny 50/150 得到 4692 个边缘像素，
+  100/200 得到 3199 个；提高阈值后，弱边缘被去掉，线条更稀疏。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_edges.png" alt="边缘对比：灰度图、Sobel x、Sobel y、近似梯度幅值、Laplacian、两组 Canny、平滑输入与灰度参考" width="900" height="1104">
+  <figcaption>
+    九格边缘结果。Sobel x 强调垂直边缘，Sobel y 强调水平边缘；
+    Laplacian 给出双向响应；两组 Canny 的阈值不同，高阈值结果更稀疏。
+    Canny 面板经过 3×3 膨胀以便在缩略图中看清，计数未使用膨胀图。
+  </figcaption>
+</figure>
+
+<h3 id="s2-4-4">阈值与后续处理</h3>
+
+<p>
+  Canny 的高阈值过高时，边缘会在弱对比处断裂；阈值过低时，噪声与纹理都会
+  变成边缘。应结合图像对比度调整，而不是固定使用一组阈值。
+  <code>L2gradient</code> 为 <code>true</code> 时用平方和开方计算幅值，
+  更准确但更慢；默认的 <code>false</code> 使用绝对值之和。
+</p>
+
+<p>
+  把 Canny 结果直接传给 <code>findContours</code> 通常得不到闭合的目标轮廓：
+  边缘可能断开，也可能在目标内部形成多条线。需要闭合轮廓时，可先做膨胀
+  或闭运算连接断点，再用轮廓面积、周长等条件筛选；也可以改用阈值掩码提取轮廓。
+  Sobel 输出若不经过 <code>convertScaleAbs</code>，负梯度会被截断为 0，
+  边缘会丢失一半。
+</p>
+
+<div class="eg" id="e2-4">
+  <div class="eg-h">例题 · 阶跃边缘</div>
+  <p>题目：创建一个 9×9 灰度图，左半部分为 0，右半部分为 255。做 3×3 Sobel x 并转成 8 位，打印中心行 (4,3)、(4,4)、(4,5) 的值，统计大于 100 的像素数；再做 Canny 50/150，打印非零像素数。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.4-eg-sobel_line.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+int count_above(const cv::Mat&amp; image, int value) {
+    cv::Mat binary;
+    cv::threshold(image, binary, value, 255, cv::THRESH_BINARY);
+    return cv::countNonZero(binary);
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::Mat::zeros(9, 9, CV_8UC1);
+    image.colRange(4, 9).setTo(cv::Scalar(255));
+
+    cv::Mat sobel_x16;
+    cv::Sobel(image, sobel_x16, CV_16S, 1, 0, 3);
+    cv::Mat sobel_x;
+    cv::convertScaleAbs(sobel_x16, sobel_x);
+
+    cv::Mat edges;
+    cv::Canny(image, edges, 50, 150, 3);
+
+    std::cout &lt;&lt; "gx(4,3)=" &lt;&lt; static_cast&lt;int&gt;(sobel_x.at&lt;uchar&gt;(4, 3))
+              &lt;&lt; " gx(4,4)=" &lt;&lt; static_cast&lt;int&gt;(sobel_x.at&lt;uchar&gt;(4, 4))
+              &lt;&lt; " gx(4,5)=" &lt;&lt; static_cast&lt;int&gt;(sobel_x.at&lt;uchar&gt;(4, 5))
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "gx &gt;100=" &lt;&lt; count_above(sobel_x, 100) &lt;&lt; '\n';
+    std::cout &lt;&lt; "canny nonzero=" &lt;&lt; cv::countNonZero(edges) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.4-eg-sobel_line.cpp -o sobel_line \
+    $(pkg-config --cflags --libs opencv4)
+./sobel_line</code></pre>
+  <pre class="out" data-label="真实输出">gx(4,3)=255 gx(4,4)=255 gx(4,5)=0
+gx &gt;100=18
+canny nonzero=9</pre>
+  <p>阶跃位于第 4 列左侧，3×3 Sobel 在 (4,3) 与 (4,4) 两列都给出 255，所以边缘是一条两像素宽的带；Canny 经过非极大值抑制，只留下 9 个单像素边缘点。Sobel 的响应宽度由核大小与阶跃位置共同决定，不能把每个强响应都当成一条独立边缘。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-4</div>
+  <p>创建一个 11×11 灰度图，在 <code>Rect(3, 3, 5, 5)</code> 内填 255，其余为 0。分别做 3×3 Sobel x 与 Sobel y 并转成 8 位，打印 (4,3) 处的 x 响应与 (3,4) 处的 y 响应，统计两幅图中大于 100 的像素数；再做 Canny 50/150，打印非零像素数。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">gx(4,3)=255 gy(3,4)=255
+gx &gt;100=28
+gy &gt;100=28
+canny nonzero=16</pre>
+  <details class="ans" data-run="示例代码/答案/2-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>方块的左右边由 Sobel x 响应，上下边由 Sobel y 响应；3×3 核使每条边形成两像素宽的响应带，因此两幅图的强响应数都是 28。Canny 把每条边细化为一条单像素线，外圈共有 16 个边缘像素。</p>
+      <pre data-lang="C++" data-name="答案/2-4.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+int count_above(const cv::Mat&amp; image, int value) {
+    cv::Mat binary;
+    cv::threshold(image, binary, value, 255, cv::THRESH_BINARY);
+    return cv::countNonZero(binary);
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image = cv::Mat::zeros(11, 11, CV_8UC1);
+    cv::rectangle(image, cv::Rect(3, 3, 5, 5), cv::Scalar(255),
+                  cv::FILLED);
+
+    cv::Mat sobel_x16;
+    cv::Mat sobel_y16;
+    cv::Sobel(image, sobel_x16, CV_16S, 1, 0, 3);
+    cv::Sobel(image, sobel_y16, CV_16S, 0, 1, 3);
+    cv::Mat sobel_x;
+    cv::Mat sobel_y;
+    cv::convertScaleAbs(sobel_x16, sobel_x);
+    cv::convertScaleAbs(sobel_y16, sobel_y);
+
+    cv::Mat edges;
+    cv::Canny(image, edges, 50, 150, 3);
+
+    std::cout &lt;&lt; "gx(4,3)=" &lt;&lt; static_cast&lt;int&gt;(sobel_x.at&lt;uchar&gt;(4, 3))
+              &lt;&lt; " gy(3,4)=" &lt;&lt; static_cast&lt;int&gt;(sobel_y.at&lt;uchar&gt;(3, 4))
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "gx &gt;100=" &lt;&lt; count_above(sobel_x, 100) &lt;&lt; '\n';
+    std::cout &lt;&lt; "gy &gt;100=" &lt;&lt; count_above(sobel_y, 100) &lt;&lt; '\n';
+    std::cout &lt;&lt; "canny nonzero=" &lt;&lt; cv::countNonZero(edges) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">gx(4,3)=255 gy(3,4)=255
+gx &gt;100=28
+gy &gt;100=28
+canny nonzero=16</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 Sobel 分别求水平与垂直梯度并转成可显示的 8 位图；
+  用 Laplacian 观察二阶变化；用两组 Canny 阈值比较边缘密度；
+  解释 Canny 结果为什么不能直接当作闭合轮廓。
+</p>
+</section>
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>直方图与曝光</h2>
+
+<p>
+  灰度直方图统计每个灰度级出现的像素数。它能直接反映曝光与对比度：
+  像素集中在低灰度端说明欠曝，集中在高灰度端说明过曝，
+  分布很窄说明对比度低，在 0 或 255 处堆积说明有截断。
+  直方图均衡化与 CLAHE 通过重新分配灰度级来增强对比度，但会改变原始灰度关系。
+</p>
+
+<h3 id="s2-5-1">calcHist 与直方图</h3>
+
+<p>
+  <code>cv::calcHist(&images, 1, channels, mask, hist, 1, histSize, ranges)</code>
+  计算直方图。输入可以是多幅图组成的数组；<code>channels</code> 指定使用哪些通道；
+  <code>mask</code> 为空时统计整幅图；<code>histSize</code> 是每个维度的箱数；
+  <code>ranges</code> 给出每个维度的取值范围。返回的 <code>hist</code> 是
+  <code>CV_32F</code> 矩阵，元素是像素计数。
+</p>
+
+<p>
+  直接按最大计数归一化时，背景集中在少数灰度级，曲线只剩一根尖峰。
+  常见做法是取对数 <code>log(1 + count)</code> 后再归一化到显示高度，
+  纵轴标注为对数计数。归一化只影响显示，不改变直方图的统计含义。
+</p>
+
+<h3 id="s2-5-2">equalizeHist 与 CLAHE</h3>
+
+<p>
+  <code>equalizeHist</code> 根据累积分布函数把输入灰度映射到 0–255，
+  使输出直方图尽量平坦。它只接受 8 位单通道图；彩色图需要先转换到
+  HSV 或 Lab，对 V 或 L 通道做均衡化，再转换回 BGR。
+  全局均衡化会同时放大噪声；输入灰度级本身很少时，输出会出现明显的条带，
+  因为均衡化只能拉伸已有灰度级，不能生成缺失的灰度级。
+</p>
+
+<p>
+  CLAHE（限制对比度的自适应直方图均衡化）把图像分成若干小块，
+  在每个小块内做均衡化，并用 <code>clipLimit</code> 限制直方图峰值，
+  抑制噪声放大。<code>tileGridSize</code> 决定分块数量，块越小局部性越强，
+  块边界也越容易出现不连续。它处理单通道 8 位或 16 位图；本课使用 8 位图。
+</p>
+
+<h3 id="s2-5-3">完整例子：低对比度增强</h3>
+
+<p>
+  程序把合成灰度图压缩为 <code>0.30 × gray + 70</code>，模拟欠曝、
+  低对比度的输入，再分别做全局均衡化与 CLAHE。四幅图各自计算直方图、
+  均值、标准差与峰值箱，用于比较增强前后的分布。
+</p>
+
+<pre data-lang="C++" data-name="2.5-histogram.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void add_cell(cv::Mat&amp; panel, const cv::Mat&amp; image, int index,
+              const std::string&amp; label, int columns, int cell_width,
+              int cell_height) {
+    const int label_height = 28;
+    const int col = index % columns;
+    const int row = index / columns;
+    const int x = col * cell_width;
+    const int y = row * (cell_height + label_height);
+    cv::Mat color;
+    if (image.channels() == 1) {
+        cv::cvtColor(image, color, cv::COLOR_GRAY2BGR);
+    } else {
+        color = image;
+    }
+    cv::Mat resized;
+    cv::resize(color, resized, cv::Size(cell_width, cell_height), 0, 0,
+               cv::INTER_AREA);
+    resized.copyTo(panel(cv::Rect(x, y + label_height, cell_width,
+                                  cell_height)));
+    cv::rectangle(panel, cv::Rect(x, y, cell_width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+cv::Mat compute_hist(const cv::Mat&amp; gray) {
+    cv::Mat hist;
+    const int channels[] = {0};
+    const int hist_size[] = {256};
+    const float range[] = {0.0F, 256.0F};
+    const float* ranges[] = {range};
+    cv::calcHist(&amp;gray, 1, channels, cv::Mat(), hist, 1, hist_size, ranges);
+    return hist;
+}
+
+cv::Mat draw_hist(const cv::Mat&amp; hist, int width, int height) {
+    const int margin = 30;
+    const int plot_width = width - margin - 10;
+    const int plot_height = height - margin - 10;
+    cv::Mat canvas(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
+    cv::line(canvas, cv::Point(margin, height - margin),
+             cv::Point(width - 10, height - margin), cv::Scalar(90, 90, 90),
+             1);
+    cv::line(canvas, cv::Point(margin, 10),
+             cv::Point(margin, height - margin), cv::Scalar(90, 90, 90), 1);
+
+    // 背景像素往往集中在一两个灰度级，直接按最大值归一化会只剩一根尖峰。
+    // 取对数后再归一化到 0..1，纵轴标注为 log(count)。
+    cv::Mat hist_log;
+    cv::log(hist + 1.0, hist_log);
+    cv::Mat hist_norm;
+    cv::normalize(hist_log, hist_norm, 0.0, 1.0, cv::NORM_MINMAX);
+
+    std::vector&lt;cv::Point&gt; curve;
+    for (int i = 0; i &lt; 256; ++i) {
+        const int x = margin + i * plot_width / 255;
+        const int y = height - margin -
+                      cvRound(hist_norm.at&lt;float&gt;(i) * plot_height);
+        curve.emplace_back(x, y);
+    }
+    std::vector&lt;cv::Point&gt; area = curve;
+    area.emplace_back(width - 10, height - margin);
+    area.emplace_back(margin, height - margin);
+    cv::fillPoly(canvas, std::vector&lt;std::vector&lt;cv::Point&gt;&gt;{area},
+                 cv::Scalar(225, 225, 225), cv::LINE_AA);
+    cv::polylines(canvas, curve, false, cv::Scalar(60, 60, 60), 2,
+                  cv::LINE_AA);
+
+    cv::putText(canvas, "0", cv::Point(margin - 4, height - 10),
+                cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(60, 60, 60), 1,
+                cv::LINE_AA);
+    cv::putText(canvas, "255", cv::Point(width - 34, height - 10),
+                cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(60, 60, 60), 1,
+                cv::LINE_AA);
+    cv::putText(canvas, "log(count)", cv::Point(margin + 6, 22),
+                cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(120, 120, 120), 1,
+                cv::LINE_AA);
+    return canvas;
+}
+
+void print_stats(const std::string&amp; name, const cv::Mat&amp; gray,
+                 const cv::Mat&amp; hist) {
+    cv::Scalar mean;
+    cv::Scalar stddev;
+    cv::meanStdDev(gray, mean, stddev);
+    double peak = 0.0;
+    cv::Point peak_loc;
+    cv::minMaxLoc(hist, nullptr, &amp;peak, nullptr, &amp;peak_loc);
+    std::cout &lt;&lt; name &lt;&lt; " mean=" &lt;&lt; cv::format("%.2f", mean[0])
+              &lt;&lt; " stddev=" &lt;&lt; cv::format("%.2f", stddev[0])
+              &lt;&lt; " peak bin=" &lt;&lt; peak_loc.y
+              &lt;&lt; " count=" &lt;&lt; static_cast&lt;int&gt;(peak) &lt;&lt; '\n';
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+    // 把灰度压到 0.30 倍再加 70，模拟曝光不足、对比度低的输入。
+    cv::Mat low;
+    cv::convertScaleAbs(gray, low, 0.30, 70.0);
+
+    cv::Mat equalized;
+    cv::equalizeHist(low, equalized);
+
+    cv::Ptr&lt;cv::CLAHE&gt; clahe = cv::createCLAHE(6.0, cv::Size(4, 4));
+    cv::Mat local;
+    clahe-&gt;apply(low, local);
+
+    const cv::Mat hist_gray = compute_hist(gray);
+    const cv::Mat hist_low = compute_hist(low);
+    const cv::Mat hist_equalized = compute_hist(equalized);
+    const cv::Mat hist_local = compute_hist(local);
+
+    print_stats("gray", gray, hist_gray);
+    print_stats("low", low, hist_low);
+    print_stats("equalized", equalized, hist_equalized);
+    print_stats("clahe", local, hist_local);
+
+    double low_min = 0.0;
+    double low_max = 0.0;
+    cv::minMaxLoc(low, &amp;low_min, &amp;low_max);
+    std::cout &lt;&lt; "low range=" &lt;&lt; cv::format("%.0f", low_min) &lt;&lt; ".."
+              &lt;&lt; cv::format("%.0f", low_max) &lt;&lt; '\n';
+
+    const int cell_width = 330;
+    const int cell_height = 367;
+    cv::Mat panel(4 * (cell_height + 28), 2 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    add_cell(panel, gray, 0, "gray", 2, cell_width, cell_height);
+    add_cell(panel, draw_hist(hist_gray, cell_width, cell_height), 1,
+             "gray histogram", 2, cell_width, cell_height);
+    add_cell(panel, low, 2, "low contrast (0.30x + 70)", 2, cell_width,
+             cell_height);
+    add_cell(panel, draw_hist(hist_low, cell_width, cell_height), 3,
+             "low histogram", 2, cell_width, cell_height);
+    add_cell(panel, equalized, 4, "equalizeHist", 2, cell_width,
+             cell_height);
+    add_cell(panel, draw_hist(hist_equalized, cell_width, cell_height), 5,
+             "equalized histogram", 2, cell_width, cell_height);
+    add_cell(panel, local, 6, "CLAHE clip=6.0 4x4", 2, cell_width,
+             cell_height);
+    add_cell(panel, draw_hist(hist_local, cell_width, cell_height), 7,
+             "clahe histogram", 2, cell_width, cell_height);
+
+    const bool saved = cv::imwrite("out_hist.png", panel);
+    std::cout &lt;&lt; "saved out_hist.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.5-histogram.cpp -o histogram \
+    $(pkg-config --cflags --libs opencv4)
+./histogram</code></pre>
+
+<pre class="out" data-label="真实输出">gray mean=191.80 stddev=19.93 peak bin=171 count=61933
+low mean=127.53 stddev=6.00 peak bin=121 count=124223
+equalized mean=133.39 stddev=73.93 peak bin=43 count=124223
+clahe mean=133.06 stddev=12.41 peak bin=141 count=90776
+low range=110..138
+saved out_hist.png: yes</pre>
+
+<p>
+  原始灰度图的均值为 191.80、标准差为 19.93；压缩后的低对比度图均值 127.53、
+  标准差只有 6.00，灰度范围 110–138。全局均衡化把范围拉到 0–255，
+  标准差升到 73.93，但直方图呈明显的稀疏条带，因为输入只有 29 个灰度级。
+  CLAHE 的标准差为 12.41，增强幅度较小，局部对比度提高；其均值 133.06
+  更接近低对比度输入 127.53，而不是原图 191.80。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_hist.png" alt="直方图与增强对比：原灰度图及直方图、低对比度图及直方图、全局均衡化及直方图、CLAHE 及直方图" width="660" height="1580">
+  <figcaption>
+    四组“图像 + 直方图”。第二组是压缩后的低对比度输入；
+    第三组全局均衡化把灰度拉开，但直方图出现条带；
+    第四组 CLAHE 用 4×4 分块与 6.0 的裁剪限制，增强更局部。
+  </figcaption>
+</figure>
+
+<h3 id="s2-5-4">彩色图与归一化</h3>
+
+<p>
+  对三通道图直接调用 <code>equalizeHist</code> 会触发断言错误。
+  正确做法是先 <code>cvtColor</code> 到 HSV，<code>split</code> 出 V 通道，
+  对 V 做均衡化，再 <code>merge</code> 并转回 BGR；也可以在 Lab 空间处理 L 通道。
+  只对 V 或 L 处理可以避免色相与饱和度被改变。
+</p>
+
+<p>
+  归一化的范围要与显示范围一致。把直方图归一化到 0–1 后，若直接写入 8 位图，
+  所有值都会变成 0 或 1，曲线不可见；应再乘以绘图区高度，或使用
+  <code>NORM_MINMAX</code> 归一化到 0–255。增强时还要注意截断：
+  <code>clipLimit</code> 过大时，局部噪声被当成细节放大；过小时，
+  增强效果接近原始图。
+</p>
+
+<div class="eg" id="e2-5">
+  <div class="eg-h">例题 · 小幅灰度拉伸</div>
+  <p>题目：创建一个 4×4 的灰度图，像素值从 100 到 115 依次递增。计算 256 箱直方图的非零箱数与峰值箱，做全局均衡化，打印均衡化前后的范围以及 (1,1)、(3,3) 的值。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.5-eg-equalize_small.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat image(4, 4, CV_8UC1);
+    for (int row = 0; row &lt; image.rows; ++row) {
+        for (int col = 0; col &lt; image.cols; ++col) {
+            image.at&lt;uchar&gt;(row, col) =
+                static_cast&lt;uchar&gt;(100 + 4 * row + col);
+        }
+    }
+
+    const int hist_size[] = {256};
+    const float range[] = {0.0F, 256.0F};
+    const float* ranges[] = {range};
+    const int channels[] = {0};
+    cv::Mat hist;
+    cv::calcHist(&amp;image, 1, channels, cv::Mat(), hist, 1, hist_size,
+                 ranges);
+    double peak = 0.0;
+    cv::Point peak_bin;
+    cv::minMaxLoc(hist, nullptr, &amp;peak, nullptr, &amp;peak_bin);
+    std::cout &lt;&lt; "hist nonzero bins=" &lt;&lt; cv::countNonZero(hist)
+              &lt;&lt; " peak bin=" &lt;&lt; peak_bin.y &lt;&lt; " count="
+              &lt;&lt; static_cast&lt;int&gt;(peak) &lt;&lt; '\n';
+
+    double low_min = 0.0;
+    double low_max = 0.0;
+    cv::minMaxLoc(image, &amp;low_min, &amp;low_max);
+
+    cv::Mat equalized;
+    cv::equalizeHist(image, equalized);
+    double high_min = 0.0;
+    double high_max = 0.0;
+    cv::minMaxLoc(equalized, &amp;high_min, &amp;high_max);
+
+    std::cout &lt;&lt; "low range=" &lt;&lt; low_min &lt;&lt; ".." &lt;&lt; low_max &lt;&lt; '\n';
+    std::cout &lt;&lt; "equalized range=" &lt;&lt; high_min &lt;&lt; ".." &lt;&lt; high_max
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "equalized(1,1)="
+              &lt;&lt; static_cast&lt;int&gt;(equalized.at&lt;uchar&gt;(1, 1)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "equalized(3,3)="
+              &lt;&lt; static_cast&lt;int&gt;(equalized.at&lt;uchar&gt;(3, 3)) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.5-eg-equalize_small.cpp -o equalize_small \
+    $(pkg-config --cflags --libs opencv4)
+./equalize_small</code></pre>
+  <pre class="out" data-label="真实输出">hist nonzero bins=16 peak bin=100 count=1
+low range=100..115
+equalized range=0..255
+equalized(1,1)=85
+equalized(3,3)=255</pre>
+  <p>输入只有 16 个不同灰度级，直方图有 16 个非零箱，每个箱计数为 1，峰值箱是第一个非零箱 100。均衡化把 100–115 映射到 0–255，映射单调不减；(1,1) 的原值 105 映射为 85，(3,3) 的原值 115 映射为 255。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-5</div>
+  <p>创建一个 4×4 的灰度图，所有像素为 120，只把 (0,0) 改为 100。做全局均衡化，打印处理前后的最小值和最大值，以及均衡化结果在 (0,0) 与 (1,1) 的值。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">before=100..120
+after=0..255
+equalized(0,0)=0
+equalized(1,1)=255</pre>
+  <details class="ans" data-run="示例代码/答案/2-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>输入只有 100 与 120 两个灰度级，均衡化把它们分别映射到 0 与 255；(0,0) 是 100，结果为 0，其余像素是 120，结果为 255。输出范围因此是 0–255，但图中仍然只有两个灰度级。</p>
+      <pre data-lang="C++" data-name="答案/2-5.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat image(4, 4, CV_8UC1, cv::Scalar(120));
+    image.at&lt;uchar&gt;(0, 0) = 100;
+
+    double low_min = 0.0;
+    double low_max = 0.0;
+    cv::minMaxLoc(image, &amp;low_min, &amp;low_max);
+
+    cv::Mat equalized;
+    cv::equalizeHist(image, equalized);
+    double high_min = 0.0;
+    double high_max = 0.0;
+    cv::minMaxLoc(equalized, &amp;high_min, &amp;high_max);
+
+    std::cout &lt;&lt; "before=" &lt;&lt; low_min &lt;&lt; ".." &lt;&lt; low_max &lt;&lt; '\n';
+    std::cout &lt;&lt; "after=" &lt;&lt; high_min &lt;&lt; ".." &lt;&lt; high_max &lt;&lt; '\n';
+    std::cout &lt;&lt; "equalized(0,0)="
+              &lt;&lt; static_cast&lt;int&gt;(equalized.at&lt;uchar&gt;(0, 0)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "equalized(1,1)="
+              &lt;&lt; static_cast&lt;int&gt;(equalized.at&lt;uchar&gt;(1, 1)) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">before=100..120
+after=0..255
+equalized(0,0)=0
+equalized(1,1)=255</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>calcHist</code> 统计灰度分布并画出对数直方图；
+  判断欠曝、过曝与低对比度；对单通道做全局均衡化与 CLAHE；
+  在 HSV 的 V 通道上处理彩色图，并解释条带与噪声放大的来源。
+</p>
+</section>
+
+<section class="lesson" id="l2-6">
+<h2><span class="no">2.6</span>几何变换：缩放、旋转、透视</h2>
+
+<p>
+  几何变换把输入像素按坐标映射搬到输出位置。缩放改变尺寸，旋转与平移属于仿射变换，
+  透视变换用四个点描述平面的投影关系。变换后的像素位置通常不是整数，
+  需要插值决定输出值；输出尺寸与插值方式都会影响结果。
+</p>
+
+<h3 id="s2-6-1">resize 与插值</h3>
+
+<p>
+  <code>cv::resize(src, dst, dsize, fx, fy, interpolation)</code> 可以给定输出尺寸
+  <code>dsize</code>，也可以给定缩放比例 <code>fx</code> 与 <code>fy</code>。
+  <code>dsize</code> 非空时以它为准，比例参数被忽略。缩小图像时优先使用
+  <code>INTER_AREA</code>，它按输出像素覆盖的输入区域取平均，能减少混叠；
+  <code>INTER_NEAREST</code> 取最近像素，速度快但会出现块状锯齿；
+  <code>INTER_LINEAR</code> 是常用的双线性插值；<code>INTER_CUBIC</code>
+  更平滑，但可能产生轻微过冲。
+</p>
+
+<p>
+  例子用 <code>cv::Size(balls.cols / 2, balls.rows / 2)</code> 指定一半尺寸。
+  整数除法会向下取整：宽 1187 变成 593，高 1343 变成 671，并不是严格的
+  0.5 倍。需要精确比例时，应使用 <code>fx</code>、<code>fy</code> 或显式计算
+  四舍五入后的尺寸。
+</p>
+
+<h3 id="s2-6-2">旋转与仿射</h3>
+
+<p>
+  <code>getRotationMatrix2D(center, angle, scale)</code> 返回 2×3 的仿射矩阵。
+  <code>center</code> 是旋转中心，<code>angle</code> 以度为单位，正值表示逆时针，
+  <code>scale</code> 是各向同性的缩放比例。旋转中心通常写
+  <code>cv::Point2f(cols / 2.0F, rows / 2.0F)</code>；若写成整数除法，
+  偶数尺寸会丢掉半个像素，旋转结果出现轻微偏移。
+</p>
+
+<p>
+  <code>warpAffine(src, dst, M, dsize, flags, borderMode, borderValue)</code>
+  把 2×3 矩阵作用到每个输出像素。输出尺寸 <code>dsize</code> 的顺序是
+  <code>(width, height)</code>。旋转后画布四角可能落在原图之外，
+  默认用 0 填充；本例用 235 的浅灰填充，便于观察边界。
+</p>
+
+<h3 id="s2-6-3">透视变换与四点顺序</h3>
+
+<p>
+  <code>getPerspectiveTransform(src, dst)</code> 接收两个各含四个点的数组，
+  返回 3×3 的透视矩阵；<code>warpPerspective</code> 用它把源平面映射到目标平面。
+  四个点必须按同一顺序给出，常用顺序是左上、右上、右下、左下。
+  顺序错乱会让图像翻转、拉伸或出现自交。四个点不能有三点共线。
+</p>
+
+<p>
+  例子从合成卡片的外框取四个角，按左上、右上、右下、左下排列，
+  映射到 600×400 的输出。目标点使用 599 与 399，使源点落在输出图像的最后一个像素上；
+  若写成 600 与 400，边界会落在图像外。输出尺寸同样按
+  <code>(width, height)</code> 书写。
+</p>
+
+<h3 id="s2-6-4">完整例子：缩放、旋转、卡片矫正</h3>
+
+<p>
+  程序对小球图做一半缩放与绕中心 30° 旋转，对卡片图做四点透视矫正，
+  打印三组尺寸或矩阵，并保存三张单图与一张三联图。旋转矩阵与透视矩阵
+  都按行打印，便于核对平移项与第三行。
+</p>
+
+<pre data-lang="C++" data-name="2.6-geometry.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+double tidy(double value) {
+    return std::abs(value) &lt; 0.0005 ? 0.0 : value;
+}
+
+void print_matrix(const cv::Mat&amp; matrix) {
+    for (int row = 0; row &lt; matrix.rows; ++row) {
+        std::cout &lt;&lt; '[';
+        for (int col = 0; col &lt; matrix.cols; ++col) {
+            if (col != 0) {
+                std::cout &lt;&lt; ", ";
+            }
+            std::cout &lt;&lt; cv::format("%.3f", tidy(matrix.at&lt;double&gt;(row, col)));
+        }
+        std::cout &lt;&lt; "]\n";
+    }
+}
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main() {
+    const std::string balls_path = "../素材/synth_balls.png";
+    const std::string card_path = "../素材/synth_card.png";
+    cv::Mat balls = cv::imread(balls_path, cv::IMREAD_COLOR);
+    cv::Mat card = cv::imread(card_path, cv::IMREAD_COLOR);
+    if (balls.empty() || card.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat half;
+    cv::resize(balls, half, cv::Size(balls.cols / 2, balls.rows / 2), 0, 0,
+               cv::INTER_AREA);
+    std::cout &lt;&lt; "resize half=" &lt;&lt; half.cols &lt;&lt; 'x' &lt;&lt; half.rows &lt;&lt; '\n';
+
+    const cv::Point2f center(balls.cols / 2.0F, balls.rows / 2.0F);
+    const cv::Mat rotation =
+        cv::getRotationMatrix2D(center, 30.0, 1.0);
+    cv::Mat rotated;
+    cv::warpAffine(balls, rotated, rotation, balls.size(), cv::INTER_LINEAR,
+                   cv::BORDER_CONSTANT, cv::Scalar(235, 235, 235));
+    std::cout &lt;&lt; "rotation matrix:\n";
+    print_matrix(rotation);
+
+    const cv::Point2f source[4] = {
+        cv::Point2f(180.0F, 120.0F), cv::Point2f(720.0F, 180.0F),
+        cv::Point2f(760.0F, 540.0F), cv::Point2f(140.0F, 500.0F)};
+    const cv::Point2f target[4] = {
+        cv::Point2f(0.0F, 0.0F), cv::Point2f(599.0F, 0.0F),
+        cv::Point2f(599.0F, 399.0F), cv::Point2f(0.0F, 399.0F)};
+    const cv::Mat perspective = cv::getPerspectiveTransform(source, target);
+    cv::Mat corrected;
+    cv::warpPerspective(card, corrected, perspective, cv::Size(600, 400),
+                        cv::INTER_LINEAR, cv::BORDER_CONSTANT,
+                        cv::Scalar(255, 255, 255));
+    std::cout &lt;&lt; "perspective matrix:\n";
+    print_matrix(perspective);
+
+    const bool resize_saved = cv::imwrite("out_resize.png", half);
+    const bool rotate_saved = cv::imwrite("out_rotate.png", rotated);
+    const bool warp_saved = cv::imwrite("out_warp.png", corrected);
+    std::cout &lt;&lt; "saved out_resize.png: " &lt;&lt; (resize_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_rotate.png: " &lt;&lt; (rotate_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_warp.png: " &lt;&lt; (warp_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+
+    const int cell_width = 420;
+    const int cell_height = 468;
+    cv::Mat panel(cell_height, 3 * cell_width, CV_8UC3,
+                  cv::Scalar(255, 255, 255));
+    place(panel, half, 0, 0, cell_width, cell_height, "resize half");
+    place(panel, rotated, cell_width, 0, cell_width, cell_height,
+          "rotate 30 deg");
+    place(panel, corrected, 2 * cell_width, 0, cell_width, cell_height,
+          "perspective");
+    const bool panel_saved = cv::imwrite("out_geometry.png", panel);
+    std::cout &lt;&lt; "saved out_geometry.png: " &lt;&lt; (panel_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.6-geometry.cpp -o geometry \
+    $(pkg-config --cflags --libs opencv4)
+./geometry</code></pre>
+
+<pre class="out" data-label="真实输出">resize half=593x671
+rotation matrix:
+[0.866, 0.500, -256.236]
+[-0.500, 0.866, 386.714]
+perspective matrix:
+[1.042, 0.110, -200.712]
+[-0.135, 1.218, -121.847]
+[0.000, 0.000, 1.000]
+saved out_resize.png: yes
+saved out_rotate.png: yes
+saved out_warp.png: yes
+saved out_geometry.png: yes</pre>
+
+<p>
+  缩放结果的尺寸是 593×671，来自整数除法。旋转矩阵的前两列是
+  cos 30° 与 sin 30° 的组合，第三列是平移量；矩阵作用后，原图中心保持不动。
+  透视矩阵的前两行包含旋转、缩放与平移，第三行是透视项；本例第三行在打印
+  精度下为 <code>[0.000, 0.000, 1.000]</code>，透视分量很小，
+  变换接近仿射变换。源四点的实际比例与目标矩形并不完全一致，
+  需要精确数值时应打印更多小数位，不要只看三位。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_geometry.png" alt="几何变换结果：缩小一半的小球图、绕中心旋转 30 度的小球图、透视矫正后的卡片图" width="1260" height="468">
+  <figcaption>
+    三联图。左图用 <code>INTER_AREA</code> 缩小到 593×671；
+    中图绕图像中心旋转 30°，边界填入浅灰色；
+    右图把卡片的四个外角映射到 600×400 的矩形，黑色边框与四角色块恢复水平。
+  </figcaption>
+</figure>
+
+<h3 id="s2-6-5">参数与错误</h3>
+
+<p>
+  最常见的错误是把 <code>dsize</code> 写成 <code>cv::Size(height, width)</code>。
+  OpenCV 的 <code>Size</code> 构造函数是 <code>(width, height)</code>，
+  写反后图像被转置或裁切。第二个错误是旋转中心使用整数除法：
+  <code>cols / 2</code> 与 <code>rows / 2</code> 都是整数，偶数尺寸会偏半个像素；
+  应写成 <code>cols / 2.0</code> 或 <code>cols / 2.0F</code>。
+</p>
+
+<p>
+  透视变换的四点顺序必须与目标点一一对应。把右上与右下交换，会让卡片上下翻转；
+  把左下与右上交换，会产生明显的斜切。源点应取自图像中真实的角点，
+  顺序按顺时针或逆时针统一排列。插值方式也会影响结果：缩小用
+  <code>INTER_AREA</code>，放大或旋转用 <code>INTER_LINEAR</code>，
+  需要保留硬边时可比较 <code>INTER_NEAREST</code> 的效果。
+</p>
+
+<div class="eg" id="e2-6">
+  <div class="eg-h">例题 · 缩放与旋转矩阵</div>
+  <p>题目：创建一个 4×4 的灰度图，按行填入 1 到 16。用 <code>INTER_NEAREST</code> 缩小到 2×2，打印结果；再求绕 (2,2) 旋转 90°、缩放比例为 1 的 2×3 矩阵并按行打印。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.6-eg-resize_matrix.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+double tidy(double value) {
+    return std::abs(value) &lt; 0.0005 ? 0.0 : value;
+}
+
+void print_matrix(const cv::Mat&amp; image) {
+    for (int row = 0; row &lt; image.rows; ++row) {
+        std::cout &lt;&lt; '[';
+        for (int col = 0; col &lt; image.cols; ++col) {
+            if (col != 0) {
+                std::cout &lt;&lt; ", ";
+            }
+            std::cout &lt;&lt; static_cast&lt;int&gt;(image.at&lt;uchar&gt;(row, col));
+        }
+        std::cout &lt;&lt; "]\n";
+    }
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat image(4, 4, CV_8UC1);
+    for (int row = 0; row &lt; image.rows; ++row) {
+        for (int col = 0; col &lt; image.cols; ++col) {
+            image.at&lt;uchar&gt;(row, col) =
+                static_cast&lt;uchar&gt;(1 + 4 * row + col);
+        }
+    }
+
+    cv::Mat small;
+    cv::resize(image, small, cv::Size(2, 2), 0, 0, cv::INTER_NEAREST);
+    std::cout &lt;&lt; "resized=" &lt;&lt; small.cols &lt;&lt; 'x' &lt;&lt; small.rows &lt;&lt; '\n';
+    print_matrix(small);
+
+    const cv::Mat rotation =
+        cv::getRotationMatrix2D(cv::Point2f(2.0F, 2.0F), 90.0, 1.0);
+    std::cout &lt;&lt; "rotation matrix:\n";
+    for (int row = 0; row &lt; rotation.rows; ++row) {
+        std::cout &lt;&lt; '['
+                  &lt;&lt; cv::format("%.1f", tidy(rotation.at&lt;double&gt;(row, 0)))
+                  &lt;&lt; ", "
+                  &lt;&lt; cv::format("%.1f", tidy(rotation.at&lt;double&gt;(row, 1)))
+                  &lt;&lt; ", "
+                  &lt;&lt; cv::format("%.1f", tidy(rotation.at&lt;double&gt;(row, 2)))
+                  &lt;&lt; "]\n";
+    }
+
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.6-eg-resize_matrix.cpp -o resize_matrix \
+    $(pkg-config --cflags --libs opencv4)
+./resize_matrix</code></pre>
+  <pre class="out" data-label="真实输出">resized=2x2
+[1, 3]
+[9, 11]
+rotation matrix:
+[0.0, 1.0, 0.0]
+[-1.0, 0.0, 4.0]</pre>
+  <p>最近邻缩小到 2×2 时，每个输出像素取输入中对应位置的像素，结果是左上角的 1、3、9、11；它没有做平均。90° 旋转矩阵为 <code>[0, 1, 0; -1, 0, 4]</code>，第一行把 x 映射到 y，第二行把 y 映射到 4−x，平移项 4 来自旋转中心 (2,2)。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-6</div>
+  <p>创建一个 5×5 的灰度图，按行填入 1 到 25。求绕 (2,2) 旋转 180°、缩放比例为 1 的矩阵，用 <code>INTER_NEAREST</code> 和 5×5 的输出尺寸做 <code>warpAffine</code>，按行打印结果。</p>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <pre class="out" data-label="预期输出">rotated 180:
+[25, 24, 23, 22, 21]
+[20, 19, 18, 17, 16]
+[15, 14, 13, 12, 11]
+[10, 9, 8, 7, 6]
+[5, 4, 3, 2, 1]</pre>
+  <details class="ans" data-run="示例代码/答案/2-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>绕 (2,2) 旋转 180° 把坐标 (x,y) 映射到 (4−x,4−y)，因此 5×5 的输出正好是输入旋转 180°：第一行从 25 递减到 21，最后一行从 5 递减到 1。旋转中心取 (2,2) 时，输出尺寸与输入相同，四角不会被裁掉。</p>
+      <pre data-lang="C++" data-name="答案/2-6.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat image(5, 5, CV_8UC1);
+    for (int row = 0; row &lt; image.rows; ++row) {
+        for (int col = 0; col &lt; image.cols; ++col) {
+            image.at&lt;uchar&gt;(row, col) =
+                static_cast&lt;uchar&gt;(1 + 5 * row + col);
+        }
+    }
+
+    const cv::Mat rotation =
+        cv::getRotationMatrix2D(cv::Point2f(2.0F, 2.0F), 180.0, 1.0);
+    cv::Mat rotated;
+    cv::warpAffine(image, rotated, rotation, cv::Size(5, 5),
+                   cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
+
+    std::cout &lt;&lt; "rotated 180:\n";
+    for (int row = 0; row &lt; rotated.rows; ++row) {
+        std::cout &lt;&lt; '[';
+        for (int col = 0; col &lt; rotated.cols; ++col) {
+            if (col != 0) {
+                std::cout &lt;&lt; ", ";
+            }
+            std::cout &lt;&lt; static_cast&lt;int&gt;(rotated.at&lt;uchar&gt;(row, col));
+        }
+        std::cout &lt;&lt; "]\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">rotated 180:
+[25, 24, 23, 22, 21]
+[20, 19, 18, 17, 16]
+[15, 14, 13, 12, 11]
+[10, 9, 8, 7, 6]
+[5, 4, 3, 2, 1]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>按用途选择 <code>INTER_AREA</code>、<code>INTER_LINEAR</code>
+  或 <code>INTER_NEAREST</code>；写出绕图像中心的旋转矩阵并调用
+  <code>warpAffine</code>；按左上、右上、右下、左下取四点做透视矫正；
+  检查 <code>dsize</code> 的顺序与旋转中心的类型。
+</p>
+</section>
+
+<section class="lesson" id="l2-7">
+<h2><span class="no">2.7</span>图像金字塔（选学）</h2>
+
+<p>
+  同一目标在图像中可能以不同尺寸出现。图像金字塔把原图逐级缩小，
+  形成一组分辨率递减的图像；模板匹配可以在粗层快速搜索，再回到细层精修。
+  这一课为选学内容，不进入后续部分的前置要求。
+</p>
+
+<h3 id="s2-7-1">pyrDown 与 pyrUp</h3>
+
+<p>
+  <code>cv::pyrDown(src, dst)</code> 先做高斯平滑，再隔行隔列采样，
+  输出宽高约为输入的一半；<code>cv::pyrUp(src, dst)</code> 先插入零像素，
+  再用高斯核插值放大。两者不是严格的逆运算：<code>pyrUp</code> 只能恢复尺寸，
+  不能恢复<code>pyrDown</code> 丢掉的高频细节。
+</p>
+
+<p>
+  从原图开始连续 <code>pyrDown</code>，得到高斯金字塔的第 0、1、2 层。
+  第 <code>i</code> 层与第 <code>i+1</code> 层的差，经过 <code>pyrUp</code>
+  对齐后，称为拉普拉斯金字塔的一层，记录该尺度的细节。
+  拉普拉斯金字塔记录各尺度的细节，可用于图像融合与重建。
+</p>
+
+<h3 id="s2-7-2">尺度空间与多尺度匹配</h3>
+
+<p>
+  模板匹配在整幅图上滑动模板，计算每个位置的相似度。模板尺寸固定时，
+  目标在图像中变大或变小都会导致失配。多尺度匹配的做法是：
+  建立模板与场景的金字塔，在不同层上用对应尺寸的模板搜索；
+  先在粗层得到候选位置，再把坐标乘以 2 映射回细层，
+  在候选附近的小窗口内用更精细的模板复核。
+</p>
+
+<p>
+  <code>matchTemplate</code> 的 <code>TM_CCOEFF_NORMED</code> 输出归一化相关系数，
+  越接近 1 越相似。平坦区域或常量模板会让分母接近 0，相关系数可能失去区分度，
+  出现多个接近 1 的候选；应结合模板的纹理、候选的局部方差与业务条件筛选。
+</p>
+
+<h3 id="s2-7-3">完整例子：三层金字塔与两档匹配</h3>
+
+<p>
+  程序读入 800×600 的合成场景与 60×60 的模板，建立三层场景金字塔。
+  先在原尺寸匹配 60×60 模板，找到左上角的大目标；
+  再把模板缩小一半，匹配 30×30 的小目标；
+  最后把 30×30 模板再缩小一半，在金字塔第 1 层搜索，
+  将坐标乘以 2 映射回原图，并在候选附近 50×50 的窗口内精修。
+</p>
+
+<pre data-lang="C++" data-name="2.7-pyramid.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void label(cv::Mat&amp; panel, const std::string&amp; text, int x, int y) {
+    cv::rectangle(panel, cv::Rect(x, y, 260, 30), cv::Scalar(245, 245, 245),
+                  cv::FILLED);
+    cv::putText(panel, text, cv::Point(x + 8, y + 22),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const std::string scene_path = "../素材/synth_match_scene.png";
+    const std::string template_path = "../素材/synth_match_template.png";
+    cv::Mat scene = cv::imread(scene_path, cv::IMREAD_COLOR);
+    cv::Mat templ = cv::imread(template_path, cv::IMREAD_COLOR);
+    if (scene.empty() || templ.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    std::vector&lt;cv::Mat&gt; levels;
+    levels.push_back(scene);
+    while (levels.back().cols &gt;= 2 * templ.cols &amp;&amp;
+           levels.back().rows &gt;= 2 * templ.rows &amp;&amp;
+           levels.size() &lt; 3) {
+        cv::Mat next;
+        cv::pyrDown(levels.back(), next);
+        levels.push_back(next);
+    }
+    for (std::size_t i = 0; i &lt; levels.size(); ++i) {
+        std::cout &lt;&lt; "pyramid " &lt;&lt; i &lt;&lt; ": " &lt;&lt; levels[i].cols &lt;&lt; 'x'
+                  &lt;&lt; levels[i].rows &lt;&lt; '\n';
+    }
+
+    cv::Mat result;
+    cv::matchTemplate(scene, templ, result, cv::TM_CCOEFF_NORMED);
+    double best = 0.0;
+    cv::Point best_location;
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    const cv::Point big_location = best_location;
+    std::cout &lt;&lt; "scale 1.00: score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ") size=" &lt;&lt; templ.cols &lt;&lt; 'x' &lt;&lt; templ.rows &lt;&lt; '\n';
+
+    cv::Mat templ_half;
+    cv::resize(templ, templ_half,
+               cv::Size(templ.cols / 2, templ.rows / 2), 0, 0,
+               cv::INTER_AREA);
+    cv::matchTemplate(scene, templ_half, result, cv::TM_CCOEFF_NORMED);
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    const cv::Point full_location(best_location.x, best_location.y);
+    std::cout &lt;&lt; "scale 0.50: score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ") size=" &lt;&lt; templ_half.cols &lt;&lt; 'x' &lt;&lt; templ_half.rows
+              &lt;&lt; '\n';
+
+    cv::Mat templ_quarter;
+    cv::pyrDown(templ_half, templ_quarter);
+    cv::matchTemplate(levels[1], templ_quarter, result, cv::TM_CCOEFF_NORMED);
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    const cv::Point coarse_full(2 * best_location.x, 2 * best_location.y);
+    std::cout &lt;&lt; "coarse level 1: score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ") -&gt; full=(" &lt;&lt; coarse_full.x &lt;&lt; ", " &lt;&lt; coarse_full.y
+              &lt;&lt; ")\n";
+
+    const int margin = 10;
+    const int left = std::max(0, coarse_full.x - margin);
+    const int top = std::max(0, coarse_full.y - margin);
+    const int right = std::min(scene.cols,
+                               coarse_full.x + templ_half.cols + margin);
+    const int bottom = std::min(scene.rows,
+                                coarse_full.y + templ_half.rows + margin);
+    const cv::Rect search_roi(left, top, right - left, bottom - top);
+    cv::Mat roi_result;
+    cv::matchTemplate(scene(search_roi), templ_half, roi_result,
+                      cv::TM_CCOEFF_NORMED);
+    cv::minMaxLoc(roi_result, nullptr, &amp;best, nullptr, &amp;best_location);
+    const cv::Point refined(left + best_location.x, top + best_location.y);
+    std::cout &lt;&lt; "refine level 0: score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; refined.x &lt;&lt; ", " &lt;&lt; refined.y &lt;&lt; ")\n";
+
+    const int panel_width = 400;
+    const int panel_height = 300;
+    const int gap = 20;
+    cv::Mat pyramid_panel(panel_height + 40, 3 * panel_width + 2 * gap, CV_8UC3,
+                          cv::Scalar(255, 255, 255));
+    for (int i = 0; i &lt; 3; ++i) {
+        cv::Mat shown;
+        cv::resize(levels[i], shown,
+                   cv::Size(levels[i].cols / 2, levels[i].rows / 2), 0, 0,
+                   cv::INTER_AREA);
+        const int x = i * (panel_width + gap);
+        label(pyramid_panel,
+              "level " + std::to_string(i) + ": " +
+                  std::to_string(levels[i].cols) + "x" +
+                  std::to_string(levels[i].rows),
+              x, 0);
+        shown.copyTo(pyramid_panel(
+            cv::Rect(x, 40, shown.cols, shown.rows)));
+    }
+
+    cv::Mat match_panel = scene.clone();
+    cv::rectangle(match_panel,
+                  cv::Rect(big_location.x, big_location.y, templ.cols,
+                           templ.rows),
+                  cv::Scalar(0, 200, 0), 2);
+    cv::rectangle(match_panel,
+                  cv::Rect(full_location.x, full_location.y,
+                           templ_half.cols, templ_half.rows),
+                  cv::Scalar(255, 0, 0), 2);
+    cv::putText(match_panel, "60x60", cv::Point(big_location.x, big_location.y - 8),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(0, 130, 0), 1,
+                cv::LINE_AA);
+    cv::putText(match_panel, "30x30", cv::Point(full_location.x, full_location.y - 8),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(255, 0, 0), 1,
+                cv::LINE_AA);
+
+    const bool pyramid_saved = cv::imwrite("out_pyramid.png", pyramid_panel);
+    const bool match_saved = cv::imwrite("out_match.png", match_panel);
+    std::cout &lt;&lt; "saved out_pyramid.png: " &lt;&lt; (pyramid_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_match.png: " &lt;&lt; (match_saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.7-pyramid.cpp -o pyramid \
+    $(pkg-config --cflags --libs opencv4)
+./pyramid</code></pre>
+
+<pre class="out" data-label="真实输出">pyramid 0: 800x600
+pyramid 1: 400x300
+pyramid 2: 200x150
+scale 1.00: score=1.000 loc=(100, 90) size=60x60
+scale 0.50: score=1.000 loc=(520, 380) size=30x30
+coarse level 1: score=1.000 loc=(260, 190) -&gt; full=(520, 380)
+refine level 0: score=1.000 loc=(520, 380)
+saved out_pyramid.png: yes
+saved out_match.png: yes</pre>
+
+<p>
+  三层尺寸依次为 800×600、400×300、200×150。60×60 模板在原图 (100,90)
+  处的得分为 1.000；30×30 模板在 (520,380) 处的得分为 1.000。
+  15×15 模板在第 1 层的 (260,190) 处得分 1.000，坐标乘以 2 得到原图
+  (520,380)；在候选附近精修后仍为 (520,380)。粗层搜索把候选范围缩小，
+  细层复核保证坐标落在原图尺度上。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_pyramid.png" alt="三层图像金字塔：800×600、400×300、200×150，三个尺度的合成场景并排显示" width="1240" height="340">
+  <figcaption>
+    三层高斯金字塔。每层由上一层经 <code>pyrDown</code> 得到，
+    尺寸逐层减半。小目标在粗层只占几个像素，适合快速定位；
+    精确坐标仍需回到细层确认。
+  </figcaption>
+</figure>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_match.png" alt="两档模板匹配结果：60×60 大目标用绿框标出，30×30 小目标用蓝框标出" width="800" height="600">
+  <figcaption>
+    两档匹配结果。绿色框是 60×60 模板在大目标处的匹配，
+    蓝色框是缩小一半的 30×30 模板在小目标处的匹配。
+    两个目标的内容相同，尺寸不同。
+  </figcaption>
+</figure>
+
+<h3 id="s2-7-4">匹配的边界</h3>
+
+<p>
+  模板尺寸必须不大于场景尺寸，否则 <code>matchTemplate</code> 会报错。
+  目标小于模板时应缩小模板，目标大于模板时应放大模板或降低搜索层。
+  缩小模板会丢失细节，缩放比例过粗时目标可能落在两个尺度之间；
+  应让相邻尺度的比例有重叠，或在粗层之后增加一次局部尺度搜索。
+</p>
+
+<p>
+  金字塔不能恢复被丢弃的高频信息。<code>pyrUp</code> 的结果比原图模糊，
+  不能用它代替原图做精确定位。模板匹配本身不处理旋转与透视；
+  目标发生旋转时，需要在多个角度上重复搜索，或改用对旋转更稳健的特征方法。
+  粗层坐标乘以 2 时还会引入半个到几个像素的量化误差，所以必须保留细层复核。
+</p>
+
+<div class="eg" id="e2-7">
+  <div class="eg-h">例题 · 小场景匹配</div>
+  <p>题目：创建一个 8×8 的灰度图，用固定种子填入随机值，再在 (2,2) 开始的 3×3 区域写入已知图案。建立一层金字塔，打印原图、金字塔第 1 层与 <code>pyrUp</code> 结果的尺寸；用该 3×3 图案做模板匹配，打印最高得分与位置。</p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="2.7-eg-pyramid_match.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    cv::Mat scene(8, 8, CV_8UC1);
+    cv::RNG rng(20261024);
+    rng.fill(scene, cv::RNG::UNIFORM, 0, 256);
+    for (int row = 0; row &lt; 3; ++row) {
+        for (int col = 0; col &lt; 3; ++col) {
+            scene.at&lt;uchar&gt;(2 + row, 2 + col) =
+                static_cast&lt;uchar&gt;(20 + 30 * row + 10 * col);
+        }
+    }
+
+    cv::Mat level1;
+    cv::Mat restored;
+    cv::pyrDown(scene, level1);
+    cv::pyrUp(level1, restored);
+    std::cout &lt;&lt; "level0=" &lt;&lt; scene.cols &lt;&lt; 'x' &lt;&lt; scene.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "level1=" &lt;&lt; level1.cols &lt;&lt; 'x' &lt;&lt; level1.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "pyrUp=" &lt;&lt; restored.cols &lt;&lt; 'x' &lt;&lt; restored.rows &lt;&lt; '\n';
+
+    const cv::Mat templ = scene(cv::Rect(2, 2, 3, 3)).clone();
+    cv::Mat result;
+    cv::matchTemplate(scene, templ, result, cv::TM_CCOEFF_NORMED);
+    double best = 0.0;
+    cv::Point best_location;
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    std::cout &lt;&lt; "match score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+  <p>编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 2.7-eg-pyramid_match.cpp -o pyramid_match \
+    $(pkg-config --cflags --libs opencv4)
+./pyramid_match</code></pre>
+  <pre class="out" data-label="真实输出">level0=8x8
+level1=4x4
+pyrUp=8x8
+match score=1.000 loc=(2, 2)</pre>
+  <p>8×8 图经过一次 <code>pyrDown</code> 变成 4×4，再 <code>pyrUp</code> 回到 8×8。模板直接取自原图 (2,2) 的 3×3 区域，因此在同一位置得到满分 1.000；随机背景避免了平坦区域的伪高分。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-7</div>
+  <p>读入 <code>../素材/synth_match_scene.png</code> 与
+  <code>../素材/synth_match_template.png</code>。建立场景的第 1 层金字塔，
+  把 60×60 模板同样缩小一半；先在第 0 层用原模板匹配大目标，
+  再在第 1 层用缩小后的模板匹配同一目标，打印两层的得分、位置与映射回原图的坐标。</p>
+  <p>本题不需要标准输入，素材直接写在程序里。</p>
+  <pre class="out" data-label="预期输出">pyramid 0: 800x600
+pyramid 1: 400x300
+level 0 score=1.000 loc=(100, 90)
+level 1 score=1.000 loc=(50, 45) -&gt; full=(100, 90)</pre>
+  <details class="ans" data-run="示例代码/答案/2-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>第 0 层在 (100,90) 找到 60×60 的大目标；第 1 层把同一目标缩成 30×30，模板也缩小一半，因此在 (50,45) 得到满分。坐标乘以 2 后回到原图的 (100,90)，与第 0 层一致。</p>
+      <pre data-lang="C++" data-name="答案/2-7.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+int main() {
+    cv::Mat scene = cv::imread("../素材/synth_match_scene.png",
+                               cv::IMREAD_COLOR);
+    cv::Mat templ = cv::imread("../素材/synth_match_template.png",
+                               cv::IMREAD_COLOR);
+    if (scene.empty() || templ.empty()) {
+        std::cout &lt;&lt; "无法读取素材" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat level1;
+    cv::Mat templ_half;
+    cv::pyrDown(scene, level1);
+    cv::pyrDown(templ, templ_half);
+    std::cout &lt;&lt; "pyramid 0: " &lt;&lt; scene.cols &lt;&lt; 'x' &lt;&lt; scene.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "pyramid 1: " &lt;&lt; level1.cols &lt;&lt; 'x' &lt;&lt; level1.rows &lt;&lt; '\n';
+
+    cv::Mat result;
+    double best = 0.0;
+    cv::Point best_location;
+    cv::matchTemplate(scene, templ, result, cv::TM_CCOEFF_NORMED);
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    std::cout &lt;&lt; "level 0 score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ")\n";
+
+    cv::matchTemplate(level1, templ_half, result, cv::TM_CCOEFF_NORMED);
+    cv::minMaxLoc(result, nullptr, &amp;best, nullptr, &amp;best_location);
+    std::cout &lt;&lt; "level 1 score=" &lt;&lt; cv::format("%.3f", best)
+              &lt;&lt; " loc=(" &lt;&lt; best_location.x &lt;&lt; ", " &lt;&lt; best_location.y
+              &lt;&lt; ") -&gt; full=(" &lt;&lt; 2 * best_location.x &lt;&lt; ", "
+              &lt;&lt; 2 * best_location.y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">pyramid 0: 800x600
+pyramid 1: 400x300
+level 0 score=1.000 loc=(100, 90)
+level 1 score=1.000 loc=(50, 45) -&gt; full=(100, 90)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>pyrDown</code> 建立多层金字塔并打印每层尺寸；
+  用 <code>pyrUp</code> 观察细节损失；在不同尺度上匹配同一目标，
+  把粗层坐标映射回原图并在局部复核；说明模板匹配对旋转与尺度变化的限制。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="01-图像与Mat.html">← 第 1 部分 · 图像与 Mat</a>
+  <span class="spacer"></span>
+  <a href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

@@ -1275,6 +1275,29 @@ li::marker { color: var(--ink-faint); }
   font-weight: 600;
 }
 
+/* 左栏底部的图。现在只有 OpenCV 的模块关系图用；图片带 .zoomable，
+   双击后的放大与拖动由 zoom.js 管。白底图在暗色页面上也保持白底，
+   学生截图时字不会反色。 */
+.rail-figure {
+  margin: 1.1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+.rail-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+}
+.rail-figure figcaption {
+  margin-top: 0.4rem;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
 /* ── 代码块外壳（code.js 套上去的） ──────────────────── */
 .code {
   margin: 1.5rem 0;

@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 部分 · 开始 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a class="active" href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" aria-current="page" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 0 部分 · 开始</div>
+  <a class="toc-l" href="#l0-1"><span class="n">0.1</span>练习目录与代码约定</a>
+  <a class="toc-sub" href="#s0-1-1">练习目录</a>
+  <a class="toc-sub" href="#s0-1-2">代码与输出约定</a>
+  <a class="toc-l" href="#l0-2"><span class="n">0.2</span>环境与链接</a>
+  <a class="toc-sub" href="#s0-2-1">确认环境</a>
+  <a class="toc-sub" href="#s0-2-2">最小程序</a>
+  <a class="toc-sub" href="#s0-2-3">编译与链接</a>
+  <a class="toc-sub" href="#s0-2-4">运行与链接失败</a>
+  <a class="toc-sub" href="#s0-2-5">用 CMake 构建</a>
+  <a class="toc-l" href="#l0-3"><span class="n">0.3</span>VS Code 配置与 IntelliSense 排错</a>
+  <a class="toc-sub" href="#s0-3-1">四个配置文件</a>
+  <a class="toc-sub" href="#s0-3-2">IntelliSense 与编译的区别</a>
+  <a class="toc-sub" href="#s0-3-3">最小配置</a>
+  <a class="toc-sub" href="#s0-3-4">修复与验证</a>
+  <a class="toc-sub" href="#s0-3-5">常见问题</a>
+  <a class="toc-l" href="#l0-4"><span class="n">0.4</span>第一个程序：读图、显示、保存</a>
+  <a class="toc-sub" href="#s0-4-1">读入并检查</a>
+  <a class="toc-sub" href="#s0-4-2">尺寸与类型</a>
+  <a class="toc-sub" href="#s0-4-3">显示与保存</a>
+  <a class="toc-sub" href="#s0-4-4">运行结果</a>
+  <a class="toc-l" href="#l0-5"><span class="n">0.5</span>先运行一个完整例子：数绿球</a>
+  <a class="toc-sub" href="#s0-5-1">处理流程</a>
+  <a class="toc-sub" href="#s0-5-2">完整程序</a>
+  <a class="toc-sub" href="#s0-5-3">运行结果</a>
+  <a class="toc-sub" href="#s0-5-4">结果图</a>
+  <a class="toc-sub" href="#s0-5-5">现在不必理解每一行</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 0 部分</div>
+  <h1>开始</h1>
+  <p class="part-lead">
+    这一部分说明练习准备、编译链接、编辑器配置与第一个完整例子：
+    读完以后，读者应当能用一条 <code>g++</code> 命令编译单文件 OpenCV 程序，
+    在工程变大时用 <code>CMakeLists.txt</code> 组织构建，在 VS Code 中修复
+    头文件的 IntelliSense 报错，读入一张图、显示并保存结果，并运行一个
+    数绿球的完整流程。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="">
+  <b>读这一部分之前</b>
+  <p>
+    无。只需要能读懂 C++ 的变量、循环、函数与 <code>std::vector</code>，
+    能用 <code>g++</code> 编译一个源文件。课程不重复讲这些语法；
+    需要时先读 C++ 基础课。
+  </p>
+</div>
+
+<section class="lesson" id="l0-1">
+<h2><span class="no">0.1</span>练习目录与代码约定</h2>
+
+<p>
+  这一课准备练习目录，并说明课里的代码、输出与图片怎么读。
+  课程结构与各课要求见 <a href="index.html#structure">课程首页</a>。
+</p>
+
+<h3 id="s0-1-1">练习目录</h3>
+
+<p>
+  课程文件夹（本页所在目录）包含 <code>示例代码</code> 与 <code>素材</code>
+  两个文件夹。先把它们复制到 <code>/tmp/opencv-course</code>，之后的命令都在
+  副本里执行；课程文件夹保持只读，误改后可以重新复制。
+  在包含这两个文件夹的目录下执行：
+</p>
+
+<pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+
+<p>
+  示例程序使用 <code>../素材/synth_balls.png</code> 这样的相对路径，所以
+  <code>示例代码</code> 与 <code>素材</code> 必须一起复制，并且保持同级。
+  运行程序时，当前目录应当是 <code>/tmp/opencv-course/示例代码</code>；
+  可以用 <code>pwd</code> 确认。程序写出的结果图也落在当前目录。
+  这个目录只是副本，误改后重新执行上面的命令即可；课程不要求网络，
+  也不需要管理员权限。
+</p>
+
+<h3 id="s0-1-2">代码与输出约定</h3>
+
+<p>
+  C++ 例子都是完整程序，包含头文件、<code>main</code> 函数与
+  <code>return</code> 语句。读者应当先照着编译运行，对照输出，再读代码与说明；
+  编译与运行方法见 0.2。
+</p>
+
+<p>
+  代码块上方的标签写明语言与程序名，输出块上方写明“真实输出”。
+  终端输出里每次都会变化的部分（版本号、时间、帧率、耗时）会在标签或正文中说明；
+  没有说明的，按原样对照即可。结果图由页面上的程序生成，图注说明看什么。
+</p>
+
+<p>
+  课程中的程序名、图片名与视频名尽量使用 ASCII 字符，避免路径编码问题；
+  页面标题、图注与说明使用中文。代码统一使用 C++17，OpenCV 符号用
+  <code>cv::</code> 显式限定，标准库用 <code>std::</code>，不写
+  <code>using namespace</code>。
+</p>
+</section>
+
+<section class="lesson" id="l0-2">
+<h2><span class="no">0.2</span>环境与链接</h2>
+
+<p>
+  课程使用已经就绪的 OpenCV 与编辑器。本课先确认 <code>pkg-config</code>
+  能查到 OpenCV，用一条 <code>g++</code> 命令完成单文件程序的编译与链接；
+  再给出一份最小的 <code>CMakeLists.txt</code>，说明工程变大时怎样把
+  构建配置固定下来。
+</p>
+
+<h3 id="s0-2-1">确认环境</h3>
+
+<p>
+  先查 OpenCV、编译器与 CMake 的版本。在练习目录中执行：
+</p>
+
+<pre data-lang="终端"><code>pkg-config --modversion opencv4
+g++ --version | head -n 1
+cmake --version | head -n 1</code></pre>
+
+<pre class="out" data-label="真实输出（版本号可能不同）">4.9.0
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+cmake version 4.1.2</pre>
+
+<p>
+  <code>pkg-config</code> 能查到 <code>opencv4</code>，说明编译参数已经登记在系统里。
+  <code>cmake</code> 用于下一小节的构建示例；版本号不同不影响后面命令的写法。
+  再查头文件路径：
+</p>
+
+<pre data-lang="终端"><code>pkg-config --cflags opencv4</code></pre>
+
+<pre class="out" data-label="真实输出（路径可能不同）">-I/usr/local/include/opencv4</pre>
+
+<p>
+  这个路径在 0.3 配置 IntelliSense 时还要用到。不同机器上可能是
+  <code>/usr/include/opencv4</code>，以实际输出为准。
+  若 <code>pkg-config</code> 报找不到包，或输出为空，说明环境没有准备好；
+  先请课程负责人处理。
+</p>
+
+<h3 id="s0-2-2">最小程序</h3>
+
+<p>
+  下面是一个完整程序：创建一个 2 行 3 列、三通道的 <code>cv::Mat</code>，
+  打印尺寸、通道数、类型编号与第一个像素。像素值用 BGR 顺序给出。
+</p>
+
+<pre data-lang="C++" data-name="0.2-hello_mat.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    cv::Mat image(2, 3, CV_8UC3, cv::Scalar(10, 20, 30));
+
+    std::cout &lt;&lt; "rows=" &lt;&lt; image.rows
+              &lt;&lt; " cols=" &lt;&lt; image.cols
+              &lt;&lt; " channels=" &lt;&lt; image.channels()
+              &lt;&lt; " type=" &lt;&lt; image.type() &lt;&lt; '\n';
+    std::cout &lt;&lt; "first pixel: " &lt;&lt; image.at&lt;cv::Vec3b&gt;(0, 0) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+
+<p>
+  <code>#include &lt;opencv2/core.hpp&gt;</code> 引入 <code>cv::Mat</code>、
+  <code>cv::Scalar</code> 与像素类型这些核心内容。OpenCV 的头文件按模块
+  划分：图像处理与绘制在 <code>imgproc.hpp</code>，读写图片在
+  <code>imgcodecs.hpp</code>，窗口显示在 <code>highgui.hpp</code>，视频
+  读写与采集在 <code>videoio.hpp</code>。每个程序只包含自己用到的模块
+  头文件。
+</p>
+
+<p>
+  <code>cv::Mat image(2, 3, CV_8UC3, cv::Scalar(10, 20, 30))</code>
+  的前三个参数依次是行数、列数、类型，第四个参数是每个像素的初值。
+  类型 <code>CV_8UC3</code> 表示每个通道 8 位无符号整数、共 3 个通道；
+  <code>cv::Scalar(10, 20, 30)</code> 按 B、G、R 顺序给出三个通道的值。
+  <code>image.at&lt;cv::Vec3b&gt;(0, 0)</code> 读取第 0 行、
+  第 0 列的像素，<code>cv::Vec3b</code> 表示三个 8 位分量。
+</p>
+
+<h3 id="s0-2-3">编译与链接</h3>
+
+<p>
+  在练习目录中执行下面两条命令。第一条编译并链接，第二条运行：
+</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 0.2-hello_mat.cpp -o hello_mat \
+    $(pkg-config --cflags --libs opencv4)
+./hello_mat</code></pre>
+
+<p>
+  <code>-std=c++17</code> 指定语言标准；<code>-Wall -Wextra</code> 打开常用警告；
+  <code>-o hello_mat</code> 指定输出程序名。反斜杠表示命令换行继续。
+  <code>$(pkg-config --cflags --libs opencv4)</code> 由 shell 先展开：
+  <code>--cflags</code> 给出头文件目录，<code>--libs</code> 给出需要链接的库。
+  这两部分缺一不可：只有头文件目录会找不到库，只有库会找不到头文件。
+</p>
+
+<p>
+  后续课的单文件例子都使用同一条命令，只替换源文件名与输出程序名；
+  9.6 的计时程序额外加 <code>-O2</code>，命令在该课单独给出。
+  程序名一律使用 ASCII 字符，例如 <code>hello_mat</code>；
+  源文件名可以带课号，例如本课的源文件。工程包含多个源文件，或需要
+  固定一组编译选项时，用下一小节的 <code>CMakeLists.txt</code>。
+</p>
+
+<h3 id="s0-2-4">运行与链接失败</h3>
+
+<p>
+  运行 <code>./hello_mat</code> 的真实输出如下。两行分别给出尺寸与第一个像素：
+</p>
+
+<pre class="out" data-label="真实输出">rows=2 cols=3 channels=3 type=16
+first pixel: [10, 20, 30]</pre>
+
+<p>
+  <code>type=16</code> 是 OpenCV 的类型编号，对应 <code>CV_8UC3</code>。
+  编号由深度与通道数编码而成，后面的课会展开。像素值按 BGR 顺序打印，
+  与创建时的 <code>(10, 20, 30)</code> 一致。
+</p>
+
+<p>
+  编译失败时，先看错误属于哪一类。下表列出三种常见情况与处理方向。
+</p>
+
+<table>
+  <thead>
+    <tr><th>现象</th><th>常见原因</th><th>处理方向</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>opencv2/core.hpp: No such file or directory</code></td>
+      <td>编译命令缺少 <code>--cflags</code>，或 <code>pkg-config</code> 查不到 OpenCV</td>
+      <td>先运行 <code>pkg-config --cflags opencv4</code>，确认有输出；再检查命令里的 <code>$(...)</code></td>
+    </tr>
+    <tr>
+      <td><code>undefined reference to cv::Mat::...</code></td>
+      <td>编译命令缺少 <code>--libs</code>，或库路径不对</td>
+      <td>确认命令同时包含 <code>--cflags</code> 与 <code>--libs</code>，包名是 <code>opencv4</code></td>
+    </tr>
+    <tr>
+      <td><code>Package opencv4 was not found</code></td>
+      <td><code>pkg-config</code> 找不到 OpenCV 的登记文件</td>
+      <td>环境没有准备好，先请课程负责人处理</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="aside warn">
+  <b>包名是 opencv4</b>
+  <p>
+    本课统一使用 <code>pkg-config ... opencv4</code>。不要改成
+    <code>opencv</code>：旧版本的登记名可能指向另一套库，链接出的程序与课里的
+    头文件版本不一致，表现是编译能过、运行行为却不同。
+  </p>
+</div>
+
+<h3 id="s0-2-5">用 CMake 构建</h3>
+
+<p>
+  单文件程序用前面的 <code>g++</code> 命令最直接。工程包含多个源文件、
+  需要统一编译选项，
+  或要让编辑器和队友共用同一套构建配置时，把这些内容写进
+  <code>CMakeLists.txt</code>，由 CMake 生成构建文件。
+  示例代码目录中的 <code>0.2-cmake</code> 是一份最小工程，构建的仍是
+  上面那份程序。
+</p>
+
+<pre data-lang="CMake" data-name="0.2-cmake/CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(hello_mat LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_compile_options(-Wall -Wextra)
+
+find_package(OpenCV 4 REQUIRED)
+
+add_executable(hello_mat ../0.2-hello_mat.cpp)
+target_include_directories(hello_mat PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(hello_mat PRIVATE ${OpenCV_LIBS})</code></pre>
+
+<p>
+  <code>cmake_minimum_required</code> 声明配置所需的最低 CMake 版本；
+  <code>project</code> 给工程命名并声明使用 C++。三行
+  <code>CMAKE_CXX_*</code> 把语言标准固定为 C++17，
+  <code>add_compile_options</code> 打开与前面 <code>g++</code> 命令相同的警告。
+</p>
+
+<p>
+  <code>find_package(OpenCV 4 REQUIRED)</code> 查找 OpenCV 4 的 CMake 配置；
+  找不到时在配置阶段报错，不会延迟到链接阶段。
+  <code>add_executable</code> 声明可执行目标与源文件；
+  <code>target_include_directories</code> 加入头文件目录；
+  <code>target_link_libraries</code> 把 <code>OpenCV_LIBS</code> 中的库链接到
+  这个目标。<code>PRIVATE</code> 表示这些设置只作用于 <code>hello_mat</code>。
+</p>
+
+<p>
+  在练习目录的 <code>示例代码</code> 下执行。第一条命令读取当前目录的
+  <code>CMakeLists.txt</code>，把构建文件写进 <code>build</code>；
+  第二条命令调用构建文件完成编译与链接；第三条运行程序：
+</p>
+
+<pre data-lang="终端"><code>cd 0.2-cmake
+cmake -S . -B build
+cmake --build build
+./build/hello_mat</code></pre>
+
+<pre class="out diag" data-label="真实输出（CMake 版本、编译器识别信息、耗时与构建路径随机器不同）">-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found OpenCV: /usr/local (found suitable version "4.9.0", minimum required is "4")
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/opencv-course/示例代码/0.2-cmake/build
+[ 50%] Building CXX object CMakeFiles/hello_mat.dir/tmp/opencv-course/示例代码/0.2-hello_mat.cpp.o
+[100%] Linking CXX executable hello_mat
+[100%] Built target hello_mat
+rows=2 cols=3 channels=3 type=16
+first pixel: [10, 20, 30]</pre>
+
+<p>
+  配置阶段把 <code>CMakeLists.txt</code> 翻译成 <code>build</code> 目录中的
+  构建文件，构建阶段调用编译器，最终得到 <code>build/hello_mat</code>。
+  程序输出与前面用 <code>g++</code> 构建的版本相同。源文件目录只多出
+  <code>build</code> 一个目录；删除它即可重新配置，不会改动源文件。
+</p>
+
+<h4>为什么不在每一课重复 CMakeLists</h4>
+
+<p>
+  后面的课仍以单文件例子为主，页面继续给一条 <code>g++</code> 命令。
+  原因有三条。
+</p>
+
+<ul>
+  <li>单文件例子只需要一行编译命令；头文件、库、语言标准与警告都在这行里，
+    读者可以直接看到每个参数的作用。换成 <code>CMakeLists.txt</code> 后，
+    同样的信息分散在配置与命令两处，初学时反而多一层间接。</li>
+  <li>各课的 <code>CMakeLists.txt</code> 只有源文件名不同，逐课重复会把页面
+    篇幅用在构建配置上，削弱本课的 OpenCV 内容；读者也难以判断哪一段才是
+    本课要讲的内容。</li>
+  <li>CMake 的收益来自多源文件、多个目标、统一选项与 IDE 集成。单文件例子
+    没有这些需求；等工程出现这些需求时，再照上面的模板扩展，CMake 的作用
+    才清楚。</li>
+</ul>
+
+<p>
+  因此课程只在环境这一课给出一份可用的 <code>CMakeLists.txt</code>，后面的
+  例子不重复它；需要把多个源文件组织成工程时，从这份模板开始，把源文件
+  逐个加入 <code>add_executable</code>，或为每个目标各写一条。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>确认 OpenCV 版本与头文件路径，用一条
+  <code>g++</code> 命令编译并链接一个 OpenCV 程序，用一份最小
+  <code>CMakeLists.txt</code> 完成同样的构建，运行后对照控制台输出，
+  并在链接失败时判断问题出在头文件、库还是 <code>pkg-config</code>。
+</p>
+</section>
+
+<section class="lesson" id="l0-3">
+<h2><span class="no">0.3</span>VS Code 配置与 IntelliSense 排错</h2>
+
+<p>
+  这一课只处理一件事：打开含 OpenCV 头文件的源文件时，VS Code 的
+  IntelliSense 报“找不到头文件”，怎样用项目级配置修好。
+  配置只写在项目级目录里，不改全局设置。
+</p>
+
+<h3 id="s0-3-1"><code>.vscode</code> 的四个文件</h3>
+
+<p>
+  <code>.vscode</code> 是项目级配置目录，放在工作区根目录下，只影响当前工作区。
+  它通常包含四个文件，分工如下：
+</p>
+
+<table>
+  <thead>
+    <tr><th>文件</th><th>作用</th><th>本课是否展开</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>c_cpp_properties.json</code></td>
+      <td>IntelliSense 的头文件路径、编译器路径与语言标准</td>
+      <td>是</td>
+    </tr>
+    <tr>
+      <td><code>settings.json</code></td>
+      <td>当前工作区的编辑器设置</td>
+      <td>否，只说明用途</td>
+    </tr>
+    <tr>
+      <td><code>launch.json</code></td>
+      <td>调试配置</td>
+      <td>否，只说明用途</td>
+    </tr>
+    <tr>
+      <td><code>tasks.json</code></td>
+      <td>任务配置</td>
+      <td>否，只说明用途</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  工作区应当打开在包含源文件与 <code>.vscode</code> 的那一层。
+  若打开的是它的父目录，VS Code 找不到这份配置，红线不会消失。
+</p>
+
+<h3 id="s0-3-2">IntelliSense 与编译的区别</h3>
+
+<p>
+  IntelliSense 是编辑器的静态检查：它按配置里的头文件路径查找符号，
+  在编辑时给出补全与红线。它不参与链接，也不生成程序。
+  最终能否运行，仍由 0.2 的 <code>g++</code> 命令决定。
+</p>
+
+<p>
+  两种现象要分开看。红线消失但链接失败，说明 IntelliSense 配好了，
+  编译命令仍缺库；能编译运行但编辑器有红线，说明编译参数正确，
+  IntelliSense 的头文件路径不对。后者不影响程序，但会影响跳转与补全，
+  应当按本课修好。
+</p>
+
+<h3 id="s0-3-3">最小配置</h3>
+
+<p>
+  在 <code>.vscode</code> 目录下新建 <code>c_cpp_properties.json</code>，
+  内容如下。JSON 不允许注释，也不能有末尾多余的逗号。
+</p>
+
+<pre data-lang="JSON" data-name="c_cpp_properties.json"><code>{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/usr/local/include/opencv4/**"
+      ],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-x64"
+    }
+  ],
+  "version": 4
+}</code></pre>
+
+<p>
+  各字段的作用：
+</p>
+
+<ul>
+  <li><code>includePath</code>：IntelliSense 查找头文件的目录。
+    <code>${workspaceFolder}/**</code> 表示工作区内递归查找；
+    第二项是 OpenCV 头文件目录，来自 0.2 的
+    <code>pkg-config --cflags opencv4</code>。测试机是
+    <code>/usr/local/include/opencv4</code>；若输出是
+    <code>/usr/include/opencv4</code>，就把第二项换成那个路径。
+    <code>/**</code> 表示连同子目录一起查找。</li>
+  <li><code>compilerPath</code>：编译器路径。测试机是
+    <code>/usr/bin/g++</code>；不确定时运行 <code>which g++</code> 查看。</li>
+  <li><code>cStandard</code> 与 <code>cppStandard</code>：C 与 C++ 标准。
+    本课使用 C++17，因此 <code>cppStandard</code> 为 <code>c++17</code>。</li>
+  <li><code>intelliSenseMode</code>：IntelliSense 的编译器模式。
+    Linux 下的 64 位 GCC 使用 <code>linux-gcc-x64</code>。</li>
+</ul>
+
+<div class="aside tip">
+  <b>路径以实际输出为准</b>
+  <p>
+    上面的 OpenCV 路径是测试机 <code>pkg-config</code> 的输出。
+    换一台机器时，先运行 <code>pkg-config --cflags opencv4</code>，
+    把 <code>-I</code> 后面的目录照抄到 <code>includePath</code>，再加上
+    <code>/**</code>。不同安装方式的前缀不同，照抄示例可能指向旧版本的头文件。
+  </p>
+</div>
+
+<h3 id="s0-3-4">修复与验证</h3>
+
+<p>
+  有两种修复方式。第一种是使用编辑器的代码操作：把光标放在带红线的
+  <code>#include</code> 行上，打开代码操作提示，选择添加头文件路径，
+  编辑器会把目录写进 <code>includePath</code>。第二种是直接编辑上面这份
+  JSON，保存后重新加载窗口。
+</p>
+
+<p>
+  重新加载窗口使用命令面板中的“Developer: Reload Window”。
+  配置修改后不重新加载，IntelliSense 可能仍使用旧路径。
+  验证两件事：红线消失；按住 Ctrl 单击 <code>cv::Mat</code> 等符号，
+  能跳转到对应的头文件。若仍不能跳转，先检查工作区根目录与
+  <code>includePath</code> 的路径是否一致。
+</p>
+
+<h3 id="s0-3-5">常见问题</h3>
+
+<table>
+  <thead>
+    <tr><th>现象</th><th>原因</th><th>处理</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>配置后仍有红线</td>
+      <td>工作区打开在父目录，<code>.vscode</code> 不在根目录</td>
+      <td>重新打开包含源文件与 <code>.vscode</code> 的那一层</td>
+    </tr>
+    <tr>
+      <td>路径写了仍找不到</td>
+      <td><code>includePath</code> 指向 <code>opencv2</code>，而不是 <code>opencv4</code></td>
+      <td>使用 <code>pkg-config --cflags opencv4</code> 给出的完整目录</td>
+    </tr>
+    <tr>
+      <td>补全与跳转异常</td>
+      <td><code>compilerPath</code> 不是实际使用的编译器</td>
+      <td>运行 <code>which g++</code>，把结果写入 <code>compilerPath</code></td>
+    </tr>
+    <tr>
+      <td>标准库符号报错</td>
+      <td><code>cppStandard</code> 不是 <code>c++17</code></td>
+      <td>改成 <code>c++17</code> 后重新加载窗口</td>
+    </tr>
+    <tr>
+      <td>改了配置没有变化</td>
+      <td>没有重新加载窗口</td>
+      <td>执行“Developer: Reload Window”</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  最后再强调一次：IntelliSense 只做静态检查，不替代编译。
+  红线消失以后，仍要用 0.2 的命令编译并运行，确认程序真的能生成、能执行。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>写出项目级 <code>.vscode/c_cpp_properties.json</code>，
+  让 OpenCV 头文件不再报红线，Ctrl+单击能跳转到头文件，并说清
+  IntelliSense 与编译链接各自负责什么。
+</p>
+</section>
+
+<section class="lesson" id="l0-4">
+<h2><span class="no">0.4</span>第一个程序：读图、显示、保存</h2>
+
+<p>
+  这一课用一个完整程序做四件事：把图片读入内存，检查读取是否成功，
+  打印尺寸与类型，保存一份副本并在窗口中显示。运行后可以同时看到
+  控制台输出、图像窗口和写出的文件，用来确认读图、显示与保存这三个步骤
+  都能完成。
+</p>
+
+<div class="aside tip">
+  <b>开始之前</b>
+  <p>
+    练习目录应当已经按前面的说明准备好，当前目录是
+    <code>/tmp/opencv-course/示例代码</code>；编译命令应当已经运行成功。
+    这两步没有完成时，先回到前面的练习目录与编译链接两节。
+  </p>
+</div>
+
+<h3 id="s0-4-1">读入并检查</h3>
+
+<p>
+  完整程序如下。先通读一遍，不必立刻记住每个函数；下面按执行顺序说明。
+</p>
+
+<pre data-lang="C++" data-name="0.4-read_show_save.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/highgui.hpp&gt;
+
+int main() {
+    const std::string path = "../素材/synth_balls.png";
+    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; std::endl;
+        return 1;
+    }
+
+    std::cout &lt;&lt; "rows=" &lt;&lt; image.rows &lt;&lt; " cols=" &lt;&lt; image.cols
+              &lt;&lt; " channels=" &lt;&lt; image.channels()
+              &lt;&lt; " type=" &lt;&lt; image.type() &lt;&lt; std::endl;
+
+    const bool saved = cv::imwrite("out_synth_balls.png", image);
+    std::cout &lt;&lt; "saved out_synth_balls.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; std::endl;
+
+    cv::imshow("synth_balls", image);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+
+    return 0;
+}</code></pre>
+
+<p>
+  <code>cv::imread(path, cv::IMREAD_COLOR)</code> 按三通道彩色读入图片。
+  路径是相对于当前工作目录的；本课从练习目录的 <code>示例代码</code>
+  文件夹运行，所以素材路径写成 <code>../素材/synth_balls.png</code>。
+  读入后立即用 <code>empty()</code> 检查：路径不对或文件无法解码时，
+  <code>imread</code> 返回一个空的 <code>Mat</code>，不会抛出异常。
+  当前目录不是练习目录的 <code>示例代码</code> 文件夹时，这个相对路径会指向
+  别处，控制台打印“无法读取”并返回 1。遇到时先用 <code>pwd</code> 确认目录；
+  素材没有复制时，按前面的练习目录说明重新复制。
+</p>
+
+<h3 id="s0-4-2">尺寸与类型</h3>
+
+<p>
+  程序打印行数、列数、通道数与类型编号。图像的行对应高度，列对应宽度；
+  三通道彩色图的通道数是 3。类型编号与前面最小程序里的 <code>CV_8UC3</code>
+  是同一个值，
+  后面的课会解释编号的构成。读取失败时程序打印提示并返回 1，
+  不再继续显示或保存。
+</p>
+
+<h3 id="s0-4-3">显示与保存</h3>
+
+<p>
+  <code>cv::imwrite("out_synth_balls.png", image)</code> 把图像写到当前目录，
+  扩展名决定编码格式，返回值表示是否写成功。返回 <code>false</code> 时，
+  检查当前目录是否可写、磁盘是否还有空间。
+  <code>cv::imshow("synth_balls", image)</code> 打开一个名为 <code>synth_balls</code>
+  的窗口；<code>cv::waitKey(0)</code> 等待按键，参数为 0 表示一直等待；
+  按键后执行 <code>cv::destroyAllWindows()</code> 关闭窗口。窗口没有出现时，
+  先看任务栏里有没有 <code>synth_balls</code>；纯终端或 SSH 环境没有图形界面，
+  可先注释 <code>imshow</code> 与 <code>waitKey</code> 两行，只验证读取、打印与保存。
+</p>
+
+<p>
+  这份程序把保存与打印放在显示之前。这样即使窗口一直等待按键，
+  结果文件与控制台输出也已经完成；关闭窗口后程序才返回。
+  若先显示再保存，窗口等待期间文件还没有写出，容易误以为保存失败。
+</p>
+
+<h3 id="s0-4-4">运行结果</h3>
+
+<p>
+  先确认当前目录，再编译并运行：
+</p>
+
+<pre data-lang="终端"><code>cd /tmp/opencv-course/示例代码
+pwd
+g++ -std=c++17 -Wall -Wextra 0.4-read_show_save.cpp -o read_show_save \
+    $(pkg-config --cflags --libs opencv4)
+./read_show_save</code></pre>
+
+<p>
+  <code>pwd</code> 应输出 <code>/tmp/opencv-course/示例代码</code>。
+  当前目录不对时，程序里的 <code>../素材/synth_balls.png</code> 会指向别处，
+  控制台打印“无法读取”并返回 1。
+</p>
+
+<p>
+  控制台先打印尺寸与保存结果，然后弹出名为 <code>synth_balls</code> 的窗口：
+</p>
+
+<pre class="out" data-label="真实输出">rows=1343 cols=1187 channels=3 type=16
+saved out_synth_balls.png: yes</pre>
+
+<p>
+  窗口显示合成图。程序停在 <code>cv::waitKey(0)</code>，等待按键；
+  在窗口上按任意键后窗口关闭，程序结束，当前目录下出现
+  <code>out_synth_balls.png</code>。保存发生在显示之前，所以窗口还在等待时，
+  文件已经写出。
+</p>
+
+<p>
+  合成图如下：
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/synth_balls.png" alt="浅色背景上分布 22 个绿色圆球的合成图，用于读取、显示与保存的例子" width="1187" height="1343">
+  <figcaption>
+    读入的合成图。程序打印的 <code>rows=1343</code> 是高度，
+    <code>cols=1187</code> 是宽度，<code>channels=3</code> 是三通道彩色图。
+    保存的副本与合成图内容相同。
+  </figcaption>
+</figure>
+
+<p>
+  <code>type=16</code> 对应 <code>CV_8UC3</code>：每通道 8 位、三通道。
+  若把读取标志改成 <code>cv::IMREAD_GRAYSCALE</code>，通道数会变成 1，
+  类型编号也会变。
+</p>
+
+<p class="can">
+  <b>你现在能做什么：</b>读入一张图片并检查是否成功，打印尺寸与类型，
+  在窗口中显示，保存一份副本，并从返回值判断保存是否成功。
+</p>
+</section>
+
+<section class="lesson" id="l0-5">
+<h2><span class="no">0.5</span>先运行一个完整例子：数绿球</h2>
+
+<p>
+  这一课先运行一个完整的颜色检测例子，不要求理解每一行。
+  程序读入合成图，按绿色阈值生成掩码，做形态学处理，提取轮廓，
+  按面积过滤，最后给每个绿球画框并编号。后面的第 1–4 部分会逐段解释。
+</p>
+
+<h3 id="s0-5-1">处理流程</h3>
+
+<ol>
+  <li>用 <code>cv::imread</code> 读入彩色图，检查是否为空。</li>
+  <li>用 <code>cv::cvtColor</code> 把 BGR 转成 HSV。HSV 把颜色与亮度分开，
+    比直接对 BGR 设阈值稳定。</li>
+  <li>用 <code>cv::inRange</code> 取绿色范围，得到一张单通道掩码：
+    绿色像素为 255，其余为 0。</li>
+  <li>用 5×5 椭圆核做一次开运算与一次闭运算，去掉小噪点、填补小孔。</li>
+  <li>用 <code>cv::findContours</code> 提取外轮廓，只保留面积不小于
+    300 像素² 的目标。</li>
+  <li>用 <code>cv::boundingRect</code> 求每个目标的外接矩形，画红框，
+    在框的上方写编号。</li>
+  <li>打印轮廓总数与保留数，保存标注图。</li>
+</ol>
+
+<p>
+  阈值范围 <code>(35, 43, 46)</code> 到 <code>(85, 255, 255)</code>
+  是这张合成图的一组可用参数。换一张图、换一种光照，参数可能需要调整；
+  第 4 部分会给出调试方法。
+</p>
+
+<h3 id="s0-5-2">完整程序</h3>
+
+<pre data-lang="C++" data-name="0.5-count_green.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_balls.png", cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：../素材/synth_balls.png" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat hsv;
+    cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+
+    cv::Mat mask;
+    cv::inRange(hsv, cv::Scalar(35, 43, 46), cv::Scalar(85, 255, 255), mask);
+
+    const cv::Mat kernel =
+        cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; kept;
+    for (const auto&amp; contour : contours) {
+        if (cv::contourArea(contour) &gt;= 300.0) {
+            kept.push_back(contour);
+        }
+    }
+
+    for (std::size_t i = 0; i &lt; kept.size(); ++i) {
+        const cv::Rect box = cv::boundingRect(kept[i]);
+        cv::rectangle(image, box, cv::Scalar(0, 0, 255), 2);
+        cv::putText(image, std::to_string(i + 1),
+                    cv::Point(box.x, box.y - 6), cv::FONT_HERSHEY_SIMPLEX,
+                    0.6, cv::Scalar(0, 0, 255), 2);
+    }
+
+    std::cout &lt;&lt; "contours=" &lt;&lt; contours.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "kept=" &lt;&lt; kept.size() &lt;&lt; '\n';
+
+    const bool saved = cv::imwrite("out_count.png", image);
+    std::cout &lt;&lt; "saved out_count.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+
+<p>
+  编译并运行：
+</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 0.5-count_green.cpp -o count_green \
+    $(pkg-config --cflags --libs opencv4)
+./count_green</code></pre>
+
+<h3 id="s0-5-3">运行结果</h3>
+
+<pre class="out" data-label="真实输出">contours=22
+kept=22
+saved out_count.png: yes</pre>
+
+<p>
+  <code>contours=22</code> 是掩码中提取到的外轮廓总数，
+  <code>kept=22</code> 是面积过滤后保留的数量。这张合成图里两个数相同，
+  说明形态学处理已经去掉了面积很小的噪点。保存的标注图如下：
+</p>
+
+<h3 id="s0-5-4">结果图</h3>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_count.png" alt="绿色小球检测结果：每个球用红框标出并写上编号，共 22 个" width="1187" height="1343">
+  <figcaption>
+    检测结果。红框是每个目标的外接矩形，框上方的数字是编号，按轮廓在
+    图像中的顺序生成。编号不是球的实际顺序，只用于区分目标。
+  </figcaption>
+</figure>
+
+<p>
+  22 是这张合成图在当前阈值与面积下限下的结果，不是所有图的固定答案。
+  背景中的绿色物体也可能被计入；光照变化会让掩码变大或变小。
+  第 4 部分会讲怎样用面积、圆形度、宽高比等特征进一步筛选。
+</p>
+
+<h3 id="s0-5-5">现在不必理解每一行</h3>
+
+<p>
+  这个例子把后面几部分的内容串在一起。现在只需要知道每一步做什么，
+  不要求写出同样的代码：
+</p>
+
+<ul>
+  <li><code>cv::Mat</code>、读图、通道与像素：第 1 部分，
+    可以先读 <a href="01-图像与Mat.html#l1-1">1.1</a> 与
+    <a href="01-图像与Mat.html#l1-2">1.2</a>。</li>
+  <li>BGR 与 HSV、颜色范围：第 1 部分的
+    <a href="01-图像与Mat.html#l1-4">1.4</a>。</li>
+  <li>画框、写编号与保存：第 1 部分的
+    <a href="01-图像与Mat.html#l1-5">1.5</a>。</li>
+</ul>
+
+<p>
+  可以作为热身做一次修改：把面积下限 <code>300.0</code> 改成
+  <code>1000.0</code>，重新编译运行，观察 <code>kept</code> 与标注图的变化。
+  想一想哪些目标被滤掉了，为什么。这个问题的完整讨论在第 3 部分。
+</p>
+
+<p class="can">
+  <b>本部分结束时应能：</b>用一条 <code>g++</code> 命令编译并链接 OpenCV 程序；
+  在 VS Code 中修复 OpenCV 头文件的 IntelliSense 报错；读入一张图，
+  打印尺寸与类型，显示并保存；运行一个完整的颜色检测例子，
+  并说出它的主要步骤。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="01-图像与Mat.html">第 1 部分 · 图像与 Mat →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 10 部分 · 检测题 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+        <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a class="active" href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" aria-current="page" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 10 部分 · 检测题</div>
+  <a class="toc-l" href="#l10-1"><span class="n">10.1</span>综合例题：目标计数与轨迹</a>
+  <a class="toc-sub" href="#s10-1-1">任务与数据</a>
+  <a class="toc-sub" href="#s10-1-2">流程与参数</a>
+  <a class="toc-sub" href="#e10-1">例题：整段视频</a>
+  <a class="toc-sub" href="#s10-1-3">结果与评价</a>
+  <a class="toc-l" href="#l10-2"><span class="n">10.2</span>五道检测题与答案</a>
+  <a class="toc-sub" href="#s10-2-1">题 1 · Mat 与 ROI</a>
+  <a class="toc-sub" href="#s10-2-2">题 2 · 阈值与形态学</a>
+  <a class="toc-sub" href="#s10-2-3">题 3 · 轮廓筛选</a>
+  <a class="toc-sub" href="#s10-2-4">题 4 · 去畸变与重投影</a>
+  <a class="toc-sub" href="#s10-2-5">题 5 · 卡尔曼</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 10 部分</div>
+  <h1>检测题</h1>
+  <p class="part-lead">
+    这一部分由一道综合例题和五道检测题组成。例题在 <code>cube.mp4</code>
+    上完成颜色掩码、形态学、轮廓筛选、碎片合并、重心跟踪、写视频与统计，
+    给出完整程序、真实输出和轨迹图；五道题分别检查 Mat 与 ROI、阈值与
+    形态学、轮廓筛选、去畸变与重投影、卡尔曼预测与更新。例题给出全部
+    实现，检测题要求先独立完成，再展开答案对照。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l2-1 l2-2 l2-3 l3-1 l3-2 l3-3 l3-4 l3-5 l4-1 l4-5 l4-6 l5-1 l5-3 l5-4 l7-1 l7-6 l8-1 l8-2">
+  <b>读这一部分之前</b>
+  <p>
+    需要掌握 Mat 的读写与 ROI、图像平滑与阈值、形态学、轮廓与形状、
+    HSV 颜色阈值、视频读写；去畸变与重投影题用到针孔投影与去畸变，
+    卡尔曼题用到预测与更新。对应的课程是
+    <a href="01-图像与Mat.html#l1-1">1.1</a>、
+    <a href="01-图像与Mat.html#l1-2">1.2</a>、
+    <a href="01-图像与Mat.html#l1-3">1.3</a>、
+    <a href="01-图像与Mat.html#l1-4">1.4</a>、
+    <a href="01-图像与Mat.html#l1-5">1.5</a>、
+    <a href="02-图像处理.html#l2-1">2.1</a>、
+    <a href="02-图像处理.html#l2-2">2.2</a>、
+    <a href="02-图像处理.html#l2-3">2.3</a>、
+    <a href="03-轮廓与形状.html#l3-1">3.1</a>、
+    <a href="03-轮廓与形状.html#l3-2">3.2</a>、
+    <a href="03-轮廓与形状.html#l3-3">3.3</a>、
+    <a href="03-轮廓与形状.html#l3-4">3.4</a>、
+    <a href="03-轮廓与形状.html#l3-5">3.5</a>、
+    <a href="04-颜色目标检测.html#l4-1">4.1</a>、
+    <a href="04-颜色目标检测.html#l4-5">4.5</a>、
+    <a href="04-颜色目标检测.html#l4-6">4.6</a>、
+    <a href="05-视频与相机.html#l5-1">5.1</a>、
+    <a href="05-视频与相机.html#l5-3">5.3</a>、
+    <a href="05-视频与相机.html#l5-4">5.4</a>、
+    <a href="07-相机模型与标定.html#l7-1">7.1</a>、
+    <a href="07-相机模型与标定.html#l7-6">7.6</a>、
+    <a href="08-卡尔曼滤波与跟踪.html#l8-1">8.1</a>、
+    <a href="08-卡尔曼滤波与跟踪.html#l8-2">8.2</a>。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l10-1">
+<h2><span class="no">10.1</span>综合例题：视频中的目标计数与轨迹</h2>
+
+<h3 id="s10-1-1">任务与数据</h3>
+
+<p>
+  任务是在 <code>素材/cube.mp4</code> 中选定一种颜色，统计每一帧的目标
+  数量，绘制目标重心的轨迹，写出标注视频，并在控制台给出一段视频的
+  汇总。评价看三件事：计数在整段视频中是否稳定；漏检与误检能否从候选数、
+  目标数和中间结果解释；改动参数后能否复现同样的变化。
+</p>
+
+<p>
+  视频为 <code>640×480</code>、<code>30</code> 帧每秒、<code>90</code> 帧、
+  <code>3.0 s</code>。画面中央是一个线框立方体，棱分别用黄、橙、粉与
+  珊瑚色绘制；背景有两个虚化斑块。立方体绕自身中心旋转，位置基本不动。
+  粉色棱在多数帧构成一块较大的连通区域，因此选粉色作为检测颜色。黄色棱
+  也能检测，但断开的次数更多；橙色棱在部分帧转到背面，候选数会降到零。
+  背景的棕色斑块亮度低于 <code>V=90</code>，青色斑块饱和度与亮度都低，
+  两者都不进入掩码。
+</p>
+
+<p>
+  粉色跨过色相 <code>0</code> 点：一部分落在 <code>150–179</code>，另一部分
+  落在 <code>0–6</code>。因此颜色掩码由两次 <code>inRange</code> 的结果
+  按位或得到。只写一段范围会丢掉另一半像素，重心随可见棱的分布偏移。
+</p>
+
+<h3 id="s10-1-2">流程与参数</h3>
+
+<p>整条流程分为八步，每一步都保留可检查的中间结果：</p>
+
+<ol>
+  <li>打开视频，读取宽、高、帧率与总帧数；打开失败时直接结束。</li>
+  <li>把每一帧从 BGR 转为 HSV，用两段色相范围生成粉色掩码。</li>
+  <li>对掩码做 <code>9×9</code> 闭运算，连接棱上的断口与压缩产生的空洞。</li>
+  <li>提取外轮廓，按 <code>contourArea</code> 去掉面积小于 <code>300 px²</code>
+      的噪点与短碎边，剩下的称为候选碎片。</li>
+  <li>按外接矩形的最近距离合并碎片：距离不超过 <code>80 px</code> 的矩形
+      并为一组。合并后的组数就是这一帧的目标数。</li>
+  <li>对每组按碎片面积加权求重心，并取所有碎片外接矩形的并集作为目标框。</li>
+  <li>用最近邻关联上一帧的跟踪点：距离超过 <code>80 px</code> 时重新初始化，
+      否则按 <code>0.12</code> 的系数做指数平滑。</li>
+  <li>在帧上画候选轮廓、目标框、测量点、跟踪点与轨迹，写入输出视频；
+      处理结束后保存轨迹图并打印统计。</li>
+</ol>
+
+<p>
+  第 5 步是计数稳定的关键。颜色掩码只覆盖立方体的一部分棱，单帧可能得到
+  一至五个互不相连的碎片；如果直接数轮廓，目标数会随立方体的转角变化。
+  按外接矩形间距合并后，同一立方体的碎片落在一组，目标数保持为一。合并
+  阈值不能随意放大：两个真正分开的目标也会被并成一组。
+</p>
+
+<table class="lookup">
+  <colgroup><col style="width: 24%"><col style="width: 30%"><col style="width: 46%"></colgroup>
+  <tr><th>参数</th><th>程序中的值</th><th>作用</th></tr>
+  <tr><td>色相范围</td><td>H 150–179 与 0–6</td><td>覆盖粉色跨过 0 点的两端</td></tr>
+  <tr><td>饱和度、明度下限</td><td>S ≥ 90，V ≥ 90</td><td>排除低饱和与低亮度的背景斑块</td></tr>
+  <tr><td>闭运算核</td><td>9×9 矩形</td><td>连接棱上的断口与压缩空洞</td></tr>
+  <tr><td>最小面积</td><td>300 px²</td><td>去掉压缩噪点与短碎边</td></tr>
+  <tr><td>合并间距</td><td>80 px</td><td>把同一立方体的碎片并成一个目标</td></tr>
+  <tr><td>跟踪门限</td><td>80 px</td><td>超过则放弃上一帧的位置，重新初始化</td></tr>
+  <tr><td>平滑系数</td><td>0.12</td><td>新测量在跟踪点中占的比例；越小越平稳</td></tr>
+</table>
+
+<div class="eg" id="e10-1">
+  <div class="eg-h">例题 · 整段视频</div>
+  <p>
+    程序处理全部 <code>90</code> 帧，写出标注视频
+    <code>素材/out_cube_track.mp4</code> 与轨迹图
+    <code>素材/out_cube_trajectory.png</code>，并打印每 15 帧一行的
+    候选数、目标数与跟踪点坐标。轨迹图左侧是原始最后一帧与平滑轨迹，
+    右侧是平滑后重心轨迹的 4 倍放大图；颜色由蓝到红表示时间先后。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="10.1-cube_track.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+constexpr int kMinArea = 300;
+constexpr double kGroupGap = 80.0;
+constexpr double kGate = 80.0;
+constexpr double kAlpha = 0.12;
+
+struct Fragment {
+    double area = 0.0;
+    cv::Rect box;
+    cv::Point2f center;
+    std::vector&lt;cv::Point&gt; contour;
+};
+
+struct Target {
+    double area = 0.0;
+    cv::Rect box;
+    cv::Point2f center;
+    std::vector&lt;int&gt; parts;
+};
+
+double rectGap(const cv::Rect&amp; a, const cv::Rect&amp; b) {
+    const int left = std::max(a.x, b.x);
+    const int right = std::min(a.x + a.width, b.x + b.width);
+    const int top = std::max(a.y, b.y);
+    const int bottom = std::min(a.y + a.height, b.y + b.height);
+    const double dx = std::max(0, left - right);
+    const double dy = std::max(0, top - bottom);
+    return std::hypot(dx, dy);
+}
+
+int findRoot(std::vector&lt;int&gt;&amp; parent, int index) {
+    while (parent[index] != index) {
+        parent[index] = parent[parent[index]];
+        index = parent[index];
+    }
+    return index;
+}
+
+void unite(std::vector&lt;int&gt;&amp; parent, int a, int b) {
+    const int ra = findRoot(parent, a);
+    const int rb = findRoot(parent, b);
+    if (ra != rb) {
+        parent[rb] = ra;
+    }
+}
+
+std::vector&lt;Target&gt; groupFragments(const std::vector&lt;Fragment&gt;&amp; fragments) {
+    const int count = static_cast&lt;int&gt;(fragments.size());
+    std::vector&lt;int&gt; parent(count);
+    std::iota(parent.begin(), parent.end(), 0);
+    for (int i = 0; i &lt; count; ++i) {
+        for (int j = i + 1; j &lt; count; ++j) {
+            if (rectGap(fragments[i].box, fragments[j].box) &lt;= kGroupGap) {
+                unite(parent, i, j);
+            }
+        }
+    }
+
+    std::vector&lt;Target&gt; targets;
+    std::vector&lt;int&gt; roots;
+    for (int i = 0; i &lt; count; ++i) {
+        const int root = findRoot(parent, i);
+        const auto found = std::find(roots.begin(), roots.end(), root);
+        int group = 0;
+        if (found == roots.end()) {
+            group = static_cast&lt;int&gt;(roots.size());
+            roots.push_back(root);
+            targets.push_back(Target());
+        } else {
+            group = static_cast&lt;int&gt;(found - roots.begin());
+        }
+        Target&amp; target = targets[group];
+        target.area += fragments[i].area;
+        target.parts.push_back(i);
+        target.box = target.parts.size() == 1
+                         ? fragments[i].box
+                         : target.box | fragments[i].box;
+    }
+
+    for (Target&amp; target : targets) {
+        cv::Point2f sum(0.0F, 0.0F);
+        for (int index : target.parts) {
+            sum += fragments[index].center *
+                   static_cast&lt;float&gt;(fragments[index].area);
+        }
+        target.center = sum / static_cast&lt;float&gt;(target.area);
+    }
+    return targets;
+}
+
+std::vector&lt;Fragment&gt; findFragments(const cv::Mat&amp; hsv) {
+    cv::Mat low;
+    cv::inRange(hsv, cv::Scalar(150, 90, 90), cv::Scalar(179, 255, 255), low);
+    cv::Mat high;
+    cv::inRange(hsv, cv::Scalar(0, 90, 90), cv::Scalar(6, 255, 255), high);
+    cv::Mat mask;
+    cv::bitwise_or(low, high, mask);
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(9, 9)));
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+    std::vector&lt;Fragment&gt; fragments;
+    for (const std::vector&lt;cv::Point&gt;&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; kMinArea) {
+            continue;
+        }
+        const cv::Moments moments = cv::moments(contour);
+        if (moments.m00 &lt;= 0.0) {
+            continue;
+        }
+        Fragment fragment;
+        fragment.area = area;
+        fragment.box = cv::boundingRect(contour);
+        fragment.center = cv::Point2f(
+            static_cast&lt;float&gt;(moments.m10 / moments.m00),
+            static_cast&lt;float&gt;(moments.m01 / moments.m00));
+        fragment.contour = contour;
+        fragments.push_back(fragment);
+    }
+    return fragments;
+}
+
+void drawHud(cv::Mat&amp; frame, int index, int total, int targets,
+             int candidates) {
+    cv::rectangle(frame, cv::Rect(0, 0, 370, 34), cv::Scalar(20, 20, 20),
+                  cv::FILLED);
+    const std::string text =
+        "frame " + std::to_string(index) + "/" + std::to_string(total) +
+        "  targets " + std::to_string(targets) + "  candidates " +
+        std::to_string(candidates);
+    cv::putText(frame, text, cv::Point(10, 24), cv::FONT_HERSHEY_SIMPLEX,
+                0.55, cv::Scalar(240, 240, 240), 1, cv::LINE_AA);
+}
+
+cv::Mat makeTrajectoryImage(const cv::Mat&amp; last,
+                            const std::vector&lt;cv::Point2f&gt;&amp; trail) {
+    cv::Mat left = last.clone();
+    for (std::size_t i = 1; i &lt; trail.size(); ++i) {
+        const double t = i / static_cast&lt;double&gt;(trail.size() - 1);
+        const cv::Scalar color(255.0 * (1.0 - t), 80.0, 255.0 * t);
+        cv::line(left, trail[i - 1], trail[i], color, 2, cv::LINE_AA);
+    }
+    if (!trail.empty()) {
+        cv::circle(left, trail.front(), 7, cv::Scalar(240, 240, 240), 2,
+                   cv::LINE_AA);
+        cv::circle(left, trail.back(), 7, cv::Scalar(0, 0, 255), 2,
+                   cv::LINE_AA);
+        cv::putText(left, "start", trail.front() + cv::Point2f(10, -10),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(240, 240, 240),
+                    1, cv::LINE_AA);
+        cv::putText(left, "end", trail.back() + cv::Point2f(10, 16),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(0, 0, 255), 1,
+                    cv::LINE_AA);
+    }
+
+    cv::Mat right(480, 640, CV_8UC3, cv::Scalar(30, 30, 30));
+    const cv::Point2f origin(320.0F, 240.0F);
+    const double zoom = 4.0;
+    const auto map = [&amp;](const cv::Point2f&amp; point) {
+        return cv::Point(
+            cvRound((point.x - origin.x) * zoom + right.cols / 2.0),
+            cvRound((point.y - origin.y) * zoom + right.rows / 2.0));
+    };
+    for (int step = -4; step &lt;= 4; ++step) {
+        const int x = cvRound(right.cols / 2.0 + step * 20 * zoom);
+        const int y = cvRound(right.rows / 2.0 + step * 20 * zoom);
+        cv::line(right, cv::Point(x, 0), cv::Point(x, right.rows - 1),
+                 cv::Scalar(55, 55, 55), 1);
+        cv::line(right, cv::Point(0, y), cv::Point(right.cols - 1, y),
+                 cv::Scalar(55, 55, 55), 1);
+    }
+    for (std::size_t i = 1; i &lt; trail.size(); ++i) {
+        const double t = i / static_cast&lt;double&gt;(trail.size() - 1);
+        const cv::Scalar color(255.0 * (1.0 - t), 80.0, 255.0 * t);
+        cv::line(right, map(trail[i - 1]), map(trail[i]), color, 2,
+                 cv::LINE_AA);
+    }
+    if (!trail.empty()) {
+        cv::circle(right, map(trail.front()), 7, cv::Scalar(240, 240, 240),
+                   cv::FILLED, cv::LINE_AA);
+        cv::circle(right, map(trail.back()), 7, cv::Scalar(0, 0, 255),
+                   cv::FILLED, cv::LINE_AA);
+    }
+    cv::putText(right, "smoothed center (4x)", cv::Point(16, 34),
+                cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(230, 230, 230), 1,
+                cv::LINE_AA);
+    cv::putText(right, "grid 20 px   white = start   red = end",
+                cv::Point(16, 460), cv::FONT_HERSHEY_SIMPLEX, 0.5,
+                cv::Scalar(190, 190, 190), 1, cv::LINE_AA);
+
+    cv::Mat panel;
+    cv::hconcat(left, right, panel);
+    return panel;
+}
+
+}  // namespace
+
+int main() {
+    const std::string input = "../素材/cube.mp4";
+    cv::VideoCapture capture(input);
+    if (!capture.isOpened()) {
+        std::cout &lt;&lt; "无法打开 " &lt;&lt; input &lt;&lt; '\n';
+        return 1;
+    }
+
+    const int width = cvRound(capture.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(capture.get(cv::CAP_PROP_FRAME_HEIGHT));
+    const double fps = capture.get(cv::CAP_PROP_FPS);
+    const int total = cvRound(capture.get(cv::CAP_PROP_FRAME_COUNT));
+
+    const std::string video_path = "../素材/out_cube_track.mp4";
+    cv::VideoWriter writer(video_path,
+                           cv::VideoWriter::fourcc('m', 'p', '4', 'v'), fps,
+                           cv::Size(width, height));
+    if (!writer.isOpened()) {
+        std::cout &lt;&lt; "无法创建输出视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    bool tracking = false;
+    cv::Point2f track(0.0F, 0.0F);
+    std::vector&lt;cv::Point2f&gt; trail;
+    std::vector&lt;int&gt; counts;
+    std::vector&lt;int&gt; candidates;
+    int detected = 0;
+    int missed = 0;
+    int reinit = 0;
+    cv::Mat last;
+
+    std::cout &lt;&lt; "frames = " &lt;&lt; total &lt;&lt; '\n';
+    std::cout &lt;&lt; "frame  candidates  targets  cx     cy\n";
+
+    int index = 0;
+    while (true) {
+        cv::Mat frame;
+        capture &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+
+        cv::Mat hsv;
+        cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+        const std::vector&lt;Fragment&gt; fragments = findFragments(hsv);
+        const std::vector&lt;Target&gt; targets = groupFragments(fragments);
+        counts.push_back(static_cast&lt;int&gt;(targets.size()));
+        candidates.push_back(static_cast&lt;int&gt;(fragments.size()));
+
+        cv::Mat shown = frame.clone();
+        for (const Fragment&amp; fragment : fragments) {
+            cv::drawContours(shown, std::vector&lt;std::vector&lt;cv::Point&gt;&gt;{
+                                          fragment.contour},
+                            0, cv::Scalar(0, 220, 0), 1, cv::LINE_AA);
+        }
+
+        if (targets.empty()) {
+            ++missed;
+            tracking = false;
+        } else {
+            int chosen = 0;
+            if (tracking) {
+                double best = -1.0;
+                for (int i = 0; i &lt; static_cast&lt;int&gt;(targets.size()); ++i) {
+                    const double distance = cv::norm(targets[i].center - track);
+                    if (best &lt; 0.0 || distance &lt; best) {
+                        best = distance;
+                        chosen = i;
+                    }
+                }
+                if (best &gt; kGate) {
+                    ++reinit;
+                    track = targets[chosen].center;
+                    tracking = true;
+                } else {
+                    track += (targets[chosen].center - track) *
+                             static_cast&lt;float&gt;(kAlpha);
+                    tracking = true;
+                }
+            } else {
+                chosen = 0;
+                for (int i = 1; i &lt; static_cast&lt;int&gt;(targets.size()); ++i) {
+                    if (targets[i].area &gt; targets[chosen].area) {
+                        chosen = i;
+                    }
+                }
+                track = targets[chosen].center;
+                tracking = true;
+            }
+            ++detected;
+            trail.push_back(track);
+
+            const Target&amp; target = targets[chosen];
+            cv::rectangle(shown, target.box, cv::Scalar(0, 200, 255), 2);
+            cv::circle(shown, target.center, 4, cv::Scalar(0, 255, 255),
+                       cv::FILLED, cv::LINE_AA);
+            cv::circle(shown, track, 5, cv::Scalar(0, 0, 255), cv::FILLED,
+                       cv::LINE_AA);
+            for (std::size_t i = 1; i &lt; trail.size(); ++i) {
+                cv::line(shown, trail[i - 1], trail[i],
+                         cv::Scalar(255, 220, 0), 2, cv::LINE_AA);
+            }
+        }
+
+        drawHud(shown, index, total, static_cast&lt;int&gt;(targets.size()),
+                static_cast&lt;int&gt;(fragments.size()));
+        writer.write(shown);
+        if (index % 15 == 0) {
+            const cv::Point2f point =
+                targets.empty() ? cv::Point2f(0.0F, 0.0F) : track;
+            std::cout &lt;&lt; std::setw(5) &lt;&lt; index &lt;&lt; "  " &lt;&lt; std::setw(10)
+                      &lt;&lt; fragments.size() &lt;&lt; "  " &lt;&lt; std::setw(7)
+                      &lt;&lt; targets.size() &lt;&lt; "  " &lt;&lt; std::fixed
+                      &lt;&lt; std::setprecision(1) &lt;&lt; std::setw(6) &lt;&lt; point.x
+                      &lt;&lt; "  " &lt;&lt; std::setw(6) &lt;&lt; point.y &lt;&lt; '\n';
+        }
+        last = frame.clone();
+        ++index;
+    }
+    writer.release();
+
+    if (last.empty() || trail.empty()) {
+        std::cout &lt;&lt; "没有读到有效帧" &lt;&lt; '\n';
+        return 1;
+    }
+
+    double path = 0.0;
+    for (std::size_t i = 1; i &lt; trail.size(); ++i) {
+        path += cv::norm(trail[i] - trail[i - 1]);
+    }
+    const cv::Point2f mean =
+        std::accumulate(trail.begin(), trail.end(), cv::Point2f(0.0F, 0.0F)) /
+        static_cast&lt;float&gt;(trail.size());
+    const auto x_bounds = std::minmax_element(
+        trail.begin(), trail.end(),
+        [](const cv::Point2f&amp; a, const cv::Point2f&amp; b) { return a.x &lt; b.x; });
+    const auto y_bounds = std::minmax_element(
+        trail.begin(), trail.end(),
+        [](const cv::Point2f&amp; a, const cv::Point2f&amp; b) { return a.y &lt; b.y; });
+    const auto count_bounds = std::minmax_element(counts.begin(), counts.end());
+    const auto candidate_bounds =
+        std::minmax_element(candidates.begin(), candidates.end());
+
+    std::cout &lt;&lt; "detected = " &lt;&lt; detected &lt;&lt; "  missed = " &lt;&lt; missed &lt;&lt; '\n';
+    std::cout &lt;&lt; "targets: min = " &lt;&lt; *count_bounds.first
+              &lt;&lt; "  max = " &lt;&lt; *count_bounds.second &lt;&lt; '\n';
+    std::cout &lt;&lt; "candidates: min = " &lt;&lt; *candidate_bounds.first
+              &lt;&lt; "  max = " &lt;&lt; *candidate_bounds.second &lt;&lt; '\n';
+    std::cout &lt;&lt; "reinit = " &lt;&lt; reinit &lt;&lt; '\n';
+    std::cout &lt;&lt; "trajectory points = " &lt;&lt; trail.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "path length = " &lt;&lt; std::fixed &lt;&lt; std::setprecision(1) &lt;&lt; path
+              &lt;&lt; " px\n";
+    std::cout &lt;&lt; "track mean = (" &lt;&lt; mean.x &lt;&lt; ", " &lt;&lt; mean.y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "track range = x " &lt;&lt; x_bounds.first-&gt;x &lt;&lt; ".."
+              &lt;&lt; x_bounds.second-&gt;x &lt;&lt; "  y " &lt;&lt; y_bounds.first-&gt;y &lt;&lt; ".."
+              &lt;&lt; y_bounds.second-&gt;y &lt;&lt; '\n';
+
+    const cv::Mat trajectory = makeTrajectoryImage(last, trail);
+    const std::string image_path = "../素材/out_cube_trajectory.png";
+    const bool image_saved = cv::imwrite(image_path, trajectory);
+    std::cout &lt;&lt; "writer frames = " &lt;&lt; index &lt;&lt; '\n';
+
+    cv::VideoCapture reader(video_path);
+    if (!reader.isOpened()) {
+        std::cout &lt;&lt; "回读失败" &lt;&lt; '\n';
+        return 1;
+    }
+    std::cout &lt;&lt; "readback frames = "
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_COUNT)) &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_cube_track.mp4 = yes" &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_cube_trajectory.png = "
+              &lt;&lt; (image_saved ? "yes" : "no") &lt;&lt; " " &lt;&lt; trajectory.cols &lt;&lt; "x"
+              &lt;&lt; trajectory.rows &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 10.1-cube_track.cpp -o cube_track \
+    $(pkg-config --cflags --libs opencv4)
+./cube_track</code></pre>
+<pre class="out" data-label="真实输出">frames = 90
+frame  candidates  targets  cx     cy
+    0           2        1   285.7   266.6
+   15           1        1   319.1   243.6
+   30           1        1   318.6   237.1
+   45           1        1   307.5   257.3
+   60           2        1   323.8   255.4
+   75           1        1   317.2   252.5
+detected = 90  missed = 0
+targets: min = 1  max = 1
+candidates: min = 1  max = 5
+reinit = 0
+trajectory points = 90
+path length = 187.8 px
+track mean = (314.8, 249.1)
+track range = x 285.7..325.0  y 234.1..266.6
+writer frames = 90
+readback frames = 90
+saved out_cube_track.mp4 = yes
+saved out_cube_trajectory.png = yes 1280x480</pre>
+  <p>
+    输出分为四段。第一行给出总帧数；表格每 15 帧取一行，列出该帧的候选
+    碎片数、合并后的目标数与跟踪点坐标；汇总段给出检出帧数、目标数范围、
+    候选数范围、重新初始化次数、轨迹点数、路径长度、重心均值与范围；
+    最后两行分别是输出视频与轨迹图的保存结果，回读帧数是倒数第三行。
+  </p>
+  <p>
+    <code>targets</code> 的最小值与最大值都是 <code>1</code>，说明合并步骤
+    把每一帧的碎片都归到了一个目标；<code>candidates</code> 在
+    <code>1–5</code> 之间变化，说明颜色掩码确实会随转角断开。
+    <code>reinit = 0</code> 表示最近邻关联的距离从未超过门限。
+    <code>path length</code> 是平滑后相邻轨迹点的距离之和，不是起点到终点
+    的位移；轨迹范围 <code>x 285.7–325.0</code>、<code>y 234.1–266.6</code>
+    说明立方体基本原地旋转，重心只在小范围内移动。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_cube_trajectory.png" alt="立方体视频的最后一帧、起点与终点标记、平滑轨迹与四倍放大的重心轨迹" width="1280" height="480">
+    <figcaption>
+      左：原始最后一帧上的平滑轨迹。白色圆点与 <code>start</code> 文字
+      标出起点，红色圆点与 <code>end</code> 文字标出终点，颜色由蓝到红
+      表示时间推进。右：轨迹的 4 倍放大图。立方体绕自身中心旋转，轨迹
+      集中在画面中部。
+    </figcaption>
+  </figure>
+</div>
+
+<h3 id="s10-1-3">结果与评价</h3>
+
+<p>
+  计数稳定来自两个层次的筛选：面积筛选去掉噪点，间距合并把同一目标的
+  碎片归组。只做面积筛选时，单帧的目标数会在一至五之间跳动；只做合并
+  而不做面积筛选时，压缩噪点会被合并进目标框，重心向外偏移。两项同时
+  使用，目标数才保持为一。
+</p>
+
+<p>
+  参数变化可以直接从汇总段读出。把最小面积从 <code>300</code> 提高到
+  <code>1500</code>，会有 <code>4</code> 帧没有任何候选，<code>missed</code>
+  从 <code>0</code> 变为 <code>4</code>；把最小面积降到 <code>50</code>，
+  会有一帧出现两个目标，<code>targets</code> 的最大值变为 <code>2</code>。
+  前者说明面积下限不能高于目标在最不利转角下的投影面积；后者说明下限
+  不能低到把压缩噪点当成目标。闭运算核也有类似的两端：核小于断口时棱
+  仍然断开，核过大时相邻的棱会连成一片，目标框与重心随之偏移。
+</p>
+
+<p>
+  轨迹的起点是第 0 帧的测量，前几帧从画面左下向中心收敛，之后在均值
+  <code>(314.8, 249.1)</code> 附近小幅移动。平滑系数 <code>0.12</code>
+  使单帧的测量跳动只影响跟踪点的一小部分，因此轨迹连续；系数过大时轨迹
+  会跟着每一帧的碎片分布抖动，系数过小时跟踪点滞后于真实位置。门限
+  <code>80 px</code> 用于区分“测量跳动”和“目标丢失”：超过门限时不再
+  平滑，而是把跟踪点重置到当前测量。
+</p>
+
+<p>
+  评价一条综合流程，不看单帧的标注是否整齐，而看整段视频的计数是否稳定、
+  漏检与误检能否由候选数、目标数和中间结果解释、改动参数后能否复现同样的
+  变化。这三点都可以由程序的输出、输出视频与轨迹图直接检查。
+</p>
+</section>
+
+<section class="lesson" id="l10-2">
+<h2><span class="no">10.2</span>五道检测题与答案</h2>
+
+<p>
+  五道题覆盖 Mat 与 ROI、阈值与形态学、轮廓筛选、去畸变与重投影、
+  卡尔曼预测与更新。题目只使用课程素材与写在程序里的数据，不需要
+  标准输入。先独立写出结果，再展开答案对照；答案中的程序都可以直接
+  编译运行。
+</p>
+
+<h3 id="s10-2-1">题 1 · Mat 与 ROI</h3>
+
+<div class="ex">
+  <div class="ex-h">检测题 10-1</div>
+  <p>
+    下面这段程序在 <code>4×5</code> 的单通道矩阵上做浅拷贝、ROI 与克隆，
+    然后修改三处像素。要求写出 <code>src</code>、<code>roi</code>、
+    <code>deep</code> 的最终内容，并回答 <code>shallow</code> 是否与
+    <code>src</code> 共享数据。本题不需要标准输入，数据直接写在
+    <code>main</code> 里。
+  </p>
+<pre data-lang="C++"><code>cv::Mat src = (cv::Mat_&lt;uchar&gt;(4, 5) &lt;&lt;
+    10, 20, 30, 40, 50,
+    60, 70, 80, 90, 100,
+    110, 120, 130, 140, 150,
+    160, 170, 180, 190, 200);
+cv::Mat roi = src(cv::Rect(1, 1, 3, 2));
+cv::Mat shallow = src;
+cv::Mat deep = src.clone();
+roi.setTo(0);
+shallow.at&lt;uchar&gt;(0, 0) = 255;
+deep.at&lt;uchar&gt;(3, 4) = 1;</code></pre>
+  <details class="ans" data-run="示例代码/答案/10-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>roi</code> 是 <code>src</code> 的视图，<code>roi.setTo(0)</code>
+        把第 1–2 行、第 1–3 列清零；<code>shallow = src</code> 只复制矩阵头，
+        两者共享同一块像素，因此 <code>shallow.at(0,0) = 255</code> 也改了
+        <code>src</code> 的左上角；<code>deep = src.clone()</code> 复制了
+        像素，修改 <code>deep</code> 的右下角不影响 <code>src</code>。
+      </p>
+<pre data-lang="C++" data-name="答案/10-1.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+namespace {
+
+void print(const std::string&amp; name, const cv::Mat&amp; image) {
+    std::cout &lt;&lt; name &lt;&lt; " (" &lt;&lt; image.rows &lt;&lt; "x" &lt;&lt; image.cols &lt;&lt; ")\n";
+    for (int row = 0; row &lt; image.rows; ++row) {
+        for (int col = 0; col &lt; image.cols; ++col) {
+            std::cout &lt;&lt; std::setw(4)
+                      &lt;&lt; static_cast&lt;int&gt;(image.at&lt;uchar&gt;(row, col));
+        }
+        std::cout &lt;&lt; '\n';
+    }
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat src = (cv::Mat_&lt;uchar&gt;(4, 5) &lt;&lt; 10, 20, 30, 40, 50, 60, 70, 80,
+                   90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200);
+    cv::Mat roi = src(cv::Rect(1, 1, 3, 2));
+    cv::Mat shallow = src;
+    cv::Mat deep = src.clone();
+
+    roi.setTo(0);
+    shallow.at&lt;uchar&gt;(0, 0) = 255;
+    deep.at&lt;uchar&gt;(3, 4) = 1;
+
+    print("src", src);
+    print("roi", roi);
+    print("deep", deep);
+    std::cout &lt;&lt; "src.data == shallow.data: "
+              &lt;&lt; (src.data == shallow.data ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "src.data == deep.data: "
+              &lt;&lt; (src.data == deep.data ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "roi is a view: "
+              &lt;&lt; (roi.data &gt;= src.data &amp;&amp; roi.data &lt; src.data + src.total()
+                      ? "yes"
+                      : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">src (4x5)
+ 255  20  30  40  50
+  60   0   0   0 100
+ 110   0   0   0 150
+ 160 170 180 190 200
+roi (2x3)
+   0   0   0
+   0   0   0
+deep (4x5)
+  10  20  30  40  50
+  60  70  80  90 100
+ 110 120 130 140 150
+ 160 170 180 190   1
+src.data == shallow.data: yes
+src.data == deep.data: no
+roi is a view: yes</pre>
+      <p>
+        <code>src.data == shallow.data</code> 为真，说明两者指向同一块
+        内存；<code>src.data == deep.data</code> 为假，说明克隆分配了新的
+        像素缓冲区。<code>roi</code> 的数据指针落在 <code>src</code> 的
+        缓冲区范围内，因此也是视图。
+      </p>
+    </div>
+  </details>
+</div>
+
+<h3 id="s10-2-2">题 2 · 阈值与形态学</h3>
+
+<div class="ex">
+  <div class="ex-h">检测题 10-2</div>
+  <p>
+    在 <code>240×120</code> 的单通道掩码上画以下内容，然后依次做
+    <code>5×5</code> 开运算与 <code>9×9</code> 闭运算。要求给出原始、
+    开运算后、闭运算后三个阶段的连通域数量与外接矩形。本题不需要标准
+    输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <ul>
+    <li>矩形 A：左上角 <code>(20,20)</code>，宽高 <code>50×50</code>；</li>
+    <li>矩形 B：左上角 <code>(90,20)</code>，宽高 <code>50×50</code>；</li>
+    <li>横线：从 <code>(69,44)</code> 到 <code>(90,44)</code>，线宽 <code>2</code>，连接 A 与 B；</li>
+    <li>圆点：圆心 <code>(210,30)</code>，半径 <code>2</code>；</li>
+    <li>矩形 C：左上角 <code>(20,80)</code>，宽高 <code>30×30</code>；</li>
+    <li>矩形 D：左上角 <code>(55,80)</code>，宽高 <code>30×30</code>，与 C 相隔 <code>5 px</code>。</li>
+  </ul>
+  <details class="ans" data-run="示例代码/答案/10-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        原始掩码有四个连通域：A 与 B 由横线连成一个，圆点单独一个，C、D 各
+        一个。<code>5×5</code> 开运算删除宽度为 <code>2</code> 的横线和半径
+        为 <code>2</code> 的圆点，A 与 B 分开，C 与 D 仍相隔 <code>5 px</code>，
+        因此仍有四个连通域。再对开运算结果做 <code>9×9</code> 闭运算，
+        C 与 D 之间的 <code>5 px</code> 间隙被填满，两个矩形并成一个，
+        连通域数量降为三。
+      </p>
+<pre data-lang="C++" data-name="答案/10-2.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+struct Component {
+    int area = 0;
+    cv::Rect box;
+};
+
+void describe(const std::string&amp; title, const cv::Mat&amp; mask) {
+    cv::Mat labels;
+    cv::Mat stats;
+    cv::Mat centroids;
+    const int count = cv::connectedComponentsWithStats(
+        mask, labels, stats, centroids, 8, CV_32S);
+    std::vector&lt;Component&gt; components;
+    for (int label = 1; label &lt; count; ++label) {
+        Component component;
+        component.area = stats.at&lt;int&gt;(label, cv::CC_STAT_AREA);
+        component.box = cv::Rect(stats.at&lt;int&gt;(label, cv::CC_STAT_LEFT),
+                                 stats.at&lt;int&gt;(label, cv::CC_STAT_TOP),
+                                 stats.at&lt;int&gt;(label, cv::CC_STAT_WIDTH),
+                                 stats.at&lt;int&gt;(label, cv::CC_STAT_HEIGHT));
+        components.push_back(component);
+    }
+    std::sort(components.begin(), components.end(),
+              [](const Component&amp; a, const Component&amp; b) {
+                  return a.box.x != b.box.x ? a.box.x &lt; b.box.x
+                                            : a.box.y &lt; b.box.y;
+              });
+    std::cout &lt;&lt; title &lt;&lt; ": " &lt;&lt; components.size() &lt;&lt; '\n';
+    for (const Component&amp; component : components) {
+        std::cout &lt;&lt; "  area=" &lt;&lt; component.area &lt;&lt; "  box=("
+                  &lt;&lt; component.box.x &lt;&lt; "," &lt;&lt; component.box.y &lt;&lt; ","
+                  &lt;&lt; component.box.width &lt;&lt; "," &lt;&lt; component.box.height
+                  &lt;&lt; ")\n";
+    }
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat mask(120, 240, CV_8UC1, cv::Scalar(0));
+    cv::rectangle(mask, cv::Rect(20, 20, 50, 50), cv::Scalar(255),
+                  cv::FILLED);
+    cv::rectangle(mask, cv::Rect(90, 20, 50, 50), cv::Scalar(255),
+                  cv::FILLED);
+    cv::line(mask, cv::Point(69, 44), cv::Point(90, 44), cv::Scalar(255), 2);
+    cv::circle(mask, cv::Point(210, 30), 2, cv::Scalar(255), cv::FILLED);
+    cv::rectangle(mask, cv::Rect(20, 80, 30, 30), cv::Scalar(255),
+                  cv::FILLED);
+    cv::rectangle(mask, cv::Rect(55, 80, 30, 30), cv::Scalar(255),
+                  cv::FILLED);
+
+    describe("raw", mask);
+
+    cv::Mat opened;
+    cv::morphologyEx(mask, opened, cv::MORPH_OPEN,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(5, 5)));
+    describe("open 5x5", opened);
+
+    cv::Mat closed;
+    cv::morphologyEx(opened, closed, cv::MORPH_CLOSE,
+                     cv::getStructuringElement(cv::MORPH_RECT,
+                                               cv::Size(9, 9)));
+    describe("close 9x9 after open", closed);
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">raw: 4
+  area=5060  box=(20,20,120,50)
+  area=900  box=(20,80,30,30)
+  area=900  box=(55,80,30,30)
+  area=13  box=(208,28,5,5)
+open 5x5: 4
+  area=2500  box=(20,20,50,50)
+  area=900  box=(20,80,30,30)
+  area=900  box=(55,80,30,30)
+  area=2500  box=(90,20,50,50)
+close 9x9 after open: 3
+  area=2500  box=(20,20,50,50)
+  area=1950  box=(20,80,65,30)
+  area=2500  box=(90,20,50,50)</pre>
+      <p>
+        开运算后的数量与原始相同，但连通域的组成已经改变：原始是
+        “A+B、圆点、C、D”，开运算后是“A、B、C、D”。只看数量会漏掉这个
+        变化，因此题目同时要求外接矩形。闭运算只填小间隙，不会把 A 与 C
+        之间 <code>10 px</code> 的空隙连起来。
+      </p>
+    </div>
+  </details>
+</div>
+
+<h3 id="s10-2-3">题 3 · 轮廓筛选</h3>
+
+<div class="ex">
+  <div class="ex-h">检测题 10-3</div>
+  <p>
+    下面的片段已经按面积筛掉小轮廓，并做了多边形逼近。要求补全四边形、
+    凸性、直角与边长比的判断，使程序在 <code>素材/synth_blocks.png</code>
+    中只保留正方形。阈值取：四个内角的余弦绝对值不超过 <code>0.15</code>，
+    最长边与最短边的比值不超过 <code>1.20</code>。输出每个候选的面积、
+    顶点数、边长比、最大余弦、重心与是否通过。本题不需要标准输入，
+    数据直接写在 <code>main</code> 里。
+  </p>
+<pre data-lang="C++"><code>const double area = cv::contourArea(contour);
+if (area &lt; 1000.0) {
+    continue;
+}
+std::vector&lt;cv::Point&gt; poly;
+cv::approxPolyDP(contour, poly, 0.02 * cv::arcLength(contour, true), true);
+// 补全：四边形、凸、直角、边长比</code></pre>
+  <details class="ans" data-run="示例代码/答案/10-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先判断 <code>poly.size() == 4</code> 且
+        <code>cv::isContourConvex(poly)</code> 为真；再依次取四条边，用
+        <code>cv::norm</code> 求长度，最长边除以最短边得到边长比；最后在
+        四个顶点处取相邻两条边的向量，用点积除以两个模长的乘积得到夹角
+        余弦的绝对值。边长比与最大余弦都在阈值内才保留。
+      </p>
+<pre data-lang="C++" data-name="答案/10-3.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+struct Candidate {
+    double area = 0.0;
+    cv::Rect box;
+    std::vector&lt;cv::Point&gt; poly;
+    double ratio = 0.0;
+    double max_cos = 0.0;
+    bool accepted = false;
+};
+
+double sideLength(const cv::Point&amp; a, const cv::Point&amp; b) {
+    return cv::norm(a - b);
+}
+
+}  // namespace
+
+int main() {
+    const std::string path = "../素材/synth_blocks.png";
+    const cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout &lt;&lt; "无法读取：" &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat binary;
+    cv::threshold(gray, binary, 0, 255,
+                  cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+
+    std::vector&lt;std::vector&lt;cv::Point&gt;&gt; contours;
+    cv::findContours(binary, contours, cv::RETR_EXTERNAL,
+                     cv::CHAIN_APPROX_SIMPLE);
+
+    std::vector&lt;Candidate&gt; candidates;
+    for (const std::vector&lt;cv::Point&gt;&amp; contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area &lt; 1000.0) {
+            continue;
+        }
+        Candidate candidate;
+        candidate.area = area;
+        candidate.box = cv::boundingRect(contour);
+        const double perimeter = cv::arcLength(contour, true);
+        cv::approxPolyDP(contour, candidate.poly, 0.02 * perimeter, true);
+        if (candidate.poly.size() == 4 &amp;&amp; cv::isContourConvex(candidate.poly)) {
+            std::vector&lt;double&gt; sides;
+            for (int i = 0; i &lt; 4; ++i) {
+                sides.push_back(
+                    sideLength(candidate.poly[i], candidate.poly[(i + 1) % 4]));
+            }
+            const auto bounds =
+                std::minmax_element(sides.begin(), sides.end());
+            candidate.ratio = *bounds.second / *bounds.first;
+            for (int i = 0; i &lt; 4; ++i) {
+                const cv::Point v1 = candidate.poly[(i + 3) % 4] -
+                                     candidate.poly[i];
+                const cv::Point v2 = candidate.poly[(i + 1) % 4] -
+                                     candidate.poly[i];
+                const double cosine =
+                    std::abs(v1.dot(v2)) /
+                    (cv::norm(v1) * cv::norm(v2));
+                candidate.max_cos = std::max(candidate.max_cos, cosine);
+            }
+            candidate.accepted =
+                candidate.ratio &lt;= 1.20 &amp;&amp; candidate.max_cos &lt;= 0.15;
+        }
+        candidates.push_back(candidate);
+    }
+
+    std::sort(candidates.begin(), candidates.end(),
+              [](const Candidate&amp; a, const Candidate&amp; b) {
+                  return a.box.x != b.box.x ? a.box.x &lt; b.box.x
+                                            : a.box.y &lt; b.box.y;
+              });
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(1);
+    std::cout &lt;&lt; "candidates = " &lt;&lt; candidates.size() &lt;&lt; '\n';
+    int selected = 0;
+    for (const Candidate&amp; candidate : candidates) {
+        const cv::Moments moments = cv::moments(candidate.poly);
+        const double center_x = moments.m10 / moments.m00;
+        const double center_y = moments.m01 / moments.m00;
+        std::cout &lt;&lt; "  area=" &lt;&lt; std::setw(6) &lt;&lt; candidate.area
+                  &lt;&lt; "  vertices=" &lt;&lt; candidate.poly.size();
+        if (candidate.poly.size() == 4) {
+            std::cout &lt;&lt; "  ratio=" &lt;&lt; std::setprecision(2)
+                      &lt;&lt; candidate.ratio &lt;&lt; "  max_cos="
+                      &lt;&lt; candidate.max_cos;
+        } else {
+            std::cout &lt;&lt; "  ratio=--  max_cos=--";
+        }
+        std::cout &lt;&lt; "  center=(" &lt;&lt; std::setprecision(1) &lt;&lt; center_x &lt;&lt; ","
+                  &lt;&lt; center_y &lt;&lt; ")  accept="
+                  &lt;&lt; (candidate.accepted ? "yes" : "no") &lt;&lt; '\n';
+        if (candidate.accepted) {
+            ++selected;
+        }
+    }
+    std::cout &lt;&lt; "selected = " &lt;&lt; selected &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">candidates = 9
+  area=8100.0  vertices=4  ratio=1.00  max_cos=0.00  center=(140.0,140.0)  accept=yes
+  area=9580.0  vertices=8  ratio=--  max_cos=--  center=(160.0,600.0)  accept=no
+  area=8978.0  vertices=4  ratio=1.00  max_cos=0.00  center=(200.0,380.0)  accept=yes
+  area=9964.0  vertices=4  ratio=1.00  max_cos=0.00  center=(380.0,140.0)  accept=yes
+  area=7821.0  vertices=4  ratio=2.18  max_cos=0.00  center=(430.0,600.0)  accept=no
+  area=10474.0  vertices=4  ratio=2.18  max_cos=0.00  center=(450.0,380.0)  accept=no
+  area=7312.0  vertices=4  ratio=1.00  max_cos=0.00  center=(650.0,150.0)  accept=yes
+  area=14444.0  vertices=4  ratio=1.79  max_cos=0.00  center=(700.0,600.0)  accept=no
+  area=11331.0  vertices=4  ratio=1.73  max_cos=0.01  center=(720.0,400.0)  accept=no
+selected = 4</pre>
+      <p>
+        九个候选中，圆点的逼近结果是八个顶点，直接排除；三个长条矩形的
+        边长比分别为 <code>2.18</code>、<code>1.79</code>、<code>1.73</code>，
+        超过 <code>1.20</code>；四个正方形的边长比都是 <code>1.00</code>，
+        最大余弦都是 <code>0.00</code>，全部通过。<code>0.01</code> 属于
+        边长比 <code>1.73</code> 的长条候选，它已因边长比被拒绝。旋转
+        <code>45°</code> 的绿色菱形也是正方形，因此被保留。
+      </p>
+    </div>
+  </details>
+</div>
+
+<h3 id="s10-2-4">题 4 · 去畸变与重投影</h3>
+
+<div class="ex">
+  <div class="ex-h">检测题 10-4</div>
+  <p>
+    给定相机矩阵
+    <code>K = [[800, 0, 320], [0, 800, 240], [0, 0, 1]]</code>、畸变系数
+    <code>D = [-0.25, 0.08, 0.001, -0.0005, 0]</code> 与像素坐标
+    <code>(420, 180)</code>。要求：
+  </p>
+  <ol>
+    <li>用 <code>undistortPoints</code> 求去畸变后的归一化坐标；</li>
+    <li>把归一化坐标当作 <code>Z=1</code> 的三维点，用
+        <code>projectPoints</code> 投回像素，报告重投影误差；</li>
+    <li>用同一组 <code>K</code>、<code>D</code> 投影三维点
+        <code>(0.2, -0.1, 2.0)</code>。</li>
+  </ol>
+  <p>本题不需要标准输入，数据直接写在 <code>main</code> 里。</p>
+  <details class="ans" data-run="示例代码/答案/10-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>undistortPoints</code> 不做透视除法以外的像素映射；不给
+        <code>P</code> 时输出归一化坐标。把归一化坐标补成 <code>Z=1</code>
+        的点，再交给 <code>projectPoints</code>，后者会重新应用畸变，因此
+        投回的像素与原像素一致。<code>undistortPoints</code> 若把
+        <code>P</code> 设为 <code>K</code>，输出的是理想针孔模型下的像素，
+        不再加畸变，所以它与原像素不相等；这一点容易误判，应以
+        <code>projectPoints</code> 的结果为准。
+      </p>
+<pre data-lang="C++" data-name="答案/10-4.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/calib3d.hpp&gt;
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    const cv::Mat camera = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt; 800.0, 0.0, 320.0,
+                            0.0, 800.0, 240.0, 0.0, 0.0, 1.0);
+    const cv::Mat distortion =
+        (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt; -0.25, 0.08, 0.001, -0.0005, 0.0);
+    const std::vector&lt;cv::Point2f&gt; pixels = {cv::Point2f(420.0F, 180.0F)};
+
+    std::vector&lt;cv::Point2f&gt; normalized;
+    cv::undistortPoints(pixels, normalized, camera, distortion);
+    std::vector&lt;cv::Point2f&gt; mapped;
+    cv::undistortPoints(pixels, mapped, camera, distortion, cv::noArray(),
+                        camera);
+
+    const std::vector&lt;cv::Point3d&gt; ray = {
+        cv::Point3d(normalized[0].x, normalized[0].y, 1.0)};
+    const std::vector&lt;cv::Point3d&gt; point = {cv::Point3d(0.2, -0.1, 2.0)};
+    const cv::Mat rvec = cv::Mat::zeros(3, 1, CV_64F);
+    const cv::Mat tvec = cv::Mat::zeros(3, 1, CV_64F);
+    std::vector&lt;cv::Point2d&gt; ray_pixel;
+    std::vector&lt;cv::Point2d&gt; point_pixel;
+    cv::projectPoints(ray, rvec, tvec, camera, distortion, ray_pixel);
+    cv::projectPoints(point, rvec, tvec, camera, distortion, point_pixel);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "normalized = (" &lt;&lt; normalized[0].x &lt;&lt; ", "
+              &lt;&lt; normalized[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "mapped pixel = (" &lt;&lt; mapped[0].x &lt;&lt; ", " &lt;&lt; mapped[0].y
+              &lt;&lt; ")\n";
+    std::cout &lt;&lt; "project normalized -&gt; (" &lt;&lt; ray_pixel[0].x &lt;&lt; ", "
+              &lt;&lt; ray_pixel[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "reprojection error = "
+              &lt;&lt; std::hypot(ray_pixel[0].x - pixels[0].x,
+                            ray_pixel[0].y - pixels[0].y)
+              &lt;&lt; " px\n";
+    std::cout &lt;&lt; "project (0.2, -0.1, 2.0) -&gt; (" &lt;&lt; point_pixel[0].x &lt;&lt; ", "
+              &lt;&lt; point_pixel[0].y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">normalized = (0.1257, -0.0754)
+mapped pixel = (420.5732, 179.6440)
+project normalized -&gt; (420.0000, 180.0000)
+reprojection error = 0.0000 px
+project (0.2, -0.1, 2.0) -&gt; (399.7300, 200.1425)</pre>
+      <p>
+        归一化坐标为 <code>(0.1257, -0.0754)</code>；按 <code>Z=1</code>
+        投回得到 <code>(420.0000, 180.0000)</code>，误差为
+        <code>0.0000 px</code>。三维点 <code>(0.2, -0.1, 2.0)</code>
+        的投影为 <code>(399.7300, 200.1425)</code>，与无畸变时的
+        <code>(400, 200)</code> 相差约 <code>0.3 px</code>，差值来自
+        径向与切向畸变。
+      </p>
+    </div>
+  </details>
+</div>
+
+<h3 id="s10-2-5">题 5 · 卡尔曼</h3>
+
+<div class="ex">
+  <div class="ex-h">检测题 10-5</div>
+  <p>
+    一维匀速模型的状态为 <code>x = [位置, 速度]^T</code>，初始
+    <code>x = [10, 2]^T</code>、<code>P = diag(4, 1)</code>，采样间隔
+    <code>dt = 0.5</code>，过程噪声 <code>Q = diag(0.1, 0.02)</code>。
+    观测矩阵 <code>H = [1, 0]</code>，观测值 <code>z = 11.5</code>，
+    观测噪声 <code>R = 0.5</code>。要求写出预测后的状态与协方差、
+    新息、新息协方差、卡尔曼增益，以及更新后的状态与协方差。
+    本题不需要标准输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <details class="ans" data-run="示例代码/答案/10-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        预测使用 <code>x' = F x</code>、<code>P' = F P F^T + Q</code>，
+        其中 <code>F = [[1, dt], [0, 1]]</code>；更新使用
+        <code>y = z - H x'</code>、<code>S = H P' H^T + R</code>、
+        <code>K = P' H^T / S</code>、<code>x = x' + K y</code>、
+        <code>P = (I - K H) P'</code>。位置预测为
+        <code>10 + 0.5×2 = 11</code>，速度保持 <code>2</code>；
+        观测比预测大 <code>0.5</code>，增益约 <code>0.897</code>，
+        更新后的位置为 <code>11.4485</code>。
+      </p>
+<pre data-lang="C++" data-name="答案/10-5.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    const double dt = 0.5;
+    const double x0 = 10.0;
+    const double x1 = 2.0;
+    const double p00 = 4.0;
+    const double p01 = 0.0;
+    const double p10 = 0.0;
+    const double p11 = 1.0;
+    const double q0 = 0.1;
+    const double q1 = 0.02;
+    const double measurement = 11.5;
+    const double r = 0.5;
+
+    const double predicted_x0 = x0 + dt * x1;
+    const double predicted_x1 = x1;
+    const double predicted_p00 = p00 + dt * (p01 + p10) +
+                                 dt * dt * p11 + q0;
+    const double predicted_p01 = p01 + dt * p11;
+    const double predicted_p10 = p10 + dt * p11;
+    const double predicted_p11 = p11 + q1;
+
+    const double innovation = measurement - predicted_x0;
+    const double s = predicted_p00 + r;
+    const double k0 = predicted_p00 / s;
+    const double k1 = predicted_p10 / s;
+    const double updated_x0 = predicted_x0 + k0 * innovation;
+    const double updated_x1 = predicted_x1 + k1 * innovation;
+    const double updated_p00 = predicted_p00 - k0 * predicted_p00;
+    const double updated_p01 = predicted_p01 - k0 * predicted_p01;
+    const double updated_p10 = predicted_p10 - k1 * predicted_p00;
+    const double updated_p11 = predicted_p11 - k1 * predicted_p01;
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "predict:\n";
+    std::cout &lt;&lt; "  x = (" &lt;&lt; predicted_x0 &lt;&lt; ", " &lt;&lt; predicted_x1 &lt;&lt; ")\n";
+    std::cout &lt;&lt; "  P = [[" &lt;&lt; predicted_p00 &lt;&lt; ", " &lt;&lt; predicted_p01
+              &lt;&lt; "], [" &lt;&lt; predicted_p10 &lt;&lt; ", " &lt;&lt; predicted_p11 &lt;&lt; "]]\n";
+    std::cout &lt;&lt; "update:\n";
+    std::cout &lt;&lt; "  innovation = " &lt;&lt; innovation &lt;&lt; '\n';
+    std::cout &lt;&lt; "  S = " &lt;&lt; s &lt;&lt; '\n';
+    std::cout &lt;&lt; "  K = (" &lt;&lt; k0 &lt;&lt; ", " &lt;&lt; k1 &lt;&lt; ")\n";
+    std::cout &lt;&lt; "  x = (" &lt;&lt; updated_x0 &lt;&lt; ", " &lt;&lt; updated_x1 &lt;&lt; ")\n";
+    std::cout &lt;&lt; "  P = [[" &lt;&lt; updated_p00 &lt;&lt; ", " &lt;&lt; updated_p01 &lt;&lt; "], ["
+              &lt;&lt; updated_p10 &lt;&lt; ", " &lt;&lt; updated_p11 &lt;&lt; "]]\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">predict:
+  x = (11.0000, 2.0000)
+  P = [[4.3500, 0.5000], [0.5000, 1.0200]]
+update:
+  innovation = 0.5000
+  S = 4.8500
+  K = (0.8969, 0.1031)
+  x = (11.4485, 2.0515)
+  P = [[0.4485, 0.0515], [0.0515, 0.9685]]</pre>
+      <p>
+        <code>Q</code> 增大表示更相信观测，增益与位置修正量都会变大；
+        <code>R</code> 增大表示更相信模型，增益变小，更新后的位置更接近
+        预测值。协方差更新后，位置方差从 <code>4.35</code> 降到
+        <code>0.4485</code>，说明这一帧观测提供了有效信息。
+      </p>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用一条完整流程处理视频：读取属性并逐帧循环；
+  用 HSV 两段范围生成颜色掩码；用闭运算与面积筛选得到候选碎片；按外接
+  矩形间距把同一目标的碎片合并；用面积加权重心与最近邻关联跟踪目标；
+  用指数平滑抑制测量跳动；写出标注视频与轨迹图并打印统计；独立完成
+  Mat 与 ROI、阈值与形态学、轮廓筛选、去畸变投影与卡尔曼预测更新五类
+  检测题。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="09-综合-装甲板识别.html">← 第 9 部分 · 综合：装甲板识别</a>
+  <span class="spacer"></span>
+  <a href="../../reference/附录-OpenCV.html">附录 · API 速查与常见错误 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

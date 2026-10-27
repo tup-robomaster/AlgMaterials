@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · 相机模型与标定 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a class="active" href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" aria-current="page" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · 相机模型与标定</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>四大坐标系与针孔模型</a>
+  <a class="toc-sub" href="#s7-1-1">四个坐标系</a>
+  <a class="toc-sub" href="#s7-1-2">针孔模型与内参</a>
+  <a class="toc-sub" href="#s7-1-3">一个点的完整计算</a>
+  <a class="toc-sub" href="#e7-1">例题：一个点的投影</a>
+  <a class="toc-sub" href="#s7-1-4">常见错误</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>单应与张正友标定</a>
+  <a class="toc-sub" href="#s7-2-1">平面单应性</a>
+  <a class="toc-sub" href="#s7-2-2">从 H 到内参</a>
+  <a class="toc-sub" href="#s7-2-3">用途与边界</a>
+  <a class="toc-sub" href="#e7-2">例题：四点单应性</a>
+  <a class="toc-l" href="#l7-3"><span class="n">7.3</span>畸变模型</a>
+  <a class="toc-sub" href="#s7-3-1">径向畸变</a>
+  <a class="toc-sub" href="#s7-3-2">切向畸变</a>
+  <a class="toc-sub" href="#s7-3-3">归一化坐标与像素</a>
+  <a class="toc-sub" href="#e7-3">例题：合成网格</a>
+  <a class="toc-sub" href="#s7-3-4">常见错误</a>
+  <a class="toc-l" href="#l7-4"><span class="n">7.4</span>棋盘格角点检测</a>
+  <a class="toc-sub" href="#s7-4-1">靶标与内角点</a>
+  <a class="toc-sub" href="#s7-4-2">findChessboardCorners</a>
+  <a class="toc-sub" href="#s7-4-3">亚像素细化</a>
+  <a class="toc-sub" href="#s7-4-4">绘制与检查</a>
+  <a class="toc-sub" href="#e7-4">例题：检测与绘制</a>
+  <a class="toc-l" href="#l7-5"><span class="n">7.5</span>calibrateCamera 与重投影误差</a>
+  <a class="toc-sub" href="#s7-5-1">输入与输出</a>
+  <a class="toc-sub" href="#s7-5-2">重投影误差</a>
+  <a class="toc-sub" href="#s7-5-3">标定流程</a>
+  <a class="toc-sub" href="#e7-5">例题：合成标定</a>
+  <a class="toc-l" href="#l7-6"><span class="n">7.6</span>去畸变与 remap</a>
+  <a class="toc-sub" href="#s7-6-1">undistort</a>
+  <a class="toc-sub" href="#s7-6-2">remap</a>
+  <a class="toc-sub" href="#s7-6-3">新内参与 ROI</a>
+  <a class="toc-sub" href="#e7-6">例题：两种去畸变</a>
+  <a class="toc-l" href="#l7-7"><span class="n">7.7</span>solvePnP、投影与 AR</a>
+  <a class="toc-sub" href="#s7-7-1">问题与输入</a>
+  <a class="toc-sub" href="#s7-7-2">方法与 flags</a>
+  <a class="toc-sub" href="#s7-7-3">重投影与 AR</a>
+  <a class="toc-sub" href="#s7-7-4">常见错误</a>
+  <a class="toc-sub" href="#e7-7">例题：平面靶标位姿</a>
+  <a class="toc-l" href="#l7-8"><span class="n">7.8</span>深度图与点云投影</a>
+  <a class="toc-sub" href="#s7-8-1">深度图与点云</a>
+  <a class="toc-sub" href="#s7-8-2">投影公式</a>
+  <a class="toc-sub" href="#s7-8-3">无效点、遮挡与 ROI</a>
+  <a class="toc-sub" href="#e7-8">例题：合成点云</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>相机模型与标定</h1>
+  <p class="part-lead">
+    这一部分从针孔模型出发，讲清世界、相机、图像与像素四个坐标系，
+    以及内参、外参与畸变参数的含义；然后用棋盘格完成角点检测、标定、
+    去畸变与 PnP，最后把深度图或点云投影到图像。7.1–7.6 要求掌握，
+    7.7 要求会用，7.8 要求看懂。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l2-6">
+  <b>读这一部分之前</b>
+  <p>
+    需要先读 <a href="01-图像与Mat.html#l1-1">1.1</a>，知道
+    <code>Mat</code> 的浅拷贝与 <code>clone</code>；读
+    <a href="01-图像与Mat.html#l1-2">1.2</a>，会按路径读图并检查
+    <code>empty</code>；读 <a href="01-图像与Mat.html#l1-3">1.3</a>，
+    会取 ROI；读 <a href="01-图像与Mat.html#l1-4">1.4</a>，会做灰度与颜色
+    转换；读 <a href="01-图像与Mat.html#l1-5">1.5</a>，会绘制标注；
+    读 <a href="02-图像处理.html#l2-6">2.6</a>，会用
+    <code>resize</code>、<code>warpAffine</code> 与
+    <code>warpPerspective</code>。标定、去畸变与投影反复用到这些操作。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>四大坐标系与针孔模型</h2>
+
+<p>
+  相机把三维场景压到二维图像。像素坐标只说明一个点在图像上的位置，
+  不能直接说明它在空间中的位置；要由像素反推空间，先要写清点在哪一个
+  坐标系里，以及这些坐标系之间怎样变换。本课建立四个坐标系与针孔投影
+  公式，再用一个点走完从世界坐标到像素坐标的完整计算。
+</p>
+
+<h3 id="s7-1-1">四个坐标系</h3>
+
+<p>
+  <b>世界坐标系</b>是描述场景的基准，记作 <code>O_w-X_wY_wZ_w</code>。
+  原点和轴向可以自行选择；标定时通常把棋盘格平面取为
+  <code>Z_w = 0</code>，让物点的第三个坐标全为零。世界坐标的单位要与
+  实际尺寸一致，常用米或毫米。
+</p>
+
+<p>
+  <b>相机坐标系</b>记作 <code>O_c-x_cy_cz_c</code>，原点在光心。
+  OpenCV 约定 <code>x_c</code> 向右、<code>y_c</code> 向下、
+  <code>z_c</code> 沿光轴向前。也就是说，相机前方的点
+  <code>z_c &gt; 0</code>，<code>z_c</code> 就是该点到相机平面的深度。
+  这个轴向与很多数学教材的 <code>y</code> 向上、<code>z</code> 向外不同，
+  写旋转矩阵时要按 OpenCV 的约定检查一遍。
+</p>
+
+<p>
+  <b>图像物理坐标系</b>在传感器平面上，原点取光轴与平面的交点，即主点；
+  <code>x</code> 向右、<code>y</code> 向下，单位是长度。焦距
+  <code>f</code> 是光心到传感器平面的距离。<b>像素坐标系</b>以图像
+  左上角为原点，<code>u</code> 向右、<code>v</code> 向下，单位是像素。
+  OpenCV 把整数坐标对应到像素中心，左上角像素的中心是
+  <code>(0,0)</code>。主点在像素坐标系中的位置记作
+  <code>(cx, cy)</code>，通常接近图像中心，但不保证正好等于宽高的一半；
+  真实相机应以标定结果为准，合成例子可以把主点设在中心。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_pinhole.jpg" alt="针孔成像模型：光心、物理成像平面、像素平面、焦距与相机坐标系" width="1200" height="817">
+  <figcaption>
+    针孔模型中的光心 <code>O</code>、物理成像平面与像素平面。空间中一点
+    <code>P</code> 与光心的连线落在成像平面上，形成像点；焦距
+    <code>f</code> 是光心到平面的距离。相机坐标系的 <code>x_c</code>、
+    <code>y_c</code>、<code>z_c</code> 按图示方向取定。
+  </figcaption>
+</figure>
+
+<h3 id="s7-1-2">针孔模型与内参</h3>
+
+<p>
+  世界坐标中的点先经旋转 <code>R</code> 与平移 <code>t</code> 变换到相机
+  坐标系，再按针孔模型投影到像素平面。把点写成齐次坐标，整个投影可以写成
+  一行：
+</p>
+
+<p>
+  <code>s[u,v,1]^T = K [R|t] [X,Y,Z,1]^T</code>
+</p>
+
+<p>
+  其中 <code>s</code> 是尺度因子，等于相机坐标系中的深度
+  <code>z_c</code>；<code>[R|t]</code> 是 <code>3×4</code> 的外参矩阵；
+  <code>K</code> 是 <code>3×3</code> 的内参矩阵：
+</p>
+
+<p>
+  <code>K = [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]</code>
+</p>
+
+<p>
+  <code>fx</code> 与 <code>fy</code> 是以像素为单位的焦距，分别等于
+  <code>f/dx</code> 与 <code>f/dy</code>，<code>dx</code>、<code>dy</code>
+  是单个像素在传感器上的物理尺寸。由于像素不一定是正方形，
+  <code>fx</code> 与 <code>fy</code> 通常不相等。把矩阵乘法展开，得到
+  最常用的两个式子：
+</p>
+
+<p>
+  <code>u = fx * X_c / Z_c + cx</code>，
+  <code>v = fy * Y_c / Z_c + cy</code>
+</p>
+
+<p>
+  <code>(X_c, Y_c, Z_c)</code> 是点在相机坐标系中的坐标。两式都除以
+  <code>Z_c</code>，所以同一个像素可以对应光线上任意深度的点；单张图像
+  缺少深度，这是由投影本身决定的。内参描述相机自身的成像比例与主点位置，
+  外参描述这一次拍摄时世界坐标与相机坐标的相对位姿。内参不随场景变化，
+  外参每换一个视角就要重新求。
+</p>
+
+<h3 id="s7-1-3">一个点的完整计算</h3>
+
+<p>
+  下面的程序给定内参、旋转向量、平移向量和一个世界坐标点，先算相机坐标，
+  再按公式算归一化坐标与像素坐标，最后用 <code>projectPoints</code>
+  核对结果，并把世界坐标轴的三条轴投影到图像上。旋转向量
+  <code>rvec</code> 的方向是旋转轴，长度是旋转角；程序用
+  <code>Rodrigues</code> 把它转成矩阵。
+</p>
+
+<div class="eg" id="e7-1">
+  <div class="eg-h">例题 · 一个点的投影</div>
+  <p>
+    内参取 <code>fx=800</code>、<code>fy=780</code>、
+    <code>cx=640</code>、<code>cy=360</code>；旋转向量为
+    <code>(0.08, -0.15, 0.03)</code>，平移向量为
+    <code>(0.05, -0.02, 2.50)</code>，单位为米。世界点为
+    <code>(0.20, -0.10, 0)</code>。程序打印相机坐标、归一化坐标、
+    手算像素、<code>projectPoints</code> 的结果与差值，再打印世界原点
+    及三条坐标轴端点的像素位置。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.1-pinhole.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 640.0,
+        0.0, 780.0, 360.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat zero = cv::Mat::zeros(1, 5, CV_64F);
+    const cv::Vec3d rvec(0.08, -0.15, 0.03);
+    const cv::Vec3d tvec(0.05, -0.02, 2.50);
+    const cv::Point3f world(0.20f, -0.10f, 0.0f);
+
+    cv::Mat R;
+    cv::Rodrigues(rvec, R);
+    cv::Mat point = (cv::Mat_&lt;double&gt;(3, 1) &lt;&lt;
+        world.x, world.y, world.z);
+    cv::Mat camera = R * point;
+    for (int i = 0; i &lt; 3; ++i) {
+        camera.at&lt;double&gt;(i, 0) += tvec[i];
+    }
+
+    const double x = camera.at&lt;double&gt;(0, 0);
+    const double y = camera.at&lt;double&gt;(1, 0);
+    const double z = camera.at&lt;double&gt;(2, 0);
+    const double fx = K.at&lt;double&gt;(0, 0);
+    const double fy = K.at&lt;double&gt;(1, 1);
+    const double cx = K.at&lt;double&gt;(0, 2);
+    const double cy = K.at&lt;double&gt;(1, 2);
+    const double u = fx * x / z + cx;
+    const double v = fy * y / z + cy;
+
+    std::vector&lt;cv::Point3f&gt; object = {world};
+    std::vector&lt;cv::Point2f&gt; projected;
+    cv::projectPoints(object, rvec, tvec, K, zero, projected);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "K =\n" &lt;&lt; K &lt;&lt; '\n';
+    std::cout &lt;&lt; "rvec = [" &lt;&lt; rvec[0] &lt;&lt; ", " &lt;&lt; rvec[1] &lt;&lt; ", "
+              &lt;&lt; rvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "tvec = [" &lt;&lt; tvec[0] &lt;&lt; ", " &lt;&lt; tvec[1] &lt;&lt; ", "
+              &lt;&lt; tvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "P_world = [" &lt;&lt; world.x &lt;&lt; ", " &lt;&lt; world.y &lt;&lt; ", "
+              &lt;&lt; world.z &lt;&lt; "]\n";
+    std::cout &lt;&lt; "P_camera = [" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ", " &lt;&lt; z &lt;&lt; "]\n";
+    std::cout &lt;&lt; "normalized = [" &lt;&lt; x / z &lt;&lt; ", " &lt;&lt; y / z &lt;&lt; "]\n";
+    std::cout &lt;&lt; "pixel = (" &lt;&lt; u &lt;&lt; ", " &lt;&lt; v &lt;&lt; ")\n";
+    std::cout &lt;&lt; "projectPoints = (" &lt;&lt; projected[0].x &lt;&lt; ", "
+              &lt;&lt; projected[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "difference = (" &lt;&lt; u - projected[0].x &lt;&lt; ", "
+              &lt;&lt; v - projected[0].y &lt;&lt; ")\n";
+
+    const std::vector&lt;cv::Point3f&gt; axes = {
+        cv::Point3f(0.0f, 0.0f, 0.0f),
+        cv::Point3f(0.1f, 0.0f, 0.0f),
+        cv::Point3f(0.0f, 0.1f, 0.0f),
+        cv::Point3f(0.0f, 0.0f, 0.1f),
+    };
+    std::vector&lt;cv::Point2f&gt; axis_pixels;
+    cv::projectPoints(axes, rvec, tvec, K, zero, axis_pixels);
+    std::cout &lt;&lt; "axis origin = (" &lt;&lt; axis_pixels[0].x &lt;&lt; ", "
+              &lt;&lt; axis_pixels[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "axis x = (" &lt;&lt; axis_pixels[1].x &lt;&lt; ", "
+              &lt;&lt; axis_pixels[1].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "axis y = (" &lt;&lt; axis_pixels[2].x &lt;&lt; ", "
+              &lt;&lt; axis_pixels[2].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "axis z = (" &lt;&lt; axis_pixels[3].x &lt;&lt; ", "
+              &lt;&lt; axis_pixels[3].y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.1-pinhole.cpp -o pinhole \
+    $(pkg-config --cflags --libs opencv4)
+./pinhole</code></pre>
+<pre class="out" data-label="真实输出">K =
+[800, 0, 640;
+ 0, 780, 360;
+ 0, 0, 1]
+rvec = [0.080, -0.150, 0.030]
+tvec = [0.050, -0.020, 2.500]
+P_world = [0.200, -0.100, 0.000]
+P_camera = [0.251, -0.115, 2.522]
+normalized = [0.100, -0.046]
+pixel = (719.687, 324.480)
+projectPoints = (719.687, 324.480)
+difference = (0.000, -0.000)
+axis origin = (656.000, 353.760)
+axis x = (687.342, 354.538)
+axis y = (654.807, 384.770)
+axis z = (650.835, 351.540)</pre>
+  <p>
+    世界点 <code>(0.20, -0.10, 0)</code> 经 <code>R</code> 与
+    <code>t</code> 变换后得到相机坐标 <code>(0.251, -0.115, 2.522)</code>。
+    除以深度得到归一化坐标 <code>(0.100, -0.046)</code>，再乘焦距并加主点，
+    得到像素 <code>(719.687, 324.480)</code>。手算与
+    <code>projectPoints</code> 的差为 0，说明公式与 OpenCV 的约定一致。
+  </p>
+  <p>
+    三条坐标轴的投影方向由旋转矩阵决定，不是固定的水平或垂直方向。
+    世界 <code>+x</code> 轴端点落在原点右方，<code>+y</code> 轴端点落在
+    下方，符合相机坐标 <code>x</code> 向右、<code>y</code> 向下的约定；
+    <code>+z</code> 轴指向相机一侧，端点在图像上只移动了几个像素，这是
+    透视缩短造成的。轴的长度取 0.1 米，若换成别的长度，端点位置会变，
+    但方向仍由 <code>R</code> 决定。
+  </p>
+</div>
+
+<h3 id="s7-1-4">常见错误</h3>
+
+<p>
+  最常见的是轴向写反。若把世界坐标的 <code>y</code> 当成向上，而相机坐标
+  的 <code>y</code> 向下，同一个点会得到上下颠倒的像素；若把
+  <code>z</code> 当成指向相机外，深度符号会反，投影点会跑到图像另一侧。
+  检查方法是把世界原点投到图像上，再看三条轴的方向是否符合预期。
+</p>
+
+<p>
+  第二个错误是单位混用。物点用毫米、平移用米，投影结果会差一千倍；
+  棋盘格方格边长写 40 而实际是 0.04 米，标定出的平移也会差一千倍。
+  内参的单位是像素，外参的单位跟随物点，二者不要混在一起换算。
+</p>
+
+<p>
+  第三个错误是主点与像素中心的概念混淆。像素坐标的整数位置对应像素中心，
+  图像左上角像素的中心是 <code>(0,0)</code>；用图像宽高的一半当作
+  <code>cx</code>、<code>cy</code> 只是近似，标定得到的主点可能有几个像素
+  的偏差。分辨率改变时，<code>fx</code>、<code>fy</code>、<code>cx</code>、
+  <code>cy</code> 都要按比例缩放，不能只改图像尺寸。
+</p>
+
+<p>
+  第四个错误是漏掉畸变。针孔公式只描述理想投影；镜头畸变明显时，
+  应先把畸变参数代入，或先去畸变再套公式。标定得到 <code>D</code> 以后，
+  <code>projectPoints</code> 会同时处理内参、外参与畸变，手算则要自己补上
+  畸变那一步。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 7-1</div>
+  <p>
+    内参取 <code>fx=800</code>、<code>fy=800</code>、<code>cx=450</code>、
+    <code>cy=350</code>，旋转矩阵为单位矩阵，平移为零。用
+    <code>projectPoints</code> 投影两个点：<code>(0.1, 0.2, 1.0)</code>
+    与 <code>(0.1, 0.2, -1.0)</code>；打印两个像素坐标，并打印两个点的
+    深度。第二个点的深度为负，说明它在相机后方。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">front = (530.000, 510.000)
+behind_center = (370.000, 190.000)
+front_depth = 1.000 behind_depth = -1.000</pre>
+  <details class="ans" data-run="示例代码/答案/7-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        旋转为单位矩阵、平移为零时，相机坐标等于世界坐标。前一个点
+        <code>Z=1</code>，像素为 <code>(800×0.1+450, 800×0.2+350)</code>，
+        即 <code>(530, 510)</code>。后一个点 <code>Z=-1</code>，公式仍能
+        算出 <code>(370, 190)</code>，但负深度表示点在相机后方，这个像素
+        没有成像意义。投影前必须先判断 <code>Z &gt; 0</code>。
+      </p>
+<pre data-lang="C++" data-name="答案/7-1.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 450.0,
+        0.0, 800.0, 350.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = cv::Mat::zeros(1, 5, CV_64F);
+    const cv::Vec3d rvec(0.0, 0.0, 0.0);
+    const cv::Vec3d tvec(0.0, 0.0, 0.0);
+    const std::vector&lt;cv::Point3f&gt; points = {
+        cv::Point3f(0.1f, 0.2f, 1.0f),
+        cv::Point3f(0.1f, 0.2f, -1.0f),
+    };
+    std::vector&lt;cv::Point2f&gt; pixels;
+    cv::projectPoints(points, rvec, tvec, K, D, pixels);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "front = (" &lt;&lt; pixels[0].x &lt;&lt; ", " &lt;&lt; pixels[0].y
+              &lt;&lt; ")\n";
+    std::cout &lt;&lt; "behind_center = (" &lt;&lt; pixels[1].x &lt;&lt; ", "
+              &lt;&lt; pixels[1].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "front_depth = 1.000 behind_depth = -1.000\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">front = (530.000, 510.000)
+behind_center = (370.000, 190.000)
+front_depth = 1.000 behind_depth = -1.000</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>写出四个坐标系的轴向与单位；用
+  <code>K[R|t]</code> 把一个世界点投影到像素，并解释每一步的结果；
+  区分内参与外参、焦距与像素焦距、主点与图像中心；检查 <code>y</code>
+  向下、<code>z</code> 向前、单位一致与 <code>Z&gt;0</code> 这四个条件。
+</p>
+</section>
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>单应与张正友标定</h2>
+
+<p>
+  棋盘格是平面靶标，物点的 <code>Z</code> 全为零。平面到平面的投影可以
+  用一个 <code>3×3</code> 的单应矩阵描述；张正友标定正是利用多张不同
+  姿态的平面靶标图像，从单应矩阵中解出内参，再用最大似然细化全部参数。
+  本课讲清单应矩阵的形式与标定的约束，并说明这些约束如何确定内参。
+</p>
+
+<h3 id="s7-2-1">平面单应性</h3>
+
+<p>
+  取靶标平面为世界坐标的 <code>Z=0</code> 平面，投影式中的第三列乘以零后
+  消失，剩下
+  <code>s[u,v,1]^T = K[r1 r2 t][X,Y,1]^T</code>。把
+  <code>H = K[r1 r2 t]</code> 记作单应矩阵，它就描述了靶标平面到图像平面
+  的映射。齐次坐标整体乘一个非零常数不改变映射，所以 <code>H</code>
+  只有 8 个自由度；一对点给出两个方程，四对不共线的点就能确定
+  <code>H</code>。
+</p>
+
+<p>
+  <code>getPerspectiveTransform</code> 接收四对点，解 8 个线性方程，得到
+  唯一的 <code>H</code>，适合点数正好为四、且四对点都可靠的情形。
+  <code>findHomography</code> 可以接收更多点，默认用最小二乘拟合；
+  指定 <code>RANSAC</code> 后，它会反复抽样并统计内点，再只用内点重算，
+  适合匹配点中混有外点的情形。两者返回的都是 <code>3×3</code> 矩阵，
+  使用时把点写成齐次坐标，乘完再除以第三分量。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_model.jpg" alt="多台相机从不同位置拍摄同一块平面靶标，虚线表示视线" width="1200" height="1046">
+  <figcaption>
+    同一块平面靶标从不同位置拍摄，每台相机对应一个外参。张正友标定把
+    每张图中的单应矩阵作为观测量，联合约束同一组内参；图中相机的数量
+    对应标定使用的视角数量。
+  </figcaption>
+</figure>
+
+<h3 id="s7-2-2">从 H 到内参</h3>
+
+<p>
+  由 <code>H = K[r1 r2 t]</code> 可得 <code>h1 = K r1</code>、
+  <code>h2 = K r2</code>（都差一个尺度因子）。旋转矩阵的两列满足
+  <code>r1·r2 = 0</code> 且 <code>|r1| = |r2| = 1</code>，代换后得到
+  两个约束：
+</p>
+
+<p>
+  <code>h1^T B h2 = 0</code>，
+  <code>h1^T B h1 = h2^T B h2</code>，
+  其中 <code>B = K^-T K^-1</code>。
+</p>
+
+<p>
+  <code>B</code> 是 <code>3×3</code> 对称矩阵，有 6 个独立元素；整体尺度
+  不影响约束，真正未知的是 5 个。每个视角给出两个方程，所以至少需要
+  3 个不同姿态的视角。这里的“不同姿态”指靶标平面相对相机的方向要有变化；
+  若所有图像里靶标都正对相机，方程接近退化，解出的内参不稳定。
+</p>
+
+<p>
+  闭式解只是初值。张正友方法的第二步是把内参、畸变参数与每个视角的外参
+  放在一起，最小化所有角点的重投影误差，用最大似然或非线性最小二乘细化。
+  因此标定结果不只取决于单应矩阵，还取决于角点位置是否准确、视角是否
+  足够分散、图像是否有畸变。OpenCV 的 <code>calibrateCamera</code> 把这两
+  步合在一起，调用者只需给出物点、像点与图像尺寸。
+</p>
+
+<h3 id="s7-2-3">用途与边界</h3>
+
+<p>
+  单应性适合处理平面：把倾斜拍摄的地面、墙面、桌面矫正到正视平面，
+  把俯视相机的地面映射为鸟瞰图，或由平面标记的四角求标记相对相机的位姿。
+  下图左侧是普通视角下的走廊与地面四边形，右侧是把框内平面矫正后的结果；
+  框外的墙面、门与物体不在同一平面上，矫正后会出现明显拉伸。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_view.jpg" alt="走廊的普通视角与平面区域矫正后的视图，框中为选定的地面四边形" width="1200" height="564">
+  <figcaption>
+    左图框出地面上的四边形，右图把它映射为正视平面。单应性只对这一平面
+    成立；离开平面的墙面与门在右图中被拉伸，不能当作矫正结果使用。
+  </figcaption>
+</figure>
+
+<p>
+  另一类用途是把倾斜拍摄的建筑立面矫正到正面。下图左侧框出立面四边形，
+  右侧是矫正结果；右图边缘出现黑色区域，因为源图中没有对应像素，这与
+  去畸变时 <code>alpha=1</code> 产生的黑边来源不同，但都需要裁边或填边。
+  四点单应性要求四个点不共线，且尽量覆盖整个平面；点过于集中时，远离
+  四点的区域会出现较大误差。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_undistort.jpg" alt="建筑立面在倾斜视角与矫正后视图中的对比，右图带黑边并标注至少需要四个点" width="1200" height="437">
+  <figcaption>
+    左图用黄色四边形框出建筑立面，右图是平面矫正后的结果。边缘黑色区域
+    来自源图没有覆盖到的像素；图注“至少需要四个点”指单应性至少需要
+    四对不共线的对应点。
+  </figcaption>
+</figure>
+
+<p>
+  单应性不能描述有深度变化的场景。同一幅图里既有地面又有墙面时，用一个
+  <code>H</code> 只能让其中一个平面正确，另一个平面会变形。镜头畸变明显
+  时也应先去畸变；否则直线在图像中弯曲，平面假设与实际像素位置不一致，
+  求出的 <code>H</code> 只在局部近似成立。
+</p>
+
+<div class="eg" id="e7-2">
+  <div class="eg-h">例题 · 四点单应性</div>
+  <p>
+    把单位正方形的四个角 <code>(0,0)</code>、<code>(1,0)</code>、
+    <code>(1,1)</code>、<code>(0,1)</code> 映射到图像中的四边形
+    <code>(100,100)</code>、<code>(400,120)</code>、<code>(380,400)</code>、
+    <code>(120,380)</code>。用 <code>getPerspectiveTransform</code> 求
+    <code>H</code>，把正方形中心 <code>(0.5,0.5)</code> 映射过去；再手算
+    <code>H</code> 乘齐次坐标的结果，并与 <code>findHomography</code>
+    用同样四点求出的矩阵比较。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.2-homography.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const std::vector&lt;cv::Point2f&gt; source = {
+        cv::Point2f(0.0f, 0.0f),
+        cv::Point2f(1.0f, 0.0f),
+        cv::Point2f(1.0f, 1.0f),
+        cv::Point2f(0.0f, 1.0f),
+    };
+    const std::vector&lt;cv::Point2f&gt; target = {
+        cv::Point2f(100.0f, 100.0f),
+        cv::Point2f(400.0f, 120.0f),
+        cv::Point2f(380.0f, 400.0f),
+        cv::Point2f(120.0f, 380.0f),
+    };
+
+    const cv::Mat H = cv::getPerspectiveTransform(source, target);
+    std::vector&lt;cv::Point2f&gt; center = {cv::Point2f(0.5f, 0.5f)};
+    std::vector&lt;cv::Point2f&gt; mapped;
+    cv::perspectiveTransform(center, mapped, H);
+
+    const cv::Mat p = (cv::Mat_&lt;double&gt;(3, 1) &lt;&lt; 0.5, 0.5, 1.0);
+    const cv::Mat q = H * p;
+    const double w = q.at&lt;double&gt;(2, 0);
+    const double manual_x = q.at&lt;double&gt;(0, 0) / w;
+    const double manual_y = q.at&lt;double&gt;(1, 0) / w;
+
+    cv::Mat H2 = cv::findHomography(source, target);
+    cv::Mat Hn = H.clone();
+    Hn /= Hn.at&lt;double&gt;(2, 2);
+    H2 /= H2.at&lt;double&gt;(2, 2);
+    double max_diff = 0.0;
+    for (int row = 0; row &lt; 3; ++row) {
+        for (int col = 0; col &lt; 3; ++col) {
+            max_diff = std::max(max_diff,
+                                std::fabs(Hn.at&lt;double&gt;(row, col) -
+                                          H2.at&lt;double&gt;(row, col)));
+        }
+    }
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "H =\n" &lt;&lt; H &lt;&lt; '\n';
+    std::cout &lt;&lt; "center = (" &lt;&lt; mapped[0].x &lt;&lt; ", " &lt;&lt; mapped[0].y
+              &lt;&lt; ")\n";
+    std::cout &lt;&lt; "manual = (" &lt;&lt; manual_x &lt;&lt; ", " &lt;&lt; manual_y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "difference = (" &lt;&lt; mapped[0].x - manual_x &lt;&lt; ", "
+              &lt;&lt; mapped[0].y - manual_y &lt;&lt; ")\n";
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "findHomography max diff = " &lt;&lt; max_diff &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.2-homography.cpp -o homography \
+    $(pkg-config --cflags --libs opencv4)
+./homography</code></pre>
+<pre class="out" data-label="真实输出">H =
+[295.6284153005465, 38.36065573770492, 100;
+ 18.68852459016393, 338.1420765027323, 100;
+ -0.01092896174863388, 0.1530054644808743, 1]
+center = (249.286, 259.949)
+manual = (249.286, 259.949)
+difference = (0.000, -0.000)
+findHomography max diff = 0.000000</pre>
+  <p>
+    矩阵的前两列负责旋转、缩放与错切，第三列是平移；因为源点
+    <code>(0,0)</code> 映射到 <code>(100,100)</code>，所以
+    <code>H</code> 的第三列前两个分量都是 100。最后一行
+    <code>(-0.0109, 0.1530, 1)</code> 描述透视，源点越远，除以第三分量
+    后的缩放越明显。中心 <code>(0.5,0.5)</code> 映射到
+    <code>(249.286, 259.949)</code>，不是四边形四个角点的算术平均，
+    这正是透视映射与仿射映射的区别。
+  </p>
+  <p>
+    手算结果与 <code>perspectiveTransform</code> 完全一致，说明齐次坐标
+    乘法与除以第三分量的步骤没有漏。四点给定时，
+    <code>findHomography</code> 与 <code>getPerspectiveTransform</code>
+    得到同一个矩阵，最大差为 0；点数多于四、且存在噪声时，两者才会因
+    求解方式不同而产生差别。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-2</div>
+  <p>
+    使用与例题相同的四对点求 <code>H</code>，把点
+    <code>(0.25, 0.75)</code> 映射到图像，打印 <code>H</code> 与映射结果。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">H =
+[295.6284153005465, 38.36065573770492, 100;
+ 18.68852459016393, 338.1420765027323, 100;
+ -0.01092896174863388, 0.1530054644808743, 1]
+(0.25, 0.75) -&gt; (182.260, 322.187)</pre>
+  <details class="ans" data-run="示例代码/答案/7-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把 <code>(0.25, 0.75, 1)</code> 与 <code>H</code> 相乘，得到齐次
+        坐标，再除以第三分量。该点靠近四边形左下区域，映射结果
+        <code>(182.260, 322.187)</code> 落在四边形内部。
+      </p>
+<pre data-lang="C++" data-name="答案/7-2.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+int main() {
+    const std::vector&lt;cv::Point2f&gt; source = {
+        cv::Point2f(0.0f, 0.0f), cv::Point2f(1.0f, 0.0f),
+        cv::Point2f(1.0f, 1.0f), cv::Point2f(0.0f, 1.0f),
+    };
+    const std::vector&lt;cv::Point2f&gt; target = {
+        cv::Point2f(100.0f, 100.0f), cv::Point2f(400.0f, 120.0f),
+        cv::Point2f(380.0f, 400.0f), cv::Point2f(120.0f, 380.0f),
+    };
+    const cv::Mat H = cv::getPerspectiveTransform(source, target);
+    const std::vector&lt;cv::Point2f&gt; input = {cv::Point2f(0.25f, 0.75f)};
+    std::vector&lt;cv::Point2f&gt; output;
+    cv::perspectiveTransform(input, output, H);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "H =\n" &lt;&lt; H &lt;&lt; '\n';
+    std::cout &lt;&lt; "(0.25, 0.75) -&gt; (" &lt;&lt; output[0].x &lt;&lt; ", "
+              &lt;&lt; output[0].y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">H =
+[295.6284153005465, 38.36065573770492, 100;
+ 18.68852459016393, 338.1420765027323, 100;
+ -0.01092896174863388, 0.1530054644808743, 1]
+(0.25, 0.75) -&gt; (182.260, 322.187)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>写出平面单应性的形式与自由度；用
+  <code>getPerspectiveTransform</code> 由四对点求 <code>H</code>，
+  用 <code>perspectiveTransform</code> 映射点；说明
+  <code>findHomography</code> 与 RANSAC 的作用；判断一个场景是否满足
+  平面假设，并解释为什么先去畸变、四点不能共线。
+</p>
+</section>
+
+<section class="lesson" id="l7-3">
+<h2><span class="no">7.3</span>畸变模型</h2>
+
+<p>
+  针孔模型假设光线沿直线传播，实际镜头会让像点偏离理想位置。偏离分为
+  径向与切向两类：径向畸变随点到主点的距离变化，切向畸变由镜头与传感器
+  不平行引起。OpenCV 把这几个系数放在一个畸变向量 <code>D</code> 里，
+  投影时先对归一化坐标施加畸变，再乘内参得到像素。
+</p>
+
+<h3 id="s7-3-1">径向畸变</h3>
+
+<p>
+  设理想归一化坐标为 <code>(x, y)</code>，<code>r² = x² + y²</code>。
+  径向畸变把点沿主点连线方向缩放：
+</p>
+
+<p>
+  <code>x_d = x (1 + k1 r² + k2 r⁴ + k3 r⁶)</code>，
+  <code>y_d = y (1 + k1 r² + k2 r⁴ + k3 r⁶)</code>
+</p>
+
+<p>
+  <code>k1</code>、<code>k2</code>、<code>k3</code> 是径向系数。
+  <code>k1 &lt; 0</code> 时，离主点越远，缩放因子越小，像点向主点收缩，
+  直线向外弯，形成桶形畸变；<code>k1 &gt; 0</code> 时，像点向外扩张，
+  形成枕形畸变。广角镜头常见桶形，长焦镜头可能出现枕形；<code>k3</code>
+  在视场很大时才明显，普通镜头常把它固定为零。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_radial.jpg" alt="桶形、枕形与胡须形三种径向畸变的网格示意" width="1200" height="792">
+  <figcaption>
+    三种径向畸变的网格表现：左为桶形，中为枕形，右为两者混合的胡须形。
+    网格线本应笔直，畸变后向外或向内弯曲；弯曲程度随离主点的距离增大。
+  </figcaption>
+</figure>
+
+<h3 id="s7-3-2">切向畸变</h3>
+
+<p>
+  切向畸变由镜头光学中心与传感器平面不严格平行引起，公式为：
+</p>
+
+<p>
+  <code>x_d = x + 2 p1 x y + p2 (r² + 2x²)</code>，
+  <code>y_d = y + p1 (r² + 2y²) + 2 p2 x y</code>
+</p>
+
+<p>
+  <code>p1</code>、<code>p2</code> 是切向系数。它们让像点沿切向偏移，
+  同一半径上的偏移方向随角度变化；径向畸变只改变半径，不改变方向。
+  普通镜头的切向系数通常比径向系数小一个数量级以上，但在广角、短焦或
+  装配偏差明显的镜头上不能忽略。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_tangential.jpg" alt="切向畸变示意：圆点成像为椭圆，右侧为带畸变的点阵图" width="1200" height="452">
+  <figcaption>
+    左图用一个圆与一条直线的成像说明切向偏移：理想圆在传感器上变成
+    椭圆，直线也不再保持原来的角度。右图是带畸变的点阵，点的间距随位置
+    变化。切向畸变与径向畸变叠加后，像点的总偏移由两者共同决定。
+  </figcaption>
+</figure>
+
+<p>
+  两类畸变在同一点上的方向不同。下图把理想位置、径向偏移后的位置与再
+  叠加切向偏移后的最终位置画在一起：径向偏移沿主点连线，切向偏移与之
+  垂直，最终位置是两次偏移的合成。理解这一点，才能看懂 <code>D</code>
+  中五个系数各自的作用。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_distortion.jpg" alt="同一点上的径向畸变、切向畸变与最终畸变位置的矢量分解" width="1200" height="881">
+  <figcaption>
+    从理想位置出发，径向畸变沿主点连线改变半径，切向畸变沿切线方向
+    改变位置；两者相加得到最终的畸变位置。图中 <code>u</code>、
+    <code>v</code> 是像素坐标轴。
+  </figcaption>
+</figure>
+
+<h3 id="s7-3-3">归一化坐标与像素</h3>
+
+<p>
+  畸变公式作用在归一化坐标上，不是直接作用在像素坐标上。完整顺序是：
+  世界点经外参变到相机坐标；除以 <code>Z</code> 得到归一化坐标
+  <code>(x, y)</code>；按上式得到 <code>(x_d, y_d)</code>；最后乘内参：
+</p>
+
+<p>
+  <code>u = fx * x_d + cx</code>，
+  <code>v = fy * y_d + cy</code>
+</p>
+
+<p>
+  OpenCV 的畸变向量按 <code>(k1, k2, p1, p2, k3, k4, k5, k6)</code> 排列，
+  常用长度是 4、5 或 8。本课的例子用 5 个参数，即
+  <code>(k1, k2, p1, p2, k3)</code>。若把公式直接套在像素坐标上，
+  等于把 <code>r</code> 当成像素距离，系数会被缩放几千倍，结果完全错误。
+</p>
+
+<div class="eg" id="e7-3">
+  <div class="eg-h">例题 · 合成网格的径向畸变</div>
+  <p>
+    取 <code>k1=-0.30</code>、<code>k2=0.10</code>，其余系数为零。程序在
+    两幅 <code>500×500</code> 的图上画同一组网格：左图用理想坐标，右图
+    先对归一化坐标施加畸变再转成像素。程序还打印
+    <code>r=0.1…0.4</code> 时的 <code>r</code>、缩放因子与畸变后的
+    <code>r'</code>，并用一个点比较手算与 <code>projectPoints</code>。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.3-distortion.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+namespace {
+
+cv::Point2d distort(double x, double y, double k1, double k2) {
+    const double r2 = x * x + y * y;
+    const double factor = 1.0 + k1 * r2 + k2 * r2 * r2;
+    return cv::Point2d(x * factor, y * factor);
+}
+
+void drawGrid(cv::Mat&amp; panel, const cv::Mat&amp; K, double k1, double k2,
+              bool apply_distortion) {
+    const cv::Scalar color(40, 40, 200);
+    for (int i = -4; i &lt;= 4; ++i) {
+        const double fixed = i * 0.1;
+        std::vector&lt;cv::Point&gt; points;
+        for (int step = 0; step &lt;= 80; ++step) {
+            const double t = -0.4 + 0.8 * step / 80.0;
+            cv::Point2d p = apply_distortion
+                ? distort(fixed, t, k1, k2)
+                : cv::Point2d(fixed, t);
+            points.push_back(cv::Point(
+                cvRound(K.at&lt;double&gt;(0, 0) * p.x + K.at&lt;double&gt;(0, 2)),
+                cvRound(K.at&lt;double&gt;(1, 1) * p.y + K.at&lt;double&gt;(1, 2))));
+        }
+        cv::polylines(panel, points, false, color, 1, cv::LINE_AA);
+
+        points.clear();
+        for (int step = 0; step &lt;= 80; ++step) {
+            const double t = -0.4 + 0.8 * step / 80.0;
+            cv::Point2d p = apply_distortion
+                ? distort(t, fixed, k1, k2)
+                : cv::Point2d(t, fixed);
+            points.push_back(cv::Point(
+                cvRound(K.at&lt;double&gt;(0, 0) * p.x + K.at&lt;double&gt;(0, 2)),
+                cvRound(K.at&lt;double&gt;(1, 1) * p.y + K.at&lt;double&gt;(1, 2))));
+        }
+        cv::polylines(panel, points, false, color, 1, cv::LINE_AA);
+    }
+    cv::putText(panel, apply_distortion ? "barrel" : "ideal",
+                cv::Point(12, 24), cv::FONT_HERSHEY_SIMPLEX, 0.7,
+                cv::Scalar(30, 30, 30), 2, cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const double k1 = -0.30;
+    const double k2 = 0.10;
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        600.0, 0.0, 250.0,
+        0.0, 600.0, 250.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt; k1, k2, 0.0, 0.0, 0.0);
+
+    cv::Mat canvas(500, 1000, CV_8UC3, cv::Scalar(255, 255, 255));
+    cv::Mat left = canvas(cv::Rect(0, 0, 500, 500));
+    cv::Mat right = canvas(cv::Rect(500, 0, 500, 500));
+    drawGrid(left, K, k1, k2, false);
+    drawGrid(right, K, k1, k2, true);
+
+    const bool saved = cv::imwrite("../素材/out_distortion.png", canvas);
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "k1 = " &lt;&lt; k1 &lt;&lt; " k2 = " &lt;&lt; k2 &lt;&lt; '\n';
+    std::cout &lt;&lt; "r       r'      delta\n";
+    for (const double r : {0.1, 0.2, 0.3, 0.4}) {
+        const double rp = r * (1.0 + k1 * r * r + k2 * r * r * r * r);
+        std::cout &lt;&lt; r &lt;&lt; "   " &lt;&lt; rp &lt;&lt; "  " &lt;&lt; rp - r &lt;&lt; '\n';
+    }
+
+    const double x = 0.3;
+    const double y = 0.1;
+    const cv::Point2d manual = distort(x, y, k1, k2);
+    const double manual_u = K.at&lt;double&gt;(0, 0) * manual.x +
+                            K.at&lt;double&gt;(0, 2);
+    const double manual_v = K.at&lt;double&gt;(1, 1) * manual.y +
+                            K.at&lt;double&gt;(1, 2);
+    std::vector&lt;cv::Point3f&gt; object = {cv::Point3f(
+        static_cast&lt;float&gt;(x), static_cast&lt;float&gt;(y), 0.0f)};
+    std::vector&lt;cv::Point2f&gt; projected;
+    cv::projectPoints(object, cv::Vec3d(0.0, 0.0, 0.0),
+                      cv::Vec3d(0.0, 0.0, 0.0), K, D, projected);
+    std::cout &lt;&lt; "manual pixel = (" &lt;&lt; manual_u &lt;&lt; ", " &lt;&lt; manual_v
+              &lt;&lt; ")\n";
+    std::cout &lt;&lt; "projectPoints = (" &lt;&lt; projected[0].x &lt;&lt; ", "
+              &lt;&lt; projected[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "difference = (" &lt;&lt; manual_u - projected[0].x &lt;&lt; ", "
+              &lt;&lt; manual_v - projected[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "saved out_distortion.png 1000x500: "
+              &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.3-distortion.cpp -o distortion \
+    $(pkg-config --cflags --libs opencv4)
+./distortion</code></pre>
+<pre class="out" data-label="真实输出">k1 = -0.3000 k2 = 0.1000
+r       r'      delta
+0.1000   0.0997  -0.0003
+0.2000   0.1976  -0.0024
+0.3000   0.2921  -0.0079
+0.4000   0.3818  -0.0182
+manual pixel = (424.7800, 308.2600)
+projectPoints = (424.7800, 308.2600)
+difference = (0.0000, -0.0000)
+saved out_distortion.png 1000x500: yes</pre>
+  <p>
+    <code>k1</code> 为负，缩放因子小于 1，所以每个 <code>r'</code> 都
+    小于对应的 <code>r</code>，差值随半径增大。半径越大，收缩越多，
+    网格线在边缘弯曲得越明显，这就是桶形畸变。手算像素与
+    <code>projectPoints</code> 的结果一致，说明畸变确实作用在归一化
+    坐标上，且内参在畸变之后才乘进去。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_distortion.png" alt="理想网格与施加 k1 后的桶形畸变网格对比" width="1000" height="500">
+    <figcaption>
+      左格是理想网格，右格是施加 <code>k1=-0.30</code>、<code>k2=0.10</code>
+      后的网格。右格的边缘向内收缩，直线变弯；中心附近变化很小，因为
+      <code>r</code> 小，畸变项的高次幂更小。
+    </figcaption>
+  </figure>
+</div>
+
+<h3 id="s7-3-4">常见错误</h3>
+
+<p>
+  第一是符号方向。把 <code>k1</code> 的符号写反，桶形会变成枕形，去畸变
+  会越去越弯。判断符号时可以看网格：边缘向内缩为桶形，对应负的
+  <code>k1</code>；边缘向外扩为枕形，对应正的 <code>k1</code>。
+</p>
+
+<p>
+  第二是漏掉高阶项。广角镜头的视场大，<code>k3</code> 可能明显；只保留
+  <code>k1</code>、<code>k2</code> 时，图像边缘的去畸变结果仍有残余弯曲。
+  反之，视角少、畸变不明显时强行估计 <code>k3</code>，会让参数不稳定。
+  是否固定某一项，要看视场与标定数据，而不是固定用同一组 flag。
+</p>
+
+<p>
+  第三是在像素坐标上套公式。归一化坐标是无量纲的，<code>r</code> 通常在
+  0 到 1 附近；像素坐标的 <code>r</code> 是几百，平方后是几万，系数完全
+  不同。第四是把畸变中心当成图像中心；OpenCV 的模型以主点
+  <code>(cx, cy)</code> 为畸变中心，主点由标定得到，不是宽高的一半。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 7-3</div>
+  <p>
+    取 <code>k1=0.2</code>、<code>k2=0.05</code>，其余系数为零。对
+    <code>r=0.1, 0.2, 0.3, 0.4, 0.5</code> 计算缩放因子
+    <code>1 + k1 r² + k2 r⁴</code> 与畸变后的 <code>r'</code>，每行打印
+    三个数。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">r = 0.100000  factor = 1.002005  r' = 0.100201
+r = 0.200000  factor = 1.008080  r' = 0.201616
+r = 0.300000  factor = 1.018405  r' = 0.305522
+r = 0.400000  factor = 1.033280  r' = 0.413312
+r = 0.500000  factor = 1.053125  r' = 0.526563</pre>
+  <details class="ans" data-run="示例代码/答案/7-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>k1</code>、<code>k2</code> 都为正，因子大于 1，所以
+        <code>r'</code> 大于 <code>r</code>，对应枕形畸变。半径越大，
+        高次项贡献越大，因子从 1.002 增加到 1.053。
+      </p>
+<pre data-lang="C++" data-name="答案/7-3.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    const double k1 = 0.2;
+    const double k2 = 0.05;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(6);
+    for (int i = 1; i &lt;= 5; ++i) {
+        const double r = 0.1 * i;
+        const double r2 = r * r;
+        const double factor = 1.0 + k1 * r2 + k2 * r2 * r2;
+        std::cout &lt;&lt; "r = " &lt;&lt; r &lt;&lt; "  factor = " &lt;&lt; factor
+                  &lt;&lt; "  r' = " &lt;&lt; r * factor &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">r = 0.100000  factor = 1.002005  r' = 0.100201
+r = 0.200000  factor = 1.008080  r' = 0.201616
+r = 0.300000  factor = 1.018405  r' = 0.305522
+r = 0.400000  factor = 1.033280  r' = 0.413312
+r = 0.500000  factor = 1.053125  r' = 0.526563</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>写出径向与切向畸变公式；解释
+  <code>k1</code>、<code>k2</code>、<code>k3</code>、<code>p1</code>、
+  <code>p2</code> 的符号与作用；按“相机坐标 → 归一化 → 畸变 → 像素”的
+  顺序完成投影；判断桶形与枕形，并指出在像素坐标上套公式、漏掉
+  <code>k3</code>、把畸变中心当成图像中心这三类错误。
+</p>
+</section>
+
+<section class="lesson" id="l7-4">
+<h2><span class="no">7.4</span>棋盘格角点检测</h2>
+
+<p>
+  标定的观测量是棋盘格内角点的像素位置。角点检测要解决三件事：把靶标
+  上的物理角点与图像中的像素一一对应，给每个角点一致的顺序，再把位置
+  细化到亚像素。本课用合成的棋盘图完成这三步，并检查错误尺寸下的结果。
+</p>
+
+<h3 id="s7-4-1">靶标与内角点</h3>
+
+<p>
+  棋盘格由黑白相间的方格组成，内角点是两个黑格与两个白格交汇的位置。
+  <code>findChessboardCorners</code> 的参数 <code>patternSize</code>
+  数的是内角点，不是方格。课程合成的棋盘有 10 列、7 行方格，内角点因此
+  是 9 列、6 行，参数写成 <code>cv::Size(9, 6)</code>。若把方格数当成
+  内角点数，检测会直接失败，或者返回错误数量。
+</p>
+
+<p>
+  检测结果按行返回，一般从靶标的一个角开始，逐行排列。不同视角下，
+  “第一角”可能落在靶标的不同物理角上；对 180° 旋转后仍然相同的对称
+  靶标，单张图的位姿会存在整体转 180° 的歧义，但重投影结果不变。消除
+  歧义的办法是固定靶标的摆放方向，或使用非对称图案。标定时物点也必须
+  按相同的行列顺序生成，否则对应关系错位，重投影误差会明显增大。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_chessboard.jpg" alt="真实棋盘格上的角点检测结果，每一行用一种颜色标出" width="900" height="1290">
+  <figcaption>
+    真实棋盘格上的检测结果。每个内角点用圆圈标出，同一行的点用同一种
+    颜色连接；颜色按行变化，便于检查行列顺序与完整性。图中有 9 列、
+    6 行内角点，共 54 个。
+  </figcaption>
+</figure>
+
+<h3 id="s7-4-2">findChessboardCorners</h3>
+
+<p>
+  <code>findChessboardCorners</code> 的输入是 8 位灰度图或彩色图，彩色图会
+  先转成灰度；输出是一个 <code>std::vector&lt;cv::Point2f&gt;</code>。找到时返回
+  <code>true</code>，向量长度等于 <code>patternSize.width ×
+  patternSize.height</code>；找不到时返回 <code>false</code>，向量可能为空，
+  也可能只填了一部分，使用前先看返回值。常用 flags 是
+  <code>CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE</code>，
+  前者用自适应阈值应对不均匀光照，后者先做亮度归一化。
+</p>
+
+<p>
+  棋盘必须完整出现在画面内，四周留出白边；靶标被裁掉一角、反光过强、
+  运动模糊或对比度不足时，检测会失败。尺寸写错也是常见原因：本课的图用
+  <code>(8,6)</code> 检测会返回 <code>false</code>；把行列互换写成
+  <code>(6,9)</code> 时，对称棋盘有时仍能返回 54 个点，但行列含义已经
+  改变，物点顺序随之错位。看到“检测成功”不能直接进入标定，先核对数量，
+  再用 <code>drawChessboardCorners</code> 画出来检查顺序。
+</p>
+
+<h3 id="s7-4-3">亚像素细化</h3>
+
+<p>
+  <code>findChessboardCorners</code> 给出的位置受像素网格限制，直接用于
+  标定会带来约半个像素的误差。<code>cornerSubPix</code> 在初值附近搜索
+  梯度交点，把角点细化到亚像素。它接收灰度图、角点向量、搜索窗口、
+  零区与终止条件，并原地修改角点向量。
+</p>
+
+<p>
+  搜索窗口取 <code>cv::Size(11, 11)</code> 时，以角点为中心在
+  (2×11+1)×(2×11+1)=23×23 的邻域内迭代；<code>zeroZone</code> 取
+  <code>cv::Size(-1, -1)</code>
+  表示不排除中心区域，若取正数则中心区域不参与计算，避免角点自身的
+  灰度值影响。终止条件用迭代次数与位移阈值共同限制，例如最多 30 次、
+  位移小于 0.01 像素即停止。窗口过大可能把邻近角点纳入搜索窗口，窗口过小则
+  在模糊图上不稳定；细化只应在检测成功之后调用。
+</p>
+
+<h3 id="s7-4-4">绘制与检查</h3>
+
+<p>
+  <code>drawChessboardCorners</code> 接收彩色图像、<code>patternSize</code>、
+  角点向量与检测结果，把每个角点画成圆圈，并按行连接。它要求图像是
+  三通道彩色图；传入灰度图时颜色不会正确显示。绘制结果用于检查三件事：
+  数量是否为 54，第一点与最后一点是否落在预期的物理角上，行的连接线
+  是否按同一方向排列。
+</p>
+
+<div class="eg" id="e7-4">
+  <div class="eg-h">例题 · 检测与绘制</div>
+  <p>
+    读取 <code>synth_chess_1.png</code>，转灰度，按
+    <code>(9,6)</code> 检测角点；检测成功后做亚像素细化，打印数量、
+    第一点与最后一点，再把角点画到彩色图上保存。程序另外用
+    <code>(8,6)</code> 检测同一幅图，确认错误尺寸返回
+    <code>false</code>。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.4-chessboard.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    cv::Mat image = cv::imread("../素材/synth_chess_1.png");
+    if (image.empty()) {
+        std::cerr &lt;&lt; "无法读取 synth_chess_1.png\n";
+        return 1;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    const cv::Size pattern(9, 6);
+    const int flags = cv::CALIB_CB_ADAPTIVE_THRESH |
+                      cv::CALIB_CB_NORMALIZE_IMAGE;
+
+    std::vector&lt;cv::Point2f&gt; corners;
+    const bool found = cv::findChessboardCorners(gray, pattern, corners,
+                                                 flags);
+    std::vector&lt;cv::Point2f&gt; wrong;
+    const bool wrong_found = cv::findChessboardCorners(
+        gray, cv::Size(8, 6), wrong, flags);
+
+    std::cout &lt;&lt; "image = synth_chess_1.png " &lt;&lt; image.cols &lt;&lt; "x"
+              &lt;&lt; image.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "pattern = " &lt;&lt; pattern.width &lt;&lt; "x" &lt;&lt; pattern.height
+              &lt;&lt; " (inner corners)\n";
+    std::cout &lt;&lt; "found = " &lt;&lt; (found ? "yes" : "no") &lt;&lt; '\n';
+    if (found) {
+        std::cout &lt;&lt; "count = " &lt;&lt; corners.size() &lt;&lt; '\n';
+        cv::cornerSubPix(gray, corners, cv::Size(11, 11),
+                         cv::Size(-1, -1),
+                         cv::TermCriteria(cv::TermCriteria::COUNT +
+                                              cv::TermCriteria::EPS,
+                                          30, 0.01));
+        std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+        std::cout &lt;&lt; "first = (" &lt;&lt; corners.front().x &lt;&lt; ", "
+                  &lt;&lt; corners.front().y &lt;&lt; ")\n";
+        std::cout &lt;&lt; "last = (" &lt;&lt; corners.back().x &lt;&lt; ", "
+                  &lt;&lt; corners.back().y &lt;&lt; ")\n";
+        cv::drawChessboardCorners(image, pattern, corners, found);
+    }
+    std::cout &lt;&lt; "wrong 8x6 found = " &lt;&lt; (wrong_found ? "yes" : "no")
+              &lt;&lt; '\n';
+    const bool saved = cv::imwrite("../素材/out_chessboard.png", image);
+    std::cout &lt;&lt; "saved out_chessboard.png " &lt;&lt; image.cols &lt;&lt; "x"
+              &lt;&lt; image.rows &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.4-chessboard.cpp -o chessboard \
+    $(pkg-config --cflags --libs opencv4)
+./chessboard</code></pre>
+<pre class="out" data-label="真实输出">image = synth_chess_1.png 900x700
+pattern = 9x6 (inner corners)
+found = yes
+count = 54
+first = (309.612, 270.586)
+last = (596.147, 456.507)
+wrong 8x6 found = no
+saved out_chessboard.png 900x700: yes</pre>
+  <p>
+    图像为 <code>900×700</code>，内角点 9 列、6 行，共 54 个。细化后的
+    第一点为 <code>(309.612, 270.586)</code>，最后一点为
+    <code>(596.147, 456.507)</code>，两点都落在图像内部。用
+    <code>(8,6)</code> 检测同一幅图返回 <code>false</code>，说明尺寸参数
+    与实际内角点数不符时不会强行给出结果。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_chessboard.png" alt="合成棋盘格上的 54 个内角点，按行着色并连接" width="900" height="700">
+    <figcaption>
+      合成棋盘上的检测结果。54 个角点按行连接，每行一种颜色；第一点与
+      最后一点的位置与程序输出一致。棋盘外的灰色区域不参与检测。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-4</div>
+  <p>
+    读取 <code>synth_chess_3.png</code>，按 <code>(9,6)</code> 检测内角点，
+    做亚像素细化，打印是否找到、角点数量、第一点与最后一点。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">found = yes
+count = 54
+first = (346.003, 294.129)
+last = (641.593, 451.296)</pre>
+  <details class="ans" data-run="示例代码/答案/7-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第三张合成棋盘的姿态与第一张不同，但仍能检测到完整的 54 个内角点。
+        首末点坐标随姿态变化，数量保持不变；若数量不是 54，应先检查
+        <code>patternSize</code> 与图像是否完整。
+      </p>
+<pre data-lang="C++" data-name="答案/7-4.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat image = cv::imread("../素材/synth_chess_3.png");
+    if (image.empty()) {
+        std::cerr &lt;&lt; "无法读取 synth_chess_3.png\n";
+        return 1;
+    }
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+    std::vector&lt;cv::Point2f&gt; corners;
+    const bool found = cv::findChessboardCorners(
+        gray, cv::Size(9, 6), corners,
+        cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE);
+    std::cout &lt;&lt; "found = " &lt;&lt; (found ? "yes" : "no") &lt;&lt; '\n';
+    if (!found) {
+        return 1;
+    }
+    cv::cornerSubPix(gray, corners, cv::Size(11, 11), cv::Size(-1, -1),
+                     cv::TermCriteria(cv::TermCriteria::COUNT +
+                                          cv::TermCriteria::EPS,
+                                      30, 0.01));
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "count = " &lt;&lt; corners.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "first = (" &lt;&lt; corners.front().x &lt;&lt; ", "
+              &lt;&lt; corners.front().y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "last = (" &lt;&lt; corners.back().x &lt;&lt; ", "
+              &lt;&lt; corners.back().y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">found = yes
+count = 54
+first = (346.003, 294.129)
+last = (641.593, 451.296)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>按内角点数设置 <code>patternSize</code>；在灰度
+  图上调用 <code>findChessboardCorners</code> 并检查返回值与数量；用
+  <code>cornerSubPix</code> 做亚像素细化；用
+  <code>drawChessboardCorners</code> 检查顺序；判断尺寸写错、靶标不完整、
+  模糊与反光造成的检测失败。
+</p>
+</section>
+
+<section class="lesson" id="l7-5">
+<h2><span class="no">7.5</span>calibrateCamera 与重投影误差</h2>
+
+<p>
+  有了多视角的棋盘角点，就可以估计内参、畸变系数与每个视角的外参。
+  <code>calibrateCamera</code> 把这些未知量放在一起做非线性优化，
+  返回一个总的重投影误差。本课说明输入输出的含义、误差怎样计算，
+  并用一组已知参数的合成视角检查恢复结果。
+</p>
+
+<h3 id="s7-5-1">输入与输出</h3>
+
+<p>
+  <code>calibrateCamera</code> 接收两个二维向量：物点
+  <code>objectPoints</code> 与像点 <code>imagePoints</code>。外层下标是
+  视角，内层是该视角的 54 个点；两个向量的视角数相同，每个视角的点数
+  相同，顺序一一对应。物点通常取靶标平面上的
+  <code>(col×square, row×square, 0)</code>，单位为米或毫米；像点是检测并
+  细化后的像素坐标。物点的单位决定了输出平移向量的单位。
+</p>
+
+<p>
+  第三个参数是 <code>imageSize</code>，必须与拍摄时实际使用的分辨率一致。
+  内参矩阵 <code>K</code> 与畸变向量 <code>D</code> 是输出。默认情况下，
+  函数根据图像尺寸与角点重新初始化 <code>K</code>，调用前传入的值不参与
+  优化；<code>D</code> 由函数按标志与当前版本初始化。设置
+  <code>CALIB_USE_INTRINSIC_GUESS</code> 后，传入的 <code>K</code> 才作为
+  初值并继续优化，结果仍会写回 <code>K</code>。稳妥的写法是传入空矩阵，
+  让函数自己初始化。<code>rvecs</code> 与 <code>tvecs</code> 是输出，
+  每个视角一组，表示靶标坐标到相机坐标的变换。函数返回总的重投影
+  RMS，单位为像素。
+</p>
+
+<p>
+  flags 控制哪些参数固定。<code>CALIB_FIX_K3</code> 把
+  <code>k3</code> 固定为零，<code>CALIB_ZERO_TANGENT_DIST</code> 把
+  <code>p1</code>、<code>p2</code> 固定为零；视角少或畸变不明显时，
+  这样可以减少未知量、避免过拟合。<code>CALIB_USE_INTRINSIC_GUESS</code>
+  表示把传入的 <code>K</code> 当作初值继续优化，结果仍会写回
+  <code>K</code>；若确实知道主点或焦距，可以再配合
+  <code>CALIB_FIX_PRINCIPAL_POINT</code> 等标志固定个别参数。
+  终止条件一般写最大迭代次数与参数变化阈值。
+</p>
+
+<h3 id="s7-5-2">重投影误差</h3>
+
+<p>
+  优化完成后，用估计出的 <code>K</code>、<code>D</code> 与每个视角的
+  <code>rvec</code>、<code>tvec</code>，把物点重新投影到图像，得到
+  <code>projected</code>；再与检测到的像点逐点求距离。所有点的距离平方
+  取平均后开方，就是 RMS。整体 RMS 由函数返回；逐视角计算可以得到每个
+  视角的误差，用于找出异常视角。误差的单位是像素，数值越小表示估计的
+  投影与检测点越吻合。
+</p>
+
+<p>
+  误差小不等于参数一定正确。视角太少、所有靶标都正对相机、参数又放得
+  很开时，优化器可能把噪声拟合进去，得到很小的 RMS，却给出不稳定的
+  焦距或畸变。检查办法包括：看每个视角的误差是否接近，看焦距与主点是否
+  落在合理范围，留出一两个视角不参与标定、用它们做验证。若某个视角的
+  误差明显大于其他视角，先检查该视角的角点顺序与清晰度，必要时删除后
+  重新标定。
+</p>
+
+<h3 id="s7-5-3">标定流程</h3>
+
+<p>
+  拍摄时准备 10 到 20 个视角，靶标在画面中的位置、距离与倾斜方向都要
+  有变化，让角点覆盖画面的中心与四角；所有视角都正对相机，会让内参约束
+  退化。靶标要平整，避免反光与运动模糊；变焦、换分辨率或重新对焦后，
+  内参会变化，需要重新标定。采集完成后逐个视角检测与细化角点，检查数量
+  与顺序，再一次性送入 <code>calibrateCamera</code>。
+</p>
+
+<p>
+  得到结果后先看整体 RMS 与逐视角误差，再决定是否删除异常视角。删除后
+  用剩余视角重新标定，比较两次的焦距、主点与畸变系数；若变化很大，
+  说明数据本身不稳定，应补拍而不是继续调参。标定结果应保存下来，与
+  拍摄分辨率绑定；换分辨率时要按比例缩放内参，不能直接沿用。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_chessboard_calib.jpg" alt="十五张不同位置与倾斜角度的棋盘格标定图拼成的网格" width="1200" height="534">
+  <figcaption>
+    一组标定视角：棋盘在画面中的位置、距离与倾斜方向各不相同，角点覆盖
+    画面的大部分区域。视角的多样性比单纯增加张数更重要；全部正对相机的
+    图像无法给内参提供足够的约束。
+  </figcaption>
+</figure>
+
+<div class="eg" id="e7-5">
+  <div class="eg-h">例题 · 合成多视角标定</div>
+  <p>
+    取真实内参 <code>fx=800</code>、<code>fy=780</code>、
+    <code>cx=450</code>、<code>cy=350</code>，畸变
+    <code>k1=-0.25</code>、<code>k2=0.08</code>，其余系数为零。用 8 个
+    不同的位姿把同一组 9×6 物点投影成像点，再把这些像点当作检测结果
+    送入 <code>calibrateCamera</code>。标定时固定 <code>k3</code> 与切向
+    系数，只估计 <code>fx</code>、<code>fy</code>、<code>cx</code>、
+    <code>cy</code>、<code>k1</code>、<code>k2</code>。程序打印真值与
+    估计值、整体 RMS、最大单视角误差与四项内参误差。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.5-calibrate.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+namespace {
+
+std::vector&lt;cv::Point3f&gt; boardPoints() {
+    constexpr int cols = 9;
+    constexpr int rows = 6;
+    constexpr double square = 0.04;
+    std::vector&lt;cv::Point3f&gt; points;
+    for (int row = 0; row &lt; rows; ++row) {
+        for (int col = 0; col &lt; cols; ++col) {
+            points.push_back(cv::Point3f(
+                static_cast&lt;float&gt;(col * square),
+                static_cast&lt;float&gt;(row * square), 0.0f));
+        }
+    }
+    return points;
+}
+
+void printDistortion(const char* name, const cv::Mat&amp; D) {
+    std::cout &lt;&lt; name &lt;&lt; " = [";
+    for (int i = 0; i &lt; 5; ++i) {
+        if (i != 0) {
+            std::cout &lt;&lt; ", ";
+        }
+        std::cout &lt;&lt; D.at&lt;double&gt;(0, i);
+    }
+    std::cout &lt;&lt; "]\n";
+}
+
+}  // namespace
+
+int main() {
+    const cv::Mat K_true = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 450.0,
+        0.0, 780.0, 350.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D_true = (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt;
+        -0.25, 0.08, 0.0, 0.0, 0.0);
+    const cv::Size image_size(900, 700);
+
+    struct Pose {
+        cv::Vec3d rvec;
+        cv::Vec3d tvec;
+    };
+    const Pose poses[] = {
+        {cv::Vec3d(0.15, -0.10, 0.02), cv::Vec3d(-0.15, -0.10, 0.85)},
+        {cv::Vec3d(0.25, -0.20, 0.05), cv::Vec3d(-0.12, -0.08, 0.90)},
+        {cv::Vec3d(-0.18, 0.22, -0.04), cv::Vec3d(-0.10, -0.06, 0.95)},
+        {cv::Vec3d(0.30, 0.10, 0.10), cv::Vec3d(-0.20, -0.12, 0.80)},
+        {cv::Vec3d(-0.10, -0.28, 0.06), cv::Vec3d(-0.08, -0.04, 1.00)},
+        {cv::Vec3d(0.12, 0.30, -0.12), cv::Vec3d(-0.16, -0.10, 0.88)},
+        {cv::Vec3d(-0.24, 0.08, 0.08), cv::Vec3d(-0.14, -0.09, 0.92)},
+        {cv::Vec3d(0.20, -0.25, -0.06), cv::Vec3d(-0.18, -0.11, 0.86)},
+    };
+
+    constexpr std::size_t view_count = sizeof(poses) / sizeof(poses[0]);
+    const std::vector&lt;cv::Point3f&gt; object = boardPoints();
+    const std::vector&lt;cv::Point3f&gt; object_const = object;
+    std::vector&lt;std::vector&lt;cv::Point3f&gt;&gt; object_points;
+    std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; image_points;
+    for (const Pose&amp; pose : poses) {
+        std::vector&lt;cv::Point2f&gt; projected;
+        cv::projectPoints(object_const, pose.rvec, pose.tvec, K_true,
+                          D_true, projected);
+        object_points.push_back(object_const);
+        image_points.push_back(projected);
+    }
+
+    cv::Mat K = cv::Mat::eye(3, 3, CV_64F);
+    cv::Mat D = cv::Mat::zeros(1, 5, CV_64F);
+    std::vector&lt;cv::Vec3d&gt; rvecs;
+    std::vector&lt;cv::Vec3d&gt; tvecs;
+    const double rms = cv::calibrateCamera(
+        object_points, image_points, image_size, K, D, rvecs, tvecs,
+        cv::CALIB_FIX_K3 | cv::CALIB_ZERO_TANGENT_DIST,
+        cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
+                         100, 1e-9));
+
+    double max_view_error = 0.0;
+    for (std::size_t i = 0; i &lt; view_count; ++i) {
+        std::vector&lt;cv::Point2f&gt; projected;
+        cv::projectPoints(object_points[i], rvecs[i], tvecs[i], K, D,
+                          projected);
+        double sum = 0.0;
+        for (std::size_t j = 0; j &lt; projected.size(); ++j) {
+            const cv::Point2f diff = projected[j] - image_points[i][j];
+            sum += diff.x * diff.x + diff.y * diff.y;
+        }
+        max_view_error = std::max(
+            max_view_error, std::sqrt(sum / projected.size()));
+    }
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "views = " &lt;&lt; view_count &lt;&lt; " image = "
+              &lt;&lt; image_size.width &lt;&lt; "x" &lt;&lt; image_size.height &lt;&lt; '\n';
+    std::cout &lt;&lt; "K_true =\n" &lt;&lt; K_true &lt;&lt; '\n';
+    std::cout &lt;&lt; "K_est =\n" &lt;&lt; K &lt;&lt; '\n';
+    printDistortion("D_true", D_true);
+    printDistortion("D_est", D);
+    std::cout &lt;&lt; std::setprecision(8);
+    std::cout &lt;&lt; "rms = " &lt;&lt; rms &lt;&lt; '\n';
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "max_view_error = " &lt;&lt; max_view_error &lt;&lt; '\n';
+    std::cout &lt;&lt; "fx_error = " &lt;&lt; K.at&lt;double&gt;(0, 0) -
+                                    K_true.at&lt;double&gt;(0, 0) &lt;&lt; '\n';
+    std::cout &lt;&lt; "fy_error = " &lt;&lt; K.at&lt;double&gt;(1, 1) -
+                                    K_true.at&lt;double&gt;(1, 1) &lt;&lt; '\n';
+    std::cout &lt;&lt; "cx_error = " &lt;&lt; K.at&lt;double&gt;(0, 2) -
+                                    K_true.at&lt;double&gt;(0, 2) &lt;&lt; '\n';
+    std::cout &lt;&lt; "cy_error = " &lt;&lt; K.at&lt;double&gt;(1, 2) -
+                                    K_true.at&lt;double&gt;(1, 2) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.5-calibrate.cpp -o calibrate \
+    $(pkg-config --cflags --libs opencv4)
+./calibrate</code></pre>
+<pre class="out" data-label="真实输出">views = 8 image = 900x700
+K_true =
+[800, 0, 450;
+ 0, 780, 350;
+ 0, 0, 1]
+K_est =
+[799.999907184659, 0, 450.0000652834597;
+ 0, 779.9999163189425, 349.9999317069024;
+ 0, 0, 1]
+D_true = [-0.250000, 0.080000, 0.000000, 0.000000, 0.000000]
+D_est = [-0.250000, 0.080009, 0.000000, 0.000000, 0.000000]
+rms = 0.00001439
+max_view_error = 0.000012
+fx_error = -0.000093
+fy_error = -0.000084
+cx_error = 0.000065
+cy_error = -0.000068</pre>
+  <p>
+    合成数据没有噪声，投影关系又严格符合模型，所以恢复结果非常接近真值：
+    整体 RMS 为 <code>1.439e-5</code> 像素，最大单视角误差为
+    <code>1.2e-5</code> 像素，焦距误差约为 <code>1e-4</code> 像素，
+    <code>k2</code> 的估计值为 <code>0.080009</code>。这些数字说明优化
+    流程与参数顺序正确，不代表真实拍摄也能达到同样精度。真实图像存在
+    角点定位误差、模糊与镜头模型偏差，RMS 通常在零点几像素到一像素之间；
+    若明显大于这个范围，应先检查角点与视角，而不是继续增加迭代次数。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-5</div>
+  <p>
+    使用与例题相同的内参与畸变真值，只取前 6 个位姿做标定，仍固定
+    <code>k3</code> 与切向系数。打印整体 RMS、<code>fx</code>、
+    <code>fy</code>、<code>cx</code>、<code>cy</code>、<code>k1</code>、
+    <code>k2</code>。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">rms = 0.000014
+fx = 800.000006
+fy = 780.000018
+cx = 450.000028
+cy = 349.999971
+k1 = -0.250000
+k2 = 0.080010</pre>
+  <details class="ans" data-run="示例代码/答案/7-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        六个视角仍然覆盖了不同的倾斜方向，合成数据又没有噪声，因此参数
+        仍能恢复到小数点后多位。真实标定中减少视角会降低稳定性；这里
+        能恢复，是因为像点由已知模型精确生成，不说明 6 个视角总够用。
+      </p>
+<pre data-lang="C++" data-name="答案/7-5.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat K_true = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 450.0,
+        0.0, 780.0, 350.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D_true = (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt;
+        -0.25, 0.08, 0.0, 0.0, 0.0);
+
+    std::vector&lt;cv::Point3f&gt; object;
+    for (int row = 0; row &lt; 6; ++row) {
+        for (int col = 0; col &lt; 9; ++col) {
+            object.push_back(cv::Point3f(
+                static_cast&lt;float&gt;(col * 0.04),
+                static_cast&lt;float&gt;(row * 0.04), 0.0f));
+        }
+    }
+    const cv::Vec3d rvecs_true[6] = {
+        {0.15, -0.10, 0.02}, {0.25, -0.20, 0.05},
+        {-0.18, 0.22, -0.04}, {0.30, 0.10, 0.10},
+        {-0.10, -0.28, 0.06}, {0.12, 0.30, -0.12},
+    };
+    const cv::Vec3d tvecs_true[6] = {
+        {-0.15, -0.10, 0.85}, {-0.12, -0.08, 0.90},
+        {-0.10, -0.06, 0.95}, {-0.20, -0.12, 0.80},
+        {-0.08, -0.04, 1.00}, {-0.16, -0.10, 0.88},
+    };
+
+    std::vector&lt;std::vector&lt;cv::Point3f&gt;&gt; object_points;
+    std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; image_points;
+    for (int i = 0; i &lt; 6; ++i) {
+        std::vector&lt;cv::Point2f&gt; projected;
+        cv::projectPoints(object, rvecs_true[i], tvecs_true[i], K_true,
+                          D_true, projected);
+        object_points.push_back(object);
+        image_points.push_back(projected);
+    }
+
+    cv::Mat K = cv::Mat::eye(3, 3, CV_64F);
+    cv::Mat D = cv::Mat::zeros(1, 5, CV_64F);
+    std::vector&lt;cv::Vec3d&gt; rvecs;
+    std::vector&lt;cv::Vec3d&gt; tvecs;
+    const double rms = cv::calibrateCamera(
+        object_points, image_points, cv::Size(900, 700), K, D, rvecs,
+        tvecs, cv::CALIB_FIX_K3 | cv::CALIB_ZERO_TANGENT_DIST);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "rms = " &lt;&lt; rms &lt;&lt; '\n';
+    std::cout &lt;&lt; "fx = " &lt;&lt; K.at&lt;double&gt;(0, 0) &lt;&lt; '\n';
+    std::cout &lt;&lt; "fy = " &lt;&lt; K.at&lt;double&gt;(1, 1) &lt;&lt; '\n';
+    std::cout &lt;&lt; "cx = " &lt;&lt; K.at&lt;double&gt;(0, 2) &lt;&lt; '\n';
+    std::cout &lt;&lt; "cy = " &lt;&lt; K.at&lt;double&gt;(1, 2) &lt;&lt; '\n';
+    std::cout &lt;&lt; "k1 = " &lt;&lt; D.at&lt;double&gt;(0, 0) &lt;&lt; '\n';
+    std::cout &lt;&lt; "k2 = " &lt;&lt; D.at&lt;double&gt;(0, 1) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">rms = 0.000014
+fx = 800.000006
+fy = 780.000018
+cx = 450.000028
+cy = 349.999971
+k1 = -0.250000
+k2 = 0.080010</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>组织物点与像点的二维向量；设置
+  <code>imageSize</code>、内参初值、畸变初值与 flags；调用
+  <code>calibrateCamera</code> 并解释 <code>K</code>、<code>D</code>、
+  <code>rvecs</code>、<code>tvecs</code>；计算整体与单视角重投影误差；
+  判断视角不足、参数过多与异常视角。
+</p>
+</section>
+
+<section class="lesson" id="l7-6">
+<h2><span class="no">7.6</span>去畸变与 remap</h2>
+
+<p>
+  标定得到 <code>K</code> 与 <code>D</code> 以后，可以把图像恢复到理想
+  针孔投影的样子。单张图可以用 <code>undistort</code>，连续帧可以用
+  <code>initUndistortRectifyMap</code> 预先算好映射表，再用
+  <code>remap</code> 逐帧查表。本课比较两种写法，并说明新内参与有效
+  区域的关系。
+</p>
+
+<h3 id="s7-6-1">undistort</h3>
+
+<p>
+  <code>undistort(src, dst, K, D, newK)</code> 对每个输出像素反算它在
+  源图中的位置，再做插值。输出与输入同尺寸；源图中没有对应像素的位置
+  填黑。第五个参数 <code>newK</code> 是去畸变后使用的内参，省略时沿用
+  <code>K</code>。沿用原内参时，边缘可能出现黑边，也可能把有效内容裁掉，
+  取决于畸变方向与强度。
+</p>
+
+<p>
+  控制裁剪范围用
+  <code>getOptimalNewCameraMatrix(K, D, size, alpha, newSize, &amp;roi)</code>。
+  <code>alpha=0</code> 只保留有效像素，输出裁到有效区域，通常没有黑边；
+  <code>alpha=1</code> 保留全部源像素，输出出现黑边，<code>roi</code>
+  给出新图中仍然有效的矩形。中间值在两者之间折中。<code>roi</code>
+  是在新图坐标系中的矩形，可直接用来裁剪。
+</p>
+
+<h3 id="s7-6-2">remap</h3>
+
+<p>
+  <code>initUndistortRectifyMap(K, D, R, newK, size, m1type, map1, map2)</code>
+  把“输出像素到源像素”的对应关系预先算成两张映射表。<code>R</code>
+  是矫正旋转，纯去畸变时传空矩阵；<code>m1type</code> 取
+  <code>CV_16SC2</code> 时，<code>map1</code> 是两通道短整型，存放整数
+  坐标，<code>map2</code> 存放插值索引；取 <code>CV_32FC1</code> 时，
+  <code>map1</code> 与 <code>map2</code> 分别是 <code>x</code>、<code>y</code>
+  的浮点坐标。两种类型的结果在精度与内存上不同，查表时都把目标像素
+  映射回源图。
+</p>
+
+<p>
+  <code>remap(src, dst, map1, map2, INTER_LINEAR)</code> 按映射表取像素，
+  默认双线性插值。映射表与内参、畸变、新内参、图像尺寸以及矫正旋转
+  <code>R</code> 有关；相机与分辨率不变、<code>R</code> 也不变时，可以只算
+  一次，之后每帧复用。若换了分辨率、改了 <code>newK</code>、重新标定或
+  改了 <code>R</code>，映射表必须重算。单张图直接调用
+  <code>undistort</code> 更省事，连续帧用映射表避免每帧重复计算。
+</p>
+
+<h3 id="s7-6-3">新内参与 ROI</h3>
+
+<p>
+  本课的例子使用 <code>1000×600</code> 的合成网格，
+  <code>fx=fy=800</code>、<code>cx=500</code>、<code>cy=300</code>，
+  畸变为 <code>(-0.35, 0.12, 0.001, -0.0005, 0)</code>。按
+  <code>alpha=0</code> 求新内参，得到
+  <code>fx=675.818</code>、<code>fy=758.691</code>、
+  <code>cx=499.290</code>、<code>cy=300.474</code>，有效区域几乎覆盖整幅
+  新图；按 <code>alpha=1</code> 求新内参，得到
+  <code>fx=630.258</code>、<code>fy=630.792</code>、<code>cx=498.994</code>、
+  <code>cy=301.338</code>，有效区域为
+  <code>(33, 52, 932, 498)</code>，四周留下黑边。
+</p>
+
+<p>
+  <code>alpha=1</code> 的焦距更小，相当于把画面缩小，以便把源图的四角
+  也装进输出；黑边来自源图没有覆盖的区域。<code>alpha=0</code> 的焦距
+  更大，画面放大到只保留有效像素，因而没有黑边，但边缘内容被裁掉。
+  两种结果都使用同一个 <code>K</code> 与 <code>D</code>，区别只在
+  <code>newK</code>；把 <code>alpha=0</code> 的新内参误用于
+  <code>alpha=1</code> 的图像，会让像素位置整体偏移。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_undistort.png" alt="畸变网格、alpha 为 0 的去畸变网格与 alpha 为 1 的去畸变网格三联图" width="1500" height="300">
+  <figcaption>
+    左格是畸变网格，中格是 <code>alpha=0</code> 的结果，右格是
+    <code>alpha=1</code> 的结果。中格裁到有效区域，没有黑边；右格保留
+    全部源像素，四周出现黑边。三格尺寸相同，便于比较线条的弯曲程度。
+  </figcaption>
+</figure>
+
+<div class="eg" id="e7-6">
+  <div class="eg-h">例题 · undistort 与 remap 对照</div>
+  <p>
+    读取 <code>synth_distort.png</code>，分别用 <code>alpha=0</code> 与
+    <code>alpha=1</code> 求新内参，调用 <code>undistort</code> 得到两幅
+    结果；再用 <code>initUndistortRectifyMap</code> 与 <code>remap</code>
+    对 <code>alpha=0</code> 的结果重做一遍，比较两种写法的最大差异。
+    程序保存三联对比图，并打印新内参、有效区域、映射表类型与一个点的
+    去畸变前后坐标。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.6-undistort.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+namespace {
+
+void label(cv::Mat&amp; panel, const std::string&amp; text) {
+    cv::putText(panel, text, cv::Point(10, 26), cv::FONT_HERSHEY_SIMPLEX,
+                0.65, cv::Scalar(255, 255, 255), 3, cv::LINE_AA);
+    cv::putText(panel, text, cv::Point(10, 26), cv::FONT_HERSHEY_SIMPLEX,
+                0.65, cv::Scalar(30, 30, 30), 1, cv::LINE_AA);
+}
+
+}  // namespace
+
+int main() {
+    const cv::Mat source = cv::imread("../素材/synth_distort.png");
+    if (source.empty()) {
+        std::cerr &lt;&lt; "无法读取 synth_distort.png\n";
+        return 1;
+    }
+    const cv::Size size = source.size();
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 500.0,
+        0.0, 800.0, 300.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt;
+        -0.35, 0.12, 0.001, -0.0005, 0.0);
+
+    cv::Rect roi0;
+    cv::Rect roi1;
+    const cv::Mat new_k0 = cv::getOptimalNewCameraMatrix(
+        K, D, size, 0.0, size, &amp;roi0);
+    const cv::Mat new_k1 = cv::getOptimalNewCameraMatrix(
+        K, D, size, 1.0, size, &amp;roi1);
+    cv::Mat undistorted0;
+    cv::Mat undistorted1;
+    cv::undistort(source, undistorted0, K, D, new_k0);
+    cv::undistort(source, undistorted1, K, D, new_k1);
+
+    cv::Mat map1;
+    cv::Mat map2;
+    cv::initUndistortRectifyMap(K, D, cv::Mat(), new_k0, size,
+                                CV_16SC2, map1, map2);
+    cv::Mat remapped;
+    cv::remap(source, remapped, map1, map2, cv::INTER_LINEAR);
+    const double remap_diff = cv::norm(undistorted0, remapped,
+                                       cv::NORM_INF);
+
+    cv::Mat canvas(300, 1500, CV_8UC3, cv::Scalar(255, 255, 255));
+    cv::Mat panels[3];
+    for (int i = 0; i &lt; 3; ++i) {
+        panels[i] = canvas(cv::Rect(i * 500, 0, 500, 300));
+    }
+    cv::resize(source, panels[0], panels[0].size());
+    cv::resize(undistorted0, panels[1], panels[1].size());
+    cv::resize(undistorted1, panels[2], panels[2].size());
+    label(panels[0], "distorted");
+    label(panels[1], "alpha=0");
+    label(panels[2], "alpha=1");
+    const bool saved = cv::imwrite("../素材/out_undistort.png", canvas);
+
+    std::vector&lt;cv::Point2f&gt; before = {cv::Point2f(200.0f, 150.0f)};
+    std::vector&lt;cv::Point2f&gt; after;
+    cv::undistortPoints(before, after, K, D, cv::noArray(), new_k0);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "image = " &lt;&lt; size.width &lt;&lt; "x" &lt;&lt; size.height &lt;&lt; '\n';
+    std::cout &lt;&lt; "K_new alpha=0 =\n" &lt;&lt; new_k0 &lt;&lt; '\n';
+    std::cout &lt;&lt; "roi alpha=0 = (" &lt;&lt; roi0.x &lt;&lt; ", " &lt;&lt; roi0.y &lt;&lt; ", "
+              &lt;&lt; roi0.width &lt;&lt; ", " &lt;&lt; roi0.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "K_new alpha=1 =\n" &lt;&lt; new_k1 &lt;&lt; '\n';
+    std::cout &lt;&lt; "roi alpha=1 = (" &lt;&lt; roi1.x &lt;&lt; ", " &lt;&lt; roi1.y &lt;&lt; ", "
+              &lt;&lt; roi1.width &lt;&lt; ", " &lt;&lt; roi1.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "map1 = " &lt;&lt; map1.cols &lt;&lt; "x" &lt;&lt; map1.rows
+              &lt;&lt; " type=" &lt;&lt; map1.type() &lt;&lt; " channels="
+              &lt;&lt; map1.channels() &lt;&lt; '\n';
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "undistort vs remap max diff = " &lt;&lt; remap_diff &lt;&lt; '\n';
+    std::cout &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "point (200, 150) -&gt; (" &lt;&lt; after[0].x &lt;&lt; ", "
+              &lt;&lt; after[0].y &lt;&lt; ")\n";
+    std::cout &lt;&lt; "saved out_undistort.png 1500x300: "
+              &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.6-undistort.cpp -o undistort \
+    $(pkg-config --cflags --libs opencv4)
+./undistort</code></pre>
+<pre class="out" data-label="真实输出">image = 1000x600
+K_new alpha=0 =
+[675.8178767313838, 0, 499.2898893872309;
+ 0, 758.6911114859562, 300.4740356240969;
+ 0, 0, 1]
+roi alpha=0 = (0, 0, 999, 599)
+K_new alpha=1 =
+[630.2580320402757, 0, 498.9944323680482;
+ 0, 630.7916441833072, 301.3382969685703;
+ 0, 0, 1]
+roi alpha=1 = (33, 52, 932, 498)
+map1 = 1000x600 type=11 channels=2
+undistort vs remap max diff = 0.000000
+point (200, 150) -&gt; (228.139, 148.069)
+saved out_undistort.png 1500x300: yes</pre>
+  <p>
+    <code>undistort</code> 与 <code>remap</code> 的最大差为 0，说明映射表
+    的坐标与插值方式一致。映射表为 <code>1000×600</code>、
+    <code>type()</code> 等于 11、两通道；<code>CV_16SC2</code> 的通道数
+    是 2，类型编号由深度与通道数共同决定。点
+    <code>(200, 150)</code> 在新内参下映射到
+    <code>(228.139, 148.069)</code>，横向移动明显，纵向变化较小，这与
+    畸变在边缘更强、中心更弱的分布一致。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-6</div>
+  <p>
+    使用与例题相同的内参与畸变，图像尺寸 <code>1000×600</code>，取
+    <code>alpha=1</code> 求新内参与有效区域；用
+    <code>undistortPoints</code> 把点 <code>(200,150)</code> 映射到新内参
+    下的坐标，打印新内参、<code>roi</code> 与映射结果。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">K_new =
+[630.2580320402757, 0, 498.9944323680482;
+ 0, 630.7916441833072, 301.3382969685703;
+ 0, 0, 1]
+roi = (33, 52, 932, 498)
+(200, 150) -&gt; (246.123, 174.626)</pre>
+  <details class="ans" data-run="示例代码/答案/7-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>alpha=1</code> 的焦距比原内参小，画面整体缩小，
+        <code>roi</code> 只覆盖中间的有效区域。点 <code>(200,150)</code>
+        在新内参下映射为 <code>(246.123, 174.626)</code>；与例题中
+        <code>alpha=0</code> 的结果不同，原因是两次使用的新内参不同，
+        不是去畸变公式不同。
+      </p>
+<pre data-lang="C++" data-name="答案/7-6.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 500.0,
+        0.0, 800.0, 300.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = (cv::Mat_&lt;double&gt;(1, 5) &lt;&lt;
+        -0.35, 0.12, 0.001, -0.0005, 0.0);
+    const cv::Size size(1000, 600);
+
+    cv::Rect roi;
+    const cv::Mat new_k = cv::getOptimalNewCameraMatrix(K, D, size, 1.0,
+                                                         size, &amp;roi);
+    std::vector&lt;cv::Point2f&gt; before = {cv::Point2f(200.0f, 150.0f)};
+    std::vector&lt;cv::Point2f&gt; after;
+    cv::undistortPoints(before, after, K, D, cv::noArray(), new_k);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "K_new =\n" &lt;&lt; new_k &lt;&lt; '\n';
+    std::cout &lt;&lt; "roi = (" &lt;&lt; roi.x &lt;&lt; ", " &lt;&lt; roi.y &lt;&lt; ", "
+              &lt;&lt; roi.width &lt;&lt; ", " &lt;&lt; roi.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "(200, 150) -&gt; (" &lt;&lt; after[0].x &lt;&lt; ", "
+              &lt;&lt; after[0].y &lt;&lt; ")\n";
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">K_new =
+[630.2580320402757, 0, 498.9944323680482;
+ 0, 630.7916441833072, 301.3382969685703;
+ 0, 0, 1]
+roi = (33, 52, 932, 498)
+(200, 150) -&gt; (246.123, 174.626)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>undistort</code> 处理单张图；用
+  <code>getOptimalNewCameraMatrix</code> 选择 <code>alpha</code> 并解释
+  黑边与裁剪；用 <code>initUndistortRectifyMap</code> 与
+  <code>remap</code> 复用映射表；区分新内参与原内参，说明映射表类型与
+  重建条件。
+</p>
+</section>
+
+<section class="lesson" id="l7-7">
+<h2><span class="no">7.7</span>solvePnP、投影与 AR</h2>
+
+<p>
+  标定给出相机的内参与畸变，<code>solvePnP</code> 进一步由若干对三维物点
+  与二维像点求这一次拍摄的外参。得到位姿以后，可以把三维坐标轴、立方体
+  或虚拟物体投影到图像上，形成增强现实式的叠加。本课用一块合成棋盘靶标
+  求位姿，画出坐标轴与立方体，并检查重投影误差。
+</p>
+
+<h3 id="s7-7-1">问题与输入</h3>
+
+<p>
+  <code>solvePnP</code> 的输入是物点 <code>objectPoints</code>、像点
+  <code>imagePoints</code>、内参 <code>K</code> 与畸变 <code>D</code>。
+  物点用靶标坐标表示，像点是这些物点在图像中的像素位置；两边的点数与
+  顺序必须一一对应。函数输出旋转向量 <code>rvec</code> 与平移向量
+  <code>tvec</code>，它们描述靶标坐标到相机坐标的变换：
+  <code>X_c = R X_object + t</code>。
+</p>
+
+<p>
+  <code>solvePnP</code> 至少需要 4 对点。平面靶标的 4 个点会带来位姿的
+  二义性：可能存在两组不同的位姿，投影结果都接近给定的像点；
+  <code>SOLVEPNP_IPPE</code> 会求出平面情形的解，<code>solvePnPGeneric</code>
+  可以同时返回多个候选。点数增加、分布展开、避免四点共线，都能降低
+  选错解的概率。物点的单位决定 <code>tvec</code> 的单位：棋盘方格写成
+  0.04 米，<code>tvec</code> 就是米；写成 40 毫米，<code>tvec</code>
+  就是毫米。
+</p>
+
+<h3 id="s7-7-2">方法与 flags</h3>
+
+<p>
+  <code>solvePnP</code> 的最后一个参数选择解法。
+  <code>SOLVEPNP_ITERATIVE</code> 是默认值，用迭代最小化重投影误差，
+  可以用 <code>useExtrinsicGuess</code> 把传入的 <code>rvec</code>、
+  <code>tvec</code> 当作初值；<code>SOLVEPNP_EPNP</code> 适合非平面点集；
+  <code>SOLVEPNP_IPPE</code> 针对平面点集；<code>SOLVEPNP_IPPE_SQUARE</code>
+  针对正方形标记，利用四个角的固定顺序；<code>SOLVEPNP_SQPNP</code>
+  是不需要初值的通用解法。方法选错不一定会报错，但可能给出不稳定或
+  错误分支的结果，平面靶标优先用 IPPE 或 ITERATIVE。
+</p>
+
+<p>
+  旋转向量与旋转矩阵可以互相转换。旋转向量的方向是旋转轴，长度是旋转
+  角，单位为弧度；<code>Rodrigues(rvec, R)</code> 得到 <code>3×3</code>
+  旋转矩阵，<code>Rodrigues(R, rvec)</code> 反向转换。旋转矩阵的列是
+  靶标三条轴在相机坐标中的方向，平移向量是靶标原点在相机坐标中的位置。
+  相机光心在世界坐标中的位置是 <code>C = -R^T t</code>，不是
+  <code>t</code> 本身，这一点在放置虚拟物体时经常用到。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_rotation.jpg" alt="旋转向量与旋转轴的几何关系：向量绕单位轴旋转角度 theta" width="1200" height="1165">
+  <figcaption>
+    旋转向量把“绕哪条轴、转多少角”压成一个三维向量：方向是单位轴
+    <code>n</code>，长度是角 <code>θ</code>。向量 <code>v</code> 绕轴
+    旋转后得到 <code>v'</code>；分解图给出平行与垂直分量的关系，
+    <code>Rodrigues</code> 公式由此得到旋转矩阵。
+  </figcaption>
+</figure>
+
+<h3 id="s7-7-3">重投影与 AR</h3>
+
+<p>
+  求到位姿后，用 <code>projectPoints(objectPoints, rvec, tvec, K, D,
+  projected)</code> 把物点重新投影，逐点比较 <code>projected</code> 与
+  输入像点，得到重投影误差。误差大时先检查点序、单位与畸变是否传入，
+  再检查是否选错了平面解。误差只是必要条件：平面二义性下两组位姿都
+  可能给出很小的误差，需要用额外的点或已知的物理约束排除。
+</p>
+
+<p>
+  画坐标轴时，把原点与三条轴端点作为物点一起投影，再用
+  <code>line</code> 连接。OpenCV 的颜色顺序是 BGR，红色写
+  <code>Scalar(0,0,255)</code>，绿色写 <code>Scalar(0,255,0)</code>，
+  蓝色写 <code>Scalar(255,0,0)</code>。画立方体时把 8 个顶点投影，连接
+  12 条棱；<code>line</code> 不做深度测试，背面的棱会透过正面显示，
+  形成线框。若要看起来像实心物体，需要按面到相机的距离排序，先画远面
+  再画近面，或使用带深度缓冲的渲染器。
+</p>
+
+<p>
+  增强现实的典型流程是：检测平面标记的四个角，求单应性或直接求位姿，
+  在靶标坐标中放置虚拟物体，把物体顶点投影到图像，最后按深度顺序叠加。
+  标记检测失败、位姿抖动或遮挡都会让虚拟物体漂移；连续视频中通常还要
+  对位姿做平滑，并保留丢失后的重置条件。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/calib_ar.jpg" alt="增强现实流程：视频输入、标记识别、单应与三维位姿、虚拟物体渲染与叠加" width="1200" height="544">
+  <figcaption>
+    平面标记的增强现实流程：由视频帧识别标记四角，求单应与三维位姿，
+    在标记坐标中渲染虚拟物体，再把渲染结果叠加回原图。位姿的准确性
+    决定虚拟物体是否贴合平面。
+  </figcaption>
+</figure>
+
+<h3 id="s7-7-4">常见错误</h3>
+
+<p>
+  第一是点数不足或点序错位。少于 4 对点无法确定位姿；物点与像点顺序
+  错一个，重投影误差会突然变大，位姿也会翻转。第二是单位不一致：
+  物点用米、平移按毫米解释，或棋盘方格边长写错，都会让 <code>tvec</code>
+  差一个数量级。第三是忽略畸变：<code>projectPoints</code> 与
+  <code>solvePnP</code> 都要传入同一个 <code>D</code>，只给内参不给畸变，
+  边缘点的误差会明显增大。
+</p>
+
+<p>
+  第四是平面二义性。四个共面点可能对应两组位姿，单看误差无法区分；
+  增加不共面的点、改变靶标姿态或使用非对称标记可以消除。第五是把
+  <code>tvec</code> 当成相机位置；它表示靶标原点到相机的平移，相机
+  光心要用 <code>-R^T t</code> 计算。第六是轴向约定：OpenCV 的
+  <code>y</code> 向下、<code>z</code> 向前，按 <code>y</code> 向上的
+  习惯摆放虚拟物体，叠加结果会上下颠倒。
+</p>
+
+<div class="eg" id="e7-7">
+  <div class="eg-h">例题 · 平面靶标位姿与立方体叠加</div>
+  <p>
+    取与合成棋盘一致的内参 <code>fx=fy=800</code>、<code>cx=450</code>、
+    <code>cy=350</code>，畸变为零；真实位姿为
+    <code>rvec=(0.20, -0.15, 0.03)</code>、<code>tvec=(-0.18, -0.12, 0.80)</code>。
+    用 54 个物点投影出像点，再调用
+    <code>solvePnP(..., SOLVEPNP_ITERATIVE)</code> 恢复位姿。程序打印真值、
+    估计值、旋转与平移差、重投影 RMS，并在棋盘图上画三条坐标轴与一个
+    线框立方体，保存为 <code>out_pnp.png</code>。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.7-pnp.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+namespace {
+
+std::vector&lt;cv::Point3f&gt; boardPoints() {
+    constexpr int cols = 9;
+    constexpr int rows = 6;
+    constexpr double square = 0.04;
+    std::vector&lt;cv::Point3f&gt; points;
+    for (int row = 0; row &lt; rows; ++row) {
+        for (int col = 0; col &lt; cols; ++col) {
+            points.push_back(cv::Point3f(
+                static_cast&lt;float&gt;(col * square),
+                static_cast&lt;float&gt;(row * square), 0.0f));
+        }
+    }
+    return points;
+}
+
+double vectorNorm(const cv::Vec3d&amp; v) {
+    return std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+}
+
+}  // namespace
+
+int main() {
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 450.0,
+        0.0, 800.0, 350.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = cv::Mat::zeros(1, 5, CV_64F);
+    const cv::Vec3d rvec_true(0.20, -0.15, 0.03);
+    const cv::Vec3d tvec_true(-0.18, -0.12, 0.80);
+
+    const std::vector&lt;cv::Point3f&gt; object = boardPoints();
+    std::vector&lt;cv::Point2f&gt; image_points;
+    cv::projectPoints(object, rvec_true, tvec_true, K, D, image_points);
+
+    cv::Vec3d rvec;
+    cv::Vec3d tvec;
+    cv::solvePnP(object, image_points, K, D, rvec, tvec, false,
+                 cv::SOLVEPNP_ITERATIVE);
+
+    std::vector&lt;cv::Point2f&gt; reprojected;
+    cv::projectPoints(object, rvec, tvec, K, D, reprojected);
+    double sum = 0.0;
+    for (std::size_t i = 0; i &lt; reprojected.size(); ++i) {
+        const cv::Point2f diff = reprojected[i] - image_points[i];
+        sum += diff.x * diff.x + diff.y * diff.y;
+    }
+    const double rms = std::sqrt(sum / reprojected.size());
+
+    cv::Mat image = cv::imread("../素材/synth_chess_1.png");
+    if (image.empty()) {
+        std::cerr &lt;&lt; "无法读取 synth_chess_1.png\n";
+        return 1;
+    }
+
+    const std::vector&lt;cv::Point3f&gt; axes = {
+        cv::Point3f(0.0f, 0.0f, 0.0f),
+        cv::Point3f(0.08f, 0.0f, 0.0f),
+        cv::Point3f(0.0f, 0.08f, 0.0f),
+        cv::Point3f(0.0f, 0.0f, 0.08f),
+    };
+    std::vector&lt;cv::Point2f&gt; axis_pixels;
+    cv::projectPoints(axes, rvec, tvec, K, D, axis_pixels);
+    cv::line(image, axis_pixels[0], axis_pixels[1], cv::Scalar(0, 0, 255),
+             3, cv::LINE_AA);
+    cv::line(image, axis_pixels[0], axis_pixels[2], cv::Scalar(0, 255, 0),
+             3, cv::LINE_AA);
+    cv::line(image, axis_pixels[0], axis_pixels[3], cv::Scalar(255, 0, 0),
+             3, cv::LINE_AA);
+
+    std::vector&lt;cv::Point3f&gt; cube;
+    for (const double z : {0.05, 0.09}) {
+        for (const double dx : {-0.02, 0.02}) {
+            for (const double dy : {-0.02, 0.02}) {
+                cube.push_back(cv::Point3f(
+                    static_cast&lt;float&gt;(0.18 + dx),
+                    static_cast&lt;float&gt;(0.12 + dy),
+                    static_cast&lt;float&gt;(z)));
+            }
+        }
+    }
+    std::vector&lt;cv::Point2f&gt; cube_pixels;
+    cv::projectPoints(cube, rvec, tvec, K, D, cube_pixels);
+    const int edges[12][2] = {
+        {0, 1}, {1, 3}, {3, 2}, {2, 0},
+        {4, 5}, {5, 7}, {7, 6}, {6, 4},
+        {0, 4}, {1, 5}, {2, 6}, {3, 7},
+    };
+    for (const auto&amp; edge : edges) {
+        cv::line(image, cube_pixels[edge[0]], cube_pixels[edge[1]],
+                 cv::Scalar(255, 0, 255), 2, cv::LINE_AA);
+    }
+    const bool saved = cv::imwrite("../素材/out_pnp.png", image);
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "rvec_true = [" &lt;&lt; rvec_true[0] &lt;&lt; ", " &lt;&lt; rvec_true[1]
+              &lt;&lt; ", " &lt;&lt; rvec_true[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "rvec_est  = [" &lt;&lt; rvec[0] &lt;&lt; ", " &lt;&lt; rvec[1] &lt;&lt; ", "
+              &lt;&lt; rvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "tvec_true = [" &lt;&lt; tvec_true[0] &lt;&lt; ", " &lt;&lt; tvec_true[1]
+              &lt;&lt; ", " &lt;&lt; tvec_true[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "tvec_est  = [" &lt;&lt; tvec[0] &lt;&lt; ", " &lt;&lt; tvec[1] &lt;&lt; ", "
+              &lt;&lt; tvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "rotation_diff = " &lt;&lt; vectorNorm(rvec - rvec_true) &lt;&lt; '\n';
+    std::cout &lt;&lt; "translation_diff = "
+              &lt;&lt; vectorNorm(tvec - tvec_true) &lt;&lt; '\n';
+    std::cout &lt;&lt; "rms = " &lt;&lt; rms &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_pnp.png " &lt;&lt; image.cols &lt;&lt; "x" &lt;&lt; image.rows
+              &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.7-pnp.cpp -o pnp \
+    $(pkg-config --cflags --libs opencv4)
+./pnp</code></pre>
+<pre class="out" data-label="真实输出">rvec_true = [0.2000, -0.1500, 0.0300]
+rvec_est  = [0.2000, -0.1500, 0.0300]
+tvec_true = [-0.1800, -0.1200, 0.8000]
+tvec_est  = [-0.1800, -0.1200, 0.8000]
+rotation_diff = 0.000000
+translation_diff = 0.000000
+rms = 0.000007
+saved out_pnp.png 900x700: yes</pre>
+  <p>
+    输入像点由真实位姿精确生成，没有噪声，因此估计值与真值在打印精度内
+    完全一致：旋转差与平移差都是 0，重投影 RMS 为
+    <code>7e-6</code> 像素。坐标轴原点落在棋盘左上角，红色为
+    <code>+x</code>，绿色为 <code>+y</code>，蓝色为 <code>+z</code>；
+    <code>+y</code> 在图像中向下，符合相机坐标约定。立方体放在棋盘上方
+    的靶标坐标中，投影后呈线框；背面的棱没有被遮挡，因为
+    <code>line</code> 不做深度测试。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_pnp.png" alt="合成棋盘上的坐标轴与线框立方体叠加结果" width="900" height="700">
+    <figcaption>
+      由 <code>solvePnP</code> 得到的位姿。原点处的红、绿、蓝三条线分别
+      是靶标坐标的 <code>+x</code>、<code>+y</code>、<code>+z</code> 轴；
+      品红色线框是放在靶标坐标中的立方体。坐标轴与立方体的位置随位姿
+      变化，棋盘本身保持原图不变。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-7</div>
+  <p>
+    只取平面靶标的四个角点，物点为 <code>(0,0,0)</code>、
+    <code>(0.32,0,0)</code>、<code>(0.32,0.20,0)</code>、
+    <code>(0,0.20,0)</code>，用真实位姿
+    <code>rvec=(0.20,-0.15,0.03)</code>、<code>tvec=(-0.18,-0.12,0.80)</code>
+    生成像点，调用 <code>solvePnP</code> 的 <code>SOLVEPNP_IPPE</code>
+    解法恢复位姿，打印 <code>rvec</code>、<code>tvec</code> 与重投影 RMS。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">rvec = [0.2000, -0.1500, 0.0300]
+tvec = [-0.1800, -0.1200, 0.8000]
+rms = 0.000000</pre>
+  <details class="ans" data-run="示例代码/答案/7-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        四个角点共面，IPPE 直接按平面情形求解；在没有噪声时恢复到真值，
+        重投影误差为 0。实际图像中四个点的定位误差会让位姿出现抖动，
+        平面二义性也可能让解跳到另一组位姿，因此通常会用更多点并检查
+        重投影误差。
+      </p>
+<pre data-lang="C++" data-name="答案/7-7.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        800.0, 0.0, 450.0,
+        0.0, 800.0, 350.0,
+        0.0, 0.0, 1.0);
+    const cv::Mat D = cv::Mat::zeros(1, 5, CV_64F);
+    const std::vector&lt;cv::Point3f&gt; object = {
+        cv::Point3f(0.0f, 0.0f, 0.0f),
+        cv::Point3f(0.32f, 0.0f, 0.0f),
+        cv::Point3f(0.32f, 0.20f, 0.0f),
+        cv::Point3f(0.0f, 0.20f, 0.0f),
+    };
+    const cv::Vec3d rvec_true(0.20, -0.15, 0.03);
+    const cv::Vec3d tvec_true(-0.18, -0.12, 0.80);
+    std::vector&lt;cv::Point2f&gt; image_points;
+    cv::projectPoints(object, rvec_true, tvec_true, K, D, image_points);
+
+    cv::Vec3d rvec;
+    cv::Vec3d tvec;
+    cv::solvePnP(object, image_points, K, D, rvec, tvec, false,
+                 cv::SOLVEPNP_IPPE);
+    std::vector&lt;cv::Point2f&gt; reprojected;
+    cv::projectPoints(object, rvec, tvec, K, D, reprojected);
+    double sum = 0.0;
+    for (std::size_t i = 0; i &lt; reprojected.size(); ++i) {
+        const cv::Point2f diff = reprojected[i] - image_points[i];
+        sum += diff.x * diff.x + diff.y * diff.y;
+    }
+    const double rms = std::sqrt(sum / reprojected.size());
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "rvec = [" &lt;&lt; rvec[0] &lt;&lt; ", " &lt;&lt; rvec[1] &lt;&lt; ", "
+              &lt;&lt; rvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; "tvec = [" &lt;&lt; tvec[0] &lt;&lt; ", " &lt;&lt; tvec[1] &lt;&lt; ", "
+              &lt;&lt; tvec[2] &lt;&lt; "]\n";
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "rms = " &lt;&lt; rms &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">rvec = [0.2000, -0.1500, 0.0300]
+tvec = [-0.1800, -0.1200, 0.8000]
+rms = 0.000000</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>组织物点与像点调用 <code>solvePnP</code>；
+  选择 ITERATIVE、EPNP 或 IPPE；用 <code>Rodrigues</code> 转换旋转向量与
+  矩阵；计算重投影 RMS；把坐标轴与线框立方体投影到图像；判断点数不足、
+  点序错位、单位不一致、忽略畸变与平面二义性。
+</p>
+</section>
+
+<section class="lesson" id="l7-8">
+<h2><span class="no">7.8</span>深度图与点云投影</h2>
+
+<p>
+  深度图给每个像素一个深度值，点云给每个点一个三维坐标；两者可以互相
+  转换。把点云投影到图像，用的仍是针孔模型，只是输入从棋盘角点换成了
+  任意三维点。本课说明深度与点云的表示、投影与反投影、无效点与遮挡，
+  并用一团合成点云检查手写投影与 <code>projectPoints</code> 是否一致。
+</p>
+
+<h3 id="s7-8-1">深度图与点云</h3>
+
+<p>
+  深度图是单通道图像，每个像素存放该方向上的深度，单位常为毫米或米。
+  数值 0 通常表示无效：深度相机没有返回、被遮挡、超出量程或表面反光。
+  深度值一般指沿光轴的 <code>Z</code>，不是点到光心的欧氏距离；只有
+  在图像中心附近，两者才近似相等。若深度图已经与彩色图配准，同一像素
+  坐标在两个图中对应同一个方向，可以直接组合成 <code>(X,Y,Z)</code>。
+</p>
+
+<p>
+  点云是一组三维点。按图像行列组织的点云叫有序点云，可以用
+  <code>(u,v)</code> 直接索引；没有图像结构的叫无序点云，只能逐点遍历。
+  本课用 <code>std::vector&lt;cv::Point3f&gt;</code> 存无序点云，不引入
+  额外的点云库。每个点还可以带颜色，颜色通常取自对应像素的 BGR 值。
+</p>
+
+<h3 id="s7-8-2">投影公式</h3>
+
+<p>
+  设点在相机坐标系中的坐标为 <code>(X_c, Y_c, Z_c)</code>，投影公式与
+  针孔模型相同：
+</p>
+
+<p>
+  <code>u = fx * X_c / Z_c + cx</code>，
+  <code>v = fy * Y_c / Z_c + cy</code>
+</p>
+
+<p>
+  使用前必须确认 <code>Z_c &gt; 0</code>；<code>Z_c = 0</code> 会除零，
+  <code>Z_c &lt; 0</code> 表示点在相机后方，算出的像素没有成像意义。
+  有畸变时，先把归一化坐标按畸变模型偏移，再乘内参；
+  <code>projectPoints</code> 会自动完成这一步，手写公式只适用于
+  <code>D</code> 为零或已经去畸变的情形。
+</p>
+
+<p>
+  反投影由像素与深度恢复三维点：
+  <code>X = (u - cx) * Z / fx</code>，
+  <code>Y = (v - cy) * Z / fy</code>，
+  <code>Z = depth</code>。反投影同样假设像素已经去畸变；若直接使用
+  畸变图像的像素，得到的射线方向会偏。深度图与彩色图来自不同相机时，
+  还要用外参把点变换到同一坐标系，并处理时间同步。
+</p>
+
+<h3 id="s7-8-3">无效点、遮挡与 ROI</h3>
+
+<p>
+  投影前先过滤无效深度：深度小于等于零、<code>NaN</code>、落在深度空洞里
+  的点都不参与统计或绘制。无效深度值常用 0 表示，它是深度数值，不是像素
+  坐标；图像左上角的 <code>(0,0)</code> 仍然是合法像素。过滤后再投影，
+  记录三类数量：有效投影点数、无效深度点数、投影落到图像外的点数，
+  三者之和应等于总点数，便于核对循环是否漏点。
+</p>
+
+<p>
+  多个点投影到同一像素时，离相机最近的点应当遮住后面的点，这就是
+  z-buffer。逐点画圆不做深度测试，后画的点会覆盖先画的点；若点云有
+  表面结构，应按深度从远到近排序，再依次绘制，近似画家算法。ROI 深度
+  均值要先排除零值，再用 <code>double</code> 累加，最后除以有效点数；
+  用整数累加会丢精度，除以总像素数则会把无效点算进平均。
+</p>
+
+<p>
+  彩色图与深度图来自不同传感器时，两者的采样时刻与视场都不同。直接
+  按同名像素组合，会把不同方向的颜色与深度配在一起；需要先做时间同步，
+  再用外参把深度点变换到彩色相机坐标系，最后投影到彩色图像。坐标系
+  对齐错误表现为颜色边缘与深度边缘整体错位，而不是零散的噪声。
+</p>
+
+<div class="eg" id="e7-8">
+  <div class="eg-h">例题 · 合成点云投影</div>
+  <p>
+    生成 <code>25×25</code> 的网格点，<code>x</code>、<code>y</code> 在
+    <code>±0.48</code> 米内，<code>z</code> 在 <code>1.2</code> 米附近按
+    正弦起伏；再追加 10 个 <code>z=-0.5</code> 的点，模拟相机后方的
+    无效点。内参取 <code>fx=fy=600</code>、<code>cx=450</code>、
+    <code>cy=300</code>，外参为
+    <code>rvec=(0.15,-0.20,0.05)</code>、<code>tvec=0</code>。程序逐点
+    做外参变换与手写投影，跳过 <code>Z&lt;=0</code> 与落在图像外的点，
+    按深度着色绘制，再用 <code>projectPoints</code> 对有效点重算一遍，
+    比较两种投影的最大差。
+  </p>
+  <p>完整程序：</p>
+<pre data-lang="C++" data-name="7.8-pointcloud.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/calib3d.hpp&gt;
+
+int main() {
+    std::vector&lt;cv::Point3f&gt; cloud;
+    for (int row = 0; row &lt; 25; ++row) {
+        for (int col = 0; col &lt; 25; ++col) {
+            const double x = (col - 12) * 0.04;
+            const double y = (row - 12) * 0.04;
+            const double z = 1.2 + 0.15 * std::sin(0.4 * col) *
+                                     std::cos(0.3 * row);
+            cloud.push_back(cv::Point3f(
+                static_cast&lt;float&gt;(x), static_cast&lt;float&gt;(y),
+                static_cast&lt;float&gt;(z)));
+        }
+    }
+    for (int i = 0; i &lt; 10; ++i) {
+        cloud.push_back(cv::Point3f(
+            static_cast&lt;float&gt;(-0.4 + 0.08 * i),
+            static_cast&lt;float&gt;(0.1 * i), -0.5f));
+    }
+
+    const cv::Mat K = (cv::Mat_&lt;double&gt;(3, 3) &lt;&lt;
+        600.0, 0.0, 450.0,
+        0.0, 600.0, 300.0,
+        0.0, 0.0, 1.0);
+    const cv::Vec3d rvec(0.15, -0.20, 0.05);
+    const cv::Vec3d tvec(0.0, 0.0, 0.0);
+    cv::Mat R;
+    cv::Rodrigues(rvec, R);
+    const double fx = K.at&lt;double&gt;(0, 0);
+    const double fy = K.at&lt;double&gt;(1, 1);
+    const double cx = K.at&lt;double&gt;(0, 2);
+    const double cy = K.at&lt;double&gt;(1, 2);
+
+    int invalid_z = 0;
+    int outside = 0;
+    int drawn = 0;
+    double depth_sum = 0.0;
+    double max_diff = 0.0;
+    std::vector&lt;cv::Point3f&gt; valid_points;
+    std::vector&lt;cv::Point2f&gt; manual_pixels;
+    cv::Mat image(600, 900, CV_8UC3, cv::Scalar(30, 30, 30));
+
+    for (const cv::Point3f&amp; p : cloud) {
+        const double x = R.at&lt;double&gt;(0, 0) * p.x +
+                         R.at&lt;double&gt;(0, 1) * p.y +
+                         R.at&lt;double&gt;(0, 2) * p.z + tvec[0];
+        const double y = R.at&lt;double&gt;(1, 0) * p.x +
+                         R.at&lt;double&gt;(1, 1) * p.y +
+                         R.at&lt;double&gt;(1, 2) * p.z + tvec[1];
+        const double z = R.at&lt;double&gt;(2, 0) * p.x +
+                         R.at&lt;double&gt;(2, 1) * p.y +
+                         R.at&lt;double&gt;(2, 2) * p.z + tvec[2];
+        if (z &lt;= 0.0) {
+            ++invalid_z;
+            continue;
+        }
+        const double u = fx * x / z + cx;
+        const double v = fy * y / z + cy;
+        if (u &lt; 0.0 || u &gt;= image.cols || v &lt; 0.0 ||
+            v &gt;= image.rows) {
+            ++outside;
+            continue;
+        }
+        valid_points.push_back(p);
+        manual_pixels.push_back(cv::Point2f(
+            static_cast&lt;float&gt;(u), static_cast&lt;float&gt;(v)));
+        depth_sum += z;
+        const double t = std::min(1.0, std::max(0.0, (z - 1.0) / 0.6));
+        const cv::Scalar color(255.0 * (1.0 - t), 80, 255.0 * t);
+        cv::circle(image, cv::Point(cvRound(u), cvRound(v)), 2, color,
+                   cv::FILLED, cv::LINE_AA);
+        ++drawn;
+    }
+
+    std::vector&lt;cv::Point2f&gt; projected;
+    cv::projectPoints(valid_points, rvec, tvec, K,
+                      cv::Mat::zeros(1, 5, CV_64F), projected);
+    for (std::size_t i = 0; i &lt; projected.size(); ++i) {
+        const cv::Point2f diff = projected[i] - manual_pixels[i];
+        max_diff = std::max(
+            max_diff, std::sqrt(static_cast&lt;double&gt;(diff.x) * diff.x +
+                                static_cast&lt;double&gt;(diff.y) * diff.y));
+    }
+
+    const bool saved = cv::imwrite("../素材/out_pointcloud.png", image);
+    const double mean_depth = drawn &gt; 0 ? depth_sum / drawn : 0.0;
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "points = " &lt;&lt; cloud.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "invalid_z = " &lt;&lt; invalid_z &lt;&lt; '\n';
+    std::cout &lt;&lt; "outside = " &lt;&lt; outside &lt;&lt; '\n';
+    std::cout &lt;&lt; "drawn = " &lt;&lt; drawn &lt;&lt; '\n';
+    std::cout &lt;&lt; std::setprecision(3);
+    std::cout &lt;&lt; "mean_depth = " &lt;&lt; mean_depth &lt;&lt; '\n';
+    std::cout &lt;&lt; std::setprecision(6);
+    std::cout &lt;&lt; "max_pixel_diff = " &lt;&lt; max_diff &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_pointcloud.png " &lt;&lt; image.cols &lt;&lt; "x"
+              &lt;&lt; image.rows &lt;&lt; ": " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 7.8-pointcloud.cpp -o pointcloud \
+    $(pkg-config --cflags --libs opencv4)
+./pointcloud</code></pre>
+<pre class="out" data-label="真实输出">points = 635
+invalid_z = 10
+outside = 72
+drawn = 553
+mean_depth = 1.177
+max_pixel_diff = 0.000000
+saved out_pointcloud.png 900x600: yes</pre>
+  <p>
+    总点数为 <code>625 + 10 = 635</code>。10 个后方点的
+    <code>Z&lt;=0</code>，全部被跳过；72 个点的投影落在
+    <code>900×600</code> 图像外，也没有绘制；剩余 553 个点画出，三者
+    之和正好是 635。有效点的平均深度为 <code>1.177</code> 米，手写投影
+    与 <code>projectPoints</code> 的最大差为 0。图中蓝色点离相机近，
+    红色点离相机远，颜色随深度连续变化。
+  </p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_pointcloud.png" alt="合成点云按深度着色投影到图像的结果，近处为蓝色，远处为红色" width="900" height="600">
+    <figcaption>
+      合成点云投影到图像的结果。点的颜色由相机坐标中的深度决定：近处
+      偏蓝，远处偏红；相机后方的点与落在图像外的点没有绘制。点阵的
+      起伏来自生成时加入的正弦深度变化。
+    </figcaption>
+  </figure>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-8</div>
+  <p>
+    构造一幅 <code>5×5</code> 的 <code>CV_32F</code> 深度图，第
+    <code>row</code> 行、第 <code>col</code> 列的值取
+    <code>1.0 + 0.1×row + 0.01×col</code>，再把
+    <code>(2,2)</code> 与 <code>(3,3)</code> 置零表示无效。取 ROI
+    <code>(1,1,3,3)</code>，统计有效点数、均值、最小值与最大值。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">roi = (1, 1, 3, 3)
+valid = 7 of 9
+mean = 1.2043
+min = 1.1100 max = 1.3200</pre>
+  <details class="ans" data-run="示例代码/答案/7-8.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        ROI 覆盖 3×3 共 9 个像素，其中两个是零，有效点为 7 个。均值只对
+        7 个有效值求和再平均，得到 <code>1.2043</code>；若除以 9，结果
+        会偏小。最小值 <code>1.1100</code> 与最大值 <code>1.3200</code>
+        分别来自 ROI 的左上与右下有效点。
+      </p>
+<pre data-lang="C++" data-name="答案/7-8.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    cv::Mat depth(5, 5, CV_32F);
+    for (int row = 0; row &lt; 5; ++row) {
+        for (int col = 0; col &lt; 5; ++col) {
+            depth.at&lt;float&gt;(row, col) =
+                static_cast&lt;float&gt;(1.0 + 0.1 * row + 0.01 * col);
+        }
+    }
+    depth.at&lt;float&gt;(2, 2) = 0.0f;
+    depth.at&lt;float&gt;(3, 3) = 0.0f;
+
+    const cv::Rect roi(1, 1, 3, 3);
+    const cv::Mat patch = depth(roi);
+    double sum = 0.0;
+    int valid = 0;
+    float min_depth = 1000.0f;
+    float max_depth = 0.0f;
+    for (int row = 0; row &lt; patch.rows; ++row) {
+        for (int col = 0; col &lt; patch.cols; ++col) {
+            const float value = patch.at&lt;float&gt;(row, col);
+            if (value &lt;= 0.0f) {
+                continue;
+            }
+            sum += value;
+            min_depth = std::min(min_depth, value);
+            max_depth = std::max(max_depth, value);
+            ++valid;
+        }
+    }
+
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(4);
+    std::cout &lt;&lt; "roi = (" &lt;&lt; roi.x &lt;&lt; ", " &lt;&lt; roi.y &lt;&lt; ", "
+              &lt;&lt; roi.width &lt;&lt; ", " &lt;&lt; roi.height &lt;&lt; ")\n";
+    std::cout &lt;&lt; "valid = " &lt;&lt; valid &lt;&lt; " of " &lt;&lt; patch.total() &lt;&lt; '\n';
+    std::cout &lt;&lt; "mean = " &lt;&lt; sum / valid &lt;&lt; '\n';
+    std::cout &lt;&lt; "min = " &lt;&lt; min_depth &lt;&lt; " max = " &lt;&lt; max_depth &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<pre class="out" data-label="真实输出">roi = (1, 1, 3, 3)
+valid = 7 of 9
+mean = 1.2043
+min = 1.1100 max = 1.3200</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>说明深度图与点云的表示及单位；用
+  <code>K</code>、<code>R</code>、<code>t</code> 把点云投影到图像；
+  在投影前过滤 <code>Z&lt;=0</code>、<code>NaN</code> 与出界点；
+  解释 z-buffer 与绘制顺序；在 ROI 内排除无效深度后求均值；指出
+  畸变、坐标系与时间同步造成的错位。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="06-特征匹配.html">← 第 6 部分 · 特征匹配</a>
+  <span class="spacer"></span>
+  <a href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

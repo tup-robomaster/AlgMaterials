@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 5 部分 · 视频与相机 — OpenCV 视觉基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-图像与Mat.html">第 1 部分</a>
+      <a href="02-图像处理.html">第 2 部分</a>
+      <a href="03-轮廓与形状.html">第 3 部分</a>
+      <a href="04-颜色目标检测.html">第 4 部分</a>
+      <a class="active" href="05-视频与相机.html">第 5 部分</a>
+      <a href="06-特征匹配.html">第 6 部分</a>
+      <a href="07-相机模型与标定.html">第 7 部分</a>
+      <a href="08-卡尔曼滤波与跟踪.html">第 8 部分</a>
+      <a href="09-综合-装甲板识别.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+      <a href="../../reference/附录-OpenCV.html">附录</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a class="active" href="index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-图像与Mat.html">第 1 部分 · 图像与 Mat</a>
+  <a class="tree-l" href="02-图像处理.html">第 2 部分 · 图像处理</a>
+  <a class="tree-l" href="03-轮廓与形状.html">第 3 部分 · 轮廓与形状</a>
+  <a class="tree-l" href="04-颜色目标检测.html">第 4 部分 · 颜色目标检测</a>
+  <a class="tree-l" aria-current="page" href="05-视频与相机.html">第 5 部分 · 视频与相机</a>
+  <a class="tree-l" href="06-特征匹配.html">第 6 部分 · 特征匹配</a>
+  <a class="tree-l" href="07-相机模型与标定.html">第 7 部分 · 相机模型与标定</a>
+  <a class="tree-l" href="08-卡尔曼滤波与跟踪.html">第 8 部分 · 卡尔曼滤波与跟踪</a>
+  <a class="tree-l" href="09-综合-装甲板识别.html">第 9 部分 · 综合：装甲板识别</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+  <a class="tree-l" href="../../reference/附录-OpenCV.html">附录 · OpenCV 速查</a>
+  <figure class="rail-figure">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/opencv-modules.png" alt="OpenCV 模块关系图：core 是基础数据结构 Mat 与核心模块，分出 imgproc、highgui、imgcodecs、videoio、video、dnn 与 ml；imgproc 连到 features2d 与 calib3d，features2d 连到 flann" width="3229" height="2388">
+    <figcaption>OpenCV 模块关系 · 双击放大，按住拖动</figcaption>
+  </figure>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 5 部分 · 视频与相机</div>
+  <a class="toc-l" href="#l5-1"><span class="n">5.1</span>VideoCapture：打开视频</a>
+  <a class="toc-sub" href="#s5-1-1">视频文件、容器与帧</a>
+  <a class="toc-sub" href="#s5-1-2">元数据与第一帧</a>
+  <a class="toc-sub" href="#s5-1-3">路径与打开失败</a>
+  <a class="toc-sub" href="#e5-1">例题：默认构造与打开检查</a>
+  <a class="toc-l" href="#l5-2"><span class="n">5.2</span>摄像头：打开、参数与采集</a>
+  <a class="toc-sub" href="#s5-2-1">设备索引与打开</a>
+  <a class="toc-sub" href="#s5-2-2">请求参数与实际参数</a>
+  <a class="toc-sub" href="#s5-2-3">采集、镜像与保存</a>
+  <a class="toc-sub" href="#s5-2-4">失败处理与释放</a>
+  <a class="toc-sub" href="#e5-2">例题：请求之后读回</a>
+  <a class="toc-l" href="#l5-3"><span class="n">5.3</span>帧循环、按键与帧率</a>
+  <a class="toc-sub" href="#s5-3-1">帧循环与退出条件</a>
+  <a class="toc-sub" href="#s5-3-2">按键、暂停与时间戳</a>
+  <a class="toc-sub" href="#s5-3-3">帧率计算与跳帧</a>
+  <a class="toc-sub" href="#e5-3">例题：按间隔取帧</a>
+  <a class="toc-l" href="#l5-4"><span class="n">5.4</span>VideoWriter：保存处理结果</a>
+  <a class="toc-sub" href="#s5-4-1">FourCC、尺寸与帧率</a>
+  <a class="toc-sub" href="#s5-4-2">写入、释放与回读</a>
+  <a class="toc-sub" href="#s5-4-3">录像与常见错误</a>
+  <a class="toc-sub" href="#e5-4">例题：两种 FourCC</a>
+  <a class="toc-l" href="#l5-5"><span class="n">5.5</span>采集与处理分离</a>
+  <a class="toc-sub" href="#s5-5-1">生产者、消费者与队列</a>
+  <a class="toc-sub" href="#s5-5-2">浅拷贝与 clone</a>
+  <a class="toc-sub" href="#s5-5-3">丢旧帧与背压</a>
+  <a class="toc-sub" href="#e5-5">例题：丢旧帧队列</a>
+  <a class="toc-l" href="#l5-6"><span class="n">5.6</span>工业相机 SDK：从取图到 Mat</a>
+  <a class="toc-sub" href="#s5-6-1">取图流程</a>
+  <a class="toc-sub" href="#s5-6-2">包装缓冲区与 Bayer</a>
+  <a class="toc-sub" href="#s5-6-3">缓冲区归属与错误</a>
+  <a class="toc-sub" href="#e5-6">例题：Bayer 顺序换错</a>
+  <a class="toc-l" href="#l5-7"><span class="n">5.7</span>相机参数与像素格式</a>
+  <a class="toc-sub" href="#s5-7-1">曝光、增益与白平衡</a>
+  <a class="toc-sub" href="#s5-7-2">模拟曝光与增益</a>
+  <a class="toc-sub" href="#s5-7-3">像素格式与位深</a>
+  <a class="toc-sub" href="#s5-7-4">参数与格式的错误</a>
+  <a class="toc-sub" href="#e5-7">例题：打包与解包</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 5 部分</div>
+  <h1>视频与相机</h1>
+  <p class="part-lead">
+    这一部分把图像序列读进来、处理并写出去：用 <code>VideoCapture</code>
+    打开视频文件或摄像头，用帧循环处理每一帧，用 <code>VideoWriter</code>
+    保存结果；最后读懂工业相机的取图流程、参数与像素格式。前四课要求会写，
+    后三课以读懂结构和格式为主。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l0-4 l1-1 l1-2 l1-5">
+  <b>读这一部分之前</b>
+  <p>
+    需要先读 <a href="00-开始.html#l0-4">0.4</a>，会读图、显示与保存；
+    读 <a href="01-图像与Mat.html#l1-1">1.1</a>，知道 <code>Mat</code>
+    的浅拷贝与 <code>clone</code> 的区别；读
+    <a href="01-图像与Mat.html#l1-2">1.2</a>，会按路径读入图像并检查
+    <code>empty</code>；读 <a href="01-图像与Mat.html#l1-5">1.5</a>，
+    会在帧上绘制标注。视频帧、相机帧与普通图像共用同一套 <code>Mat</code>
+    操作。
+  </p>
+</div>
+
+<div class="aside warn">
+  <b>开始之前：练习目录还在吗</b>
+  <p>
+    下面的命令在课程文件夹 <code>lessons/opencv</code>（本页所在目录）下执行。
+    <code>/tmp</code> 是系统存放临时文件的目录，电脑重启后可能被清空。
+    如果没有按第 0 部分 0.1 准备过练习目录，或者准备之后重启过电脑，
+    先执行下面几行，再开始这一部分：
+  </p>
+  <pre data-lang="终端"><code>rm -rf /tmp/opencv-course
+mkdir -p /tmp/opencv-course
+cp -r 示例代码 素材 /tmp/opencv-course/
+cd /tmp/opencv-course/示例代码</code></pre>
+  <p>
+    第一行会删除整个练习副本，路径不要改成自己的目录。复制完成后，
+    用 <code>pwd</code> 确认当前目录是 <code>/tmp/opencv-course/示例代码</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l5-1">
+<h2><span class="no">5.1</span>VideoCapture：打开视频</h2>
+
+<p>
+  视频文件保存的是按时间排列的一串图像帧，外面还有容器与编码信息。
+  容器负责把帧、时间戳和索引放在一起，编码器负责压缩每一帧。OpenCV
+  读文件时不要求调用者处理这些封装细节，读出的每一帧仍然是
+  <code>cv::Mat</code>，通道顺序仍是 BGR。
+</p>
+
+<h3 id="s5-1-1">视频文件、容器与帧</h3>
+
+<p>
+  <code>cv::VideoCapture</code> 负责打开视频源、解码并交出下一帧。打开文件
+  时给出路径与后端标志：
+</p>
+
+<pre data-lang="C++"><code>cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+if (!cap.isOpened()) {
+    std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+    return 1;
+}</code></pre>
+
+<p>
+  第二个参数是后端（backend），<code>cv::CAP_ANY</code> 表示让 OpenCV
+  自行选择。同一台机器上，文件与摄像头可能走不同后端；后端只影响打开方式，
+  读出的帧仍是 <code>cv::Mat</code>。路径写相对路径时，基准是程序运行时的
+  工作目录，不是源文件所在目录。从 <code>示例代码</code> 目录运行程序，
+  <code>../素材/cube.mp4</code> 才指向素材目录。
+</p>
+
+<p>
+  <code>isOpened()</code> 只在打开动作之后有意义。它返回 <code>true</code>
+  表示后端已经建立了可读的连接；文件存在但编码器缺失、设备被占用，都会让
+  它返回 <code>false</code>。打开成功以后，用 <code>cap &gt;&gt; frame</code>
+  读取下一帧。到达文件末尾、相机断流或解码失败时，<code>frame.empty()</code>
+  为真。判断结束要用这一条件，不能只看当前帧号。
+</p>
+
+<p>
+  打开后可以读取元数据。它们都以 <code>double</code> 返回，单位随属性变化：
+</p>
+
+<table>
+  <thead>
+    <tr><th>属性</th><th>含义</th><th>单位或说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>CAP_PROP_FRAME_WIDTH</code></td><td>帧宽</td><td>像素</td></tr>
+    <tr><td><code>CAP_PROP_FRAME_HEIGHT</code></td><td>帧高</td><td>像素</td></tr>
+    <tr><td><code>CAP_PROP_FPS</code></td><td>标称帧率</td><td>帧/秒</td></tr>
+    <tr><td><code>CAP_PROP_FRAME_COUNT</code></td><td>文件总帧数</td><td>帧；摄像头通常为 0</td></tr>
+  </tbody>
+</table>
+
+<p>
+  属性不被当前后端支持时，<code>get</code> 返回 0，而不是报错。因此看到
+  宽高为 0，先确认 <code>isOpened()</code>，再确认后端是否提供这项属性。
+  文件的总帧数也可能因为容器缺少索引而不准确；逐帧读到 <code>empty</code>
+  才是可靠的结束条件。
+</p>
+
+<h3 id="s5-1-2">元数据与第一帧</h3>
+
+<p>
+  <code>素材/cube.mp4</code> 是课程合成的视频：640×480、30 帧每秒、共 90 帧，
+  画面是一个旋转的线框立方体，位置与颜色固定。下面的程序打开它，打印元数据，
+  读取第一帧，在帧上写一行摘要并保存为 PNG。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.1-video_capture.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    const std::string path = "../素材/cube.mp4";
+    cv::VideoCapture cap(path, cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开 " &lt;&lt; path &lt;&lt; '\n';
+        return 1;
+    }
+
+    const double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    const double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const double frames = cap.get(cv::CAP_PROP_FRAME_COUNT);
+
+    std::cout &lt;&lt; "opened=1" &lt;&lt; '\n';
+    std::cout &lt;&lt; "width=" &lt;&lt; cvRound(width) &lt;&lt; " height=" &lt;&lt; cvRound(height)
+              &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2) &lt;&lt; fps
+              &lt;&lt; " frames=" &lt;&lt; cvRound(frames) &lt;&lt; '\n';
+
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "读取第一帧失败" &lt;&lt; '\n';
+        return 1;
+    }
+    std::cout &lt;&lt; "first frame=" &lt;&lt; frame.cols &lt;&lt; "x" &lt;&lt; frame.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "position=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_FRAMES))
+              &lt;&lt; '\n';
+
+    cv::Mat shown = frame.clone();
+    cv::Mat bar(74, 420, CV_8UC3, cv::Scalar(20, 20, 20));
+    bar.copyTo(shown(cv::Rect(14, 14, bar.cols, bar.rows)));
+    cv::putText(shown,
+                cv::format("%dx%d  %.2f fps  %d frames", frame.cols,
+                           frame.rows, fps, cvRound(frames)),
+                cv::Point(26, 46), cv::FONT_HERSHEY_SIMPLEX, 0.60,
+                cv::Scalar(235, 235, 235), 1, cv::LINE_AA);
+    cv::putText(shown, "first frame", cv::Point(26, 76),
+                cv::FONT_HERSHEY_SIMPLEX, 0.60, cv::Scalar(120, 220, 255), 1,
+                cv::LINE_AA);
+
+    const bool saved = cv::imwrite("../素材/out_first_frame.png", shown);
+    std::cout &lt;&lt; "saved out_first_frame.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.1-video_capture.cpp -o video_info \
+    $(pkg-config --cflags --libs opencv4)
+./video_info</code></pre>
+
+<pre class="out" data-label="真实输出">opened=1
+width=640 height=480 fps=30.00 frames=90
+first frame=640x480
+position=1
+saved out_first_frame.png: yes</pre>
+
+<p>
+  <code>opened=1</code> 来自 <code>isOpened()</code>；第二行来自
+  <code>get</code>：宽 640、高 480、帧率 30.00、总帧数 90；第三行
+  <code>first frame=640x480</code> 来自 <code>frame.size()</code>。
+  第一次 <code>cap &gt;&gt; frame</code> 读出第 1 帧，帧尺寸与元数据一致。
+  <code>position=1</code> 来自 <code>get(CAP_PROP_POS_FRAMES)</code>，
+  表示下一次读取会从第 2 帧开始：帧号从 0 开始数，读完一帧后位置前进一格。
+  最后一行来自 <code>imwrite</code>；保存的 <code>out_first_frame.png</code>
+  是带摘要条的第一帧，不是原视频的副本。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_first_frame.png" alt="cube.mp4 的第一帧，左上角叠加了分辨率、帧率与总帧数" width="640" height="480">
+  <figcaption>
+    第一帧的画面与左上角的摘要条。摘要文字由程序用 <code>putText</code>
+    写入，保存的是叠加后的图像；原始帧没有这几个字。
+  </figcaption>
+</figure>
+
+<p>
+  摘要中的 640×480、30.00 fps 与 90 frames 都来自 <code>get</code> 的返回值，
+  不是手写在程序里的常量。换一段视频，这三个数随之变化；程序不需要改。
+  如果这三个数与播放器显示的不同，以 OpenCV 读回的值为准，再检查后端是否
+  正确识别了文件。
+</p>
+
+<h3 id="s5-1-3">路径与打开失败</h3>
+
+<p>
+  打开失败最常见的原因与路径有关。相对路径以运行程序时的目录为基准；
+  在编辑器里点运行与在终端里先 <code>cd</code> 再运行，工作目录可能不同。
+  路径中的目录分隔符、文件名大小写与扩展名都要与磁盘一致。文件确实存在，
+  但当前 OpenCV 构建缺少对应的解码器时，<code>isOpened()</code> 同样返回
+  <code>false</code>；这类失败不能靠再读一次帧解决。
+</p>
+
+<p>
+  另一个容易忽略的错误，是把文件路径写成整数。整数会被解释为摄像头索引：
+  <code>cv::VideoCapture cap(0)</code> 尝试打开第 0 号摄像头，而不是名为
+  <code>0</code> 的文件。反过来，把摄像头索引写成字符串，则会按文件路径
+  查找。两种写法都能编译，错误只在运行时以 <code>isOpened() == false</code>
+  的形式出现。
+</p>
+
+<p>
+  打开失败后不要再调用 <code>get</code> 推测内容，也不要继续读帧。先打印
+  路径和 <code>isOpened()</code>，确认打开的是预期对象；再检查文件能否被
+  其他播放器解码。读取循环结束时，<code>VideoCapture</code> 的析构函数会
+  释放后端资源；需要提前释放或重新打开时，调用 <code>release()</code>。
+</p>
+
+<div class="eg" id="e5-1">
+  <div class="eg-h">例题 · 默认构造与打开检查</div>
+  <p>
+    题目：默认构造一个 <code>VideoCapture</code>，再打开
+    <code>../素材/cube.mp4</code>。对两个对象都打印
+    <code>isOpened()</code>、宽、高、总帧数与帧率，观察未打开对象上的
+    <code>get</code> 返回什么。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.1-eg-open_check.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+void report(const std::string&amp; title, cv::VideoCapture&amp; cap) {
+    std::cout &lt;&lt; title &lt;&lt; " opened=" &lt;&lt; (cap.isOpened() ? 1 : 0);
+    std::cout &lt;&lt; " width=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    std::cout &lt;&lt; " height=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    std::cout &lt;&lt; " frames=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+    std::cout &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; cap.get(cv::CAP_PROP_FPS) &lt;&lt; '\n';
+}
+
+int main() {
+    cv::VideoCapture closed;
+    report("closed", closed);
+
+    cv::VideoCapture good("../素材/cube.mp4");
+    report("good", good);
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.1-eg-open_check.cpp -o eg_open_check \
+    $(pkg-config --cflags --libs opencv4)
+./eg_open_check</code></pre>
+  <pre class="out" data-label="真实输出">closed opened=0 width=0 height=0 frames=0 fps=0.00
+good opened=1 width=640 height=480 frames=90 fps=30.00</pre>
+  <p>
+    默认构造的对象没有连接任何视频源，<code>isOpened()</code> 为 0，四个
+    属性都读成 0。对未打开的对象调用 <code>get</code> 不会让程序中止，
+    但返回的数字没有意义。第二个对象打开成功，宽高、总帧数与帧率都与文件
+    一致。检查顺序应当固定为：先看 <code>isOpened()</code>，再使用
+    <code>get</code> 的值。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-1</div>
+  <p>
+    打开 <code>../素材/cube.mp4</code>，打印宽、高、帧率与总帧数；把读取位置
+    设到第 44 帧，读一帧，打印 <code>set</code> 的返回值、读取后的帧号、
+    时间戳（毫秒）与画面中心像素的 BGR 值；随后继续读到文件结束，打印从
+    这一帧起一共解码了多少帧。本题不需要标准输入，数据直接写在
+    <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">opened=1 width=640 height=480 fps=30.00 frames=90
+seek=1 pos=45 timestamp_ms=1467 center=(51,53,55)
+decoded=46</pre>
+  <details class="ans" data-run="示例代码/答案/5-1.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>set</code> 把读取位置放到第 44 帧（从 0 开始数），下一次读取得到第 45 帧，读完后 <code>pos=45</code>。时间戳约 1467 毫秒，中心像素取画面几何中心。随后从这一帧继续读到结尾，共解码 46 帧，即第 45 帧至第 90 帧。返回值 1 表示后端接受了定位请求，不表示所有属性都可以修改。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-1.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    std::cout &lt;&lt; "opened=1 width="
+              &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH)) &lt;&lt; " height="
+              &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT)) &lt;&lt; " fps="
+              &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; cap.get(cv::CAP_PROP_FPS) &lt;&lt; " frames="
+              &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT)) &lt;&lt; '\n';
+
+    const bool moved = cap.set(cv::CAP_PROP_POS_FRAMES, 44);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "读取失败" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const cv::Vec3b center =
+        frame.at&lt;cv::Vec3b&gt;(frame.rows / 2, frame.cols / 2);
+    std::cout &lt;&lt; "seek=" &lt;&lt; moved
+              &lt;&lt; " pos=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_FRAMES))
+              &lt;&lt; " timestamp_ms=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_MSEC))
+              &lt;&lt; " center=(" &lt;&lt; static_cast&lt;int&gt;(center[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(center[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(center[2]) &lt;&lt; ")" &lt;&lt; '\n';
+
+    int decoded = 1;
+    while (true) {
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        ++decoded;
+    }
+    std::cout &lt;&lt; "decoded=" &lt;&lt; decoded &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">opened=1 width=640 height=480 fps=30.00 frames=90
+seek=1 pos=45 timestamp_ms=1467 center=(51,53,55)
+decoded=46</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 <code>VideoCapture</code> 打开视频文件，检查
+  <code>isOpened()</code>；读取宽、高、帧率与总帧数；读取第一帧并保存；
+  设置读取位置并解释读取后的帧号；区分文件路径与摄像头索引，判断打开失败
+  来自路径、编码器还是对象类型。
+</p>
+</section>
+
+<section class="lesson" id="l5-2">
+<h2><span class="no">5.2</span>摄像头：打开、参数与采集</h2>
+
+<p>
+  摄像头与视频文件在代码层几乎是同一个对象：用 <code>VideoCapture</code>
+  打开，用 <code>operator&gt;&gt;</code> 取下一帧。区别在打开参数与可用属性。
+  摄像头没有固定的总帧数，分辨率与帧率也由设备支持的模式决定。下面的程序
+  先尝试摄像头，失败时回退到课程视频，两条路径共用后面的读取、镜像与保存。
+</p>
+
+<h3 id="s5-2-1">设备索引与打开</h3>
+
+<p>
+  打开摄像头时，传给构造函数的整数是设备索引。索引 0 表示系统枚举到的第一个
+  摄像头，1 表示第二个，依此类推。索引不是设备型号，也不保证与机身上的编号
+  一致。程序不应当假定某个索引一定存在：
+</p>
+
+<pre data-lang="C++"><code>cv::VideoCapture cap;
+cap.open(0, cv::CAP_V4L2);
+if (!cap.isOpened()) {
+    std::cout &lt;&lt; "摄像头不可用" &lt;&lt; '\n';
+}</code></pre>
+
+<p>
+  Linux 上摄像头通常走 V4L2 后端。也可以写 <code>cv::CAP_ANY</code> 让
+  OpenCV 自选，但部分环境会选中 GStreamer；这些 GStreamer 版本在打开后
+  设置宽高时可能停掉采集管线，<code>isOpened()</code> 仍为真，后续读取却
+  全部为空。因此本课先明确指定 <code>CAP_V4L2</code>，打不开时再退回
+  <code>CAP_ANY</code>。
+</p>
+
+<p>
+  <code>isOpened()</code> 为真只说明设备已经建立连接，不说明第一帧一定能
+  按时到达。设备被其他程序占用、索引指向不存在的设备、驱动没有提供可读格式，
+  都会让打开失败。打开成功但连续读不到帧时，仍要按断流处理，检查
+  <code>frame.empty()</code>，必要时释放后改用视频文件。
+</p>
+
+<p>
+  没有摄像头时，后续程序用 <code>--no-camera</code> 跳过设备，直接读取
+  视频文件；读取、镜像、保存与参数读回的代码与摄像头路径相同。
+  这样没有硬件的读者也能完成帧循环。
+</p>
+
+<h3 id="s5-2-2">请求参数与实际参数</h3>
+
+<p>
+  打开后可以用 <code>set</code> 请求宽、高与帧率。返回值表示后端是否接受了
+  这次请求，不等同于设备已经按该值输出。设备只支持若干离散分辨率时，请求
+  1280×720 可能被改成 640×480；自动曝光或带宽限制也可能把实际帧率压低。
+  因此每次 <code>set</code> 之后都要用 <code>get</code> 读回实际值：
+</p>
+
+<pre data-lang="C++"><code>const bool ok_width = cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+const double actual_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);</code></pre>
+
+<p>
+  文件后端通常不支持修改帧尺寸或帧率，<code>set</code> 返回
+  <code>false</code>，实际值仍是文件本身的值。相机可能接受部分请求，也可能
+  全部拒绝。后续计算像素坐标、视场或标定参数时，必须使用读回的实际宽高，
+  不能使用请求值。打印请求值与实际值并排，是排查这类问题最快的方法。
+</p>
+
+<h3 id="s5-2-3">采集、镜像与保存</h3>
+
+<p>
+  下面的程序请求 1280×720、30 帧每秒，连续读取 5 帧，保留最后一帧，做左右
+  镜像，保存单帧快照与两格对比图。没有摄像头或读取不到帧时，程序自动改用
+  <code>cube.mp4</code>，保证同一段流程可以运行。两条路径默认都会弹出结果
+  窗口；没有图形界面或做自动核对时，加 <code>--no-window</code> 关闭窗口。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.2-camera.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/highgui.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+    bool try_camera = true;
+    bool show_window = true;
+    for (int i = 1; i &lt; argc; ++i) {
+        if (std::strcmp(argv[i], "--no-camera") == 0) {
+            try_camera = false;
+        } else if (std::strcmp(argv[i], "--no-window") == 0) {
+            show_window = false;
+        }
+    }
+
+    cv::VideoCapture cap;
+    std::string mode = "video";
+    if (try_camera) {
+        // Linux 上优先用 V4L2。CAP_ANY 可能选中 GStreamer，部分 GStreamer
+        // 版本在设置宽高时会停掉采集管线，之后所有帧都为空。
+        cap.open(0, cv::CAP_V4L2);
+        if (!cap.isOpened()) {
+            cap.open(0, cv::CAP_ANY);
+        }
+        if (cap.isOpened()) {
+            mode = "camera";
+        } else {
+            std::cout &lt;&lt; "camera open failed, using video" &lt;&lt; '\n';
+        }
+    }
+
+    if (!cap.isOpened()) {
+        mode = "video";
+        cap.open("../素材/cube.mp4", cv::CAP_ANY);
+    }
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const bool set_width = cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    const bool set_height = cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
+    const bool set_fps = cap.set(cv::CAP_PROP_FPS, 30);
+
+    cv::Mat last;
+    int frames = 0;
+    for (int i = 0; i &lt; 5; ++i) {
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        last = frame.clone();
+        ++frames;
+    }
+
+    if (frames == 0 &amp;&amp; mode == "camera") {
+        std::cout &lt;&lt; "camera gave no frame, using video" &lt;&lt; '\n';
+        cap.release();
+        cap.open("../素材/cube.mp4", cv::CAP_ANY);
+        mode = "video";
+        for (int i = 0; i &lt; 5; ++i) {
+            cv::Mat frame;
+            cap &gt;&gt; frame;
+            if (frame.empty()) {
+                break;
+            }
+            last = frame.clone();
+            ++frames;
+        }
+    }
+
+    const double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    const double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    std::cout &lt;&lt; "mode=" &lt;&lt; mode &lt;&lt; '\n';
+    std::cout &lt;&lt; "set width=" &lt;&lt; set_width &lt;&lt; " height=" &lt;&lt; set_height
+              &lt;&lt; " fps=" &lt;&lt; set_fps &lt;&lt; '\n';
+    std::cout &lt;&lt; "requested=1280x720 fps=30.00" &lt;&lt; '\n';
+    std::cout &lt;&lt; "actual=" &lt;&lt; cvRound(width) &lt;&lt; "x" &lt;&lt; cvRound(height)
+              &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2) &lt;&lt; fps &lt;&lt; '\n';
+    std::cout &lt;&lt; "frames=" &lt;&lt; frames &lt;&lt; '\n';
+
+    if (last.empty()) {
+        std::cout &lt;&lt; "没有读到帧" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat mirrored;
+    cv::flip(last, mirrored, 1);
+    const bool saved_jpg = cv::imwrite("../素材/snapshot.jpg", mirrored);
+
+    cv::Mat panel(520, 1280, CV_8UC3, cv::Scalar(255, 255, 255));
+    place(panel, last, 0, 0, 640, 520, "last captured frame");
+    place(panel, mirrored, 640, 0, 640, 520, "mirrored snapshot");
+    const bool saved_png = cv::imwrite("../素材/out_camera.png", panel);
+
+    std::cout &lt;&lt; "saved snapshot.jpg: " &lt;&lt; (saved_jpg ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_camera.png: " &lt;&lt; (saved_png ? "yes" : "no")
+              &lt;&lt; '\n';
+
+    if (show_window) {
+        if (mode == "camera") {
+            cv::imshow("snapshot", mirrored);
+        } else {
+            cv::imshow("camera fallback", panel);
+        }
+        std::cout &lt;&lt; "press any key in the window to close" &lt;&lt; '\n';
+        cv::waitKey(0);
+    }
+    return 0;
+}</code></pre>
+
+<p>
+  没有摄像头时，<code>--no-camera</code> 跳过设备并在窗口中显示回退结果。
+  下面的真实输出额外加了 <code>--no-window</code>，避免程序等待按键：
+</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.2-camera.cpp -o camera \
+    $(pkg-config --cflags --libs opencv4)
+./camera --no-camera --no-window</code></pre>
+
+<pre class="out" data-label="真实输出">mode=video
+set width=0 height=0 fps=0
+requested=1280x720 fps=30.00
+actual=640x480 fps=30.00
+frames=5
+saved snapshot.jpg: yes
+saved out_camera.png: yes</pre>
+
+<p>
+  <code>mode=video</code> 表示当前走的是文件路径；三个 <code>set</code>
+  都返回 0，说明文件后端不接受修改，实际值仍是 640×480、30.00 fps。
+  <code>frames=5</code> 是成功读到的帧数，快照取自第 5 帧。程序把镜像后的
+  最后一帧写到 <code>素材/snapshot.jpg</code>，把原帧与镜像帧拼成
+  <code>out_camera.png</code>。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_camera.png" alt="摄像头示例的回退结果：最后一帧与左右镜像后的快照" width="1280" height="520">
+  <figcaption>
+    左格是回退视频的最后一帧，右格是左右镜像后的结果。两张图来自
+    <code>--no-camera</code> 的回退路径，用于核对镜像与保存；它们不是摄像头
+    拍摄的画面。
+  </figcaption>
+</figure>
+
+<p>
+  有摄像头时直接运行 <code>./camera</code>，不要加 <code>--no-camera</code>。
+  程序会打印 <code>mode=camera</code>，随后三行是设备接受请求的情况，
+  <code>actual</code> 的宽高与帧率随设备变化，不能照抄下面的回退值。读取
+  5 帧后，程序弹出标题为 <code>snapshot</code> 的窗口，显示镜像后的画面，
+  按任意键关闭；关闭前已经把同一帧保存为 <code>素材/snapshot.jpg</code>。
+  若只想核对输出、不打开窗口，加 <code>--no-window</code>。
+</p>
+
+<div class="aside tip">
+  <b>摄像头程序由读者运行，截图不要求提交</b>
+  <p>
+    打开摄像头的这一份需要读者亲自运行，前提是自己的机器上有摄像头，
+    教材只给出回退路径的真实输出。程序会自动保存 <code>snapshot.jpg</code>，不需要额外按键，
+    也没有必须提交的截图。若确实需要保留窗口画面，可以在窗口出现后用系统
+    截图工具截取；更直接的办法是保留程序写出的
+    <code>snapshot.jpg</code>，摄像头路径的窗口显示的就是同一帧镜像结果。
+  </p>
+</div>
+
+<p>
+  两条路径默认都会弹出窗口并在关闭前等待。摄像头路径的窗口标题为
+  <code>snapshot</code>，显示镜像后的画面；文件回退路径的窗口标题为
+  <code>camera fallback</code>，显示原帧与镜像帧的两格对比图。加
+  <code>--no-window</code> 后两条路径都不建窗口，读完 5 帧就结束。两种路径
+  都会调用 <code>release</code> 或由析构函数释放设备。窗口标题只用于识别
+  这一份程序，不是文件路径的一部分。
+</p>
+
+<h3 id="s5-2-4">失败处理与释放</h3>
+
+<p>
+  摄像头失败通常有四类：设备被其他程序占用，索引指向不存在的设备，请求的
+  分辨率或像素格式不受支持，以及当前用户没有读取设备的权限。前三类可以在
+  程序内检测：打开后检查 <code>isOpened()</code>，设置后读回实际值，读取后
+  检查 <code>empty()</code>。权限问题会表现为打开失败，本课不通过修改系统
+  配置解决，直接改用视频文件完成同一段流程。
+</p>
+
+<p>
+  没有摄像头而直接运行 <code>./camera</code> 时，程序会先尝试设备，失败后
+  回退到视频。某些后端会把设备错误写到标准错误，终端里因此出现额外的警告；
+  程序自己的输出仍在标准输出，以 <code>mode=video</code> 开头的那几行为准。
+  回退不是异常处理的替代品：真实项目应当在界面上说明当前使用的是相机还是
+  文件，避免把回退画面误当成实时画面。
+</p>
+
+<p>
+  需要切换设备或重新打开文件时，先调用 <code>release()</code>。同一对象再次
+  <code>open</code> 也可以，但先释放更容易确认上一路资源已经归还。读取循环
+  结束后不需要手动释放局部对象，析构函数会处理。
+</p>
+
+<div class="eg" id="e5-2">
+  <div class="eg-h">例题 · 请求之后读回</div>
+  <p>
+    题目：用视频文件模拟“请求参数”的流程。打开
+    <code>../素材/cube.mp4</code>，请求 1280×720、30 帧每秒，打印三个
+    <code>set</code> 的返回值、请求值与读回的实际值；读取第一帧，左右镜像，
+    保存为 <code>out_eg_camera.png</code>。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.2-eg-readback.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    std::cout &lt;&lt; "opened=" &lt;&lt; (cap.isOpened() ? 1 : 0) &lt;&lt; '\n';
+    if (!cap.isOpened()) {
+        return 1;
+    }
+
+    const bool set_width = cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    const bool set_height = cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
+    const bool set_fps = cap.set(cv::CAP_PROP_FPS, 30);
+
+    std::cout &lt;&lt; "set width=" &lt;&lt; set_width &lt;&lt; " height=" &lt;&lt; set_height
+              &lt;&lt; " fps=" &lt;&lt; set_fps &lt;&lt; '\n';
+    std::cout &lt;&lt; "requested=1280x720 fps=30.00" &lt;&lt; '\n';
+    std::cout &lt;&lt; "actual=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH))
+              &lt;&lt; "x" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT))
+              &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; cap.get(cv::CAP_PROP_FPS) &lt;&lt; '\n';
+
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "没有读到帧" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat mirrored;
+    cv::flip(frame, mirrored, 1);
+    const bool saved = cv::imwrite("out_eg_camera.png", mirrored);
+    std::cout &lt;&lt; "saved out_eg_camera.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.2-eg-readback.cpp -o eg_readback \
+    $(pkg-config --cflags --libs opencv4)
+./eg_readback</code></pre>
+  <pre class="out" data-label="真实输出">opened=1
+set width=0 height=0 fps=0
+requested=1280x720 fps=30.00
+actual=640x480 fps=30.00
+saved out_eg_camera.png: yes</pre>
+  <p>
+    文件后端没有改变帧尺寸的能力，三个 <code>set</code> 都返回 0；实际值仍是
+    640×480、30.00 fps。程序没有把请求值当成实际值，而是重新
+    <code>get</code> 一次。换成一台支持 1280×720 的摄像头时，
+    <code>set</code> 可能返回 1，<code>actual</code> 也可能仍是 1280×720，
+    具体结果由设备决定。读回这一步在两种情况下都不能省。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-2</div>
+  <p>
+    用视频文件模拟摄像头参数回读：打开 <code>../素材/cube.mp4</code>，请求
+    320×240、15 帧每秒，打印三个 <code>set</code> 的结果与读回的实际宽高、
+    帧率；把读取位置设到第 20 帧，读一帧并左右镜像，打印读取后的帧号与尺寸，
+    以及原图 <code>(100,100)</code> 和镜像图 <code>(100,539)</code> 的 BGR
+    值；把镜像图保存为 <code>out_ex_5_2.png</code>。本题不需要标准输入，
+    数据直接写在 <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">set=0/0/0 actual=640x480 fps=30.00
+pos=21 size=640x480
+original(100,100)=(33,35,37) mirrored(100,539)=(33,35,37)
+saved out_ex_5_2.png: yes</pre>
+  <details class="ans" data-run="示例代码/答案/5-2.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        文件后端不接受尺寸与帧率修改，三个 <code>set</code> 都是 0，实际值仍是 640×480、30.00 fps。定位到第 20 帧后读取，得到第 21 帧。<code>flip(..., 1)</code> 做左右镜像，镜像图中横坐标 <code>639-x</code> 对应原图的 <code>x</code>，所以原图 <code>(100,100)</code> 与镜像图 <code>(100,539)</code> 的像素相同。保存的是镜像图。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-2.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const bool set_width = cap.set(cv::CAP_PROP_FRAME_WIDTH, 320);
+    const bool set_height = cap.set(cv::CAP_PROP_FRAME_HEIGHT, 240);
+    const bool set_fps = cap.set(cv::CAP_PROP_FPS, 15);
+    std::cout &lt;&lt; "set=" &lt;&lt; set_width &lt;&lt; "/" &lt;&lt; set_height &lt;&lt; "/" &lt;&lt; set_fps
+              &lt;&lt; " actual=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH))
+              &lt;&lt; "x" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT))
+              &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; cap.get(cv::CAP_PROP_FPS) &lt;&lt; '\n';
+
+    cap.set(cv::CAP_PROP_POS_FRAMES, 20);
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        std::cout &lt;&lt; "读取失败" &lt;&lt; '\n';
+        return 1;
+    }
+
+    cv::Mat mirrored;
+    cv::flip(frame, mirrored, 1);
+    const cv::Vec3b left = frame.at&lt;cv::Vec3b&gt;(100, 100);
+    const cv::Vec3b right = mirrored.at&lt;cv::Vec3b&gt;(100, 539);
+    std::cout &lt;&lt; "pos=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_FRAMES))
+              &lt;&lt; " size=" &lt;&lt; frame.cols &lt;&lt; "x" &lt;&lt; frame.rows &lt;&lt; '\n';
+    std::cout &lt;&lt; "original(100,100)=(" &lt;&lt; static_cast&lt;int&gt;(left[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(left[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(left[2]) &lt;&lt; ")"
+              &lt;&lt; " mirrored(100,539)=(" &lt;&lt; static_cast&lt;int&gt;(right[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(right[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(right[2]) &lt;&lt; ")" &lt;&lt; '\n';
+
+    const bool saved = cv::imwrite("out_ex_5_2.png", mirrored);
+    std::cout &lt;&lt; "saved out_ex_5_2.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">set=0/0/0 actual=640x480 fps=30.00
+pos=21 size=640x480
+original(100,100)=(33,35,37) mirrored(100,539)=(33,35,37)
+saved out_ex_5_2.png: yes</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用设备索引打开摄像头，检查 <code>isOpened()</code>；
+  请求宽、高与帧率并读回实际值；读取若干帧，左右镜像并保存快照；在没有
+  摄像头时回退到视频文件；识别设备占用、索引错误、分辨率不支持与权限不足，
+  并在切换设备前释放资源。
+</p>
+</section>
+
+<section class="lesson" id="l5-3">
+<h2><span class="no">5.3</span>帧循环、按键与帧率</h2>
+
+<p>
+  视频处理的主体是一个循环：取一帧，处理一帧，再决定是否继续。循环必须有
+  明确的结束条件，否则文件读完以后程序会停在原地，或者窗口关不掉。这一课
+  把读取、显示、按键、暂停与帧率计算放进同一个结构，并用
+  <code>--no-window</code> 提供一条不依赖窗口的运行路径。
+</p>
+
+<h3 id="s5-3-1">帧循环与退出条件</h3>
+
+<p>
+  最基本的循环只依赖 <code>empty()</code>：
+</p>
+
+<pre data-lang="C++"><code>while (true) {
+    cv::Mat frame;
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+        break;
+    }
+    // 处理 frame
+}</code></pre>
+
+<p>
+  文件读到末尾时，<code>operator&gt;&gt;</code> 交出的帧为空；相机断电或断流时
+  也一样。这个条件同时覆盖正常结束与读取失败，适合作为循环的底线。需要限制
+  处理数量时，再叠加帧数上限，例如只处理前 100 帧。不要用
+  <code>CAP_PROP_FRAME_COUNT</code> 作为唯一条件：摄像头通常返回 0，部分容器
+  的总帧数也不准确。
+</p>
+
+<p>
+  退出条件还应当包含用户输入。只靠 <code>empty()</code> 的窗口程序，在实时
+  摄像头下永远不会自己结束，用户必须能按键退出。按键读取与帧读取在同一个
+  循环里完成，顺序通常是先取帧，再显示，再读键，最后决定是否 break。
+</p>
+
+<h3 id="s5-3-2">按键、暂停与时间戳</h3>
+
+<p>
+  <code>cv::waitKey(delay)</code> 等待键盘事件，返回按键的编码；在等待期间
+  它也让 GUI 有机会刷新窗口。<code>delay</code> 的单位是毫秒：给 1 表示最多
+  等 1 毫秒，适合连续播放；给 0 表示一直等到有按键。没有按键时返回 -1。
+  常见按键值是 ESC 的 27、空格 32、字母 <code>q</code> 的 113。
+</p>
+
+<p>
+  下面的程序播放 <code>cube.mp4</code>。有窗口时按视频帧率控制显示间隔，
+  按空格切换暂停，按 <code>q</code> 或 ESC 退出；<code>--no-window</code>
+  跳过显示与按键，只跑解码与计时，用于自动核对。程序在第 1、30、60、90 帧
+  打印时间戳与帧号，最后打印总耗时与平均帧率。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.3-frame_loop.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;cstring&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/highgui.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main(int argc, char** argv) {
+    bool show_window = true;
+    for (int i = 1; i &lt; argc; ++i) {
+        if (std::strcmp(argv[i], "--no-window") == 0) {
+            show_window = false;
+        }
+    }
+
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const int total = cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+    std::cout &lt;&lt; "opened=1 total=" &lt;&lt; total &lt;&lt; " fps=" &lt;&lt; std::fixed
+              &lt;&lt; std::setprecision(2) &lt;&lt; fps &lt;&lt; '\n';
+
+    const int delay = std::max(1, cvRound(1000.0 / fps));
+    const int64 start = cv::getTickCount();
+    int processed = 0;
+    bool paused = false;
+
+    while (true) {
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        ++processed;
+
+        const int position = cvRound(cap.get(cv::CAP_PROP_POS_FRAMES));
+        const int timestamp = cvRound(cap.get(cv::CAP_PROP_POS_MSEC));
+        if (position == 1 || position % 30 == 0) {
+            std::cout &lt;&lt; "sample frame=" &lt;&lt; position &lt;&lt; " pos=" &lt;&lt; position
+                      &lt;&lt; " timestamp_ms=" &lt;&lt; timestamp &lt;&lt; '\n';
+        }
+
+        if (show_window) {
+            cv::imshow("frame loop", frame);
+            const int key = cv::waitKey(paused ? 0 : delay);
+            if (key == 27 || key == 'q') {
+                break;
+            }
+            if (key == ' ') {
+                paused = !paused;
+            }
+        }
+    }
+
+    const int64 end = cv::getTickCount();
+    const double elapsed_ms =
+        1000.0 * static_cast&lt;double&gt;(end - start) / cv::getTickFrequency();
+    const double average_fps =
+        elapsed_ms &gt; 0.0 ? processed * 1000.0 / elapsed_ms : 0.0;
+
+    std::cout &lt;&lt; "processed=" &lt;&lt; processed &lt;&lt; " elapsed_ms=" &lt;&lt; std::fixed
+              &lt;&lt; std::setprecision(1) &lt;&lt; elapsed_ms
+              &lt;&lt; " avg_fps=" &lt;&lt; std::setprecision(2) &lt;&lt; average_fps &lt;&lt; '\n';
+    if (show_window) {
+        cv::destroyAllWindows();
+    }
+    return 0;
+}</code></pre>
+
+<p>
+  先编译。播放窗口需要图形界面，由读者在自己的桌面上运行；自动核对使用
+  <code>--no-window</code>：
+</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.3-frame_loop.cpp -o frame_loop \
+    $(pkg-config --cflags --libs opencv4)
+./frame_loop --no-window</code></pre>
+
+<pre class="out" data-label="真实输出">opened=1 total=90 fps=30.00
+sample frame=1 pos=1 timestamp_ms=0
+sample frame=30 pos=30 timestamp_ms=967
+sample frame=60 pos=60 timestamp_ms=1967
+sample frame=90 pos=90 timestamp_ms=2967
+processed=90 elapsed_ms=25.7 avg_fps=3501.69</pre>
+
+<p>
+  四个 <code>sample</code> 行对应第 1、30、60、90 帧。第一帧的时间戳是 0，
+  之后每帧增加约 33 毫秒：30 帧处为 967 毫秒，60 帧处为 1967 毫秒，
+  90 帧处为 2967 毫秒。时间戳由后端按文件帧率给出，不是程序自己按帧号乘
+  出来的。读取一帧后，<code>pos</code> 等于下一帧的 0 基索引：读完第 1 帧后
+  <code>pos=1</code>，下一次读取的是第 2 帧。
+</p>
+
+<p>
+  <code>processed=90</code> 表示 90 帧全部读到。最后一行的
+  <code>elapsed_ms</code> 与 <code>avg_fps</code> 每次运行都会变化，它们
+  取决于机器速度、当时负载与是否显示窗口；上面的数字只是一次运行的结果。
+  不带 <code>--no-window</code> 时，每帧还要等待约 33 毫秒用于显示，
+  平均帧率会接近 30，而不是这里的几千。两种数字都真实，含义不同：前者是
+  解码与处理的吞吐，后者是受显示节奏限制的播放帧率。
+</p>
+
+<div class="aside tip">
+  <b>窗口模式的操作</b>
+  <p>
+    直接运行 <code>./frame_loop</code> 会打开播放窗口。按空格暂停，再按一次
+    继续；暂停时程序停在 <code>waitKey(0)</code>，不会继续解码。按
+    <code>q</code> 或 ESC 立即退出。窗口关闭后，程序仍会打印总耗时与平均
+    帧率。没有图形界面时使用 <code>--no-window</code>，不要反复尝试打开窗口。
+  </p>
+</div>
+
+<p>
+  <code>waitKey</code> 的返回值要与字符常量比较，不能与字符串比较。窗口没有
+  获得焦点时，按键可能收不到；这是窗口系统的焦点问题，不是循环写错。若程序
+  看起来“卡住”，先确认是否在 <code>waitKey(0)</code> 上等待按键。
+</p>
+
+<h3 id="s5-3-3">帧率计算与跳帧</h3>
+
+<p>
+  <code>cv::getTickCount()</code> 返回一个单调递增的计数值，
+  <code>cv::getTickFrequency()</code> 返回每秒的计数次数。两者相除得到秒数。
+  这种计时不依赖系统墙上时钟，适合测量一段代码的耗时。平均帧率用处理的帧数
+  除以耗时；它统计的是这段循环的吞吐，不是视频文件的标称帧率。
+</p>
+
+<p>
+  处理速度跟不上输入时，实时相机会在队列里堆积旧帧，导致画面延迟越来越大。
+  一种做法是主动跳帧：只处理需要的帧，或者每次取最新一帧。文件处理也可以
+  跳帧，用 <code>cap.set(cv::CAP_PROP_POS_FRAMES, n)</code> 把下一帧的帧号
+  定位到 <code>n</code>，再读取。定位的单位是帧号，不是毫秒；帧号从 0 开始，
+  读取得到的是帧号 <code>n</code> 的那一帧，也就是从 1 开始数的第
+  <code>n+1</code> 帧，读取后位置变为 <code>n+1</code>。
+</p>
+
+<p>
+  跳帧会改变时间间隔，但不会改变每帧的时间戳。需要真实时间时，仍以
+  <code>CAP_PROP_POS_MSEC</code> 为准；需要固定处理节奏时，用帧号与标称帧率
+  计算即可，但要说明这是标称时间。两种时间不要混在同一个变量里。
+</p>
+
+<div class="eg" id="e5-3">
+  <div class="eg-h">例题 · 按间隔取帧</div>
+  <p>
+    题目：打开 <code>../素材/cube.mp4</code>，依次定位到第 0、15、30、45、
+    60、75 帧，每定位一次读一帧，打印目标帧号、读取后的帧号、时间戳与
+    画面的平均 BGR 值。观察定位与读取各让帧号前进多少。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.3-eg-skip_frames.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const std::vector&lt;int&gt; targets = {0, 15, 30, 45, 60, 75};
+    for (const int target : targets) {
+        const bool moved = cap.set(cv::CAP_PROP_POS_FRAMES, target);
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            std::cout &lt;&lt; "seek=" &lt;&lt; target &lt;&lt; " empty=1" &lt;&lt; '\n';
+            continue;
+        }
+        const cv::Scalar mean = cv::mean(frame);
+        std::cout &lt;&lt; "seek=" &lt;&lt; target
+                  &lt;&lt; " pos=" &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_FRAMES))
+                  &lt;&lt; " timestamp_ms="
+                  &lt;&lt; cvRound(cap.get(cv::CAP_PROP_POS_MSEC))
+                  &lt;&lt; " mean_bgr=(" &lt;&lt; cvRound(mean[0]) &lt;&lt; ","
+                  &lt;&lt; cvRound(mean[1]) &lt;&lt; "," &lt;&lt; cvRound(mean[2]) &lt;&lt; ")"
+                  &lt;&lt; " moved=" &lt;&lt; moved &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.3-eg-skip_frames.cpp -o eg_skip_frames \
+    $(pkg-config --cflags --libs opencv4)
+./eg_skip_frames</code></pre>
+  <pre class="out" data-label="真实输出">seek=0 pos=1 timestamp_ms=0 mean_bgr=(51,56,62) moved=1
+seek=15 pos=16 timestamp_ms=500 mean_bgr=(51,57,62) moved=1
+seek=30 pos=31 timestamp_ms=1000 mean_bgr=(51,56,62) moved=1
+seek=45 pos=46 timestamp_ms=1500 mean_bgr=(51,56,62) moved=1
+seek=60 pos=61 timestamp_ms=2000 mean_bgr=(51,57,62) moved=1
+seek=75 pos=76 timestamp_ms=2500 mean_bgr=(51,57,62) moved=1</pre>
+  <p>
+    <code>set</code> 的参数是目标帧号，读取后打印的 <code>pos</code> 是目标
+    加 1：例如目标 15 读到第 16 帧位置。时间戳随目标帧号线性增加，每 15 帧
+    增加约 500 毫秒。平均 BGR 值在 51–62 之间小幅变化，说明六帧并非同一张
+    画面；若六行完全相同，先检查定位是否被后端忽略。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-3</div>
+  <p>
+    打开 <code>../素材/cube.mp4</code>，用帧循环读完全部帧，统计总帧数、最后
+    一帧的时间戳、B 通道平均值最高的帧号与该帧的 B 通道平均值。平均值取
+    <code>cv::mean(frame)[0]</code>，保留一位小数。本题不需要标准输入，
+    数据直接写在 <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">frames=90 first_ms=0 last_ms=2967 brightest=7 max_mean=51.4</pre>
+  <details class="ans" data-run="示例代码/答案/5-3.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        循环读到 <code>empty</code> 为止，共 90 帧；最后一帧时间戳是 2967 毫秒。逐帧计算 <code>cv::mean(frame)[0]</code>，第 7 帧的平均值最高，为 51.4。这里取的是 B 通道平均值；若要灰度平均值，需要先转换到灰度。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-3.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    int frames = 0;
+    int brightest = 0;
+    double max_mean = -1.0;
+    int last_ms = 0;
+
+    while (true) {
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        ++frames;
+        last_ms = cvRound(cap.get(cv::CAP_PROP_POS_MSEC));
+        const double mean = cv::mean(frame)[0];
+        if (mean &gt; max_mean) {
+            max_mean = mean;
+            brightest = frames;
+        }
+    }
+
+    std::cout &lt;&lt; "frames=" &lt;&lt; frames &lt;&lt; " first_ms=0 last_ms=" &lt;&lt; last_ms
+              &lt;&lt; " brightest=" &lt;&lt; brightest &lt;&lt; " max_mean="
+              &lt;&lt; std::fixed &lt;&lt; std::setprecision(1) &lt;&lt; max_mean &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">frames=90 first_ms=0 last_ms=2967 brightest=7 max_mean=51.4</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>写一个以 <code>empty()</code> 和按键为退出条件的
+  帧循环；用 <code>waitKey</code> 处理暂停与退出；读取并解释帧时间戳；
+  用 <code>getTickCount</code> 与 <code>getTickFrequency</code> 计算平均
+  帧率；按帧号定位并跳帧，说明定位后的帧号变化。
+</p>
+</section>
+
+<section class="lesson" id="l5-4">
+<h2><span class="no">5.4</span>VideoWriter：保存处理结果</h2>
+
+<p>
+  处理完的帧需要按时间顺序存成视频，才能回放或交给下一段程序。
+  <code>cv::VideoWriter</code> 接收一帧帧 <code>Mat</code>，按指定的编码器、
+  帧率与尺寸写成文件。写出成功不等于文件可读：编码器是否可用、尺寸是否与帧
+  一致、是否调用了 <code>release</code>，都会影响最终文件。这一课写出一段
+  带帧号的视频，再用 <code>VideoCapture</code> 读回核对。
+</p>
+
+<h3 id="s5-4-1">FourCC、尺寸与帧率</h3>
+
+<p>
+  FourCC 是四字符编码标识，告诉写入器使用哪一种压缩格式。构造
+  <code>VideoWriter</code> 时需要四样信息：输出路径、FourCC、帧率与帧尺寸。
+  路径的扩展名决定容器，FourCC 决定编码器；两者要匹配，例如
+  <code>mp4v</code> 写 <code>.mp4</code>，<code>MJPG</code> 写
+  <code>.avi</code>。常用组合如下，能否使用取决于所用机器上 OpenCV 的构建：
+</p>
+
+<table>
+  <thead>
+    <tr><th>FourCC</th><th>写法</th><th>常见容器</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>MJPG</td><td><code>fourcc('M','J','P','G')</code></td><td>.avi</td><td>每帧独立压缩，兼容性好，文件较大</td></tr>
+    <tr><td>mp4v</td><td><code>fourcc('m','p','4','v')</code></td><td>.mp4</td><td>MPEG-4 视频，文件较小</td></tr>
+    <tr><td>XVID</td><td><code>fourcc('X','V','I','D')</code></td><td>.avi</td><td>依赖机器上的编码器，可能打不开</td></tr>
+  </tbody>
+</table>
+
+<p>
+  帧尺寸必须与后续 <code>write</code> 的每一帧完全相同。写入器不会自动缩放；
+  尺寸不一致时，有的后端会拒绝写入，有的会写出损坏文件。帧率是写进文件头的
+  标称值，只影响回放速度，不控制程序实际写得多快。用 15 帧每秒写入 90 帧，
+  文件播放约 6 秒，与程序运行耗时无关。
+</p>
+
+<p>
+  构造完成后先检查 <code>isOpened()</code>。返回 <code>false</code> 时，
+  常见原因是 FourCC 在当前机器上不可用、扩展名与容器不匹配，或者输出目录不可写。
+  这时不要继续调用 <code>write</code>，否则可能得到空文件而没有明确报错。
+</p>
+
+<h3 id="s5-4-2">写入、释放与回读</h3>
+
+<p>
+  下面的程序读取 <code>cube.mp4</code>，在每一帧左上角写帧号，按原尺寸、
+  原帧率写成 <code>out_cube.mp4</code>。写完后释放写入器，再用
+  <code>VideoCapture</code> 打开输出文件，打印回读的元数据。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.4-video_writer.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开输入视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const int width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    const double fps = cap.get(cv::CAP_PROP_FPS);
+    const int total = cvRound(cap.get(cv::CAP_PROP_FRAME_COUNT));
+    std::cout &lt;&lt; "opened=1 input=" &lt;&lt; width &lt;&lt; "x" &lt;&lt; height &lt;&lt; " fps="
+              &lt;&lt; std::fixed &lt;&lt; std::setprecision(2) &lt;&lt; fps
+              &lt;&lt; " frames=" &lt;&lt; total &lt;&lt; '\n';
+
+    const std::string path = "../素材/out_cube.mp4";
+    cv::VideoWriter writer(path,
+                           cv::VideoWriter::fourcc('m', 'p', '4', 'v'), fps,
+                           cv::Size(width, height));
+    std::cout &lt;&lt; "writer opened=" &lt;&lt; (writer.isOpened() ? 1 : 0) &lt;&lt; '\n';
+    if (!writer.isOpened()) {
+        std::cout &lt;&lt; "无法创建输出视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    int written = 0;
+    while (true) {
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        ++written;
+
+        cv::Mat shown = frame.clone();
+        const std::string label = "frame " + std::to_string(written);
+        cv::rectangle(shown, cv::Rect(0, 0, 180, 40), cv::Scalar(20, 20, 20),
+                      cv::FILLED);
+        cv::putText(shown, label, cv::Point(12, 28),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.75, cv::Scalar(240, 240, 240),
+                    2, cv::LINE_AA);
+        writer.write(shown);
+    }
+    writer.release();
+    std::cout &lt;&lt; "written=" &lt;&lt; written &lt;&lt; '\n';
+
+    cv::VideoCapture reader(path, cv::CAP_ANY);
+    if (!reader.isOpened()) {
+        std::cout &lt;&lt; "回读失败" &lt;&lt; '\n';
+        return 1;
+    }
+    std::cout &lt;&lt; "readback opened=1 size="
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_WIDTH)) &lt;&lt; "x"
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_HEIGHT))
+              &lt;&lt; " fps=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; reader.get(cv::CAP_PROP_FPS)
+              &lt;&lt; " frames=" &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_COUNT))
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "saved out_cube.mp4: yes" &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.4-video_writer.cpp -o video_writer \
+    $(pkg-config --cflags --libs opencv4)
+./video_writer</code></pre>
+
+<pre class="out" data-label="真实输出">opened=1 input=640x480 fps=30.00 frames=90
+writer opened=1
+written=90
+readback opened=1 size=640x480 fps=30.00 frames=90
+saved out_cube.mp4: yes</pre>
+
+<p>
+  输入与输出都是 640×480、30.00 fps；写入了 90 帧，回读也是 90 帧。
+  <code>writer opened=1</code> 说明测试机编码器接受了 <code>mp4v</code> 与
+  <code>.mp4</code> 的组合。<code>writer.release()</code> 不能省略：它把
+  缓冲区里的帧与文件尾写完，并关闭文件。程序在释放之后才打开回读，避免读写
+  同一个文件时状态冲突。
+</p>
+
+<p>
+  回读的帧数是最直接的完整性检查。只检查文件是否存在不够：文件可能只写入了
+  几帧，或者因为编码器不匹配而无法解码。进一步可以读取第一帧，确认尺寸与内容；
+  本程序的输出可以直接用视频播放器打开，左上角应当依次显示
+  <code>frame 1</code> 到 <code>frame 90</code>。
+</p>
+
+<h3 id="s5-4-3">录像与常见错误</h3>
+
+<p>
+  摄像头录像使用同一套写入流程：先读一帧，取得实际宽高，用这组尺寸构造
+  <code>VideoWriter</code>，之后每读一帧就写一帧。不要在第一次读取之前用
+  请求值构造写入器：相机可能给出不同的实际尺寸，写出的第一帧就会尺寸不符。
+  停止录像时先退出读取循环，再 <code>release</code> 写入器。
+</p>
+
+<p>
+  常见错误有四种。第一，写入尺寸与帧尺寸不一致；第二，帧率写成 0 或负数，
+  文件头无效；第三，FourCC 在当前机器上不可用，<code>isOpened()</code> 已经返回
+  <code>false</code>，程序仍继续写；第四，程序异常退出或提前 <code>return</code>，
+  没有调用 <code>release</code>，文件尾缺失。前三种可以在写循环之前检查，
+  第四种要把释放放进所有退出路径。
+</p>
+
+<div class="eg" id="e5-4">
+  <div class="eg-h">例题 · 两种 FourCC</div>
+  <p>
+    题目：生成 6 帧 96×64 的测试画面，分别用 <code>MJPG</code> 写入
+    <code>out_eg_mjpg.avi</code>，用 <code>mp4v</code> 写入
+    <code>out_eg_mp4v.mp4</code>，帧率都是 20。每次写完立即回读，打印写入器
+    是否打开、回读是否成功、尺寸与帧数。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.4-eg-fourcc.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+namespace {
+
+void writeVideo(const std::string&amp; path, int fourcc) {
+    cv::VideoWriter writer(path, fourcc, 20.0, cv::Size(96, 64));
+    std::cout &lt;&lt; path &lt;&lt; " writer=" &lt;&lt; (writer.isOpened() ? 1 : 0);
+    if (!writer.isOpened()) {
+        std::cout &lt;&lt; '\n';
+        return;
+    }
+
+    for (int i = 0; i &lt; 6; ++i) {
+        cv::Mat frame(64, 96, CV_8UC3, cv::Scalar(30, 30, 30));
+        cv::rectangle(frame, cv::Rect(4 + i * 12, 20, 24, 24),
+                      cv::Scalar(40, 200, 240), cv::FILLED);
+        writer.write(frame);
+    }
+    writer.release();
+
+    cv::VideoCapture reader(path, cv::CAP_ANY);
+    std::cout &lt;&lt; " read=" &lt;&lt; (reader.isOpened() ? 1 : 0)
+              &lt;&lt; " size=" &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_WIDTH))
+              &lt;&lt; "x" &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_HEIGHT))
+              &lt;&lt; " frames="
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_COUNT)) &lt;&lt; '\n';
+}
+
+}  // namespace
+
+int main() {
+    writeVideo("out_eg_mjpg.avi",
+               cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+    writeVideo("out_eg_mp4v.mp4",
+               cv::VideoWriter::fourcc('m', 'p', '4', 'v'));
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.4-eg-fourcc.cpp -o eg_fourcc \
+    $(pkg-config --cflags --libs opencv4)
+./eg_fourcc</code></pre>
+  <pre class="out" data-label="真实输出">out_eg_mjpg.avi writer=1 read=1 size=96x64 frames=6
+out_eg_mp4v.mp4 writer=1 read=1 size=96x64 frames=6</pre>
+  <p>
+    两种组合在测试机上均可用，尺寸与帧数都正确。文件大小会不同：
+    <code>MJPG</code> 对每帧独立压缩，这个测试画面的 AVI 约 8.7 KB；
+    <code>mp4v</code> 的 MP4 约 1.6 KB。大小不是判据，回读帧数与尺寸才是。
+    换一台机器时，如果某一行的 <code>writer=0</code>，说明该编码器不可用，
+    应换另一组组合，而不是继续写。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-4</div>
+  <p>
+    读取 <code>../素材/cube.mp4</code> 的前 20 帧，在每帧上画一条从左上角到
+    右下角的黄色对角线，用 <code>MJPG</code>、15 帧每秒写成
+    <code>out_ex_5_4.avi</code>；释放写入器后回读，打印写入帧数、回读帧数、
+    尺寸与帧率。本题不需要标准输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">written=20 readback=20 size=640x480 fps=15.00</pre>
+  <details class="ans" data-run="示例代码/答案/5-4.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        程序写入前 20 帧，使用 MJPG 与 AVI 容器，帧率 15。释放写入器后回读得到 20 帧、640×480、15.00 fps。写入数与回读数一致，说明文件头与文件尾完整；若提前返回而没有 <code>release</code>，回读帧数可能少。对角线用于确认写入的是处理后的帧。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-4.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/videoio.hpp&gt;
+
+int main() {
+    cv::VideoCapture cap("../素材/cube.mp4", cv::CAP_ANY);
+    if (!cap.isOpened()) {
+        std::cout &lt;&lt; "无法打开输入视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    const int width = cvRound(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    const int height = cvRound(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    cv::VideoWriter writer("out_ex_5_4.avi",
+                           cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 15.0,
+                           cv::Size(width, height));
+    if (!writer.isOpened()) {
+        std::cout &lt;&lt; "无法创建输出视频" &lt;&lt; '\n';
+        return 1;
+    }
+
+    int written = 0;
+    while (written &lt; 20) {
+        cv::Mat frame;
+        cap &gt;&gt; frame;
+        if (frame.empty()) {
+            break;
+        }
+        cv::line(frame, cv::Point(0, 0), cv::Point(width - 1, height - 1),
+                 cv::Scalar(0, 220, 255), 2, cv::LINE_AA);
+        writer.write(frame);
+        ++written;
+    }
+    writer.release();
+
+    cv::VideoCapture reader("out_ex_5_4.avi", cv::CAP_ANY);
+    if (!reader.isOpened()) {
+        std::cout &lt;&lt; "回读失败" &lt;&lt; '\n';
+        return 1;
+    }
+    std::cout &lt;&lt; "written=" &lt;&lt; written &lt;&lt; " readback="
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_COUNT)) &lt;&lt; " size="
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_WIDTH)) &lt;&lt; "x"
+              &lt;&lt; cvRound(reader.get(cv::CAP_PROP_FRAME_HEIGHT)) &lt;&lt; " fps="
+              &lt;&lt; std::fixed &lt;&lt; std::setprecision(2)
+              &lt;&lt; reader.get(cv::CAP_PROP_FPS) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">written=20 readback=20 size=640x480 fps=15.00</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>用 FourCC、帧率与尺寸构造
+  <code>VideoWriter</code>，检查 <code>isOpened()</code>；把处理后的帧逐帧
+  写入视频并释放；用 <code>VideoCapture</code> 回读帧数与元数据；解释尺寸
+  不一致、帧率无效、编码器不可用与忘记释放分别会造成什么结果。
+</p>
+</section>
+
+<section class="lesson" id="l5-5">
+<h2><span class="no">5.5</span>采集与处理分离</h2>
+
+<p>
+  采集一帧和处理一帧的耗时通常不相等。相机按固定节奏出图，处理可能因为
+  检测、滤波或写文件而变慢。如果读取和处理写在同一个循环里，处理慢就会让
+  相机缓冲区堆积，画面延迟越来越大。把采集与处理分成两个角色，中间用有界
+  队列传递帧，是常见的结构。下面说明这两个角色如何分工、帧的所有权如何
+  转移，以及队列满时怎样取舍。
+</p>
+
+<h3 id="s5-5-1">生产者、消费者与队列</h3>
+
+<p>
+  采集端是生产者，负责尽快把相机里的帧取出来；处理端是消费者，按自己的速度
+  从队列取帧。队列有容量上限，满了以后必须做选择：丢掉最旧的一帧，或者让
+  生产者等待。前一种选择保持低延迟，但会丢失中间帧；后一种选择不丢帧，但会
+  把压力传回相机，降低采集帧率。两种选择都没有绝对优劣，取决于任务更在意
+  实时性还是完整性。
+</p>
+
+<pre data-lang="伪代码"><code>采集端:
+    while running:
+        frame = camera.read()
+        queue.push(frame.clone())
+        if queue.size() &gt; capacity:
+            queue.pop_front()
+
+处理端:
+    while running:
+        if queue.empty():
+            continue
+        frame = queue.pop_front()
+        result = process(frame)</code></pre>
+
+<p>
+  队列里存的是帧的副本或所有权，不是相机缓冲区的裸地址。真实的多线程程序
+  还需要同步队列的读写。理解上面两段的分工与丢帧条件之后，再学线程、
+  互斥量与条件变量时，就知道每一步在保护什么。
+</p>
+
+<h3 id="s5-5-2">浅拷贝与 clone</h3>
+
+<p>
+  <code>cv::Mat</code> 的赋值与拷贝构造是浅拷贝：两个对象共享同一块像素数据，
+  只各自保存一份头部。相机后端经常复用同一块缓冲区，下一次取图会覆盖上一帧
+  的内容。如果把浅拷贝得到的 <code>Mat</code> 放进队列，消费者拿到的对象会
+  在生产者下一次写入时改变，读到的可能已经不是入队时的那一帧。
+</p>
+
+<p>
+  下面的程序用一块 <code>Mat</code> 模拟相机缓冲区：先浅拷贝一份放进队列，
+  再深拷贝一份作为存档；随后修改原缓冲区，比较三个对象看到的像素与
+  <code>data</code> 指针。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.5-buffer_clone.cpp"><code>#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    cv::Mat camera_buffer(2, 4, CV_8UC3, cv::Scalar(1, 2, 3));
+    cv::Mat queued = camera_buffer;
+    cv::Mat snapshot = camera_buffer.clone();
+
+    camera_buffer.setTo(cv::Scalar(9, 9, 9));
+
+    const cv::Vec3b camera_pixel = camera_buffer.at&lt;cv::Vec3b&gt;(0, 0);
+    const cv::Vec3b queued_pixel = queued.at&lt;cv::Vec3b&gt;(0, 0);
+    const cv::Vec3b snapshot_pixel = snapshot.at&lt;cv::Vec3b&gt;(0, 0);
+
+    std::cout &lt;&lt; "camera=(" &lt;&lt; static_cast&lt;int&gt;(camera_pixel[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(camera_pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(camera_pixel[2]) &lt;&lt; ")"
+              &lt;&lt; " queued=(" &lt;&lt; static_cast&lt;int&gt;(queued_pixel[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(queued_pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(queued_pixel[2]) &lt;&lt; ")"
+              &lt;&lt; " snapshot=(" &lt;&lt; static_cast&lt;int&gt;(snapshot_pixel[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(snapshot_pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(snapshot_pixel[2]) &lt;&lt; ")" &lt;&lt; '\n';
+
+    std::cout &lt;&lt; "data camera=" &lt;&lt; static_cast&lt;const void*&gt;(camera_buffer.data)
+              &lt;&lt; " queued=" &lt;&lt; static_cast&lt;const void*&gt;(queued.data)
+              &lt;&lt; " snapshot=" &lt;&lt; static_cast&lt;const void*&gt;(snapshot.data)
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "share queued="
+              &lt;&lt; (queued.data == camera_buffer.data ? "yes" : "no")
+              &lt;&lt; " snapshot="
+              &lt;&lt; (snapshot.data == camera_buffer.data ? "yes" : "no") &lt;&lt; '\n';
+    std::cout &lt;&lt; "queued size=" &lt;&lt; queued.cols &lt;&lt; "x" &lt;&lt; queued.rows
+              &lt;&lt; " step=" &lt;&lt; queued.step[0] &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.5-buffer_clone.cpp -o buffer_clone \
+    $(pkg-config --cflags --libs opencv4)
+./buffer_clone</code></pre>
+
+<pre class="out" data-label="真实输出">camera=(9,9,9) queued=(9,9,9) snapshot=(1,2,3)
+data camera=0x56f3b599fc00 queued=0x56f3b599fc00 snapshot=0x56f3b599fcc0
+share queued=yes snapshot=no
+queued size=4x2 step=12</pre>
+
+<p>
+  修改缓冲区之后，<code>queued</code> 看到的是新值 (9,9,9)，因为它与
+  <code>camera_buffer</code> 共用同一块数据；<code>snapshot</code> 仍是旧值
+  (1,2,3)，因为 <code>clone()</code> 分配了独立内存。两行 <code>data</code>
+  的十六进制地址中，前两个相同，第三个不同；具体地址每次运行都会变化，
+  有意义的是它们是否相等。最后的 <code>share</code> 行直接给出比较结果。
+</p>
+
+<p>
+  队列里应当放 <code>frame.clone()</code>，或者在取帧后立即处理完再取下一帧。
+  只在单线程、且处理发生在下一次读取之前时，浅拷贝才可以省去复制。跨线程、
+  跨函数长期保存时，默认使用深拷贝；需要优化时再考虑缓冲池与所有权转移。
+</p>
+
+<h3 id="s5-5-3">丢旧帧与背压</h3>
+
+<p>
+  有界队列满时，丢掉最旧的一帧（drop-oldest）可以让消费者总是拿到较新的画面，
+  代价是丢失中间帧，帧号不连续。让生产者等待（背压，backpressure）可以保留
+  每一帧，代价是采集节奏被处理速度拖慢，实时相机可能因此丢帧或超时。选择
+  哪一种，要看下游是“必须看到每一帧”还是“必须看到当前画面”。
+</p>
+
+<p>
+  队列长度决定允许的延迟上限。容量为 3、每帧处理耗时 30 毫秒时，最坏情况下
+  消费者手里的帧比相机晚约 90 毫秒。容量越大，抗抖动能力越强，延迟也越大。
+  帧进入队列时记录帧号与时间戳，消费时就能判断当前帧有多旧；只记录图像而不
+  记录时间，无法区分“处理慢”和“相机本来就在出旧图”。
+</p>
+
+<div class="eg" id="e5-5">
+  <div class="eg-h">例题 · 丢旧帧队列</div>
+  <p>
+    题目：用容量为 3 的 <code>std::deque&lt;cv::Mat&gt;</code> 模拟有界队列。
+    依次产生编号 0 到 4 的 5 帧，每帧是一个 1×1 的灰度图，像素值等于编号；
+    入队前 <code>clone</code>，超过容量时丢掉队首。打印每次入队后的队列长度
+    与累计丢弃数，最后依次出队并打印帧号与剩余长度。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.5-eg-drop_oldest.cpp"><code>#include &lt;cstddef&gt;
+#include &lt;deque&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    const std::size_t capacity = 3;
+    std::deque&lt;cv::Mat&gt; queue;
+    int dropped = 0;
+
+    for (int id = 0; id &lt; 5; ++id) {
+        cv::Mat frame(1, 1, CV_8UC1, cv::Scalar(id));
+        queue.push_back(frame.clone());
+        if (queue.size() &gt; capacity) {
+            queue.pop_front();
+            ++dropped;
+        }
+        std::cout &lt;&lt; "pushed=" &lt;&lt; id &lt;&lt; " size=" &lt;&lt; queue.size()
+                  &lt;&lt; " dropped=" &lt;&lt; dropped &lt;&lt; '\n';
+    }
+
+    while (!queue.empty()) {
+        const cv::Mat frame = queue.front();
+        queue.pop_front();
+        std::cout &lt;&lt; "pop=" &lt;&lt; static_cast&lt;int&gt;(frame.at&lt;uchar&gt;(0, 0))
+                  &lt;&lt; " left=" &lt;&lt; queue.size() &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.5-eg-drop_oldest.cpp -o eg_drop_oldest \
+    $(pkg-config --cflags --libs opencv4)
+./eg_drop_oldest</code></pre>
+  <pre class="out" data-label="真实输出">pushed=0 size=1 dropped=0
+pushed=1 size=2 dropped=0
+pushed=2 size=3 dropped=0
+pushed=3 size=3 dropped=1
+pushed=4 size=3 dropped=2
+pop=2 left=2
+pop=3 left=1
+pop=4 left=0</pre>
+  <p>
+    容量为 3，前三次入队不丢帧；第 4 帧入队后长度为 4，丢掉队首的 0；
+    第 5 帧入队后丢掉 1。最终队列里是 2、3、4，出队顺序与入队顺序一致，
+    帧号连续但起点已经后移。累计丢弃数为 2，等于总入队数减容量。
+    <code>clone</code> 让五个 1×1 图各自拥有独立数据，出队后不会互相覆盖。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-5</div>
+  <p>
+    把队列容量改为 4，产生编号 0 到 6 的 7 帧，仍按 drop-oldest 规则入队；
+    打印每次入队后的长度与累计丢弃数，最后依次出队并打印帧号与剩余长度。
+    本题不需要标准输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">push=0 size=1 dropped=0
+push=1 size=2 dropped=0
+push=2 size=3 dropped=0
+push=3 size=4 dropped=0
+push=4 size=4 dropped=1
+push=5 size=4 dropped=2
+push=6 size=4 dropped=3
+pop=3 left=3
+pop=4 left=2
+pop=5 left=1
+pop=6 left=0</pre>
+  <details class="ans" data-run="示例代码/答案/5-5.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        容量为 4，前四帧入队后长度为 4，不丢帧；第 5 帧入队后丢掉编号 0，第 6 帧丢掉 1，第 7 帧丢掉 2。最终队列里是 3、4、5、6。<code>clone</code> 让每一帧拥有独立数据，出队后的像素值仍对应入队时的编号。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-5.cpp"><code>#include &lt;cstddef&gt;
+#include &lt;deque&gt;
+#include &lt;iostream&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    const std::size_t capacity = 4;
+    std::deque&lt;cv::Mat&gt; queue;
+    int dropped = 0;
+
+    for (int id = 0; id &lt; 7; ++id) {
+        cv::Mat buffer(1, 1, CV_8UC1, cv::Scalar(id));
+        queue.push_back(buffer.clone());
+        if (queue.size() &gt; capacity) {
+            queue.pop_front();
+            ++dropped;
+        }
+        std::cout &lt;&lt; "push=" &lt;&lt; id &lt;&lt; " size=" &lt;&lt; queue.size()
+                  &lt;&lt; " dropped=" &lt;&lt; dropped &lt;&lt; '\n';
+    }
+
+    while (!queue.empty()) {
+        const int id = static_cast&lt;int&gt;(queue.front().at&lt;uchar&gt;(0, 0));
+        queue.pop_front();
+        std::cout &lt;&lt; "pop=" &lt;&lt; id &lt;&lt; " left=" &lt;&lt; queue.size() &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">push=0 size=1 dropped=0
+push=1 size=2 dropped=0
+push=2 size=3 dropped=0
+push=3 size=4 dropped=0
+push=4 size=4 dropped=1
+push=5 size=4 dropped=2
+push=6 size=4 dropped=3
+pop=3 left=3
+pop=4 left=2
+pop=5 left=1
+pop=6 left=0</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>说明采集端、处理端与有界队列的分工；解释
+  <code>Mat</code> 浅拷贝为什么不能直接跨线程长期保存；用
+  <code>clone</code> 保存独立帧；实现 drop-oldest 的入队规则并解释它与
+  背压的取舍；用帧号与时间戳说明队列延迟。
+</p>
+</section>
+
+<section class="lesson" id="l5-6">
+<h2><span class="no">5.6</span>工业相机 SDK：从取图到 Mat</h2>
+
+<p>
+  工业相机的厂商 SDK 接口各不相同，但取图流程大体相同：初始化、枚举设备、
+  打开、设置参数、开始采集、取一帧、包装成 <code>Mat</code>、停止采集、关闭。
+  这一课用普通内存模拟相机缓冲区，把流程中最容易出错的两步——缓冲区包装
+  与 Bayer 转换——写成可以运行的程序。
+</p>
+
+<h3 id="s5-6-1">取图流程</h3>
+
+<p>
+  下表列出每一步的作用与常见返回值。不同 SDK 的函数名与错误码不同，顺序与
+  资源归属基本相同。
+</p>
+
+<table>
+  <thead>
+    <tr><th>步骤</th><th>做什么</th><th>失败时检查</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1 初始化</td><td>加载 SDK 运行库，建立内部状态</td><td>运行库版本、初始化返回值</td></tr>
+    <tr><td>2 枚举设备</td><td>列出可用相机与序列号</td><td>设备数量、连接与供电</td></tr>
+    <tr><td>3 打开</td><td>按索引或序列号建立会话</td><td>设备是否被占用、权限</td></tr>
+    <tr><td>4 设置参数</td><td>曝光、增益、分辨率、像素格式</td><td>参数范围、是否在采集前设置</td></tr>
+    <tr><td>5 开始采集</td><td>启动图像流</td><td>传输带宽、触发模式</td></tr>
+    <tr><td>6 取一帧</td><td>等待并取得一帧图像</td><td>超时、断流、帧状态</td></tr>
+    <tr><td>7 包装为 Mat</td><td>用宽、高、类型、步长解释缓冲区</td><td>像素格式、行填充、生命周期</td></tr>
+    <tr><td>8 停止采集</td><td>结束图像流</td><td>是否还有未归还的缓冲区</td></tr>
+    <tr><td>9 关闭</td><td>释放会话与设备</td><td>按打开的逆序释放</td></tr>
+  </tbody>
+</table>
+
+<p>
+  第 6 步与第 7 步之间的缓冲区归属决定了下一步能不能长期保存。SDK 可能把
+  数据复制给调用者，也可能只借出一块内部缓冲区，还可能通过回调把地址传进来。
+  借用的缓冲区通常要在下一次取图前归还；回调里的地址只在回调期间有效。
+  无论是哪一种，只要需要跨函数、跨线程保存，就应当复制成自己的
+  <code>Mat</code>。
+</p>
+
+<h3 id="s5-6-2">包装缓冲区与 Bayer</h3>
+
+<p>
+  <code>cv::Mat(rows, cols, type, data, step)</code> 用外部内存构造头部，
+  不复制像素。第四个参数是数据首地址，第五个参数是每一行占用的字节数
+  （step），不是像素数。相机为了对齐，常在每行末尾补几个字节；此时
+  <code>step</code> 大于 <code>cols × elemSize</code>。只按宽度计算步长，
+  第二行起就会错位。省略 <code>step</code> 时 OpenCV 按连续存储处理，只适用
+  于没有行填充的缓冲区。
+</p>
+
+<p>
+  彩色工业相机常输出 Bayer 格式：每个像素只保存 R、G、B 中的一个分量，
+  排列成 2×2 重复单元。常见排列的首行是 R G、第二行 G B，记为 RGGB。
+  显示或处理前要用 <code>cvtColor</code> 做去马赛克（demosaicing），把单通道
+  Bayer 图还原成三通道 BGR。排列顺序必须与相机一致，写错会偏色。
+</p>
+
+<p>
+  OpenCV 的旧常量名与首行排列并不一致：头文件注明
+  <code>COLOR_BayerBG2BGR</code> 等价于 RGGB，<code>COLOR_BayerRG2BGR</code>
+  等价于 BGGR。首行 R G、第二行 G B 的 RGGB 排列应使用
+  <code>COLOR_BayerBG2BGR</code>；若按首行写成
+  <code>COLOR_BayerRG2BGR</code>，红蓝通道会互换。OpenCV 还提供按排列命名的
+  别名 <code>COLOR_BayerRGGB2BGR</code>，它等于
+  <code>COLOR_BayerBG2BGR</code>。下面的程序使用旧名，便于与常见示例对照。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.6-bayer_wrap.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_NEAREST);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+cv::Mat makeScene() {
+    cv::Mat scene(240, 240, CV_8UC3);
+    scene(cv::Rect(0, 0, 120, 120)).setTo(cv::Scalar(30, 30, 210));
+    scene(cv::Rect(120, 0, 120, 120)).setTo(cv::Scalar(220, 80, 30));
+    scene(cv::Rect(0, 120, 120, 120)).setTo(cv::Scalar(30, 190, 60));
+    scene(cv::Rect(120, 120, 120, 120)).setTo(cv::Scalar(230, 230, 230));
+
+    cv::circle(scene, cv::Point(60, 60), 30, cv::Scalar(235, 235, 235),
+               cv::FILLED, cv::LINE_AA);
+    cv::circle(scene, cv::Point(180, 60), 30, cv::Scalar(20, 20, 20),
+               cv::FILLED, cv::LINE_AA);
+    cv::circle(scene, cv::Point(60, 180), 30, cv::Scalar(15, 15, 15),
+               cv::FILLED, cv::LINE_AA);
+    cv::line(scene, cv::Point(130, 230), cv::Point(230, 130),
+             cv::Scalar(30, 30, 30), 3, cv::LINE_AA);
+    return scene;
+}
+
+cv::Mat mosaicRG(const cv::Mat&amp; bgr) {
+    cv::Mat bayer(bgr.rows, bgr.cols, CV_8UC1);
+    for (int y = 0; y &lt; bgr.rows; ++y) {
+        for (int x = 0; x &lt; bgr.cols; ++x) {
+            const cv::Vec3b pixel = bgr.at&lt;cv::Vec3b&gt;(y, x);
+            uchar value = 0;
+            if (y % 2 == 0 &amp;&amp; x % 2 == 0) {
+                value = pixel[2];
+            } else if (y % 2 == 1 &amp;&amp; x % 2 == 1) {
+                value = pixel[0];
+            } else {
+                value = pixel[1];
+            }
+            bayer.at&lt;uchar&gt;(y, x) = value;
+        }
+    }
+    return bayer;
+}
+
+}  // namespace
+
+int main() {
+    const int rows = 2;
+    const int cols = 3;
+    std::vector&lt;uchar&gt; buffer(rows * cols * 3, 0);
+    cv::Mat wrapped(rows, cols, CV_8UC3, buffer.data(), cols * 3);
+    wrapped.at&lt;cv::Vec3b&gt;(0, 0) = cv::Vec3b(10, 20, 30);
+    wrapped.at&lt;cv::Vec3b&gt;(rows - 1, cols - 1) = cv::Vec3b(40, 50, 60);
+
+    std::cout &lt;&lt; "wrapped type=" &lt;&lt; wrapped.type()
+              &lt;&lt; " channels=" &lt;&lt; wrapped.channels() &lt;&lt; " rows=" &lt;&lt; rows
+              &lt;&lt; " cols=" &lt;&lt; cols &lt;&lt; " step=" &lt;&lt; wrapped.step[0] &lt;&lt; '\n';
+    std::cout &lt;&lt; "buffer first=(" &lt;&lt; static_cast&lt;int&gt;(buffer[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(buffer[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(buffer[2]) &lt;&lt; ")"
+              &lt;&lt; " last=(" &lt;&lt; static_cast&lt;int&gt;(buffer[buffer.size() - 3])
+              &lt;&lt; "," &lt;&lt; static_cast&lt;int&gt;(buffer[buffer.size() - 2]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(buffer[buffer.size() - 1]) &lt;&lt; ")" &lt;&lt; '\n';
+
+    const cv::Mat scene = makeScene();
+    const cv::Mat bayer = mosaicRG(scene);
+    cv::Mat restored;
+    cv::cvtColor(bayer, restored, cv::COLOR_BayerBG2BGR);
+    cv::Mat mosaic_view;
+    cv::cvtColor(bayer, mosaic_view, cv::COLOR_GRAY2BGR);
+
+    const cv::Vec3b original_pixel = scene.at&lt;cv::Vec3b&gt;(30, 30);
+    const cv::Vec3b restored_pixel = restored.at&lt;cv::Vec3b&gt;(30, 30);
+    cv::Mat diff;
+    cv::absdiff(scene, restored, diff);
+    const cv::Scalar mean_diff = cv::mean(diff);
+
+    std::cout &lt;&lt; "bayer type=" &lt;&lt; bayer.type()
+              &lt;&lt; " channels=" &lt;&lt; bayer.channels() &lt;&lt; " rows=" &lt;&lt; bayer.rows
+              &lt;&lt; " cols=" &lt;&lt; bayer.cols &lt;&lt; " step=" &lt;&lt; bayer.step[0] &lt;&lt; '\n';
+    std::cout &lt;&lt; "pixel original=(" &lt;&lt; static_cast&lt;int&gt;(original_pixel[0])
+              &lt;&lt; "," &lt;&lt; static_cast&lt;int&gt;(original_pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(original_pixel[2]) &lt;&lt; ")"
+              &lt;&lt; " restored=(" &lt;&lt; static_cast&lt;int&gt;(restored_pixel[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(restored_pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(restored_pixel[2]) &lt;&lt; ")" &lt;&lt; '\n';
+    std::cout &lt;&lt; "mean_abs_diff=" &lt;&lt; cvRound(mean_diff[0]) &lt;&lt; '\n';
+
+    cv::Mat panel(300, 780, CV_8UC3, cv::Scalar(255, 255, 255));
+    place(panel, scene, 0, 0, 260, 300, "BGR scene");
+    place(panel, mosaic_view, 260, 0, 260, 300, "Bayer RG raw");
+    place(panel, restored, 520, 0, 260, 300, "demosaiced BGR");
+    const bool saved = cv::imwrite("../素材/out_bayer.png", panel);
+    std::cout &lt;&lt; "saved out_bayer.png: " &lt;&lt; (saved ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.6-bayer_wrap.cpp -o bayer_wrap \
+    $(pkg-config --cflags --libs opencv4)
+./bayer_wrap</code></pre>
+
+<pre class="out" data-label="真实输出">wrapped type=16 channels=3 rows=2 cols=3 step=9
+buffer first=(10,20,30) last=(40,50,60)
+bayer type=0 channels=1 rows=240 cols=240 step=240
+pixel original=(30,30,210) restored=(30,30,210)
+mean_abs_diff=1
+saved out_bayer.png: yes</pre>
+
+<p>
+  外部缓冲区是 2×3 的三通道图，共 18 字节，每行 9 字节。程序通过
+  <code>wrapped</code> 写入两个像素，随后直接从 <code>buffer</code> 读到了
+  同样的 BGR 值，说明 <code>Mat</code> 没有复制数据。Bayer 图是 240×240 的
+  单通道图，类型值为 0；三通道 BGR 图的类型值为 16。类型值由深度与通道数
+  编码，不能只看数值猜含义，用 <code>type()</code>、<code>channels()</code>
+  与 <code>elemSize()</code> 核对更可靠。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_bayer.png" alt="Bayer 示例：原始 BGR 场景、Bayer 单通道马赛克与去马赛克后的 BGR 图" width="780" height="300">
+  <figcaption>
+    左格是合成的 BGR 场景；中格是抽取出的 Bayer 单通道马赛克；右格是用
+    <code>COLOR_BayerBG2BGR</code> 还原的 BGR 图。三格尺寸相同，中格显示为
+    灰度是因为每个像素只有一个颜色分量。
+  </figcaption>
+</figure>
+
+<p>
+  程序在红块左上方的 <code>(30,30)</code> 取一个像素，原图与还原图都是
+  (30,30,210)，说明该位置的颜色被正确还原。B 通道的平均绝对误差为 1，
+  差异主要集中在色块边界：去马赛克需要从邻域插值，边界两侧的颜色不同，
+  插值结果不会与原图逐像素相同。误差大小与图案、排列和插值方法有关，
+  不能用某一个像素的结果代表整幅图。
+</p>
+
+<h3 id="s5-6-3">缓冲区归属与错误</h3>
+
+<p>
+  借用型缓冲区最常见的错误，是把 <code>Mat</code> 存进队列后继续取图。
+  SDK 复用同一块内存，队列里的对象会在下一次取图时被覆盖；表面上是队列里的
+  帧“自己变了”，实际是数据被生产者重写。回调型接口还有一层限制：回调返回后，
+  地址可能立即失效，不能在回调里只保存裸指针。解决方式是复制、及时处理，
+  或者使用 SDK 提供的缓冲区引用计数。
+</p>
+
+<p>
+  第二类错误与步长有关。行填充让 <code>step</code> 大于有效字节数
+  <code>cols × elemSize()</code>；如果包装时把像素宽度直接当字节步长，
+  第二行开始就会读到上一行的填充字节，图像出现斜向错位。
+  第三类错误是 Bayer 顺序写错，红蓝互换或整体偏绿。第四类错误是取图超时
+  没有处理，程序在等待一帧时永久阻塞。四类错误都不会在编译时暴露，必须靠
+  尺寸、颜色与超时返回值检查。
+</p>
+
+<div class="eg" id="e5-6">
+  <div class="eg-h">例题 · Bayer 顺序换错</div>
+  <p>
+    题目：构造一张 16×16 的四色图，按 RGGB 抽取 Bayer 单通道图；分别用
+    <code>COLOR_BayerBG2BGR</code> 与 <code>COLOR_BayerRG2BGR</code> 还原，
+    打印两种结果的类型、通道数与红块中心像素的 BGR 值。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.6-eg-bayer_order.cpp"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+
+namespace {
+
+cv::Mat mosaicRG(const cv::Mat&amp; bgr) {
+    cv::Mat bayer(bgr.rows, bgr.cols, CV_8UC1);
+    for (int y = 0; y &lt; bgr.rows; ++y) {
+        for (int x = 0; x &lt; bgr.cols; ++x) {
+            const cv::Vec3b pixel = bgr.at&lt;cv::Vec3b&gt;(y, x);
+            if (y % 2 == 0 &amp;&amp; x % 2 == 0) {
+                bayer.at&lt;uchar&gt;(y, x) = pixel[2];
+            } else if (y % 2 == 1 &amp;&amp; x % 2 == 1) {
+                bayer.at&lt;uchar&gt;(y, x) = pixel[0];
+            } else {
+                bayer.at&lt;uchar&gt;(y, x) = pixel[1];
+            }
+        }
+    }
+    return bayer;
+}
+
+void report(const std::string&amp; name, const cv::Mat&amp; bayer, int code) {
+    cv::Mat bgr;
+    cv::cvtColor(bayer, bgr, code);
+    const cv::Vec3b pixel = bgr.at&lt;cv::Vec3b&gt;(4, 4);
+    std::cout &lt;&lt; name &lt;&lt; " type=" &lt;&lt; bgr.type()
+              &lt;&lt; " channels=" &lt;&lt; bgr.channels() &lt;&lt; " pixel=("
+              &lt;&lt; static_cast&lt;int&gt;(pixel[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(pixel[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(pixel[2]) &lt;&lt; ")" &lt;&lt; '\n';
+}
+
+}  // namespace
+
+int main() {
+    cv::Mat scene(16, 16, CV_8UC3);
+    scene(cv::Rect(0, 0, 8, 8)).setTo(cv::Scalar(30, 30, 210));
+    scene(cv::Rect(8, 0, 8, 8)).setTo(cv::Scalar(210, 80, 30));
+    scene(cv::Rect(0, 8, 8, 8)).setTo(cv::Scalar(30, 190, 60));
+    scene(cv::Rect(8, 8, 8, 8)).setTo(cv::Scalar(230, 230, 230));
+
+    const cv::Mat bayer = mosaicRG(scene);
+    const cv::Vec3b source = scene.at&lt;cv::Vec3b&gt;(4, 4);
+    std::cout &lt;&lt; "source pixel=(" &lt;&lt; static_cast&lt;int&gt;(source[0]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(source[1]) &lt;&lt; ","
+              &lt;&lt; static_cast&lt;int&gt;(source[2]) &lt;&lt; ")" &lt;&lt; '\n';
+
+    report("BayerBG2BGR", bayer, cv::COLOR_BayerBG2BGR);
+    report("BayerRG2BGR", bayer, cv::COLOR_BayerRG2BGR);
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.6-eg-bayer_order.cpp -o eg_bayer_order \
+    $(pkg-config --cflags --libs opencv4)
+./eg_bayer_order</code></pre>
+  <pre class="out" data-label="真实输出">source pixel=(30,30,210)
+BayerBG2BGR type=16 channels=3 pixel=(30,30,210)
+BayerRG2BGR type=16 channels=3 pixel=(210,30,30)</pre>
+  <p>
+    原图红块中心是 (30,30,210)，B 分量 30、R 分量 210。用
+    <code>BayerBG2BGR</code> 还原后仍是 (30,30,210)；换成
+    <code>BayerRG2BGR</code> 后变成 (210,30,30)，红蓝互换。两种结果都是
+    合法的三通道图，类型与通道数完全一样，只有颜色不对。因此 Bayer 顺序
+    不能靠类型检查发现，必须用已知颜色的测试图或相机厂商给出的排列核对。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-6</div>
+  <p>
+    模拟一行有填充的相机缓冲区：准备 10 个字节，值为 0 到 9；用
+    <code>cv::Mat(2, 3, CV_8UC1, data, 5)</code> 包装成 2×3 的单通道图。
+    打印行数、列数、步长与元素总数，再打印两行的像素值；把
+    <code>(0,0)</code> 改成 99，打印底层缓冲区的第 1 个字节与第 4 个字节，
+    确认改的是像素而不是填充。本题不需要标准输入，数据直接写在
+    <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">rows=2 cols=3 step=5 total=6
+row0=0 1 2 row1=5 6 7
+backing first=99 padding=3</pre>
+  <details class="ans" data-run="示例代码/答案/5-6.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        步长是 5 字节，有效列宽是 3 字节，每行末尾有 2 字节填充。第二行从缓冲区偏移 5 开始，所以 <code>row1</code> 读到 5、6、7。修改 <code>view(0,0)</code> 会写回 <code>buffer[0]</code>，填充字节 <code>buffer[3]</code> 不受影响。步长按字节计，不能等于列数。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-6.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    std::vector&lt;uchar&gt; buffer(10, 0);
+    for (std::size_t i = 0; i &lt; buffer.size(); ++i) {
+        buffer[i] = static_cast&lt;uchar&gt;(i);
+    }
+
+    cv::Mat view(2, 3, CV_8UC1, buffer.data(), 5);
+    std::cout &lt;&lt; "rows=" &lt;&lt; view.rows &lt;&lt; " cols=" &lt;&lt; view.cols
+              &lt;&lt; " step=" &lt;&lt; view.step[0] &lt;&lt; " total=" &lt;&lt; view.total()
+              &lt;&lt; '\n';
+    std::cout &lt;&lt; "row0=" &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(0, 0)) &lt;&lt; " "
+              &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(0, 1)) &lt;&lt; " "
+              &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(0, 2)) &lt;&lt; " row1="
+              &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(1, 0)) &lt;&lt; " "
+              &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(1, 1)) &lt;&lt; " "
+              &lt;&lt; static_cast&lt;int&gt;(view.at&lt;uchar&gt;(1, 2)) &lt;&lt; '\n';
+
+    view.at&lt;uchar&gt;(0, 0) = 99;
+    std::cout &lt;&lt; "backing first=" &lt;&lt; static_cast&lt;int&gt;(buffer[0])
+              &lt;&lt; " padding=" &lt;&lt; static_cast&lt;int&gt;(buffer[3]) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">rows=2 cols=3 step=5 total=6
+row0=0 1 2 row1=5 6 7
+backing first=99 padding=3</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>按九步说明工业相机的取图流程；用
+  <code>Mat(rows, cols, type, data, step)</code> 包装外部缓冲区并解释步长；
+  区分复制、借用与回调三种缓冲区归属；按相机排列选择 Bayer 常量并还原
+  BGR；识别缓冲区复用、步长错误、Bayer 顺序错误与取图超时。
+</p>
+</section>
+
+<section class="lesson" id="l5-7">
+<h2><span class="no">5.7</span>相机参数与像素格式</h2>
+
+<p>
+  相机输出的像素值不是场景亮度的直接复制。曝光时间决定感光元件积累光量的
+  时长，增益把电信号放大，白平衡调整三个颜色通道的比例，帧率决定每秒输出
+  多少帧。像素格式则决定这些数值怎样排布成字节。参数与格式设置错，后面的
+  阈值、轮廓与测量都会建立在失真的数据上。这一课用合成图模拟这些影响，并
+  说明常见格式与位深。
+</p>
+
+<h3 id="s5-7-1">曝光、增益与白平衡</h3>
+
+<p>
+  曝光时间（exposure time）是传感器积分光信号的时间，单位通常是毫秒或微秒。
+  时间加倍，画面大致亮一倍；运动目标在长曝光下会出现拖影。增益（gain）在
+  读出信号后放大数值，能提亮画面，也会把噪声一起放大；增益加倍不等于曝光
+  时间加倍，后者还能收集更多光子，前者只是放大已有信号。两者都可以设成自动
+  模式，但自动模式会随场景变化，做阈值或测量时通常锁定。
+</p>
+
+<p>
+  帧率与曝光时间相互制约：一帧的曝光时间不能超过帧周期。30 帧每秒的帧周期
+  约 33 毫秒，曝光时间设为 40 毫秒就无法维持 30 帧。提高帧率通常要缩短曝光
+  或降低分辨率，画面会更暗或细节更少。白平衡（white balance）调整 R、B
+  通道的相对增益，使白色物体在不同光源下仍接近白色；自动白平衡会让同一块
+  颜色在画面中缓慢漂移，颜色检测前应固定或记录其状态。
+</p>
+
+<p>
+  感兴趣区域（ROI，region of interest）让相机只输出画面的一部分，可以提高
+  帧率、减少传输量。ROI 的左上角成为新的像素原点，主点位置随之改变。之前
+  在整幅图上得到的相机内参不能直接继续使用；需要按新原点修正，或者重新标定。
+  改动 ROI 以后，像素坐标、视场与测量结果都要按新的几何关系重新核对。
+</p>
+
+<h3 id="s5-7-2">模拟曝光与增益</h3>
+
+<p>
+  下面的程序构造一张合成场景，用 <code>convertTo</code> 模拟曝光变化，
+  用固定种子的高斯噪声模拟高增益，打印每种情况的平均亮度与过曝像素数，
+  并把四幅图拼成一张对比图。噪声种子固定，重复运行得到相同结果。
+</p>
+
+<p>完整程序：</p>
+
+<pre data-lang="C++" data-name="5.7-camera_params.cpp"><code>#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+#include &lt;opencv2/imgproc.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+
+namespace {
+
+void place(cv::Mat&amp; panel, const cv::Mat&amp; image, int x, int y, int width,
+           int height, const std::string&amp; label) {
+    const int label_height = 28;
+    cv::rectangle(panel, cv::Rect(x, y, width, label_height),
+                  cv::Scalar(245, 245, 245), cv::FILLED);
+    cv::putText(panel, label, cv::Point(x + 8, y + 20),
+                cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(30, 30, 30), 1,
+                cv::LINE_AA);
+
+    const int inner_width = width - 16;
+    const int inner_height = height - label_height - 16;
+    const double scale = std::min(static_cast&lt;double&gt;(inner_width) / image.cols,
+                                  static_cast&lt;double&gt;(inner_height) / image.rows);
+    const int shown_width = std::max(1, cvRound(image.cols * scale));
+    const int shown_height = std::max(1, cvRound(image.rows * scale));
+    cv::Mat shown;
+    cv::resize(image, shown, cv::Size(shown_width, shown_height), 0, 0,
+               cv::INTER_AREA);
+    const int left = x + (width - shown_width) / 2;
+    const int top = y + label_height + (inner_height - shown_height) / 2 + 8;
+    shown.copyTo(panel(cv::Rect(left, top, shown_width, shown_height)));
+}
+
+cv::Mat makeScene() {
+    cv::Mat scene(240, 320, CV_8UC3);
+    for (int y = 0; y &lt; scene.rows; ++y) {
+        const int value = 35 + y * 90 / scene.rows;
+        scene.row(y).setTo(cv::Scalar(value, value, value));
+    }
+    cv::rectangle(scene, cv::Rect(24, 30, 90, 70), cv::Scalar(40, 40, 210),
+                  cv::FILLED);
+    cv::rectangle(scene, cv::Rect(150, 40, 80, 80), cv::Scalar(40, 200, 60),
+                  cv::FILLED);
+    cv::circle(scene, cv::Point(95, 170), 44, cv::Scalar(230, 230, 230),
+               cv::FILLED, cv::LINE_AA);
+    cv::circle(scene, cv::Point(235, 175), 38, cv::Scalar(25, 25, 25),
+               cv::FILLED, cv::LINE_AA);
+    return scene;
+}
+
+void report(const std::string&amp; name, const cv::Mat&amp; image) {
+    cv::Mat gray;
+    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat clipped;
+    cv::threshold(gray, clipped, 249, 255, cv::THRESH_BINARY);
+    std::cout &lt;&lt; name &lt;&lt; " mean=" &lt;&lt; cvRound(cv::mean(gray)[0])
+              &lt;&lt; " clipped=" &lt;&lt; cv::countNonZero(clipped) &lt;&lt; '\n';
+}
+
+}  // namespace
+
+int main() {
+    const cv::Mat scene = makeScene();
+
+    cv::Mat bright;
+    scene.convertTo(bright, CV_8UC3, 4.0, 0.0);
+    cv::Mat dark;
+    scene.convertTo(dark, CV_8UC3, 0.25, 0.0);
+
+    cv::RNG rng(12345);
+    cv::Mat noise(scene.size(), CV_32FC3);
+    rng.fill(noise, cv::RNG::NORMAL, 0.0, 18.0);
+    cv::Mat scene_float;
+    scene.convertTo(scene_float, CV_32FC3);
+    const cv::Mat noisy_float = scene_float + noise;
+    cv::Mat noisy;
+    noisy_float.convertTo(noisy, CV_8UC3);
+
+    report("normal", scene);
+    report("exposure x4", bright);
+    report("exposure x0.25", dark);
+    report("gain high", noisy);
+
+    cv::Mat panel(300, 1040, CV_8UC3, cv::Scalar(255, 255, 255));
+    place(panel, scene, 0, 0, 260, 300, "normal");
+    place(panel, bright, 260, 0, 260, 300, "exposure x4");
+    place(panel, dark, 520, 0, 260, 300, "exposure x0.25");
+    place(panel, noisy, 780, 0, 260, 300, "gain high + noise");
+    const bool saved = cv::imwrite("../素材/out_exposure.png", panel);
+    std::cout &lt;&lt; "saved out_exposure.png: " &lt;&lt; (saved ? "yes" : "no")
+              &lt;&lt; '\n';
+
+    const cv::Mat mono8(2, 2, CV_8UC1, cv::Scalar(128));
+    const cv::Mat mono12(2, 2, CV_16UC1, cv::Scalar(2048));
+    const cv::Mat bgr8(2, 2, CV_8UC3, cv::Scalar(10, 20, 30));
+    std::cout &lt;&lt; "mono8 type=" &lt;&lt; mono8.type()
+              &lt;&lt; " channels=" &lt;&lt; mono8.channels() &lt;&lt; " elem="
+              &lt;&lt; mono8.elemSize() &lt;&lt; '\n';
+    std::cout &lt;&lt; "mono12 type=" &lt;&lt; mono12.type()
+              &lt;&lt; " channels=" &lt;&lt; mono12.channels() &lt;&lt; " elem="
+              &lt;&lt; mono12.elemSize() &lt;&lt; '\n';
+    std::cout &lt;&lt; "bgr8 type=" &lt;&lt; bgr8.type()
+              &lt;&lt; " channels=" &lt;&lt; bgr8.channels() &lt;&lt; " elem="
+              &lt;&lt; bgr8.elemSize() &lt;&lt; '\n';
+
+    const std::vector&lt;int&gt; twelve = {0, 1023, 2047, 4095};
+    std::cout &lt;&lt; "mono12 to mono8:";
+    for (const int value : twelve) {
+        std::cout &lt;&lt; " " &lt;&lt; value &lt;&lt; "-&gt;"
+                  &lt;&lt; cvRound(value * 255.0 / 4095.0);
+    }
+    std::cout &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+
+<p>在 <code>示例代码</code> 目录下编译并运行：</p>
+
+<pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.7-camera_params.cpp -o camera_params \
+    $(pkg-config --cflags --libs opencv4)
+./camera_params</code></pre>
+
+<pre class="out" data-label="真实输出">normal mean=94 clipped=0
+exposure x4 mean=223 clipped=42259
+exposure x0.25 mean=24 clipped=0
+gain high mean=94 clipped=128
+saved out_exposure.png: yes
+mono8 type=0 channels=1 elem=1
+mono12 type=2 channels=1 elem=2
+bgr8 type=16 channels=3 elem=3
+mono12 to mono8: 0-&gt;0 1023-&gt;64 2047-&gt;127 4095-&gt;255</pre>
+
+<p>
+  正常画面的平均亮度是 94，没有像素达到 250 以上。曝光乘 4 后，平均亮度
+  升到 223，已有 42259 个像素过曝；这些像素被截到 255，原有层次无法恢复。
+  曝光乘 0.25 后，平均亮度降到 24，暗部细节被压到接近 0。高增益那幅的平均
+  亮度仍是 94，过曝像素只有 128 个，但画面里布满噪声；平均值看不出噪声，
+  必须看方差或直接看图像。平均亮度相同不代表画质相同。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/out_exposure.png" alt="曝光与增益对比：正常、曝光乘 4、曝光乘 0.25 与高增益加噪声" width="1040" height="300">
+  <figcaption>
+    四格依次是正常曝光、曝光乘 4、曝光乘 0.25 与高增益加噪声。曝光乘 4
+    后亮部大面积变白，乘 0.25 后暗部接近黑色，高增益一格的噪声最明显。
+  </figcaption>
+</figure>
+
+<p>
+  <code>convertTo</code> 的缩放与偏移会做饱和处理：超过 255 的值写成 255，
+  低于 0 的值写成 0。真实相机的过曝也是同样的截断，过曝区域没有可恢复的
+  细节。调参时先保证亮部不过曝，再提高暗部；只提高增益会把噪声一起抬高。
+</p>
+
+<h3 id="s5-7-3">像素格式与位深</h3>
+
+<p>
+  像素格式描述每个像素怎样存储。下表列出常见格式与 OpenCV 中的对应类型。
+  类型值可以打印，但阅读代码时更常用 <code>CV_8UC1</code> 这样的写法：
+</p>
+
+<table>
+  <thead>
+    <tr><th>格式</th><th>每像素内容</th><th>常见 Mat 类型</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mono8</td><td>1 个 8 位灰度</td><td><code>CV_8UC1</code></td><td>范围 0–255</td></tr>
+    <tr><td>Mono10 / Mono12</td><td>1 个 10 或 12 位灰度</td><td><code>CV_16UC1</code></td><td>常放在 16 位字中，范围 0–1023 或 0–4095</td></tr>
+    <tr><td>Bayer RG / GR / GB / BG</td><td>每个像素 1 个颜色分量</td><td><code>CV_8UC1</code></td><td>需去马赛克还原 BGR</td></tr>
+    <tr><td>BGR8</td><td>蓝、绿、红各 8 位</td><td><code>CV_8UC3</code></td><td>OpenCV 默认彩色顺序</td></tr>
+    <tr><td>RGB8</td><td>红、绿、蓝各 8 位</td><td><code>CV_8UC3</code></td><td>内存顺序与 BGR 相反，需转换</td></tr>
+    <tr><td>YUV422</td><td>亮度与色度共用采样</td><td><code>CV_8UC2</code></td><td>常见 YUYV 排列，转换后才能按 BGR 处理</td></tr>
+  </tbody>
+</table>
+
+<p>
+  10 位与 12 位数据有两种存法。非打包（unpacked）格式把每个值放进一个 16 位
+  字，低 10 位或低 12 位有效，高位补 0；这种数据可以直接用
+  <code>CV_16UC1</code> 读取，但数值范围不是 0–255，不能直接交给按 8 位
+  设计的阈值。打包（packed）格式把多个像素的值压进连续字节，例如两个 12 位
+  值占 3 个字节；这种数据不能直接按 <code>CV_16UC1</code> 解释，必须先解包。
+</p>
+
+<p>
+  把 12 位数据缩放到 8 位，常用 <code>value × 255 / 4095</code>；10 位用
+  <code>value × 255 / 1023</code>。直接用 <code>convertTo</code> 指定
+  <code>CV_8UC1</code> 而不给缩放系数，会把大部分值截成 255，画面几乎全白。
+  反过来，把 10 位数据当 8 位读，字节会错位，图像出现条纹或噪声。位深、打包
+  方式与类型三者必须一起确认。
+</p>
+
+<h3 id="s5-7-4">参数与格式的错误</h3>
+
+<p>
+  第一类错误是把 10 位或 12 位数据直接当作 0–255 使用。阈值 100 在 12 位
+  图里只相当于很暗的区域，画面大部分会被判为前景。第二类错误是 Bayer 顺序
+  与转换常量不匹配，红蓝互换或整体偏绿，类型检查发现不了。第三类错误是
+  ROI 原点偏移没有计入，像素坐标与之前的内参对不上，测距与投影都会偏。
+  第四类错误是自动曝光与自动白平衡在采集过程中变化，同一批图的颜色与亮度
+  不可比。做定量测量前固定这些参数，并记录固定值。
+</p>
+
+<p>
+  参数不是越高越好。曝光提高会过曝，增益提高会放大噪声，帧率提高会缩短曝光，
+  ROI 缩小会改变几何关系。每次只改一个参数，保存一组对照图，记录平均亮度、
+  过曝像素比例与噪声水平，再决定下一组值。只凭肉眼在显示器上判断，容易把
+  亮度变化误当成颜色变化。
+</p>
+
+<div class="eg" id="e5-7">
+  <div class="eg-h">例题 · 打包与解包</div>
+  <p>
+    题目：把 4 个 12 位像素值 100、1000、2000、4095 按每两个值占 3 个字节
+    打包，打印 6 个字节；再解包回 4 个值，打印并检查是否与原值一致。最后
+    打印 <code>CV_16UC1</code> 的类型值、通道数与元素大小，以及 10 位、12 位
+    中间值缩放到 8 位的结果。
+  </p>
+  <p>完整程序：</p>
+  <pre data-lang="C++" data-name="5.7-eg-pixel_format.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+namespace {
+
+void packPair(std::vector&lt;uchar&gt;&amp; bytes, std::size_t offset, int first,
+              int second) {
+    bytes[offset] = static_cast&lt;uchar&gt;(first &amp; 0xFF);
+    bytes[offset + 1] = static_cast&lt;uchar&gt;(((first &gt;&gt; 8) &amp; 0x0F) |
+                                           ((second &amp; 0x0F) &lt;&lt; 4));
+    bytes[offset + 2] = static_cast&lt;uchar&gt;((second &gt;&gt; 4) &amp; 0xFF);
+}
+
+}  // namespace
+
+int main() {
+    const std::vector&lt;int&gt; values = {100, 1000, 2000, 4095};
+    std::vector&lt;uchar&gt; packed(6, 0);
+    packPair(packed, 0, values[0], values[1]);
+    packPair(packed, 3, values[2], values[3]);
+
+    std::cout &lt;&lt; "packed bytes:";
+    for (const uchar byte : packed) {
+        std::cout &lt;&lt; " " &lt;&lt; static_cast&lt;int&gt;(byte);
+    }
+    std::cout &lt;&lt; '\n';
+
+    const int first = packed[0] | ((packed[1] &amp; 0x0F) &lt;&lt; 8);
+    const int second = ((packed[1] &gt;&gt; 4) &amp; 0x0F) | (packed[2] &lt;&lt; 4);
+    const int third = packed[3] | ((packed[4] &amp; 0x0F) &lt;&lt; 8);
+    const int fourth = ((packed[4] &gt;&gt; 4) &amp; 0x0F) | (packed[5] &lt;&lt; 4);
+    std::cout &lt;&lt; "unpacked=" &lt;&lt; first &lt;&lt; " " &lt;&lt; second &lt;&lt; " " &lt;&lt; third &lt;&lt; " "
+              &lt;&lt; fourth &lt;&lt; '\n';
+    std::cout &lt;&lt; "match="
+              &lt;&lt; (first == values[0] &amp;&amp; second == values[1] &amp;&amp;
+                          third == values[2] &amp;&amp; fourth == values[3]
+                      ? "yes"
+                      : "no")
+              &lt;&lt; '\n';
+
+    cv::Mat mono12(1, 4, CV_16UC1);
+    for (int i = 0; i &lt; 4; ++i) {
+        mono12.at&lt;ushort&gt;(0, i) = static_cast&lt;ushort&gt;(values[i]);
+    }
+    std::cout &lt;&lt; "mono12 type=" &lt;&lt; mono12.type()
+              &lt;&lt; " channels=" &lt;&lt; mono12.channels()
+              &lt;&lt; " elem=" &lt;&lt; mono12.elemSize() &lt;&lt; '\n';
+    std::cout &lt;&lt; "mono10 512-&gt;8bit: " &lt;&lt; cvRound(512 * 255.0 / 1023.0) &lt;&lt; '\n';
+    std::cout &lt;&lt; "mono12 2048-&gt;8bit: " &lt;&lt; cvRound(2048 * 255.0 / 4095.0)
+              &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+  <p>在 <code>示例代码</code> 目录下编译并运行：</p>
+  <pre data-lang="终端"><code>g++ -std=c++17 -Wall -Wextra 5.7-eg-pixel_format.cpp -o eg_pixel_format \
+    $(pkg-config --cflags --libs opencv4)
+./eg_pixel_format</code></pre>
+  <pre class="out" data-label="真实输出">packed bytes: 100 128 62 208 247 255
+unpacked=100 1000 2000 4095
+match=yes
+mono12 type=2 channels=1 elem=2
+mono10 512-&gt;8bit: 128
+mono12 2048-&gt;8bit: 128</pre>
+  <p>
+    打包后的 6 个字节是 100、128、62、208、247、255；解包得到
+    100、1000、2000、4095，与原值一致。每个 12 位值占 1.5 字节，两个值正好
+    3 字节。若把这段数据直接按 <code>CV_16UC1</code> 读取，字节边界会错开，
+    数值不再对应原来的像素。<code>CV_16UC1</code> 的类型值是 2，通道数为 1，
+    每个像素占 2 字节；它适合非打包的 16 位字，不适合打包流。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-7</div>
+  <p>
+    构造一行 5 个 8 位像素，值为 10、50、100、200、250；用
+    <code>convertTo</code> 按增益 1.8、偏移 10 转换，打印每个原值与转换后的
+    值。再构造 4 个 12 位像素，值为 0、512、2048、4095，缩放到 8 位后打印
+    对应关系。本题不需要标准输入，数据直接写在 <code>main</code> 里。
+  </p>
+  <p>预期输出：</p>
+  <pre class="out" data-label="预期输出">gain: 10-&gt;28 50-&gt;100 100-&gt;190 200-&gt;255 250-&gt;255
+12bit: 0-&gt;0 512-&gt;32 2048-&gt;128 4095-&gt;255</pre>
+  <details class="ans" data-run="示例代码/答案/5-7.cpp">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        增益 1.8、偏移 10：10→28，50→100，100→190，200→255（370 被截断），250→255（460 被截断）。12 位缩放到 8 位使用 255/4095：0→0，512→32，2048→128，4095→255。转换会对结果取整，并按目标类型做饱和处理。
+      </p>
+      <pre data-lang="C++" data-name="答案/5-7.cpp"><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include &lt;opencv2/core.hpp&gt;
+
+int main() {
+    const std::vector&lt;uchar&gt; values = {10, 50, 100, 200, 250};
+    cv::Mat source(1, static_cast&lt;int&gt;(values.size()), CV_8UC1);
+    for (std::size_t i = 0; i &lt; values.size(); ++i) {
+        source.at&lt;uchar&gt;(0, static_cast&lt;int&gt;(i)) = values[i];
+    }
+
+    cv::Mat gained;
+    source.convertTo(gained, CV_8UC1, 1.8, 10.0);
+    std::cout &lt;&lt; "gain:";
+    for (std::size_t i = 0; i &lt; values.size(); ++i) {
+        std::cout &lt;&lt; " " &lt;&lt; static_cast&lt;int&gt;(values[i]) &lt;&lt; "-&gt;"
+                  &lt;&lt; static_cast&lt;int&gt;(gained.at&lt;uchar&gt;(0, static_cast&lt;int&gt;(i)));
+    }
+    std::cout &lt;&lt; '\n';
+
+    const std::vector&lt;ushort&gt; raw = {0, 512, 2048, 4095};
+    cv::Mat mono12(1, static_cast&lt;int&gt;(raw.size()), CV_16UC1);
+    for (std::size_t i = 0; i &lt; raw.size(); ++i) {
+        mono12.at&lt;ushort&gt;(0, static_cast&lt;int&gt;(i)) = raw[i];
+    }
+
+    cv::Mat mono8;
+    mono12.convertTo(mono8, CV_8UC1, 255.0 / 4095.0);
+    std::cout &lt;&lt; "12bit:";
+    for (std::size_t i = 0; i &lt; raw.size(); ++i) {
+        std::cout &lt;&lt; " " &lt;&lt; raw[i] &lt;&lt; "-&gt;"
+                  &lt;&lt; static_cast&lt;int&gt;(mono8.at&lt;uchar&gt;(0, static_cast&lt;int&gt;(i)));
+    }
+    std::cout &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <pre class="out" data-label="真实输出">gain: 10-&gt;28 50-&gt;100 100-&gt;190 200-&gt;255 250-&gt;255
+12bit: 0-&gt;0 512-&gt;32 2048-&gt;128 4095-&gt;255</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can">
+  <b>你现在能写什么：</b>说明曝光、增益、帧率、白平衡与 ROI 对画面的影响；
+  用 <code>convertTo</code> 模拟曝光与增益并解释截断；按像素格式选择
+  <code>Mat</code> 类型；区分 10/12 位非打包与打包数据，按位深缩放到 8 位；
+  识别位深、Bayer 顺序、ROI 原点与自动参数造成的错误。
+</p>
+</section>
+
+<nav class="pager">
+  <a href="04-颜色目标检测.html">← 第 4 部分 · 颜色目标检测</a>
+  <span class="spacer"></span>
+  <a href="06-特征匹配.html">第 6 部分 · 特征匹配 →</a>
+</nav>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>
+
