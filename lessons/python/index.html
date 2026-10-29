@@ -3,28 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python — TUP 算法组</title>
+<title>Python 工具与视觉脚本 — TUP 算法组</title>
 <link rel="stylesheet" href="../../assets/style.css">
-<style>
-/* 占位页的版式：一栏字、没有目录栏，跟 TUP.html 首页是一套。
-   样式写在本页里，不动 style.css，别的页不受影响。 */
-.stub {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 5rem 1.5rem 4rem;
-}
-.stub-slot {
-  margin: 2rem 0 0;
-  padding: 1.1rem 1.3rem;
-  background: var(--code-bg);
-  border-left: 3px solid var(--rule-strong);
-  border-radius: 0 4px 4px 0;
-  color: var(--ink-soft);
-  font-size: 0.94rem;
-}
-.stub-slot > b { color: var(--ink-mid); }
-.stub-slot p:last-child { margin-bottom: 0; }
-</style>
 <script src="../../assets/theme.js"></script>
 </head>
 <body>
@@ -36,6 +16,18 @@
   </a>
   <span class="sep" aria-hidden="true"></span>
   <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
     <nav class="nav-courses" aria-label="课程">
       <a href="../cpp_Basics/index.html">C++ 基础课</a>
       <a href="../cpp_advanced/index.html">C++ 进阶课</a>
@@ -50,20 +42,578 @@
   <button class="theme-btn" type="button"></button>
 </header>
 
-<main class="stub">
+<div class="wrap">
 
-  <h1>Python</h1>
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
 
-  <div class="stub-slot">
-    <p><b>作者很懒，还没写....</b></p>
-    <p>已经写好的是 <a href="../cpp_Basics/index.html">C++ 基础课</a>和 <a href="../cpp_advanced/index.html">C++ 进阶课</a>。</p>
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么读这门课</a>
+  <a class="toc-l" href="#structure">课程结构</a>
+  <a class="toc-l" href="#paths">推荐路径</a>
+  <a class="toc-l" href="#media">素材说明</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · 语法与容器</a>
+  <a class="toc-l" href="#p2">第 2 部分 · 函数、类与模块</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 文件、异常与标准库</a>
+  <a class="toc-l" href="#p4">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="toc-l" href="#p5">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 数据与图表</a>
+  <a class="toc-l" href="#p7">第 7 部分 · 工程与测试</a>
+  <a class="toc-l" href="#p8">第 8 部分 · 综合</a>
+  <a class="toc-l" href="#p9">第 9 部分 · 检测题</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
+  <h1>Python 工具与视觉脚本</h1>
+  <p class="part-lead">
+    这门课面向已经会写 C++ 的读者，用 Python 写日常小工具与视觉脚本。
+    内容从脚本运行、报错阅读与第一个批量读图工具开始，经过字符串、列表、
+    字典、控制流与函数，再进入 NumPy、OpenCV、数据图表与工程测试。
+    每个例子都给出完整程序与真实输出，每课两道练习要求独立写出可运行的脚本。
+  </p>
+</header>
+
+<section id="how">
+  <h2 class="sec-plain">怎么读这门课</h2>
+
+  <p>
+    全课 10 个部分、51 课，分三档要求。<b>第 0–1 部分是基础</b>，
+    建议按顺序读完，并亲手运行、修改例子。<b>第 2–7 部分按需阅读</b>：
+    每一部分开头先列前置课，读完前置再按当前任务选读。
+    <b>第 8–9 部分是综合练习</b>，建议在读完第 1–7 部分的相关必读课之后再做。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>档次</th><th>部分</th><th>读到什么程度</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>基础</b></td>
+        <td>第 0–1 部分</td>
+        <td>按顺序读；例子必须运行，参数要能改，输出要能解释</td>
+      </tr>
+      <tr>
+        <td><b>按需</b></td>
+        <td>第 2–7 部分</td>
+        <td>先读该部分列出的前置课，再按任务选读；不要求从头到尾</td>
+      </tr>
+      <tr>
+        <td><b>综合</b></td>
+        <td>第 8–9 部分</td>
+        <td>独立完成一条完整脚本流程与一组检测题</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    具体到每一课，用四个词标注要求。<b>会用</b>指能运行、能改参数、能解释输出；
+    <b>掌握</b>指能独立写出一段完整脚本并定位常见错误；<b>看懂</b>指能读懂代码与
+    参数，不要求独立实现；<b>了解</b>指知道概念、流程与适用场景。
+  </p>
+
+  <p>
+    全课有四课标为<b>选学</b>：1.7、2.5、3.7 与 8.4。选学课可以跳过，
+    也不进入任何部分的前置。
+  </p>
+
+  <h3>每页怎么读</h3>
+
+  <p>
+    课里的 Python 例子都是完整脚本，代码块后紧跟真实输出；涉及文件的例子
+    还会给出终端命令与结果文件的内容。练习先自己写，卡住了再展开答案。
+    运行方法与练习目录见 <a href="00-开始.html#l0-1">0.1</a>，
+    报错的阅读方法见 <a href="00-开始.html#l0-3">0.3</a>。
+    课程假设读者已经会写基本的 C++ 程序：变量、循环、函数与数组，
+    能用一条命令编译并运行源文件；Python 的语法从第 0 部分开始介绍。
+  </p>
+</section>
+
+<section id="structure">
+  <h2 class="sec-plain">课程结构</h2>
+
+  <p>
+    下表给出 10 个部分的分工、课数、前置与主要内容。“前置”只列必读课，
+    不列选学课。每个部分页的第一屏会把这些前置写成可点击的链接。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>部分</th><th>类型</th><th>课数</th><th>前置</th><th>主要内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>0 开始</b></td>
+        <td>基础</td><td>5</td><td>无</td>
+        <td>练习目录、解释器、报错阅读、批量读取图片尺寸、C++ 习惯对照</td>
+      </tr>
+      <tr>
+        <td><b>1 语法与容器</b></td>
+        <td>基础</td><td>7</td><td>0.1–0.5</td>
+        <td>值与类型、字符串、列表与元组、字典与集合、控制流与推导式、函数、命名空间（1.7 选学）</td>
+      </tr>
+      <tr>
+        <td><b>2 函数进阶、类与模块</b></td>
+        <td>按需</td><td>5</td><td>1.6</td>
+        <td>参数进阶、闭包与装饰器、类与对象、继承与组合、模块与包（2.5 选学）</td>
+      </tr>
+      <tr>
+        <td><b>3 文件、异常与标准库</b></td>
+        <td>按需</td><td>7</td><td>第 1 部分的必读课、2.1</td>
+        <td>路径与文本、CSV 与 JSON、YAML、异常、上下文管理器、命令行、日志（3.7 选学）</td>
+      </tr>
+      <tr>
+        <td><b>4 NumPy</b></td>
+        <td>按需</td><td>6</td><td>0.4、1.1–1.6</td>
+        <td>ndarray、索引与视图、形状与广播、统计与直方图、线性代数、随机数</td>
+      </tr>
+      <tr>
+        <td><b>5 OpenCV Python</b></td>
+        <td>按需</td><td>7</td><td>3.1、4.1–4.6</td>
+        <td>读写与通道、颜色与阈值、形态学与轮廓、视频、摄像头回退、标定、性能</td>
+      </tr>
+      <tr>
+        <td><b>6 数据与图表</b></td>
+        <td>按需</td><td>4</td><td>1.2–1.3、4.1–4.4、4.6</td>
+        <td>Matplotlib 基本用法、曲线、散点与直方图、保存图表</td>
+      </tr>
+      <tr>
+        <td><b>7 工程与测试</b></td>
+        <td>按需</td><td>4</td><td>1.6、2.3、3.1、3.4、3.5</td>
+        <td>项目结构、命令行参数、单元测试、调试与性能</td>
+      </tr>
+      <tr>
+        <td><b>8 综合</b></td>
+        <td>综合</td><td>4</td><td>1.6、2.3、3.1–3.6、4.1–4.4、5.1–5.4、6.1、7.1–7.3</td>
+        <td>视频目标计数、检测与越线、命令行与日志、离线回放评估（8.4 选学）</td>
+      </tr>
+      <tr>
+        <td><b>9 检测题</b></td>
+        <td>综合</td><td>2</td><td>1.6、2.3、3.1–3.5、4.1–4.4、5.1–5.4、6.1、7.1–7.3</td>
+        <td>批量图片统计与报告、五道检测题与答案</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    合计 5 + 7 + 5 + 7 + 6 + 7 + 4 + 4 + 4 + 2 = 51 课。
+  </p>
+</section>
+
+<section id="paths">
+  <h2 class="sec-plain">推荐路径</h2>
+
+  <p>
+    不要求按 0 到 9 的顺序读完。可以按目标选一条路径，先读前置，
+    再读该路径列出的课。路径里的编号都指课程编号，不是页码。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>目标</th><th>建议顺序</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>日常小工具</td>
+        <td>0 → 1 → 2 → 3</td>
+        <td>文件遍历、文本处理、异常与命令行参数；不依赖图像库</td>
+      </tr>
+      <tr>
+        <td>图像脚本</td>
+        <td>0 → 1 → 4 → 5</td>
+        <td>先掌握列表与 NumPy 数组，再进入 OpenCV 的读写、阈值与轮廓</td>
+      </tr>
+      <tr>
+        <td>数据与图表</td>
+        <td>0 → 1 → 4 → 6</td>
+        <td>用 NumPy 整理数据，用 Matplotlib 画曲线、散点与直方图</td>
+      </tr>
+      <tr>
+        <td>工程与测试</td>
+        <td>0 → 1 → 2 → 3 → 7</td>
+        <td>把脚本拆成模块，加入命令行入口与单元测试</td>
+      </tr>
+      <tr>
+        <td>全课</td>
+        <td>0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9</td>
+        <td>第 8–9 部分要求先读完第 1–5 部分的必读课</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="media">
+  <h2 class="sec-plain">素材说明</h2>
+
+  <p>
+    课程例子使用的图片与文本都随课程放在本地。
+    合成素材由课程附带的生成脚本生成，位置、颜色与尺寸固定，
+    重复运行得到同一组文件。
+  </p>
+
+  <p>
+    六张 PNG 分别是：<code>synth_shapes.png</code> 为 640×480 的彩色几何
+    图形，<code>synth_balls.png</code> 为 640×480 的彩色圆球，
+    <code>synth_grid.png</code> 为 320×240 的灰度棋盘；
+    <code>synth_chess_1.png</code> 到 <code>synth_chess_3.png</code> 是
+    三张 640×480 的棋盘格标定图，图案为 9×6 内角点，三张姿态不同。
+    文本素材有四份：<code>synth_notes.txt</code> 是四行“名字,分数”，
+    <code>synth_scores.csv</code> 带表头、空行与坏行，
+    <code>synth_config.json</code> 与 <code>synth_config.yaml</code> 是内容
+    等价的两份嵌套配置。视频素材有一份：<code>synth_cube.mp4</code> 是
+    320×240、每秒 12 帧、共 36 帧的合成视频，橙色方块沿水平方向移动。
+  </p>
+
+  <div class="aside tip">
+    <b>关于结果文件</b>
+    <p>
+      0.4 的例子会写出 <code>out_sizes.txt</code>，4.6 会写出
+      <code>out_points.csv</code>，5.1 到 5.6 会写出
+      <code>out_*.png</code>、<code>out_video/</code> 与
+      <code>out_camera/</code>。这些结果写在课程根目录，不写进素材目录；
+      删除后重新运行即可再生成。
+    </p>
   </div>
+</section>
 
-  <footer class="site-footer">
-    TUP 战队算法组 · Python
-  </footer>
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">
+    基础，5 课，无前置。只要求能读懂 C++ 基本语句。
+    这一部分把练习目录、脚本运行、报错阅读与一个完整工具走通。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">练习目录与代码约定</a>
+      <span class="d">复制练习目录、运行检查脚本、代码与输出块的阅读约定</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">第一个脚本</a>
+      <span class="d"><code>main</code> 与入口判断；脚本结构；运行与退出码</span>
+    </span></li>
+    <li><span class="n">0.3</span><span class="body">
+      <a class="t" href="00-开始.html#l0-3">报错与调试</a>
+      <span class="d">读 traceback；文件不存在、缩进、名字与类型四类错误；调试顺序</span>
+    </span></li>
+    <li><span class="n">0.4</span><span class="body">
+      <a class="t" href="00-开始.html#l0-4">第一个完整工具：批量读取图片尺寸</a>
+      <span class="d"><code>pathlib</code> 遍历、<code>cv2.imread</code>、尺寸与类型、写入结果文件</span>
+    </span></li>
+    <li><span class="n">0.5</span><span class="body">
+      <a class="t" href="00-开始.html#l0-5">从 C++ 到 Python：要改的习惯</a>
+      <span class="d">名字与别名、切片复制、函数修改列表、真除法与整除、真值判断</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-语法与容器.html">第 1 部分 · 语法与容器</a></h2>
+  <p class="part-note">
+    基础，7 课，前置 0.1–0.5。这一部分从值与类型开始，讲清字符串、
+    列表、元组、字典与集合，最后写条件、循环、推导式与函数；1.7 为选学的
+    命名空间。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-1">值、变量与类型</a>
+      <span class="d">常见类型；名字绑定；转换与浮点精度；<code>isinstance</code> 与 <code>is None</code></span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-2">字符串与格式化</a>
+      <span class="d">下标与切片；<code>strip</code>、<code>split</code>、<code>join</code>；f-string 对齐；逐行读文本</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-3">列表、元组与切片</a>
+      <span class="d">增删与查找；<code>sort</code> 与 <code>sorted</code>；切片复制；<code>enumerate</code> 与 <code>zip</code>；嵌套容器</span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-4">字典与集合</a>
+      <span class="d"><code>get</code>、<code>setdefault</code>、<code>update</code>；插入顺序；交并差；<code>Counter</code></span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-5">控制流与推导式</a>
+      <span class="d"><code>if/elif/else</code>；<code>for/else</code> 与 <code>while</code>；列表、字典、集合推导式；<code>key</code> 函数</span>
+    </span></li>
+    <li><span class="n">1.6</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-6">函数</a>
+      <span class="d">定义与调用；位置、关键字与默认参数；多返回值与作用域；可变默认值</span>
+    </span></li>
+    <li><span class="n">1.7</span><span class="body">
+      <a class="t" href="01-语法与容器.html#l1-7">命名空间（选学）</a>
+      <span class="d">模块、函数、类与对象的命名空间；LEGB 查找与遮蔽；<code>globals</code>、<code>locals</code>、<code>vars</code>；<code>SimpleNamespace</code></span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 1.1–1.6。这一部分把参数、作用域与闭包讲细，
+    用类与 dataclass 组织检测结果，再把脚本拆成模块与包；
+    2.5 为选学的迭代器、生成器与装饰器。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-函数类与模块.html#l2-1">参数、作用域与闭包</a>
+      <span class="d">仅位置与仅关键字参数；可变默认值；LEGB 与 <code>nonlocal</code>；计数器闭包；<code>partial</code></span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-函数类与模块.html#l2-2">类与对象</a>
+      <span class="d">类与实例属性；<code>__init__</code> 与 <code>__repr__</code>；<code>@dataclass</code>；组合与继承；对象列表排序</span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-函数类与模块.html#l2-3">模块、包与导入</a>
+      <span class="d">模块与包；绝对导入；<code>python3 -m</code>；主程序入口；导入路径排错</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-函数类与模块.html#l2-4">类型标注与文档字符串</a>
+      <span class="d">参数与返回值标注；容器类型；运行时不检查；<code>__annotations__</code> 与 <code>inspect.signature</code></span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-函数类与模块.html#l2-5">选学：迭代器、生成器与装饰器</a>
+      <span class="d">迭代协议；<code>yield</code> 与惰性求值；装饰器与 <code>wraps</code>；分批处理与计数</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a></h2>
+  <p class="part-note">
+    按需，7 课，前置 1.1–1.6、2.1、2.3。这一部分处理文件、目录、配置、
+    命令行与日志，最后选学二进制帧；3.7 为了解内容。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-1">文件读写与 with</a>
+      <span class="d"><code>open</code> 的读写模式；逐行处理；<code>Path.write_text</code>；编码与换行</span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-2">异常与错误处理</a>
+      <span class="d">常见异常；<code>try/except/else/finally</code>；自定义异常；批处理跳过坏行与退出码</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-3">pathlib 与目录遍历</a>
+      <span class="d">路径拼接；<code>name</code>、<code>stem</code>、<code>suffix</code>；<code>iterdir</code> 与 <code>glob</code>；创建与改名</span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-4">CSV、JSON 与 YAML 配置</a>
+      <span class="d"><code>DictReader</code> 与 <code>DictWriter</code>；JSON 读写；<code>yaml.safe_load</code>；默认值与校验</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-5">argparse 与命令行工具</a>
+      <span class="d">位置与可选参数；<code>type</code>、<code>default</code>、<code>choices</code>；<code>main</code> 返回退出码；帮助与错误</span>
+    </span></li>
+    <li><span class="n">3.6</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-6">logging 与调试输出</a>
+      <span class="d">日志级别；记录器与处理器；格式串；延迟格式化；<code>logger.exception</code></span>
+    </span></li>
+    <li><span class="n">3.7</span><span class="body">
+      <a class="t" href="03-文件异常与标准库.html#l3-7">选学：二进制数据与帧解析</a>
+      <span class="d"><code>bytes</code> 与 <code>bytearray</code>；<code>struct</code>；CRC8；帧结构；缓冲区与半包</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p4">
+  <h2><a href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a></h2>
+  <p class="part-note">
+    按需，6 课，前置 0.4、1.1–1.6。这一部分从 ndarray 的创建与内存讲起，
+    依次进入索引与视图、形状与广播、统计与直方图、线性代数与随机数；
+    每个例子都给出完整程序与真实输出。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-1">ndarray 的创建与内存</a>
+      <span class="d">创建数组；形状、类型与大小；内存布局与步长；类型转换与溢出</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-2">索引、切片与视图</a>
+      <span class="d">下标与切片；视图与副本；布尔掩码与 <code>where</code>；花式索引与轴</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-3">形状、广播与向量化</a>
+      <span class="d"><code>reshape</code> 与转置；拼接与堆叠；广播规则；按轴聚合与归一化</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-4">统计、排序与直方图</a>
+      <span class="d">均值、标准差与极值；最值与坐标；分位数与直方图；排序、排名与缺失值</span>
+    </span></li>
+    <li><span class="n">4.5</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-5">线性代数</a>
+      <span class="d">矩阵与向量；解线性方程组；逆、行列式与范数；最小二乘与 SVD</span>
+    </span></li>
+    <li><span class="n">4.6</span><span class="body">
+      <a class="t" href="04-NumPy.html#l4-6">随机数与可复现</a>
+      <span class="d">生成器与种子；常见分布；随机掩码与抽样；保存与复现</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p5">
+  <h2><a href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a></h2>
+  <p class="part-note">
+    按需，7 课，前置 3.1、4.1–4.6。这一部分把数组知识落到图像与视频：
+    读写与通道、颜色与阈值、形态学与轮廓、视频逐帧处理、摄像头回退、
+    相机标定，最后比较循环与向量化的耗时。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-1">图像的读取、通道与保存</a>
+      <span class="d">读图标志；形状、类型与像素；通道拆分与合并；区域与保存</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-2">颜色空间、阈值与掩码</a>
+      <span class="d">BGR 与 HSV；<code>inRange</code> 与双区间；掩码统计与连通区域；Otsu 与自适应阈值</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-3">形态学、边缘与轮廓</a>
+      <span class="d">腐蚀、膨胀与开闭运算；Canny 边缘；轮廓、面积与周长；外接矩形与圆形度</span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-4">视频的读取与写出</a>
+      <span class="d">打开视频与元数据；逐帧读取；写出视频；抽帧与释放</span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-5">摄像头与回退视频</a>
+      <span class="d">打开摄像头；读取失败与回退；显示窗口与按键；无摄像头环境</span>
+    </span></li>
+    <li><span class="n">5.6</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-6">相机标定与去畸变</a>
+      <span class="d">棋盘格与世界坐标；角点检测与细化；标定与重投影误差；去畸变与位姿</span>
+    </span></li>
+    <li><span class="n">5.7</span><span class="body">
+      <a class="t" href="05-OpenCV-Python.html#l5-7">性能与内存</a>
+      <span class="d">计时方法；循环与向量化；视图与副本；优化顺序</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p6">
+  <h2><a href="06-数据与图表.html">第 6 部分 · 数据与图表</a></h2>
+  <p class="part-note">
+    按需，4 课，前置 1.2–1.3、4.1–4.4、4.6。这一部分把数组数据画成
+    图表：从画布与折线开始，进入多条曲线与子图、散点与直方图，最后
+    控制尺寸、分辨率与保存边界；每个例子都给出完整程序与真实输出。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-数据与图表.html#l6-1">画布、坐标轴与折线图</a>
+      <span class="d">Figure 与 Axes；折线、颜色与标记；标题、标签、范围与图例；保存与关闭</span>
+    </span></li>
+    <li><span class="n">6.2</span><span class="body">
+      <a class="t" href="06-数据与图表.html#l6-2">多条曲线、样式与子图</a>
+      <span class="d">多条曲线与线型；网格、参考线与文字；并排子图；读回线条、标题与网格状态</span>
+    </span></li>
+    <li><span class="n">6.3</span><span class="body">
+      <a class="t" href="06-数据与图表.html#l6-3">散点图与直方图</a>
+      <span class="d"><code>scatter</code> 与颜色条；<code>hist</code> 的计数与边界；分箱与范围；固定种子</span>
+    </span></li>
+    <li><span class="n">6.4</span><span class="body">
+      <a class="t" href="06-数据与图表.html#l6-4">尺寸、分辨率与保存</a>
+      <span class="d">英寸与 DPI；紧凑边界；背景与 PNG 通道；多子图保存与读回</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p7">
+  <h2><a href="07-工程与测试.html">第 7 部分 · 工程与测试</a></h2>
+  <p class="part-note">
+    按需，4 课，前置 1.6、2.3、3.1、3.2、3.4、3.5。这一部分把脚本
+    整理成包，加入命令行入口与单元测试，并用断言、剖析与计时比较写法；
+    每个例子都给出完整程序与真实输出。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-工程与测试.html#l7-1">把脚本拆成包</a>
+      <span class="d">包目录与入口；相对导入与 <code>-m</code>；按文件位置解析路径；读取容错</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-工程与测试.html#l7-2">命令行入口与子命令</a>
+      <span class="d">包内入口与 <code>-m</code>；子命令与处理函数分派；共享 <code>--data</code> 选项；退出码与错误</span>
+    </span></li>
+    <li><span class="n">7.3</span><span class="body">
+      <a class="t" href="07-工程与测试.html#l7-3">单元测试 unittest</a>
+      <span class="d">测试类与方法；断言与异常；运行器与结果对象；可重复的测试输出</span>
+    </span></li>
+    <li><span class="n">7.4</span><span class="body">
+      <a class="t" href="07-工程与测试.html#l7-4">断言、性能与剖析</a>
+      <span class="d"><code>assert</code>；<code>cProfile</code> 调用次数；<code>timeit</code> 比较；优化顺序</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p8">
+  <h2><a href="08-综合.html">第 8 部分 · 综合</a></h2>
+  <p class="part-note">
+    综合，4 课（8.4 选学），前置 1.6、2.3、3.1–3.6、4.1–4.4、5.1–5.4、
+    6.1、7.1–7.3。这一部分把前面的知识合成一条视频处理流程：从任务拆解
+    开始，完成检测、跟踪与越线计数，再加上命令行、日志与报告；选学课用
+    离线轨迹比较平滑参数。每个例子都给出完整程序与真实输出。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">8.1</span><span class="body">
+      <a class="t" href="08-综合.html#l8-1">任务拆解：视频目标计数</a>
+      <span class="d">输入与输出；流程与参数；颜色、面积与越线判据；合成视频的基准结果</span>
+    </span></li>
+    <li><span class="n">8.2</span><span class="body">
+      <a class="t" href="08-综合.html#l8-2">实现：检测、跟踪与输出</a>
+      <span class="d">模块划分；HSV 掩码与最大轮廓；重心关联与越线防抖；CSV、JSON、视频与标注帧</span>
+    </span></li>
+    <li><span class="n">8.3</span><span class="body">
+      <a class="t" href="08-综合.html#l8-3">收尾：命令行、日志与报告</a>
+      <span class="d">参数与退出码；文件日志与报告；缺失输入与写入失败；耗时统计</span>
+    </span></li>
+    <li><span class="n">8.4</span><span class="body">
+      <a class="t" href="08-综合.html#l8-4">选学：离线回放与参数对比</a>
+      <span class="d">轨迹 CSV 与低置信度处理；指数平滑；抖动、滞后与预测误差；参数扫描</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p9">
+  <h2><a href="09-检测题.html">第 9 部分 · 检测题</a></h2>
+  <p class="part-note">
+    综合，2 课，前置 1.6、2.3、3.1–3.5、4.1–4.4、5.1–5.4、6.1、7.1–7.3。
+    这一部分先做一道批量图片统计的完整例题，再用五道检测题检查目录、
+    配置、数组、视频与工程五类任务；每题给出输入、预期输出与评分点，
+    答案都由检查脚本真跑并逐行核对。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">9.1</span><span class="body">
+      <a class="t" href="09-检测题.html#l9-1">综合例题：批量图片统计与报告</a>
+      <span class="d">目录遍历与坏图跳过；通道均值与连通域计数；CSV、JSON 与柱状图；稳定顺序</span>
+    </span></li>
+    <li><span class="n">9.2</span><span class="body">
+      <a class="t" href="09-检测题.html#l9-2">五道检测题与答案</a>
+      <span class="d">自检形状；目录与 CSV、坏行与配置、NumPy、视频抽帧、多文件线程工具；评分点与核对</span>
+    </span></li>
+  </ul>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
 
 </main>
+</div>
 
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
 </body>
 </html>

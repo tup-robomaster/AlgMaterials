@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · 工程与测试 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a class="active" href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" aria-current="page" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · 工程与测试</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>把脚本拆成包</a>
+  <a class="toc-sub" href="#s7-1-1">工程目录</a>
+  <a class="toc-sub" href="#s7-1-2">包的导入</a>
+  <a class="toc-sub" href="#s7-1-3">入口与路径</a>
+  <a class="toc-sub" href="#s7-1-4">数据与容错</a>
+  <a class="toc-sub" href="#e7-1">例题：分解测量报告</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>命令行入口与子命令</a>
+  <a class="toc-sub" href="#s7-2-1">入口与包的分工</a>
+  <a class="toc-sub" href="#s7-2-2">子命令与分派</a>
+  <a class="toc-sub" href="#s7-2-3">共享选项与路径</a>
+  <a class="toc-sub" href="#s7-2-4">退出码与错误边界</a>
+  <a class="toc-sub" href="#e7-2">例题：测量记录工具</a>
+  <a class="toc-l" href="#l7-3"><span class="n">7.3</span>单元测试 unittest</a>
+  <a class="toc-sub" href="#s7-3-1">测试函数与测试类</a>
+  <a class="toc-sub" href="#s7-3-2">断言与异常</a>
+  <a class="toc-sub" href="#s7-3-3">运行器与结果</a>
+  <a class="toc-sub" href="#s7-3-4">可重复的测试输出</a>
+  <a class="toc-sub" href="#e7-3">例题：平均值测试</a>
+  <a class="toc-l" href="#l7-4"><span class="n">7.4</span>断言、性能与剖析</a>
+  <a class="toc-sub" href="#s7-4-1">断言</a>
+  <a class="toc-sub" href="#s7-4-2">调用次数与 cProfile</a>
+  <a class="toc-sub" href="#s7-4-3">基准计时 timeit</a>
+  <a class="toc-sub" href="#s7-4-4">优化顺序</a>
+  <a class="toc-sub" href="#e7-4">例题：循环与公式</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>工程与测试</h1>
+  <p class="part-lead">
+    这一部分把能运行的脚本整理成可维护的工程：把读取、计算与入口拆成包，
+    用命令行参数控制行为，用单元测试检查边界，用断言、调用次数与计时
+    比较两种写法。每一步都保留真实输出，便于重复核对。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-6 l2-3 l3-1 l3-2 l3-4 l3-5">
+  <b>前置</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="01-语法与容器.html#l1-6">1.6</a>（函数）、
+    <a href="02-函数类与模块.html#l2-3">2.3</a>（模块、包与导入）、
+    <a href="03-文件异常与标准库.html#l3-1">3.1</a>（文件读写与 with）、
+    <a href="03-文件异常与标准库.html#l3-2">3.2</a>（异常与错误处理）、
+    <a href="03-文件异常与标准库.html#l3-4">3.4</a>（CSV、JSON 与 YAML 配置）、
+    <a href="03-文件异常与标准库.html#l3-5">3.5</a>（argparse 与命令行工具）。
+  </p>
+</div>
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>把脚本拆成包</h2>
+
+<p>
+  当一个脚本同时负责读文件、计算统计量和打印结果时，任何一处改动都可能
+  影响其他环节。工程化的第一步是按职责拆分：读取放在一个模块，计算放在
+  另一个模块，入口只负责组织流程。拆分后，读取与计算可以单独导入、单独
+  测试，命令行入口也更容易替换。
+</p>
+
+<p>
+  这一课建立一个测量报告工程：数据文件放在 <code>data</code> 目录，包目录
+  里放包的说明、读取模块、统计模块与入口模块。最后从工程目录用
+  <code>python3 -m</code> 运行，观察包内导入与路径解析。
+</p>
+
+<h3 id="s7-1-1">工程目录</h3>
+
+<p>
+  本课建立的包（package）是带 <code>__init__.py</code> 的目录。这个文件
+  可以为空，也可以放包的说明与公开接口；它的存在让 Python 把目录当作包
+  处理。入口模块（entry module）名为 <code>__main__.py</code>，用
+  <code>python3 -m 包名</code> 运行时，Python 会找到并执行这个文件。
+</p>
+
+<p>
+  例子把工程分成四部分：<code>depth_report/__init__.py</code> 说明包，
+  <code>depth_report/io.py</code> 读取 CSV，<code>depth_report/stats.py</code>
+  计算汇总与筛选，<code>depth_report/__main__.py</code> 组织输出。数据文件
+  单独放在 <code>data/measurements.csv</code>，与代码分离，便于替换数据而
+  不改程序。
+</p>
+
+<h3 id="s7-1-2">包的导入</h3>
+
+<p>
+  包内模块之间用相对导入：<code>from .io import read_measurements</code>
+  里的点表示当前包，<code>from .stats import near, summarize</code> 同理。
+  相对导入要求模块作为包的一部分被导入；直接执行
+  <code>python3 depth_report/__main__.py</code> 时，入口文件被当成顶层
+  脚本，没有包上下文，相对导入会失败。
+</p>
+
+<p>
+  正确方式是在工程目录执行 <code>python3 -m depth_report</code>。这时
+  Python 把当前目录加入模块搜索路径，找到 <code>depth_report</code> 包，
+  执行包内的 <code>__main__.py</code>，相对导入可以解析。工程目录应当是
+  包目录的上一级，而不是包目录本身。
+</p>
+
+<h3 id="s7-1-3">入口与路径</h3>
+
+<p>
+  入口模块用 <code>Path(__file__).resolve().parent.parent / "data" /
+  "measurements.csv"</code> 定位数据文件。<code>__file__</code> 是当前模块
+  的文件路径，<code>resolve()</code> 转成绝对路径并解析符号链接，
+  <code>parent</code> 从入口文件所在目录向上两级，得到工程目录，再拼出
+  数据路径。
+</p>
+
+<p>
+  这种写法不依赖当前工作目录：无论从哪里启动，只要包能被导入，数据路径
+  都指向工程内的文件。打印结果时只输出数据内容与统计值，不输出绝对路径，
+  输出更简洁，也不会暴露运行环境的目录结构。
+</p>
+
+<h3 id="s7-1-4">数据与容错</h3>
+
+<p>
+  <code>read_measurements</code> 先读表头，再逐行读取。空行跳过；字段数
+  不是三段的行跳过；深度或面积不能转成浮点数的行也跳过。表头必须正好是
+  <code>name,depth,area</code>，否则抛出 <code>ValueError</code>，让格式
+  问题尽早暴露。
+</p>
+
+<p>
+  <code>summarize</code> 接收行列表，返回行数、平均深度与最大面积；空列表
+  返回计数 0 与两个 0.0，避免除零。<code>near</code> 按深度阈值筛选名字。
+  读取与统计分开后，统计函数可以直接用构造的列表测试，不需要准备文件。
+</p>
+
+<div class="eg" id="e7-1">
+  <div class="eg-h">例题 · 分解测量报告</div>
+  <p>题目：建立一个测量报告包，包内分读取、统计、入口三个模块；数据文件包含表头、五行记录与一个空行；从工程目录用模块方式运行，打印记录数、平均深度、最大面积与深度不超过 12 的样本名。</p>
+  <p>包说明文件：</p>
+  <pre data-lang="Python" data-file="7.1-project/depth_report/__init__.py"><code>"""按深度与面积汇总测量记录的示例包。"""</code></pre>
+  <p>读取模块：</p>
+  <pre data-lang="Python" data-file="7.1-project/depth_report/io.py"><code>def read_measurements(path):
+    rows = []
+    with open(path, encoding="utf-8") as handle:
+        header = handle.readline().strip().split(",")
+        if header != ["name", "depth", "area"]:
+            raise ValueError("unexpected header")
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(",")
+            if len(parts) != 3:
+                continue
+            name, depth_text, area_text = parts
+            try:
+                depth = float(depth_text)
+                area = float(area_text)
+            except ValueError:
+                continue
+            rows.append((name, depth, area))
+    return rows</code></pre>
+  <p>统计模块：</p>
+  <pre data-lang="Python" data-file="7.1-project/depth_report/stats.py"><code>def summarize(rows):
+    if not rows:
+        return {"count": 0, "mean_depth": 0.0, "max_area": 0.0}
+    depths = [row[1] for row in rows]
+    areas = [row[2] for row in rows]
+    return {
+        "count": len(rows),
+        "mean_depth": sum(depths) / len(depths),
+        "max_area": max(areas),
+    }
+
+
+def near(rows, limit):
+    return [row[0] for row in rows if row[1] &lt;= limit]</code></pre>
+  <p>数据文件：</p>
+  <pre data-lang="文本"><code>name,depth,area
+north,18.5,42.0
+east,12.4,38.5
+south,9.8,51.2
+west,15.1,27.4
+
+center,11.2,44.8</code></pre>
+  <p>入口模块：</p>
+  <pre data-lang="Python" data-name="7.1-project/depth_report/__main__.py"><code>from pathlib import Path
+
+from .io import read_measurements
+from .stats import near, summarize
+
+
+DATA = Path(__file__).resolve().parent.parent / "data" / "measurements.csv"
+
+
+def main():
+    rows = read_measurements(DATA)
+    report = summarize(rows)
+    print("rows:", report["count"])
+    print("mean depth: %.2f" % report["mean_depth"])
+    print("max area: %.1f" % report["max_area"])
+    print("near:", ", ".join(near(rows, 12.0)))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>cd 示例代码/7.1-project
+python3 -m depth_report</code></pre>
+    <pre class="out" data-label="真实输出">rows: 5
+mean depth: 13.40
+max area: 51.2
+near: south, center</pre>
+  <p>数据文件有五行记录，空行被跳过，所以行数为 5。深度之和是 67.0，
+  平均深度 13.40；面积最大的是 south 的 51.2。阈值 12.0 只保留 south
+  与 center，east 的深度 12.4 超过阈值，不进入结果。</p>
+  <p>运行命令从工程目录开始，<code>-m</code> 让 Python 以包的方式执行
+  <code>depth_report</code>。如果直接在包目录里执行入口文件，相对导入
+  会失败；如果在外层目录执行，工程目录又不在模块搜索路径里。目录、导入
+  方式与运行位置三者必须一致。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-1</div>
+  <p>写一个脚本 <code>7-1.py</code>，把 <code>示例代码/7.1-project</code> 加入 <code>sys.path</code>，从 <code>depth_report.io</code> 导入 <code>read_measurements</code>，从 <code>depth_report.stats</code> 导入 <code>summarize</code>；读取工程的数据文件，打印记录数、平均深度（两位小数）与最大面积（一位小数）。</p>
+    <pre class="out" data-label="预期输出">rows: 5
+mean depth: 13.40
+max area: 51.2</pre>
+  <!-- 答案 7-1 -->
+  <details class="ans" data-run="示例代码/答案/7-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        把工程目录加入模块搜索路径后，可以从包中导入读取与汇总函数。数据
+        文件有五行有效记录，平均深度为 13.40，最大面积为 51.2。
+      </p>
+      <pre data-lang="Python"><code>import sys
+
+sys.path.insert(0, "示例代码/7.1-project")
+from depth_report.io import read_measurements
+from depth_report.stats import summarize
+
+
+rows = read_measurements("示例代码/7.1-project/data/measurements.csv")
+report = summarize(rows)
+print("rows:", report["count"])
+print("mean depth: %.2f" % report["mean_depth"])
+print("max area: %.1f" % report["max_area"])</code></pre>
+      <pre class="out" data-label="真实输出">rows: 5
+mean depth: 13.40
+max area: 51.2</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-2</div>
+  <p>写一个脚本 <code>7-2.py</code>，用同样的方式导入 <code>read_measurements</code> 与 <code>near</code>，读取工程数据，筛选深度不超过 15.0 的样本；打印用逗号加空格连接的名字，以及筛选后的数量。</p>
+    <pre class="out" data-label="预期输出">near 15.0: east, south, center
+count: 3</pre>
+  <!-- 答案 7-2 -->
+  <details class="ans" data-run="示例代码/答案/7-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        深度不超过 15.0 的样本是 east、south 与 center，共 3 个。west 的
+        深度为 15.1，超过阈值，因此不进入结果。
+      </p>
+      <pre data-lang="Python"><code>import sys
+
+sys.path.insert(0, "示例代码/7.1-project")
+from depth_report.io import read_measurements
+from depth_report.stats import near
+
+
+rows = read_measurements("示例代码/7.1-project/data/measurements.csv")
+names = near(rows, 15.0)
+print("near 15.0:", ", ".join(names))
+print("count:", len(names))</code></pre>
+      <pre class="out" data-label="真实输出">near 15.0: east, south, center
+count: 3</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把脚本拆成包，用相对导入连接读取、统计与入口模块，从工程目录以模块方式运行，并按文件位置解析数据路径。</p>
+</section>
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>命令行入口与子命令</h2>
+
+<p>
+  包把读取与统计拆开之后，入口仍然是一段固定流程：数据文件写死，输出
+  只有一种。换文件、换阈值或只取一部分结果时，仍然要改源码。这一课在
+  包内增加命令行入口，由入口解析子命令与选项，再调用包里的函数；包保持
+  不变，入口负责选择与输出。上一课的 <code>__main__.py</code> 保留为固定
+  报告，本课的 <code>cli.py</code> 是同一包内另一个入口，按子命令调用
+  同一组读取与统计函数。
+</p>
+
+<h3 id="s7-2-1">入口与包的分工</h3>
+
+<p>
+  命令行入口写成包内的 <code>cli.py</code>，从工程目录用
+  <code>python3 -m depth_report.cli</code> 运行。模块方式让
+  <code>cli.py</code> 仍在包的上下文里，开头的
+  <code>from .io import read_measurements</code> 这类相对导入可以解析；
+  直接执行文件路径时，模块被当成顶层脚本，相对导入会失败。
+</p>
+
+<p>
+  入口只承担建立解析器、解析命令行与分派三项职责。参数声明、类型转换与
+  帮助文本交给 argparse，读取与统计仍留在 <code>io.py</code> 和
+  <code>stats.py</code>；调整统计规则不必改动入口，增加子命令也不必
+  复制读取代码。
+</p>
+
+<h3 id="s7-2-2">子命令与分派</h3>
+
+<p>
+  <code>add_subparsers(dest="command", required=True)</code> 建立子命令
+  （subcommand）层：<code>dest</code> 把子命令名存进
+  <code>args.command</code>，<code>required=True</code> 要求必须给出一个
+  子命令。每个 <code>sub.add_parser</code> 拥有自己的参数与帮助；
+  <code>set_defaults(handler=...)</code> 把处理函数（handler）绑到解析
+  结果。
+</p>
+  <pre data-lang="Python"><code>parser = argparse.ArgumentParser(prog="tool")
+sub = parser.add_subparsers(dest="command", required=True)
+hello = sub.add_parser("hello")
+hello.add_argument("name")
+hello.set_defaults(handler=run_hello)</code></pre>
+<p>
+  解析完成后调用 <code>args.handler(args)</code> 即可分派。主流程不必写
+  <code>if args.command == ...</code> 的长链；增加子命令时，只需注册新的
+  解析器与处理函数。
+</p>
+
+<h3 id="s7-2-3">共享选项与路径</h3>
+
+<p>
+  两个子命令都要读同一个 CSV，公共选项 <code>--data</code> 写进一个
+  <code>add_help=False</code> 的父解析器（parent parser），再通过
+  <code>parents=[common]</code> 传给每个子命令。父解析器只提供参数定义，
+  不单独解析命令行；<code>add_help=False</code> 让它不生成
+  <code>-h</code>，子命令各自保留帮助，避免选项冲突。
+</p>
+  <pre data-lang="Python"><code>common = argparse.ArgumentParser(add_help=False)
+common.add_argument("--data", type=Path, default=DATA)
+sub.add_parser("summary", parents=[common])
+sub.add_parser("near", parents=[common])</code></pre>
+<p>
+  两个子命令都接受 <code>--data</code>，省略时取父解析器里的默认值。
+  实际工程中这个默认值用
+  <code>Path(__file__).resolve().parent.parent / "data" /
+  "measurements.csv"</code> 按模块位置定位，不依赖当前工作目录；
+  <code>type=Path</code> 把命令行文本转成路径对象，后续可以直接用
+  <code>.name</code> 取文件名。用户给出的相对路径按当前目录解析，绝对
+  路径按原样使用。
+</p>
+
+<h3 id="s7-2-4">退出码与错误边界</h3>
+
+<p>
+  <code>summary</code> 成功返回 0；<code>near</code> 没有匹配记录返回 1；
+  数据文件缺失或表头不符时，包里的 <code>OSError</code> 与
+  <code>ValueError</code> 会向上抛出，入口捕获后把错误写到标准错误并
+  返回 3。参数错误仍由 argparse 以 2 结束。调用者据此区分「输入有问题」
+  「没有结果」与「参数写错」。
+</p>
+
+<p>
+  错误在入口这一层统一处理：业务函数遇到无法继续的输入就抛出异常，由
+  <code>main</code> 转成一条错误信息与退出码。调用者只要检查返回值，
+  不必解析输出文本。
+</p>
+
+<div class="eg" id="e7-2">
+  <div class="eg-h">例题 · 测量记录工具</div>
+  <p>题目：为上一课的测量报告包增加命令行入口 <code>cli.py</code>，提供 <code>summary</code> 与 <code>near</code> 两个子命令；<code>summary</code> 打印文件名、记录数、平均深度与最大面积，<code>near</code> 按深度上限筛选样本；两个子命令共享 <code>--data</code> 选项，默认读取工程内的数据文件；从工程目录用模块方式运行 <code>summary</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="7.1-project/depth_report/cli.py"><code>import argparse
+import sys
+from pathlib import Path
+
+from .io import read_measurements
+from .stats import near, summarize
+
+
+DATA = Path(__file__).resolve().parent.parent / "data" / "measurements.csv"
+
+
+def run_summary(args):
+    report = summarize(read_measurements(args.data))
+    print("%s: %d rows, mean depth %.2f, max area %.1f"
+          % (args.data.name, report["count"], report["mean_depth"],
+             report["max_area"]))
+    return 0
+
+
+def run_near(args):
+    names = near(read_measurements(args.data), args.limit)
+    print("near %.1f: %d" % (args.limit, len(names)))
+    if names:
+        print(", ".join(names))
+    return 0 if names else 1
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="depth-report",
+                                     description="inspect measurement records")
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--data", type=Path, default=DATA,
+                        help="CSV file with name, depth and area")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    summary = sub.add_parser("summary", parents=[common],
+                             help="print count and depth/area statistics")
+    summary.set_defaults(handler=run_summary)
+
+    nearby = sub.add_parser("near", parents=[common],
+                            help="list samples within a depth limit")
+    nearby.add_argument("--limit", type=float, default=12.0)
+    nearby.set_defaults(handler=run_near)
+    return parser
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    try:
+        return args.handler(args)
+    except (OSError, ValueError) as error:
+        print("error:", error, file=sys.stderr)
+        return 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>cd 示例代码/7.1-project
+python3 -m depth_report.cli summary</code></pre>
+    <pre class="out" data-label="真实输出">measurements.csv: 5 rows, mean depth 13.40, max area 51.2</pre>
+  <p>数据文件有五行有效记录，深度之和是 67.0，平均深度 13.40；面积最大
+  的是 south 的 51.2。输出只保留文件名 <code>measurements.csv</code>，
+  不含完整路径。</p>
+  <p>另一个子命令 <code>near</code> 接收 <code>--limit</code>。阈值 12.0
+  时保留 south 与 center；阈值 9.0 时没有样本，程序打印计数 0 并返回 1：</p>
+  <pre data-lang="终端"><code>python3 -m depth_report.cli near --limit 9.0
+echo $?</code></pre>
+    <pre class="out" data-label="真实输出">near 9.0: 0
+1</pre>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-3</div>
+  <p>写一个脚本 <code>7-3.py</code>。用 <code>argparse</code> 建立解析器 <code>calc</code>，添加 <code>total</code> 与 <code>scale</code> 两个子命令。<code>total</code> 接收位置参数 <code>values</code>（<code>nargs="+"</code>、<code>type=int</code>）并打印 <code>sum:</code> 与总和；<code>scale</code> 接收位置参数 <code>value</code>（整数）与选项 <code>--factor</code>（整数，默认 2）并打印 <code>product:</code> 与乘积。两个子命令都用 <code>set_defaults(handler=...)</code> 绑定处理函数，再用 <code>args.handler(args)</code> 分派。分别解析 <code>["total", "3", "4", "5"]</code> 与 <code>["scale", "7", "--factor", "3"]</code>，打印结果。</p>
+    <pre class="out" data-label="预期输出">sum: 12
+product: 21</pre>
+  <!-- 答案 7-3 -->
+  <details class="ans" data-run="示例代码/答案/7-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>total</code> 子命令把三个整数相加，<code>scale</code> 子命令
+        把位置参数与因子相乘。两个处理函数由
+        <code>set_defaults(handler=...)</code> 绑定，解析后统一调用
+        <code>args.handler(args)</code>。
+      </p>
+      <pre data-lang="Python"><code>import argparse
+
+
+def run_total(args):
+    print("sum:", sum(args.values))
+
+
+def run_scale(args):
+    print("product:", args.value * args.factor)
+
+
+parser = argparse.ArgumentParser(prog="calc")
+sub = parser.add_subparsers(dest="command", required=True)
+total = sub.add_parser("total")
+total.add_argument("values", nargs="+", type=int)
+total.set_defaults(handler=run_total)
+scale = sub.add_parser("scale")
+scale.add_argument("value", type=int)
+scale.add_argument("--factor", type=int, default=2)
+scale.set_defaults(handler=run_scale)
+
+for argv in (["total", "3", "4", "5"], ["scale", "7", "--factor", "3"]):
+    args = parser.parse_args(argv)
+    args.handler(args)</code></pre>
+      <pre class="out" data-label="真实输出">sum: 12
+product: 21</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-4</div>
+  <p>写一个脚本 <code>7-4.py</code>，把 <code>示例代码/7.1-project</code> 加入 <code>sys.path</code>，从 <code>depth_report.io</code> 与 <code>depth_report.stats</code> 导入读取与筛选函数。建立 <code>near</code> 子命令，位置参数 <code>path</code>，选项 <code>--limit</code>（浮点，默认 12.0）；处理函数打印 <code>near &lt;阈值&gt;: &lt;数量&gt;</code>，有记录时再打印一行名单并返回 0，没有记录时返回 1。用 <code>main</code> 依次调用阈值 12.0、阈值 9.0 与不存在的文件 <code>missing.csv</code>，每次打印返回值；缺失文件由入口捕获，返回 3，调用时用 <code>contextlib.redirect_stderr</code> 捕获错误文本，避免它混进标准输出。</p>
+    <pre class="out" data-label="预期输出">near 12.0: 2
+south, center
+exit: 0
+near 9.0: 0
+exit: 1
+missing: 3</pre>
+  <!-- 答案 7-4 -->
+  <details class="ans" data-run="示例代码/答案/7-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        阈值 12.0 保留 south 与 center，返回 0；阈值 9.0 没有记录，返回 1；
+        不存在的文件在入口里被捕获，返回 3。三次调用的返回值分别打印在
+        <code>exit:</code> 与 <code>missing:</code> 后面。
+      </p>
+      <pre data-lang="Python"><code>import argparse
+import contextlib
+import io
+import sys
+
+sys.path.insert(0, "示例代码/7.1-project")
+from depth_report.io import read_measurements
+from depth_report.stats import near
+
+
+def run_near(args):
+    names = near(read_measurements(args.path), args.limit)
+    print("near %.1f: %d" % (args.limit, len(names)))
+    if names:
+        print(", ".join(names))
+    return 0 if names else 1
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="report")
+    sub = parser.add_subparsers(dest="command", required=True)
+    nearby = sub.add_parser("near")
+    nearby.add_argument("path")
+    nearby.add_argument("--limit", type=float, default=12.0)
+    nearby.set_defaults(handler=run_near)
+    return parser
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    try:
+        return args.handler(args)
+    except (OSError, ValueError) as error:
+        print("error:", error, file=sys.stderr)
+        return 3
+
+
+path = "示例代码/7.1-project/data/measurements.csv"
+print("exit:", main(["near", path, "--limit", "12.0"]))
+print("exit:", main(["near", path, "--limit", "9.0"]))
+with contextlib.redirect_stderr(io.StringIO()):
+    code = main(["near", "missing.csv"])
+print("missing:", code)</code></pre>
+      <pre class="out" data-label="真实输出">near 12.0: 2
+south, center
+exit: 0
+near 9.0: 0
+exit: 1
+missing: 3</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>给包增加带子命令的命令行入口，共享数据路径选项，按处理函数分派，并用退出码区分成功、空结果与输入错误。</p>
+</section>
+
+<section class="lesson" id="l7-3">
+<h2><span class="no">7.3</span>单元测试 unittest</h2>
+
+<p>
+  单元测试（unit test）把函数放在受控输入下运行，检查结果是否符合预期。
+  测试不依赖完整工程，也不需要手工打开文件；它可以反复执行，在修改后
+  快速发现回归。这一课用标准库 <code>unittest</code> 测试平均值函数，
+  覆盖正常值、单值与空列表三种情况。
+</p>
+
+<h3 id="s7-3-1">测试函数与测试类</h3>
+
+<p>
+  测试类继承 <code>unittest.TestCase</code>，测试方法名以
+  <code>test_</code> 开头。运行器只收集这些方法，并按方法名排序执行。
+  每个测试方法应当独立：自己准备输入、调用被测函数、写断言，不依赖其他
+  测试留下的状态。
+</p>
+
+<p>
+  一个测试只检查一个行为。平均值函数的正常输入、单元素输入与空输入可以
+  写成三个方法，失败时能直接看出是哪一类情况出错。测试方法内部通常不
+  打印，结果由断言与运行器汇总。
+</p>
+
+<h3 id="s7-3-2">断言与异常</h3>
+
+<p>
+  <code>assertEqual</code> 检查两个值相等，<code>assertAlmostEqual</code>
+  检查浮点数在给定小数位内相等。浮点运算可能有微小误差，比较
+  <code>4.0</code> 这类结果时用 <code>assertAlmostEqual</code> 更稳妥。
+</p>
+
+<p>
+  <code>with self.assertRaises(ValueError):</code> 检查代码块是否抛出指定
+  异常。空列表求平均值应当抛出 <code>ValueError</code>；如果函数没有抛出，
+  这个测试会失败。断言异常类型，而不是只捕获所有异常，可以避免把其他
+  错误当成预期行为。
+</p>
+
+<h3 id="s7-3-3">运行器与结果</h3>
+
+<p>
+  <code>unittest.defaultTestLoader.loadTestsFromTestCase</code> 从测试类
+  收集所有 <code>test_</code> 方法，
+  <code>unittest.TextTestRunner(...).run(suite)</code> 执行并返回结果对象。
+  结果对象的 <code>testsRun</code> 是执行数量，<code>failures</code> 与
+  <code>errors</code> 分别是断言失败与异常错误，<code>skipped</code> 是跳过
+  数量，<code>wasSuccessful()</code> 返回整体是否通过。
+</p>
+
+<p>
+  失败与错误不同：断言不成立进入 <code>failures</code>，测试代码抛出未
+  预期的异常进入 <code>errors</code>。两者都表示测试没有通过，但排查方向
+  不同。结果对象还保存每个失败的文本说明，默认运行器会把它打印出来。
+</p>
+
+<h3 id="s7-3-4">可重复的测试输出</h3>
+
+<p>
+  默认运行器会打印一行 <code>Ran 3 tests in 0.001s</code>，其中的耗时随
+  机器与负载变化，不能逐字核对。把 <code>stream</code> 指向
+  <code>io.StringIO</code>，运行器把详细输出写进内存；脚本只取报告的
+  第一行，再自己打印数量与通过状态。
+</p>
+
+<p>
+  这样输出只包含报告第一行、数量与布尔结果，重复运行保持一致。真实项目
+  通常让运行器直接输出到终端，能完整看到报告；本课为了让输出可逐字核对，
+  才把报告捕获后重新组织。
+</p>
+
+<div class="eg" id="e7-3">
+  <div class="eg-h">例题 · 平均值测试</div>
+  <p>题目：为一个求平均值的函数写三个测试，分别覆盖正常列表、单元素列表与空列表；空列表应抛出 <code>ValueError</code>；用文本运行器执行测试，把报告写入内存，打印执行数、失败数、错误数、跳过数、整体结果与报告第一行。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="7.3-unittest.py"><code>import io
+import unittest
+
+
+def mean(values):
+    if not values:
+        raise ValueError("empty")
+    return sum(values) / len(values)
+
+
+class MeanTests(unittest.TestCase):
+    def test_typical(self):
+        self.assertAlmostEqual(mean([2, 4, 6]), 4.0)
+
+    def test_single(self):
+        self.assertEqual(mean([7]), 7.0)
+
+    def test_empty(self):
+        with self.assertRaises(ValueError):
+            mean([])
+
+
+def run_suite():
+    suite = unittest.defaultTestLoader.loadTestsFromTestCase(MeanTests)
+    stream = io.StringIO()
+    result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+    print("tests run:", result.testsRun)
+    print("failures:", len(result.failures))
+    print("errors:", len(result.errors))
+    print("skipped:", len(result.skipped))
+    print("ok:", result.wasSuccessful())
+    print("first line:", stream.getvalue().splitlines()[0])
+
+
+if __name__ == "__main__":
+    run_suite()</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/7.3-unittest.py</code></pre>
+    <pre class="out" data-label="真实输出">tests run: 3
+failures: 0
+errors: 0
+skipped: 0
+ok: True
+first line: test_empty (__main__.MeanTests.test_empty) ... ok</pre>
+  <p>三个测试都通过：执行数为 3，失败、错误与跳过都是 0，
+  <code>wasSuccessful()</code> 返回 <code>True</code>。测试方法按名称排序
+  执行，<code>test_empty</code> 排在最前，所以捕获报告的第一行是
+  <code>test_empty</code> 的通过记录。</p>
+  <p>报告写在 <code>StringIO</code> 里，终端只看到脚本自己打印的六行。
+  标准运行器的耗时行仍在内存字符串中，但没有被输出，因此不影响可重复的
+  真实输出。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-5</div>
+  <p>写一个脚本 <code>7-5.py</code>，实现中位数函数 <code>median</code>：空列表抛出 <code>ValueError</code>，奇数个元素返回中间值，偶数个元素返回中间两个值的平均。用 <code>unittest</code> 写三个测试分别覆盖奇数、偶数与空列表；用文本运行器执行并把报告写入内存；打印执行数、失败数、错误数、整体结果与报告第一行。</p>
+    <pre class="out" data-label="预期输出">tests run: 3
+failures: 0
+errors: 0
+ok: True
+first line: test_empty (__main__.MedianTests.test_empty) ... ok</pre>
+  <!-- 答案 7-5 -->
+  <details class="ans" data-run="示例代码/答案/7-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        中位数函数通过奇数、偶数与空列表三个测试；空列表抛出
+        <code>ValueError</code>。执行数为 3，失败与错误都是 0，测试方法按
+        名称排序，第一行是 <code>test_empty</code> 的通过记录。
+      </p>
+      <pre data-lang="Python"><code>import io
+import unittest
+
+
+def median(values):
+    if not values:
+        raise ValueError("empty")
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return float(ordered[middle])
+    return (ordered[middle - 1] + ordered[middle]) / 2.0
+
+
+class MedianTests(unittest.TestCase):
+    def test_odd(self):
+        self.assertEqual(median([3, 1, 2]), 2.0)
+
+    def test_even(self):
+        self.assertEqual(median([4, 1, 3, 2]), 2.5)
+
+    def test_empty(self):
+        with self.assertRaises(ValueError):
+            median([])
+
+
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(MedianTests)
+stream = io.StringIO()
+result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+print("tests run:", result.testsRun)
+print("failures:", len(result.failures))
+print("errors:", len(result.errors))
+print("ok:", result.wasSuccessful())
+print("first line:", stream.getvalue().splitlines()[0])</code></pre>
+      <pre class="out" data-label="真实输出">tests run: 3
+failures: 0
+errors: 0
+ok: True
+first line: test_empty (__main__.MedianTests.test_empty) ... ok</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-6</div>
+  <p>写一个脚本 <code>7-6.py</code>，实现上下限裁剪函数 <code>clamp(value, low, high)</code>：区间非法时抛出 <code>ValueError</code>，否则把值限制在上下限之间。用 <code>unittest</code> 写四个测试，分别覆盖区间内、低于下限、高于上限与非法区间；执行测试并打印执行数、失败数与整体结果；最后打印对 <code>-2</code>、<code>3</code>、<code>20</code> 调用 <code>clamp(..., 0, 10)</code> 的结果列表。</p>
+    <pre class="out" data-label="预期输出">tests run: 4
+failures: 0
+ok: True
+values: [0, 3, 10]</pre>
+  <!-- 答案 7-6 -->
+  <details class="ans" data-run="示例代码/答案/7-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        裁剪函数的区间内、低于下限、高于上限与非法区间四个测试全部通过。
+        对 <code>-2</code>、<code>3</code>、<code>20</code> 调用
+        <code>clamp(..., 0, 10)</code>，结果依次是 0、3、10。
+      </p>
+      <pre data-lang="Python"><code>import io
+import unittest
+
+
+def clamp(value, low, high):
+    if low &gt; high:
+        raise ValueError("bad range")
+    return max(low, min(value, high))
+
+
+class ClampTests(unittest.TestCase):
+    def test_inside(self):
+        self.assertEqual(clamp(3, 0, 10), 3)
+
+    def test_low(self):
+        self.assertEqual(clamp(-2, 0, 10), 0)
+
+    def test_high(self):
+        self.assertEqual(clamp(20, 0, 10), 10)
+
+    def test_bad_range(self):
+        with self.assertRaises(ValueError):
+            clamp(5, 10, 0)
+
+
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(ClampTests)
+stream = io.StringIO()
+result = unittest.TextTestRunner(stream=stream, verbosity=1).run(suite)
+print("tests run:", result.testsRun)
+print("failures:", len(result.failures))
+print("ok:", result.wasSuccessful())
+print("values:", [clamp(-2, 0, 10), clamp(3, 0, 10), clamp(20, 0, 10)])</code></pre>
+      <pre class="out" data-label="真实输出">tests run: 4
+failures: 0
+ok: True
+values: [0, 3, 10]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>为函数写单元测试，覆盖正常值、边界与异常，用运行器收集结果，并把测试报告整理成可重复的输出。</p>
+</section>
+
+<section class="lesson" id="l7-4">
+<h2><span class="no">7.4</span>断言、性能与剖析</h2>
+
+<p>
+  程序正确之后才值得比较快慢。这一课先用断言核对两种写法的结果一致，
+  再用性能剖析（profiling）查看函数调用次数，最后用基准计时（benchmark）
+  比较循环与公式，并只输出稳定的判断结果。
+</p>
+
+<h3 id="s7-4-1">断言</h3>
+
+<p>
+  <code>assert condition, message</code> 在条件为假时抛出
+  <code>AssertionError</code>，并带上说明文字。断言适合检查程序内部的
+  不变量，例如“两种算法的结果必须相同”“循环结束后累计值不为负”。它把
+  假设写进代码，出错时立即停在违反假设的位置。
+</p>
+
+<p>
+  断言不是用户输入校验。Python 以 <code>-O</code> 运行时移除
+  <code>assert</code> 语句，依赖断言的检查会消失；来自文件、命令行或网络
+  的输入应当用 <code>if</code> 加异常处理。例子只在内部结果对照处使用
+  断言。
+</p>
+
+<h3 id="s7-4-2">调用次数与 cProfile</h3>
+
+<p>
+  <code>cProfile.Profile()</code> 建立剖析器，<code>enable()</code> 开始
+  记录，<code>disable()</code> 停止。剖析结果可以用
+  <code>pstats.Stats(profiler)</code> 读取；<code>stats.stats</code> 是以
+  <code>(文件名, 行号, 函数名)</code> 为键的字典，值的前两项是原始调用
+  次数与总调用次数。
+</p>
+
+<p>
+  原始调用（primitive call）不计递归产生的重复进入；总调用（total call）
+  包含递归。普通函数被调用一次时两者都是 1；递归函数的总调用次数会明显
+  大于原始调用。例子只打印调用次数，不打印耗时，因为耗时随机器与负载
+  变化。
+</p>
+
+<h3 id="s7-4-3">基准计时 timeit</h3>
+
+<p>
+  <code>timeit.timeit("表达式", globals=globals(), number=2000)</code> 把
+  表达式执行指定次数并返回总秒数。<code>globals</code> 让表达式能访问
+  当前模块的函数；<code>number</code> 要足够大，使计时不受单次调度的
+  偶然波动影响，又不能让脚本等待过久。
+</p>
+
+<p>
+  比较两种写法时，分别计时，再比较两个总时间。脚本只打印哪一方更快，
+  不打印具体秒数；这样输出在不同机器上仍可逐字核对。若两者差距很小，
+  应增加次数或重复多轮，而不是根据一次结果下结论。
+</p>
+
+<h3 id="s7-4-4">优化顺序</h3>
+
+<p>
+  合理的顺序是：先确认结果正确，再用剖析找调用热点，再换算法或数据结构，
+  最后用计时验证。把循环换成公式属于算法层面的改变，通常比微调语法更
+  有效；在数据量很大时，还可以考虑向量化或使用更合适的容器。
+</p>
+
+<p>
+  每次优化后重新运行断言与测试，确保结果没有变化。只比较时间而不检查
+  结果，可能把错误实现当成更快版本。例子在计时前用断言核对循环与公式的
+  结果，再输出调用次数与快慢判断。
+</p>
+
+<div class="eg" id="e7-4">
+  <div class="eg-h">例题 · 循环与公式</div>
+  <p>题目：用循环与公式分别计算 0 到 999 的平方和；用断言确认两者相等；用剖析器统计循环函数的调用次数；用 <code>timeit</code> 各执行 2000 次，打印结果、原始调用次数、总调用次数、重复次数与更快的一方。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="7.4-profile.py"><code>import cProfile
+import pstats
+import timeit
+
+
+def sum_squares_loop(n):
+    total = 0
+    for value in range(n):
+        total += value * value
+    return total
+
+
+def sum_squares_formula(n):
+    return (n - 1) * n * (2 * n - 1) // 6
+
+
+def profile_loop(n):
+    profiler = cProfile.Profile()
+    profiler.enable()
+    result = sum_squares_loop(n)
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    calls = 0
+    primitives = 0
+    for func, values in stats.stats.items():
+        if func[2] == "sum_squares_loop":
+            primitives, calls = values[0], values[1]
+    return result, primitives, calls
+
+
+result, primitives, calls = profile_loop(1000)
+assert result == sum_squares_formula(1000)
+number = 2000
+loop_time = timeit.timeit("sum_squares_loop(1000)", globals=globals(),
+                          number=number)
+formula_time = timeit.timeit("sum_squares_formula(1000)", globals=globals(),
+                             number=number)
+print("result:", result)
+print("primitive calls:", primitives)
+print("calls:", calls)
+print("repeats:", number)
+print("faster:", "formula" if formula_time &lt; loop_time else "loop")</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/7.4-profile.py</code></pre>
+    <pre class="out" data-label="真实输出">result: 332833500
+primitive calls: 1
+calls: 1
+repeats: 2000
+faster: formula</pre>
+  <p>循环与公式的结果都是 332833500，断言通过后才进入计时。循环函数在
+  剖析期间被调用一次，原始调用与总调用都是 1。两种写法各执行 2000 次，
+  公式更快，因此最后一行是 <code>formula</code>。</p>
+  <p>脚本没有打印具体秒数，只打印快慢判断，输出不随机器速度变化。若在
+  其他数据规模下公式不再占优，判断会相应改变，但结果断言仍会保护正确性。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-7</div>
+  <p>写一个脚本 <code>7-7.py</code>，实现 <code>average</code> 函数：用断言检查列表非空，空列表触发 <code>AssertionError</code>，说明文字为 <code>empty</code>；用断言检查 <code>[2, 4, 6]</code> 的平均值为 4.0、<code>[10]</code> 的平均值为 10.0；用 <code>try</code> 捕获空列表的断言错误并打印说明；统计执行的检查次数，最后打印检查次数与 <code>[2, 4, 6]</code> 的平均值。</p>
+    <pre class="out" data-label="预期输出">empty: empty
+checks: 3
+average: 4.0</pre>
+  <!-- 答案 7-7 -->
+  <details class="ans" data-run="示例代码/答案/7-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三次断言检查都执行了：两次检查平均值结果，一次检查空列表的
+        <code>AssertionError</code>。空列表的说明文字是 <code>empty</code>，
+        非空列表的平均值是 4.0。
+      </p>
+      <pre data-lang="Python"><code>def average(values):
+    assert values, "empty"
+    return sum(values) / len(values)
+
+
+checks = 0
+assert average([2, 4, 6]) == 4.0
+checks += 1
+assert average([10]) == 10.0
+checks += 1
+try:
+    average([])
+except AssertionError as error:
+    print("empty:", str(error))
+    checks += 1
+print("checks:", checks)
+print("average:", average([2, 4, 6]))</code></pre>
+      <pre class="out" data-label="真实输出">empty: empty
+checks: 3
+average: 4.0</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-8</div>
+  <p>写一个脚本 <code>7-8.py</code>，实现递归斐波那契函数 <code>fib</code>；用 <code>cProfile</code> 统计 <code>fib(10)</code> 的调用，读取函数名对应的原始调用次数与总调用次数；打印结果、总调用次数与原始调用次数。</p>
+    <pre class="out" data-label="预期输出">result: 55
+calls: 177
+primitive: 1</pre>
+  <!-- 答案 7-8 -->
+  <details class="ans" data-run="示例代码/答案/7-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        递归斐波那契计算 <code>fib(10)</code> 得到 55。剖析结果显示总调用
+        次数为 177，原始调用次数为 1；递归产生的重复进入计入总调用，不计入
+        原始调用。
+      </p>
+      <pre data-lang="Python"><code>import cProfile
+import pstats
+
+
+def fib(n):
+    if n &lt; 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+
+
+profiler = cProfile.Profile()
+profiler.enable()
+result = fib(10)
+profiler.disable()
+stats = pstats.Stats(profiler)
+calls = 0
+primitives = 0
+for func, values in stats.stats.items():
+    if func[2] == "fib":
+        primitives, calls = values[0], values[1]
+print("result:", result)
+print("calls:", calls)
+print("primitive:", primitives)</code></pre>
+      <pre class="out" data-label="真实输出">result: 55
+calls: 177
+primitive: 1</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用断言检查内部不变量，用 cProfile 读取函数调用次数，用 timeit 比较两种写法，并按“正确、剖析、改算法、再计时”的顺序优化。</p>
+</section>
+
+<nav class="pager">
+  <a href="06-数据与图表.html">← 第 6 部分 · 数据与图表</a>
+  <span class="spacer"></span>
+  <a href="08-综合.html">第 8 部分 · 综合 →</a>
+</nav>
+
+</main>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 部分 · 开始 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a class="active" href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" aria-current="page" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 0 部分 · 开始</div>
+  <a class="toc-l" href="#l0-1"><span class="n">0.1</span>练习目录与代码约定</a>
+  <a class="toc-sub" href="#s0-1-1">练习目录</a>
+  <a class="toc-sub" href="#s0-1-2">代码与输出约定</a>
+  <a class="toc-sub" href="#e0-1">例题：确认练习目录</a>
+  <a class="toc-l" href="#l0-2"><span class="n">0.2</span>第一个脚本</a>
+  <a class="toc-sub" href="#s0-2-1">写出并运行</a>
+  <a class="toc-sub" href="#e0-2">例题：第一个脚本</a>
+  <a class="toc-sub" href="#s0-2-2">脚本结构</a>
+  <a class="toc-sub" href="#s0-2-3">运行与退出码</a>
+  <a class="toc-l" href="#l0-3"><span class="n">0.3</span>报错与调试</a>
+  <a class="toc-sub" href="#s0-3-1">读 traceback</a>
+  <a class="toc-sub" href="#s0-3-2">找不到文件</a>
+  <a class="toc-sub" href="#e0-3">例题：文件不存在</a>
+  <a class="toc-sub" href="#s0-3-3">缩进、名字与类型</a>
+  <a class="toc-sub" href="#s0-3-4">调试顺序</a>
+  <a class="toc-l" href="#l0-4"><span class="n">0.4</span>第一个完整工具：批量读取图片尺寸</a>
+  <a class="toc-sub" href="#s0-4-1">任务与数据</a>
+  <a class="toc-sub" href="#s0-4-2">遍历素材目录</a>
+  <a class="toc-sub" href="#s0-4-3">读图与尺寸</a>
+  <a class="toc-sub" href="#s0-4-4">写结果文件</a>
+  <a class="toc-sub" href="#s0-4-5">运行结果</a>
+  <a class="toc-sub" href="#e0-4">例题：批量读取尺寸</a>
+  <a class="toc-l" href="#l0-5"><span class="n">0.5</span>从 C++ 到 Python：要改的习惯</a>
+  <a class="toc-sub" href="#s0-5-1">名字是标签</a>
+  <a class="toc-sub" href="#s0-5-2">可变对象与函数</a>
+  <a class="toc-sub" href="#s0-5-3">除法与真值</a>
+  <a class="toc-sub" href="#s0-5-4">对照表</a>
+  <a class="toc-sub" href="#e0-5">例题：别名与复制</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 0 部分</div>
+  <h1>开始</h1>
+  <p class="part-lead">
+    这一部分把练习目录、脚本运行、报错阅读与一个完整工具走通：
+    读完以后，读者应当能在命令行运行一个 Python 脚本，读懂 traceback 里
+    指向自己代码的那一帧，用 <code>pathlib</code> 遍历素材目录、用 OpenCV
+    读取图片尺寸，并把结果写入文件；同时知道从 C++ 带来的哪些习惯要改。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="">
+  <b>前置</b>
+  <p>
+    课程假设读者已经会写基本的 C++ 程序：变量、循环、函数与数组，
+    能在命令行编译并运行一个源文件。
+  </p>
+</div>
+
+<section class="lesson" id="l0-1">
+<h2><span class="no">0.1</span>练习目录与代码约定</h2>
+
+<p>
+  这一课准备练习目录，并说明课里的代码、输出与练习怎么读。
+  课程结构与后续安排见 <a href="index.html#structure">课程首页</a>。
+</p>
+
+<h3 id="s0-1-1">练习目录</h3>
+
+<p>
+  课程文件夹与本页同级，包含 <code>示例代码</code> 与 <code>素材</code>
+  两个文件夹。先把它们复制到 <code>/tmp/python-course</code>，之后的命令
+  都在副本的根目录执行；课程文件夹保持只读，改坏了可以重新复制。
+  在包含这两个文件夹的目录下执行：
+</p>
+
+<pre data-lang="终端"><code>rm -rf /tmp/python-course
+mkdir -p /tmp/python-course
+cp -r 示例代码 素材 /tmp/python-course/
+cd /tmp/python-course</code></pre>
+
+<p>
+  复制完成后，课程根目录下有 <code>示例代码</code>、<code>素材</code>
+  两个文件夹，练习产生的文件也写在这里。不要把工作目录切进
+  <code>示例代码</code>：例子里的 <code>Path("素材")</code>
+  与输出文件 <code>out_sizes.txt</code> 都按课程根目录解析。
+</p>
+
+<p>
+  确认目录就位，运行检查脚本：
+</p>
+
+<pre data-lang="终端"><code>python3 示例代码/0.1-check.py</code></pre>
+
+<pre class="out" data-label="真实输出">当前目录: python-course
+脚本目录: 示例代码
+素材目录存在: True</pre>
+
+<p>
+  <code>当前目录</code> 是执行命令时所在的目录，<code>脚本目录</code>
+  是脚本文件所在的目录，两者可以不同。最后一行确认 <code>素材</code>
+  文件夹找得到。
+</p>
+
+<h3 id="s0-1-2">代码与输出约定</h3>
+
+<p>
+  课里的 Python 代码块都标着语言与文件名，例如
+  <code>data-name="0.2-hello.py"</code>。页面上贴出的正文与
+  <code>示例代码</code> 中同名文件一致；文件开头可以有一段说明性注释，
+  页面上从第一条可执行语句开始贴。
+</p>
+
+<p>
+  代码块后面紧跟的输出块有两种标签。<b>真实输出</b> 是本机运行这份程序
+  得到的标准输出，逐字抄录；<b>预期输出</b> 是练习应当得到的结果。
+  比对时按行比较，行末空格不参与，行数与字符必须一致。若你的输出与
+  页面不同，先检查工作目录与素材路径，再逐行对照。
+</p>
+
+<p>
+  练习要求自己写一份脚本，文件名写在题目里，例如 <code>0-1.py</code>。
+  写完后在课程根目录运行 <code>python3 0-1.py</code>，把输出与页面上的
+  预期输出对照。答案放在 <code>示例代码/答案</code> 中，页面上折叠显示；
+  先独立完成，再展开对照。
+</p>
+
+<p>
+  终端代码块中的命令都从课程根目录开始执行。以 <code>$</code> 开头的行
+  表示提示符，不需要输入。
+</p>
+
+<div class="eg" id="e0-1">
+  <div class="eg-h">例题 · 确认练习目录</div>
+  <p>题目：打印当前目录名、脚本目录名，以及素材目录是否存在。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="0.1-check.py"><code>from pathlib import Path
+
+print("当前目录:", Path.cwd().name)
+print("脚本目录:", Path(__file__).resolve().parent.name)
+print("素材目录存在:", (Path(__file__).resolve().parent.parent / "素材").is_dir())</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/0.1-check.py</code></pre>
+  <pre class="out" data-label="真实输出">当前目录: python-course
+脚本目录: 示例代码
+素材目录存在: True</pre>
+  <p><code>Path.cwd()</code> 取当前工作目录，<code>Path(__file__).resolve().parent</code> 取脚本所在目录。<code>parent.parent</code> 再向上一层，正好是课程根目录，因此 <code>素材</code> 找得到。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-1</div>
+  <p>写一个脚本 <code>0-1.py</code>，用三个变量分别保存课程名、部分名与课号，再逐行打印。课程名是 <code>Python 工具与视觉脚本</code>，部分名是 <code>第 0 部分</code>，课号是 <code>0.1</code>。输出三行，前缀分别是 <code>课程：</code>、<code>部分：</code>、<code>课：</code>。</p>
+  <pre class="out" data-label="预期输出">课程：Python 工具与视觉脚本
+部分：第 0 部分
+课：0.1</pre>
+  <!-- 答案 0-1 -->
+  <details class="ans" data-run="示例代码/答案/0-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个变量各存一段文字，<code>print</code> 逐个输出。
+      </p>
+      <pre data-lang="Python"><code>course = "Python 工具与视觉脚本"
+part = "第 0 部分"
+lesson = "0.1"
+print("课程：" + course)
+print("部分：" + part)
+print("课：" + lesson)</code></pre>
+      <pre class="out" data-label="真实输出">课程：Python 工具与视觉脚本
+部分：第 0 部分
+课：0.1</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-2</div>
+  <p>写一个脚本 <code>0-2.py</code>，检查课程根目录下的 <code>素材</code> 与 <code>示例代码</code> 两个目录是否存在。按目录名排序，每行打印 <code>目录 名称: 是否存在</code>。</p>
+  <pre class="out" data-label="预期输出">目录 示例代码: True
+目录 素材: True</pre>
+  <!-- 答案 0-2 -->
+  <details class="ans" data-run="示例代码/答案/0-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个目录都用 <code>Path(name).is_dir()</code> 检查，路径相对当前目录
+        解析。名称先排序，<code>示例代码</code> 排在 <code>素材</code> 前。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+for name in sorted(["素材", "示例代码"]):
+    print(f"目录 {name}: {Path(name).is_dir()}")</code></pre>
+      <pre class="out" data-label="真实输出">目录 示例代码: True
+目录 素材: True</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>复制练习目录，在课程根目录运行一个脚本，并分清“当前目录”与“脚本目录”。</p>
+</section>
+
+<section class="lesson" id="l0-2">
+<h2><span class="no">0.2</span>第一个脚本</h2>
+
+<p>
+  这一课运行第一个脚本，并说明一个 Python 文件的最小结构。
+</p>
+
+<h3 id="s0-2-1">写出并运行</h3>
+
+<p>
+  新建一个文本文件，写入下面三行输出。文件名使用 <code>0.2-hello.py</code>；
+  Python 习惯用 <code>.py</code> 作为扩展名，文件名中间可以出现点号。
+</p>
+
+<div class="eg" id="e0-2">
+  <div class="eg-h">例题 · 第一个脚本</div>
+  <p>题目：打印问候，计算 <code>3 + 4</code> 与 <code>7 / 2</code>。程序放在一个函数里，由文件末尾的判断调用。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="0.2-hello.py"><code>def main():
+    print("hello, TUP")
+    print("3 + 4 =", 3 + 4)
+    print("7 / 2 =", 7 / 2)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/0.2-hello.py</code></pre>
+  <pre class="out" data-label="真实输出">hello, TUP
+3 + 4 = 7
+7 / 2 = 3.5</pre>
+  <p><code>print</code> 用逗号分隔多个参数，输出时在每个参数之间补一个空格。
+  <code>3 + 4</code> 是整数加法，结果是 <code>7</code>；
+  <code>7 / 2</code> 是浮点除法，结果是 <code>3.5</code>，不是 C++ 整数相除得到的 <code>3</code>。</p>
+</div>
+
+<h3 id="s0-2-2">脚本结构</h3>
+
+<p>
+  上面的文件分三段。第一段 <code>def main():</code> 定义一个函数；
+  函数体缩进四个空格，函数在定义时并不执行。第二段
+  <code>if __name__ == "__main__":</code> 判断当前文件是不是被直接运行：
+  直接运行时条件成立，调用 <code>main()</code>；被别的文件导入时条件不成立，
+  只提供函数，不产生输出。第三段是空行，用来分隔顶层语句。
+</p>
+
+<p>
+  缩进是语法的一部分。同一个代码块必须使用相同的缩进量，通常统一用四个
+  空格；不要混用制表符与空格。行尾不需要分号，语句结束就是换行。
+  <code>#</code> 之后到行尾是注释，解释器忽略。
+</p>
+
+<h3 id="s0-2-3">运行与退出码</h3>
+
+<p>
+  在终端运行脚本后，可以用 <code>echo $?</code> 查看退出码。
+  正常结束时退出码为 0；解释器抛出未捕获的异常时退出码非 0。
+</p>
+
+<pre data-lang="终端"><code>python3 示例代码/0.2-hello.py
+echo $?</code></pre>
+
+<pre class="out" data-label="真实输出">hello, TUP
+3 + 4 = 7
+7 / 2 = 3.5
+0</pre>
+
+<p>
+  退出码是脚本与外部工具约定成功或失败的方式。后面的检查脚本会同时看
+  标准输出与退出码；练习程序应当正常结束并返回 0。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 0-3</div>
+  <p>写一个脚本 <code>0-3.py</code>，保存名字 <code>TUP</code>，然后打印三行：第一行是 <code>name:</code> 与名字，第二行是 <code>2 + 3</code> 的算式与结果，第三行是 <code>2 * 3</code> 的算式与结果。使用 <code>print</code> 的逗号分隔形式，让每个逗号处输出一个空格。</p>
+  <pre class="out" data-label="预期输出">name: TUP
+2 + 3 = 5
+2 * 3 = 6</pre>
+  <!-- 答案 0-3 -->
+  <details class="ans" data-run="示例代码/答案/0-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>print</code> 的逗号分隔参数会在输出时补一个空格，
+        因此第一行是 <code>name: TUP</code>，后两行分别显示算式与结果。
+      </p>
+      <pre data-lang="Python"><code>name = "TUP"
+print("name:", name)
+print("2 + 3 =", 2 + 3)
+print("2 * 3 =", 2 * 3)</code></pre>
+      <pre class="out" data-label="真实输出">name: TUP
+2 + 3 = 5
+2 * 3 = 6</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-4</div>
+  <p>写一个脚本 <code>0-4.py</code>，把输出放进 <code>main</code> 函数，并由文件末尾的 <code>if __name__ == "__main__":</code> 调用。先打印一行 <code>start</code>，再打印 <code>10 // 3</code> 与保留两位小数的 <code>10 / 3</code>，格式如下。</p>
+  <pre class="out" data-label="预期输出">start
+10 // 3 = 3
+10 / 3 = 3.33</pre>
+  <!-- 答案 0-4 -->
+  <details class="ans" data-run="示例代码/答案/0-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        脚本把输出放进 <code>main</code>，由文件末尾的入口判断调用。
+        <code>//</code> 向下取整得到 3，<code>/</code> 得到浮点数，
+        <code>round</code> 保留两位小数。
+      </p>
+      <pre data-lang="Python"><code>def main():
+    print("start")
+    print("10 // 3 =", 10 // 3)
+    print("10 / 3 =", round(10 / 3, 2))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <pre class="out" data-label="真实输出">start
+10 // 3 = 3
+10 / 3 = 3.33</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写出带 <code>main</code> 函数与入口判断的脚本，运行并检查退出码。</p>
+</section>
+
+<section class="lesson" id="l0-3">
+<h2><span class="no">0.3</span>报错与调试</h2>
+
+<p>
+  Python 的报错信息比 C++ 编译器的短，但结构固定。学会从最后一行往前读，
+  多数错误可以在一分钟内定位。这一课看四种最常见的错误：找不到文件、
+  缩进不一致、名字未定义与类型不匹配。
+</p>
+
+<h3 id="s0-3-1">读 traceback</h3>
+
+<p>
+  未捕获的异常会打印一段 traceback。最后一行是异常类型与消息，
+  它说明出了什么事；上面的 <code>File "…", line N, in …</code>
+  说明出事时正在执行哪个文件的第几行。从下往上找第一帧属于自己的文件，
+  那一行就是需要修改的位置。
+</p>
+
+<p>
+  紧随其后的源码行与 <code>^</code> 标记指出具体位置。标准库内部的帧
+  可能有多层，初学时不必逐层读懂；先看最后一行的异常类型，再看自己文件
+  的那一帧。
+</p>
+
+<h3 id="s0-3-2">找不到文件</h3>
+
+<p>
+  下面这段程序打开 <code>素材/missing.png</code>。文件不存在，解释器在
+  <code>open</code> 处抛出 <code>FileNotFoundError</code>：
+</p>
+
+<div class="eg" id="e0-3">
+  <div class="eg-h">例题 · 文件不存在</div>
+  <p>题目：打开素材目录中的一张图片并读取全部字节。文件不存在时，观察 traceback 怎样指出出错的行与路径。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="0.3-err-file.py"><code>with open("素材/missing.png", "rb") as file:
+    data = file.read()
+print(len(data))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/0.3-err-file.py</code></pre>
+  <pre class="diag" data-diag="0.3-err-file.py">Traceback (most recent call last):
+  File "示例代码/0.3-err-file.py", line 1, in &lt;module&gt;
+    with open("素材/missing.png", "rb") as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '素材/missing.png'</pre>
+  <p>最后一行给出异常类型与出错路径。路径是相对当前目录解析的；在课程根目录运行时，它找的是 <code>/tmp/python-course/素材/missing.png</code>。文件名拼错、目录层级不对、或忘了先复制素材，都会得到同一种异常。</p>
+</div>
+
+<p>
+  处理这类错误时先确认当前目录，再确认文件名的拼写与大小写。
+  <code>Path("素材/missing.png").exists()</code> 可以提前判断文件是否存在；
+  读取图片时 <code>cv2.imread</code> 在失败时返回 <code>None</code>，
+  不抛异常，需要单独检查。
+</p>
+
+<h3 id="s0-3-3">缩进、名字与类型</h3>
+
+<p>
+  缩进不一致会在解析阶段失败，程序一行都不会执行。下面的
+  <code>return</code> 比循环体少缩进两个空格，解释器无法判断它属于哪一层：
+</p>
+
+<pre data-lang="Python" data-name="0.3-err-indent.py"><code>def total(values):
+    result = 0
+    for value in values:
+        result += value
+      return result
+
+print(total([1, 2, 3]))</code></pre>
+
+<pre class="diag" data-diag="0.3-err-indent.py">  File "示例代码/0.3-err-indent.py", line 5
+    return result
+                 ^
+IndentationError: unindent does not match any outer indentation level</pre>
+
+<p>
+  这类错误没有 <code>Traceback</code> 开头，因为解释器在编译源码时就已经
+  停下。把 <code>return</code> 改成与 <code>for</code> 对齐的四个空格即可。
+</p>
+
+<p>
+  名字错误发生在运行时。下面的程序调用 <code>average</code>，但这个名字
+  从未定义：
+</p>
+
+<pre data-lang="Python" data-name="0.3-err-name.py"><code>scores = [88, 92, 79]
+print(average(scores))</code></pre>
+
+<pre class="diag" data-diag="0.3-err-name.py">Traceback (most recent call last):
+  File "示例代码/0.3-err-name.py", line 2, in &lt;module&gt;
+    print(average(scores))
+          ^^^^^^^
+NameError: name 'average' is not defined</pre>
+
+<p>
+  拼写错误、忘记先定义、或在函数内部使用了没有声明的外部名字，都会得到
+  <code>NameError</code>。检查报错那一行的名字，再搜索它在哪里定义。
+</p>
+
+<p>
+  类型错误同样在运行时出现。下面把字符串 <code>"3"</code> 与整数
+  <code>4</code> 相加：
+</p>
+
+<pre data-lang="Python" data-name="0.3-err-type.py"><code>count = "3"
+total = count + 4
+print(total)</code></pre>
+
+<pre class="diag" data-diag="0.3-err-type.py">Traceback (most recent call last):
+  File "示例代码/0.3-err-type.py", line 2, in &lt;module&gt;
+    total = count + 4
+            ~~~~~~^~~
+TypeError: can only concatenate str (not "int") to str</pre>
+
+<p>
+  <code>+</code> 对两个字符串表示拼接，对两个数字表示加法，两者不能混用。
+  先用 <code>int(count)</code> 把字符串转换成整数，再相加。
+  这类错误在 C++ 里由编译器提前发现，在 Python 里要等到那一行真正执行。
+</p>
+
+<h3 id="s0-3-4">调试顺序</h3>
+
+<p>
+  遇到报错时按下面的顺序处理，通常比反复改动代码更快：
+</p>
+
+<ol>
+  <li>读最后一行，确认异常类型与消息。</li>
+  <li>从下往上找第一帧属于自己的文件，记下行号。</li>
+  <li>检查那一行的输入：变量是什么类型、值从哪里来、路径是否存在。</li>
+  <li>在出错行之前插入临时 <code>print</code>，把关键变量的值与类型打印出来。</li>
+  <li>修改后重新运行；确认修复后再删掉临时输出。</li>
+</ol>
+
+<p>
+  不要一次改很多处。每次只改一个假设，再运行一次，才能知道是哪一处起了作用。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 0-5</div>
+  <p>下面的代码把两个数字保存成字符串，直接相加会得到 <code>1218</code>，而不是 <code>30</code>。写一个脚本 <code>0-5.py</code>，先转换成整数再相加，按下面的格式输出一行。</p>
+  <pre data-lang="Python"><code>left = "12"
+right = "18"</code></pre>
+  <pre class="out" data-label="预期输出">12 + 18 = 30</pre>
+  <!-- 答案 0-5 -->
+  <details class="ans" data-run="示例代码/答案/0-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>int(left)</code> 与 <code>int(right)</code> 先把字符串转换成
+        整数，再相加。若直接写 <code>left + right</code>，得到的是字符串拼接
+        的结果 <code>1218</code>。
+      </p>
+      <pre data-lang="Python"><code>left = "12"
+right = "18"
+print(f"{left} + {right} = {int(left) + int(right)}")</code></pre>
+      <pre class="out" data-label="真实输出">12 + 18 = 30</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-6</div>
+  <p>下面的程序把函数名 <code>average</code> 拼成了 <code>averge</code>，运行会得到 <code>NameError</code>。改正后保存为 <code>0-6.py</code>，打印平均分并保留两位小数。</p>
+  <pre data-lang="Python"><code>scores = [88, 92, 79]
+
+
+def average(values):
+    return sum(values) / len(values)
+
+
+print("average:", round(averge(scores), 2))</code></pre>
+  <pre class="out" data-label="预期输出">average: 86.33</pre>
+  <!-- 答案 0-6 -->
+  <details class="ans" data-run="示例代码/答案/0-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        报错来自调用处的 <code>averge</code> 与定义的 <code>average</code>
+        不一致；改正后函数返回平均值，<code>round</code> 保留两位小数。
+      </p>
+      <pre data-lang="Python"><code>scores = [88, 92, 79]
+
+
+def average(values):
+    return sum(values) / len(values)
+
+
+print("average:", round(average(scores), 2))</code></pre>
+      <pre class="out" data-label="真实输出">average: 86.33</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>从 traceback 的最后一行与自己的文件帧定位错误，区分文件、缩进、名字与类型四类问题。</p>
+</section>
+
+<section class="lesson" id="l0-4">
+<h2><span class="no">0.4</span>第一个完整工具：批量读取图片尺寸</h2>
+
+<p>
+  这一课写一个小工具：遍历素材目录中的所有 PNG，打印文件名、宽、高、
+  通道数与像素类型，并把同样的信息写入 <code>out_sizes.txt</code>。
+  它把路径遍历、图片读取与文件写入串在一起，是后面视觉脚本的常见骨架。
+</p>
+
+<h3 id="s0-4-1">任务与数据</h3>
+
+<p>
+  素材目录中有三张 PNG：<code>synth_balls.png</code> 与
+  <code>synth_shapes.png</code> 都是 640×480 的彩色图，
+  <code>synth_grid.png</code> 是 320×240 的灰度图。工具不假定文件数量
+  与顺序，而是扫描目录，按文件名排序后逐个处理。
+</p>
+
+<p>
+  输出分两部分：屏幕上是一张对齐的表，文件里是逗号分隔的记录。
+  前者供人阅读，后者供其他脚本继续处理。两者使用同一批数据，
+  避免手工抄写出错。
+</p>
+
+<h3 id="s0-4-2">遍历素材目录</h3>
+
+<p>
+  <code>pathlib.Path</code> 把路径封装成对象。
+  <code>Path("素材")</code> 表示相对当前目录的素材文件夹，
+  <code>.glob("*.png")</code> 返回其中所有以 <code>.png</code> 结尾的文件。
+  <code>sorted()</code> 按路径的字符串顺序排序，保证每次运行顺序一致。
+</p>
+
+<p>
+  <code>path.name</code> 只取文件名，不含目录。<code>Path.glob</code>
+  不递归进入子目录；素材目录只有一层，够用。若以后要递归，改用
+  <code>rglob</code>。
+</p>
+
+<h3 id="s0-4-3">读图与尺寸</h3>
+
+<p>
+  <code>cv2.imread(str(path))</code> 读入图片，返回一个 NumPy 数组。
+  默认参数把图片读成三通道 BGR，即使原文件是灰度 PNG，返回的仍是三通道，
+  所以下面三张图的 <code>channels</code> 都是 3。读入失败时返回
+  <code>None</code>，程序先检查再取尺寸。
+</p>
+
+<p>
+  <code>image.shape</code> 的顺序是“高、宽、通道数”，不是“宽、高”。
+  程序写成 <code>height, width = image.shape[:2]</code>，再用
+  <code>image.shape[2]</code> 取通道数。<code>image.dtype</code>
+  是像素类型，8 位无符号整数显示为 <code>uint8</code>。
+</p>
+
+<h3 id="s0-4-4">写结果文件</h3>
+
+<p>
+  程序把每张图拼成一行 <code>名字,宽,高,通道,类型</code>，用
+  <code>"\n".join(lines)</code> 连接，再在末尾补一个换行。
+  <code>Path.write_text</code> 的 <code>encoding="utf-8"</code>
+  明确写出编码，换一台机器也不会因默认编码不同而写出乱码。
+</p>
+
+<p>
+  结果文件写在当前目录，不写进素材目录。这样重复运行不会污染只读素材，
+  删除结果也不会影响输入。
+</p>
+
+<h3 id="s0-4-5">运行结果</h3>
+
+<div class="eg" id="e0-4">
+  <div class="eg-h">例题 · 批量读取图片尺寸</div>
+  <p>题目：扫描 <code>素材</code> 中的 PNG，按文件名排序，打印对齐的尺寸表，并写入 <code>out_sizes.txt</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="0.4-image_sizes.py"><code>from pathlib import Path
+
+import cv2
+
+
+def main():
+    rows = []
+    for path in sorted(Path("素材").glob("*.png")):
+        image = cv2.imread(str(path))
+        if image is None:
+            print("读入失败:", path.name)
+            continue
+        height, width = image.shape[:2]
+        channels = image.shape[2] if image.ndim == 3 else 1
+        rows.append((path.name, width, height, channels, image.dtype))
+
+    for name, width, height, channels, dtype in rows:
+        print(f"{name:&lt;18}{width:&gt;4}x{height:&lt;4} channels={channels}  {dtype}")
+
+    lines = [f"{name},{width},{height},{channels},{dtype}"
+             for name, width, height, channels, dtype in rows]
+    Path("out_sizes.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"{len(rows)} images -&gt; out_sizes.txt")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  <p>运行并查看结果文件：</p>
+  <pre data-lang="终端"><code>python3 示例代码/0.4-image_sizes.py
+cat out_sizes.txt</code></pre>
+  <pre class="out" data-label="真实输出">synth_balls.png    640x480  channels=3  uint8
+synth_chess_1.png  640x480  channels=3  uint8
+synth_chess_2.png  640x480  channels=3  uint8
+synth_chess_3.png  640x480  channels=3  uint8
+synth_grid.png     320x240  channels=3  uint8
+synth_shapes.png   640x480  channels=3  uint8
+6 images -&gt; out_sizes.txt
+synth_balls.png,640,480,3,uint8
+synth_chess_1.png,640,480,3,uint8
+synth_chess_2.png,640,480,3,uint8
+synth_chess_3.png,640,480,3,uint8
+synth_grid.png,320,240,3,uint8
+synth_shapes.png,640,480,3,uint8</pre>
+  <p>前七行来自脚本，后六行来自 <code>cat</code>。文件名按字典序排列，
+  <code>synth_balls</code> 最先，三张 <code>synth_chess</code> 紧随其后，
+  <code>synth_grid</code> 与 <code>synth_shapes</code> 最后。除
+  <code>synth_grid</code> 是 320×240 外，其余图片都是 640×480。
+  灰度图读入后仍是三通道，这是 <code>imread</code> 默认行为的直接结果。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-7</div>
+  <p>写一个脚本 <code>0-7.py</code>，遍历 <code>素材</code> 中的 PNG，只保留宽度不小于 640 的图片。先打印这些图片的数量，格式为 <code>N wide images</code>；再按文件名顺序逐行打印 <code>文件名 宽x高</code>。</p>
+  <pre class="out" data-label="预期输出">5 wide images
+synth_balls.png 640x480
+synth_chess_1.png 640x480
+synth_chess_2.png 640x480
+synth_chess_3.png 640x480
+synth_shapes.png 640x480</pre>
+  <!-- 答案 0-7 -->
+  <details class="ans" data-run="示例代码/答案/0-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        遍历时先读入图片，读入失败就跳过；<code>shape</code> 的前两项是
+        高与宽，判断宽度是否达到 640 后再加入结果列表。路径已按名字排序，
+        输出顺序固定。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+import cv2
+
+wide = []
+for path in sorted(Path("素材").glob("*.png")):
+    image = cv2.imread(str(path))
+    if image is None:
+        continue
+    height, width = image.shape[:2]
+    if width &gt;= 640:
+        wide.append((path.name, width, height))
+
+print(f"{len(wide)} wide images")
+for name, width, height in wide:
+    print(f"{name} {width}x{height}")</code></pre>
+      <pre class="out" data-label="真实输出">5 wide images
+synth_balls.png 640x480
+synth_chess_1.png 640x480
+synth_chess_2.png 640x480
+synth_chess_3.png 640x480
+synth_shapes.png 640x480</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-8</div>
+  <p>写一个脚本 <code>0-8.py</code>，读入 <code>素材/synth_grid.png</code>，打印图片的 <code>shape</code>、<code>dtype</code> 与像素总数（高乘宽）。</p>
+  <pre class="out" data-label="预期输出">shape: (240, 320, 3)
+dtype: uint8
+pixels: 76800</pre>
+  <!-- 答案 0-8 -->
+  <details class="ans" data-run="示例代码/答案/0-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>imread</code> 默认按三通道读入，所以灰度图的
+        <code>shape</code> 也是 (240, 320, 3)；前两项是高与宽，
+        相乘得到像素总数。
+      </p>
+      <pre data-lang="Python"><code>import cv2
+
+image = cv2.imread("素材/synth_grid.png")
+print("shape:", image.shape)
+print("dtype:", image.dtype)
+print("pixels:", image.shape[0] * image.shape[1])</code></pre>
+      <pre class="out" data-label="真实输出">shape: (240, 320, 3)
+dtype: uint8
+pixels: 76800</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>pathlib</code> 遍历目录、用 OpenCV 读取图片尺寸，并把结构化结果写入文本文件。</p>
+</section>
+
+<section class="lesson" id="l0-5">
+<h2><span class="no">0.5</span>从 C++ 到 Python：要改的习惯</h2>
+
+<p>
+  Python 的变量、对象与函数参数传递规则和 C++ 不同。若照 C++ 的直觉写，
+  程序往往能运行，结果却与预期不符。这一课集中处理五个最容易沿用的习惯：
+  变量是名字而不是存储位置、列表赋值不复制、函数可以修改传入的列表、
+  除法默认得到浮点数、空容器的真值为假。
+</p>
+
+<h3 id="s0-5-1">名字是标签</h3>
+
+<p>
+  Python 的赋值语句把名字绑定到对象上，不复制对象。写成
+  <code>b = a</code> 之后，<code>a</code> 与 <code>b</code> 是同一个列表的
+  两个名字；通过任意一个名字修改列表，另一个名字读到的内容也会变。
+  这与 C++ 的引用相似，但不需要在类型上写 <code>&amp;</code>，
+  也无法通过重新赋值让另一个名字跟着改变。
+</p>
+
+<p>
+  要得到独立副本，使用切片 <code>a[:]</code>、<code>list(a)</code>
+  或 <code>copy.copy(a)</code>。这三种写法都只复制第一层；列表中若还有
+  列表，内层仍是共享的，需要 <code>copy.deepcopy</code>。
+</p>
+
+<h3 id="s0-5-2">可变对象与函数</h3>
+
+<p>
+  函数参数同样按名字传递。函数收到的是对象本身，不是副本；
+  在函数里调用 <code>values.append(1)</code> 会修改调用者的列表。
+  若函数体内对参数重新赋值，例如 <code>values = [0]</code>，
+  只是让局部名字指向新对象，调用者的列表不变。
+</p>
+
+<p>
+  列表、字典与集合是可变对象；整数、浮点数、字符串与元组不可变。
+  对不可变对象“修改”时，解释器实际创建新对象并重新绑定名字，
+  因此函数内部无法通过参数改变外部的整数或字符串。
+</p>
+
+<h3 id="s0-5-3">除法与真值</h3>
+
+<p>
+  <code>/</code> 总是得到浮点数，即使两个操作数都是整数；
+  <code>//</code> 是向下取整的除法，<code>%</code> 取余。
+  负数上的 <code>//</code> 向负无穷取整，与 C++ 的截断方向不同：
+  <code>-7 // 2</code> 是 <code>-4</code>，不是 <code>-3</code>。
+</p>
+
+<p>
+  条件判断接受任意对象。空列表、空字符串、空字典、<code>0</code>、
+  <code>0.0</code> 与 <code>None</code> 为假，其余为真。
+  判断“有没有内容”直接写 <code>if values:</code>，不必先求长度。
+  判断“是不是 <code>None</code>”用 <code>is None</code>，不要用
+  <code>== None</code>。
+</p>
+
+<h3 id="s0-5-4">对照表</h3>
+
+<table>
+  <thead>
+    <tr><th>C++ 习惯</th><th>Python 写法</th><th>要注意的地方</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>int a = 3;</code></td><td><code>a = 3</code></td><td>不写类型，名字可以重新绑定到别的类型</td></tr>
+    <tr><td><code>{ }</code> 包围代码块</td><td>缩进四个空格</td><td>缩进是语法，混用空格与制表符会报错</td></tr>
+    <tr><td><code>for (int i = 0; i &lt; n; ++i)</code></td><td><code>for i in range(n):</code></td><td><code>range</code> 不含终点</td></tr>
+    <tr><td><code>nullptr</code></td><td><code>None</code></td><td>用 <code>is None</code> 判断</td></tr>
+    <tr><td><code>int / int</code> 截断</td><td><code>/</code> 得到浮点数</td><td>要整除写 <code>//</code></td></tr>
+    <tr><td>按值传参复制对象</td><td>传的是对象本身</td><td>可变对象会在函数内被修改</td></tr>
+  </tbody>
+</table>
+
+<div class="eg" id="e0-5">
+  <div class="eg-h">例题 · 别名、复制、函数修改与除法</div>
+  <p>题目：用一段程序依次演示列表赋值、切片复制、函数内修改、真除法与整除、以及空容器的真值。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="0.5-demo.py"><code>def add_one(values):
+    values.append(1)
+
+
+a = [1, 2, 3]
+b = a
+b.append(4)
+print("alias:", a)
+
+c = a[:]
+c.append(5)
+print("copy:", a)
+print("copy:", c)
+
+add_one(a)
+print("mutated:", a)
+
+print("7 / 2 =", 7 / 2)
+print("7 // 2 =", 7 // 2)
+print("bool:", bool([]), bool([0]), bool(""))
+
+x = None
+print("none:", x is None)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/0.5-demo.py</code></pre>
+  <pre class="out" data-label="真实输出">alias: [1, 2, 3, 4]
+copy: [1, 2, 3, 4]
+copy: [1, 2, 3, 4, 5]
+mutated: [1, 2, 3, 4, 1]
+7 / 2 = 3.5
+7 // 2 = 3
+bool: False True False
+none: True</pre>
+  <p><code>b = a</code> 之后修改 <code>b</code>，<code>a</code> 也变成四个元素；<code>c = a[:]</code> 得到独立列表，追加 5 只影响 <code>c</code>。<code>add_one</code> 修改的是调用者的列表，因此 <code>a</code> 末尾多出 1。空列表为假，包含 0 的列表为真，空字符串为假。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-9</div>
+  <p>写一个脚本 <code>0-9.py</code>，先建立列表 <code>[1, 2, 3]</code>，用赋值得到第二个名字并追加 4；再用切片得到副本并追加 5。按下面的顺序打印三行，验证赋值是别名、切片是复制。</p>
+  <pre class="out" data-label="预期输出">a: [1, 2, 3, 4]
+a: [1, 2, 3, 4]
+c: [1, 2, 3, 4, 5]</pre>
+  <!-- 答案 0-9 -->
+  <details class="ans" data-run="示例代码/答案/0-9.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>b = a</code> 只增加一个名字，两个名字指向同一个列表；
+        <code>c = a[:]</code> 创建新列表，追加 5 只影响 <code>c</code>。
+        因此前两行看到的 <code>a</code> 都包含 4。
+      </p>
+      <pre data-lang="Python"><code>a = [1, 2, 3]
+b = a
+b.append(4)
+print("a:", a)
+
+c = a[:]
+c.append(5)
+print("a:", a)
+print("c:", c)</code></pre>
+      <pre class="out" data-label="真实输出">a: [1, 2, 3, 4]
+a: [1, 2, 3, 4]
+c: [1, 2, 3, 4, 5]</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-10</div>
+  <p>写一个脚本 <code>0-10.py</code>，定义 <code>add_item(values, item)</code>，在列表末尾追加元素并返回 <code>None</code>。建立 <code>values = [1, 2]</code>，调用后打印列表与返回值；再打印 <code>-7 // 2</code>、<code>-7 % 2</code>，以及空列表与 <code>[0]</code> 的真值。</p>
+  <pre class="out" data-label="预期输出">values: [1, 2, 3]
+returned: None
+-7 // 2 = -4
+-7 % 2 = 1
+empty: False nonempty: True</pre>
+  <!-- 答案 0-10 -->
+  <details class="ans" data-run="示例代码/答案/0-10.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        函数收到的是列表本身，<code>append</code> 修改调用者的
+        <code>values</code>，返回值是 <code>None</code>。负数
+        <code>//</code> 向负无穷取整，余数取正；空列表为假，
+        含 0 的列表为真。
+      </p>
+      <pre data-lang="Python"><code>def add_item(values, item):
+    values.append(item)
+
+
+values = [1, 2]
+returned = add_item(values, 3)
+print("values:", values)
+print("returned:", returned)
+print("-7 // 2 =", -7 // 2)
+print("-7 % 2 =", -7 % 2)
+print("empty:", bool([]), "nonempty:", bool([0]))</code></pre>
+      <pre class="out" data-label="真实输出">values: [1, 2, 3]
+returned: None
+-7 // 2 = -4
+-7 % 2 = 1
+empty: False nonempty: True</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>判断一段 Python 代码里的赋值是别名还是复制，知道函数会不会改到调用者的列表，并按 Python 的除法与真值规则改写 C++ 习惯。</p>
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="01-语法与容器.html">第 1 部分 · 语法与容器 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "camera": {
+    "fps": 30,
+    "height": 480,
+    "width": 640
+  },
+  "detector": {
+    "min_area": 120,
+    "threshold": 0.55
+  },
+  "verbose": false
+}

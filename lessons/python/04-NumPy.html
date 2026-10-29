@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 4 部分 · NumPy 数组与向量化 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a class="active" href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" aria-current="page" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 4 部分 · NumPy 数组与向量化</div>
+  <a class="toc-l" href="#l4-1"><span class="n">4.1</span>ndarray 的创建与内存</a>
+  <a class="toc-sub" href="#s4-1-1">创建数组</a>
+  <a class="toc-sub" href="#s4-1-2">形状、类型与大小</a>
+  <a class="toc-sub" href="#s4-1-3">内存布局与步长</a>
+  <a class="toc-sub" href="#s4-1-4">类型转换与溢出</a>
+  <a class="toc-sub" href="#e4-1">例题：数组的几种建法</a>
+  <a class="toc-l" href="#l4-2"><span class="n">4.2</span>索引、切片与视图</a>
+  <a class="toc-sub" href="#s4-2-1">下标与切片</a>
+  <a class="toc-sub" href="#s4-2-2">视图与副本</a>
+  <a class="toc-sub" href="#s4-2-3">布尔掩码与 where</a>
+  <a class="toc-sub" href="#s4-2-4">花式索引与轴</a>
+  <a class="toc-sub" href="#e4-2">例题：灰度图上的取数</a>
+  <a class="toc-l" href="#l4-3"><span class="n">4.3</span>形状、广播与向量化</a>
+  <a class="toc-sub" href="#s4-3-1">reshape 与转置</a>
+  <a class="toc-sub" href="#s4-3-2">拼接与堆叠</a>
+  <a class="toc-sub" href="#s4-3-3">广播规则</a>
+  <a class="toc-sub" href="#s4-3-4">按轴聚合与归一化</a>
+  <a class="toc-sub" href="#e4-3">例题：形状变换与图像归一化</a>
+  <a class="toc-l" href="#l4-4"><span class="n">4.4</span>统计、排序与直方图</a>
+  <a class="toc-sub" href="#s4-4-1">均值、标准差与极值</a>
+  <a class="toc-sub" href="#s4-4-2">最值与坐标</a>
+  <a class="toc-sub" href="#s4-4-3">分位数与直方图</a>
+  <a class="toc-sub" href="#s4-4-4">排序、排名与缺失值</a>
+  <a class="toc-sub" href="#e4-4">例题：一张图的统计量</a>
+  <a class="toc-l" href="#l4-5"><span class="n">4.5</span>线性代数</a>
+  <a class="toc-sub" href="#s4-5-1">矩阵与向量</a>
+  <a class="toc-sub" href="#s4-5-2">解线性方程组</a>
+  <a class="toc-sub" href="#s4-5-3">逆、行列式与范数</a>
+  <a class="toc-sub" href="#s4-5-4">最小二乘与 SVD</a>
+  <a class="toc-sub" href="#e4-5">例题：方程组与直线拟合</a>
+  <a class="toc-l" href="#l4-6"><span class="n">4.6</span>随机数与可复现</a>
+  <a class="toc-sub" href="#s4-6-1">生成器与种子</a>
+  <a class="toc-sub" href="#s4-6-2">常见分布</a>
+  <a class="toc-sub" href="#s4-6-3">随机掩码与抽样</a>
+  <a class="toc-sub" href="#s4-6-4">保存与复现</a>
+  <a class="toc-sub" href="#e4-6">例题：带噪声的直线</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 4 部分</div>
+  <h1>NumPy 数组与向量化</h1>
+  <p class="part-lead">
+    图像在 Python 里是数组，检测结果、坐标与统计量也都落在数组上。
+    这一部分从 ndarray 的创建、形状与内存布局讲起，经过索引、视图、广播与
+    统计，再进入线性代数与随机数。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l0-4 l1-1 l1-2 l1-3 l1-4 l1-5 l1-6">
+  <b>前置</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="00-开始.html#l0-4">0.4</a>（第一个完整工具：批量读取图片尺寸）与
+    <a href="01-语法与容器.html#l1-1">1.1</a>（值、变量与类型）、
+    <a href="01-语法与容器.html#l1-2">1.2</a>（字符串与格式化）、
+    <a href="01-语法与容器.html#l1-3">1.3</a>（列表、元组与切片）、
+    <a href="01-语法与容器.html#l1-4">1.4</a>（字典与集合）、
+    <a href="01-语法与容器.html#l1-5">1.5</a>（控制流与推导式）、
+    <a href="01-语法与容器.html#l1-6">1.6</a>（函数）。
+  </p>
+</div>
+
+<section class="lesson" id="l4-1">
+<h2><span class="no">4.1</span>ndarray 的创建与内存</h2>
+
+<p>
+  NumPy 的核心是 ndarray（N-dimensional array，N 维数组），它把同一种
+  数据类型的元素放在一段连续内存里，并记录形状、步长与字节序。Python 列表
+  可以混放不同类型，逐个元素访问；ndarray 要求类型一致，换来的是整块数据的
+  批量运算与更小的存储开销。这一课从创建数组开始，依次看形状、类型、步长与
+  类型转换。
+</p>
+
+<h3 id="s4-1-1">创建数组</h3>
+
+<p>
+  <code>np.array(seq, dtype=...)</code> 从列表或嵌套列表构造数组，默认按
+  元素推断类型。<code>np.zeros(shape)</code> 与 <code>np.ones(shape)</code>
+  创建全零与全一数组，<code>np.full(shape, value)</code> 用指定值填满。
+  形状写成元组：<code>(2, 3)</code> 表示两行三列，<code>(3,)</code> 表示
+  长度为 3 的一维数组。
+</p>
+
+<p>
+  <code>np.arange(start, stop, step)</code> 与 Python 的 <code>range</code>
+  一样不含终点，步长可以是小数；<code>np.linspace(start, stop, num)</code>
+  按个数等分，默认包含终点。需要固定类型时显式写 <code>dtype</code>，
+  例如图像用 <code>uint8</code>，坐标用 <code>float32</code>。
+</p>
+  <pre data-lang="Python"><code>a = np.array([[1, 2, 3], [4, 5, 6]])
+z = np.zeros((2, 4), dtype=np.uint8)
+o = np.ones((3,), dtype=np.float32)
+f = np.full((2, 2), 7)
+r = np.arange(0, 10, 3)
+l = np.linspace(0.0, 1.0, 5)</code></pre>
+
+<p>
+  <code>np.array</code> 默认复制输入数据；<code>np.asarray</code> 在输入已经
+  是 ndarray 且类型相同时直接返回原对象，不复制。创建之后数组的大小固定，
+  不能像列表那样追加元素；需要更多空间时新建一个更大的数组，再把旧数据写进去。
+</p>
+
+<h3 id="s4-1-2">形状、类型与大小</h3>
+
+<p>
+  <code>shape</code> 是各维长度的元组，<code>ndim</code> 是维数，
+  <code>size</code> 是元素总数，等于 <code>shape</code> 各分量相乘。
+  <code>dtype</code> 是元素类型，<code>itemsize</code> 是每个元素占的字节数，
+  <code>nbytes</code> 是整块数据占的字节数，等于 <code>size * itemsize</code>。
+</p>
+
+<p>
+  彩色图像从 OpenCV 读入后形状是 <code>(高, 宽, 3)</code>，三个通道按蓝、
+  绿、红排列；灰度图是 <code>(高, 宽)</code>。一张 640×480 的彩色图有
+  640×480×3=921600 个 <code>uint8</code> 元素，占 921600 字节。
+  <code>len(array)</code> 只返回第一维的长度，不等于元素总数，统计大小时用
+  <code>size</code>。
+</p>
+
+<h3 id="s4-1-3">内存布局与步长</h3>
+
+<p>
+  步长（stride）是沿某一维走一步所跨的字节数，单位是字节而不是元素。
+  C 顺序（C order）把最后一维排得最密，行与行之间相隔一整行；Fortran 顺序
+  （Fortran order）相反，第一维最密。创建时写 <code>order="F"</code> 得到
+  列优先的数组，<code>flags["C_CONTIGUOUS"]</code> 与
+  <code>flags["F_CONTIGUOUS"]</code> 分别报告两种连续性。
+</p>
+  <pre data-lang="Python"><code>a = np.arange(6, dtype=np.int16).reshape(2, 3)
+a.T
+view = a[0]
+view[0] = 9</code></pre>
+
+<p>
+  <code>a</code> 是两行三列的 <code>int16</code>，每个元素 2 字节，行步长
+  为 3×2=6，列步长为 2。转置只交换两个轴的步长，没有搬动数据，所以
+  <code>a.T</code> 的步长是 <code>(2, 6)</code>，它不再是 C 连续。
+  <code>a[0]</code> 是原数组第一行的视图，改 <code>view[0]</code> 就是改
+  <code>a[0, 0]</code>，<code>a[0]</code> 因此变成 <code>[9, 1, 2]</code>。
+</p>
+
+<p>
+  OpenCV 读入的图像是 C 连续的。转置、切片与 <code>transpose</code> 得到的
+  数组可能不连续；有些函数要求连续内存，遇到这类报错时先调用
+  <code>np.ascontiguousarray(array)</code> 复制成 C 连续，再传入。
+</p>
+
+<h3 id="s4-1-4">类型转换与溢出</h3>
+
+<p>
+  <code>astype(dtype)</code> 返回转换后的新数组，默认复制；浮点转整数时
+  小数部分被截断，向零取整。整数类型有固定范围：<code>uint8</code> 是
+  0 到 255，<code>int8</code> 是 −128 到 127，<code>int16</code> 是
+  −32768 到 32767。超出范围时按模运算回绕，不报错。
+</p>
+
+<p>
+  回绕是图像处理的常见错误：两个 <code>uint8</code> 相加，250+10 得到 4
+  而不是 260。需要保留范围时先转成更宽的类型，例如
+  <code>astype(np.int16)</code> 或 <code>astype(np.float32)</code>，算完再
+  裁剪并转回。<code>np.clip(array, 0, 255)</code> 把越界值压到边界，
+  避免回绕。
+</p>
+
+<p>
+  浮点数不能用 <code>==</code> 直接比较，<code>0.1 + 0.2</code> 与
+  <code>0.3</code> 的二进制表示不同，比较结果为 <code>False</code>。
+  判断两个浮点数组是否相等用 <code>np.allclose(a, b)</code> 或
+  <code>np.isclose(a, b)</code>，它们按相对与绝对容差比较。
+</p>
+
+<div class="eg" id="e4-1">
+  <div class="eg-h">例题 · 数组的几种建法</div>
+  <p>题目：用列表、<code>zeros</code>、<code>ones</code>、<code>full</code>、<code>arange</code> 与 <code>linspace</code> 创建数组，打印形状、维数、类型、元素数、元素字节数、整块字节数、步长与内存顺序；再演示 <code>astype</code> 与整数回绕。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.1-array.py"><code>import numpy as np
+
+
+a = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.int16)
+z = np.zeros((2, 4), dtype=np.uint8)
+o = np.ones((3,), dtype=np.float32)
+f = np.full((2, 2), 7, dtype=np.int32)
+r = np.arange(0, 10, 3)
+l = np.linspace(0.0, 1.0, 5)
+
+print("a:", a.shape, a.ndim, a.dtype, a.size, a.itemsize)
+print("a strides:", a.strides)
+print("C flags:", a.flags["C_CONTIGUOUS"], a.flags["F_CONTIGUOUS"])
+b = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.int16, order="F")
+print("F flags:", b.flags["C_CONTIGUOUS"], b.flags["F_CONTIGUOUS"])
+print("F strides:", b.strides)
+print("zeros:", z.shape, z.dtype, int(z.sum()))
+print("ones:", o.shape, o.dtype, float(o.sum()))
+print("full:", f.shape, int(f[0, 0]))
+print("arange:", r.tolist())
+print("linspace:", np.round(l, 2).tolist())
+
+small = a.astype(np.int8)
+print("astype:", small.dtype, small.nbytes, a.nbytes)
+wrap = np.array([120, 100], dtype=np.int8) + np.array([20, 30], dtype=np.int8)
+print("wrap:", wrap.tolist())</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.1-array.py</code></pre>
+    <pre class="out" data-label="真实输出">a: (2, 3) 2 int16 6 2
+a strides: (6, 2)
+C flags: True False
+F flags: False True
+F strides: (2, 4)
+zeros: (2, 4) uint8 0
+ones: (3,) float32 3.0
+full: (2, 2) 7
+arange: [0, 3, 6, 9]
+linspace: [0.0, 0.25, 0.5, 0.75, 1.0]
+astype: int8 6 12
+wrap: [-116, -126]</pre>
+  <p><code>a</code> 的形状是两行三列，维数 2，类型 <code>int16</code>，
+  共 6 个元素，每个 2 字节，整块 12 字节。C 顺序下沿行方向走一步跨 3×2=6
+  字节，沿列方向跨 2 字节，因此步长是 <code>(6, 2)</code>。改成
+  <code>order="F"</code> 后第一维最密，步长换成 <code>(2, 4)</code>：
+  行方向跨 2 字节，列方向跨两行共 4 字节。零数组的和为 0，一数组三个
+  <code>1.0</code> 相加为 3.0，全值数组的每个元素都是 7。
+  <code>arange(0, 10, 3)</code> 从 0 开始、每次加 3、不含终点，得到
+  0、3、6、9；<code>linspace(0, 1, 5)</code> 把 0 到 1 等分成四段，
+  得到五个包含终点的值。转成 <code>int8</code> 后每个元素 1 字节，整块从
+  12 字节降到 6 字节；1 到 6 都在 <code>int8</code> 范围内，数值不变。
+  最后一行 120+20=140 超过 127，按 256 取模得到 −116；100+30=130 同样
+  回绕成 −126。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-1</div>
+  <p>写一个脚本 <code>4-1.py</code>，创建三个数组：<code>np.arange(12, dtype=np.uint8).reshape(3, 4)</code>、<code>np.linspace(-1.0, 1.0, 5)</code> 与 <code>np.full((2, 3), 5, dtype=np.int16, order="F")</code>。打印第一个数组的形状、维数、类型与元素数；打印它的步长；打印第二个数组的列表；打印第三个数组的 C 连续与 F 连续标志；最后打印三个数组的 <code>nbytes</code>。</p>
+    <pre class="out" data-label="预期输出">a: (3, 4) 2 uint8 12
+a strides: (4, 1)
+b: [-1.0, -0.5, 0.0, 0.5, 1.0]
+c flags: False True
+bytes: 12 40 12</pre>
+  <!-- 答案 4-1 -->
+  <details class="ans" data-run="示例代码/答案/4-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>arange</code> 先建 12 个 <code>uint8</code>，再重排成三行四列，
+        行步长 4 字节、列步长 1 字节。第二个数组的五个点包含终点，依次是
+        −1、−0.5、0、0.5、1。第三个数组按 Fortran 顺序存放，C 连续为
+        <code>False</code>、F 连续为 <code>True</code>。三个数组的字节数
+        分别是 12、40 与 12：第一个是 12 个单字节元素，第二个是 5 个双精度
+        浮点数，第三个是 6 个双字节整数。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+a = np.arange(12, dtype=np.uint8).reshape(3, 4)
+b = np.linspace(-1.0, 1.0, 5)
+c = np.full((2, 3), 5, dtype=np.int16, order="F")
+
+print("a:", a.shape, a.ndim, a.dtype, a.size)
+print("a strides:", a.strides)
+print("b:", b.tolist())
+print("c flags:", c.flags["C_CONTIGUOUS"], c.flags["F_CONTIGUOUS"])
+print("bytes:", a.nbytes, b.nbytes, c.nbytes)</code></pre>
+      <pre class="out" data-label="真实输出">a: (3, 4) 2 uint8 12
+a strides: (4, 1)
+b: [-1.0, -0.5, 0.0, 0.5, 1.0]
+c flags: False True
+bytes: 12 40 12</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-2</div>
+  <p>写一个脚本 <code>4-2.py</code>，创建 <code>uint8</code> 数组 <code>[250, 2]</code> 与 <code>[10, 3]</code>，打印相加结果；把第一个数组转成 <code>int16</code> 后打印，再转回 <code>uint8</code> 后打印；创建 <code>int8</code> 数组 <code>[120]</code>，加 20 后打印；最后打印 <code>0.1 + 0.2 == 0.3</code> 的结果与 <code>np.isclose(0.1 + 0.2, 0.3)</code> 的结果。</p>
+    <pre class="out" data-label="预期输出">sum: [4, 5]
+cast: [250, 2]
+back: [250, 2]
+wrap: [-116]
+float equal: False
+float close: True</pre>
+  <!-- 答案 4-2 -->
+  <details class="ans" data-run="示例代码/答案/4-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>uint8</code> 加法按 256 取模：250+10=260 回绕为 4，2+3=5 不变。
+        转成 <code>int16</code> 后 250 与 2 都保留，再转回 <code>uint8</code>
+        仍是原值。<code>int8</code> 的 120+20=140 超出上界 127，回绕为 −116。
+        <code>0.1 + 0.2</code> 与 <code>0.3</code> 的二进制表示不同，
+        <code>==</code> 得到 <code>False</code>，<code>isclose</code> 按容差
+        比较得到 <code>True</code>。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+x = np.array([250, 2], dtype=np.uint8)
+y = np.array([10, 3], dtype=np.uint8)
+print("sum:", (x + y).tolist())
+print("cast:", x.astype(np.int16).tolist())
+print("back:", x.astype(np.int16).astype(np.uint8).tolist())
+
+v = np.array([120], dtype=np.int8)
+print("wrap:", (v + 20).tolist())
+print("float equal:", bool(0.1 + 0.2 == 0.3))
+print("float close:", bool(np.isclose(0.1 + 0.2, 0.3)))</code></pre>
+      <pre class="out" data-label="真实输出">sum: [4, 5]
+cast: [250, 2]
+back: [250, 2]
+wrap: [-116]
+float equal: False
+float close: True</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 NumPy 创建指定类型与形状的数组，读出元素数、字节数与步长，并在整数回绕之前把数据转成更宽的类型。</p>
+</section>
+
+<section class="lesson" id="l4-2">
+<h2><span class="no">4.2</span>索引、切片与视图</h2>
+
+<p>
+  索引决定取哪几个元素，切片决定取哪一块；NumPy 的切片通常返回视图，
+  与父数组共用同一段内存。视图与副本的区别直接决定修改会不会影响原图，
+  也是用 OpenCV 裁剪区域时必须留意的第一件事。
+</p>
+
+<h3 id="s4-2-1">下标与切片</h3>
+
+<p>
+  多维数组用逗号分隔各维下标：<code>a[i, j]</code> 取第 i 行第 j 列，
+  <code>a[i]</code> 取一整行，<code>a[:, j]</code> 取一整列。每一维都可以
+  写切片 <code>start:stop:step</code>，起点包含、终点不包含，省略起点表示
+  从头开始，省略终点表示到最后。负下标从末尾数起，<code>a[::-1]</code>
+  把第一维倒序。
+</p>
+  <pre data-lang="Python"><code>a = np.arange(12).reshape(3, 4)
+a[1, 2]
+a[1]
+a[:, 1]
+a[::2, 1:3]</code></pre>
+
+<p>
+  <code>a[1, 2]</code> 是第 2 行第 3 列的元素，值为 6。行切片
+  <code>a[1]</code> 得到长度 4 的一维数组；列切片 <code>a[:, 1]</code>
+  同样是一维数组，元素来自每一行的第 2 列。<code>a[::2, 1:3]</code>
+  取第 0、2 行与第 1、2 列，结果形状是 <code>(2, 2)</code>。
+</p>
+
+<p>
+  切片写错时不会报越界，而是安静地返回空数组或较短的结果。例如
+  <code>a[5:8]</code> 在长度为 3 的轴上返回空数组，<code>a[1:100]</code>
+  只取到末尾。读完切片结果后先打印 <code>shape</code>，确认取到的范围与
+  预期一致。
+</p>
+
+<h3 id="s4-2-2">视图与副本</h3>
+
+<p>
+  基本切片返回视图（view），视图与原数组共用数据，只记录自己的形状与步长。
+  修改视图的元素，原数组对应位置一起改变；反过来修改原数组，视图也看得到。
+  <code>copy()</code> 返回副本（copy），副本拥有独立内存，修改副本不影响
+  原数组。判断两个数组是否共用内存用 <code>np.shares_memory(a, b)</code>。
+</p>
+
+<p>
+  视图省内存，也带来副作用。从图像中裁出一块区域做处理时，如果希望原图
+  保持不变，裁剪后立刻调用 <code>copy()</code>；如果希望把处理结果写回原图，
+  直接使用视图即可。OpenCV 的绘图函数会修改传入的数组，把视图传进去，
+  原图上的对应区域也会被画上。
+</p>
+
+<p>
+  花式索引与布尔索引返回副本，不是视图。用整数数组取出的行、用掩码筛出的
+  元素都不与原数组共享内存；修改这些结果不会写回原数组。需要写回时，用
+  视图做切片赋值：<code>a[mask] = value</code> 直接改原数组。
+</p>
+
+<h3 id="s4-2-3">布尔掩码与 where</h3>
+
+<p>
+  比较运算逐元素进行，返回同形状的布尔数组，称为掩码（mask）。
+  <code>mask.sum()</code> 统计为真的元素个数，<code>mask.mean()</code>
+  得到为真的比例。<code>a[mask]</code> 把为真的元素取成一维数组，
+  顺序按行优先，先第一行从左到右，再第二行。
+</p>
+  <pre data-lang="Python"><code>a = np.array([5, 1, 4, 2, 3])
+mask = a &gt; 2
+mask.sum()
+mask.mean()
+a[mask]
+np.where(mask, a, 0)</code></pre>
+
+<p>
+  对 <code>a = [5, 1, 4, 2, 3]</code>，掩码为
+  <code>[True, False, True, False, True]</code>，<code>a[mask]</code>
+  得到 <code>[5, 4, 3]</code>，<code>where</code> 填零后得到
+  <code>[5, 0, 4, 0, 3]</code>。
+</p>
+
+<p>
+  <code>np.where(condition, x, y)</code> 按条件逐元素选择：条件为真取
+  <code>x</code>，为假取 <code>y</code>，两个分支可以是标量，也可以是与
+  条件同形状的数组。只传条件时，<code>np.where(mask)</code> 返回为真元素的
+  坐标元组，图像中常用它定位亮点的行列。
+</p>
+
+<p>
+  多个条件组合要用位运算符 <code>&amp;</code>、<code>|</code>、
+  <code>~</code>，每个条件加括号：<code>(gray &gt; 50) &amp; (gray &lt; 200)</code>。
+  Python 的 <code>and</code> 与 <code>or</code> 只接受单个真假值，不能逐元素
+  运算，写进数组条件会抛出“truth value of an array is ambiguous”。
+</p>
+
+<h3 id="s4-2-4">花式索引与轴</h3>
+
+<p>
+  花式索引（fancy indexing）用整数数组作为下标。写一个整数数组
+  <code>a[[0, 2]]</code> 取第 0、2 行；写两个等长整数数组
+  <code>a[[0, 1], [1, 2]]</code> 按位置配对，取 (0,1) 与 (1,2) 两个元素，
+  结果是一维数组。花式索引的结果是副本，形状由下标数组的形状决定。
+</p>
+
+<p>
+  <code>np.take(a, indices, axis=0)</code> 沿指定轴取元素，语义与整数数组
+  下标相同，适合把索引放在变量里。轴（axis）是数组的维度编号，从 0 开始；
+  对二维数组，<code>axis=0</code> 沿行方向减少行数，<code>axis=1</code>
+  沿列方向减少列数。
+</p>
+
+<p>
+  <code>np.newaxis</code>（也可写 <code>None</code>）在索引中增加一个长度
+  为 1 的轴：<code>a[:, np.newaxis]</code> 把形状 <code>(n,)</code> 变成
+  <code>(n, 1)</code>，<code>a[np.newaxis, :]</code> 变成
+  <code>(1, n)</code>。增加轴不复制数据，只改变形状与步长，常用于让两个
+  数组在广播时对齐。
+</p>
+
+<div class="eg" id="e4-2">
+  <div class="eg-h">例题 · 灰度图上的取数</div>
+  <p>题目：读取 <code>素材/synth_grid.png</code> 的灰度图，练习二维切片、视图修改、副本修改、布尔掩码、<code>np.where</code>、花式索引、<code>np.take</code> 与 <code>newaxis</code>；每一步都打印形状或数值，核对视图与副本的区别。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.2-index.py"><code>import cv2
+import numpy as np
+
+
+image = cv2.imread("素材/synth_grid.png", cv2.IMREAD_GRAYSCALE)
+print("shape:", image.shape, image.dtype)
+print("corner:", int(image[0, 0]), int(image[-1, -1]))
+
+roi = image[40:120, 60:180]
+print("roi:", roi.shape, int(roi.mean()))
+
+view = image[0:40, 0:60]
+view[:] = 255
+print("view changed parent:", int(image[0, 0]), int(image[40, 0]))
+
+copied = image[0:40, 0:60].copy()
+copied[:] = 0
+print("copy changed parent:", int(image[0, 0]))
+
+mask = image &gt; 200
+ys, xs = np.where(mask)
+print("mask:", mask.shape, int(mask.sum()), round(float(mask.mean()), 4))
+print("first white:", int(xs[0]), int(ys[0]))
+print("where sum:", int(np.where(mask, 1, 0).sum()))
+
+fancy = image[[40, 60, 80], [0, 40, 80]]
+print("fancy:", fancy.tolist())
+print("take:", np.take(image, [0, 10, 20], axis=0).shape)
+print("newaxis:", image[..., np.newaxis].shape)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.2-index.py</code></pre>
+    <pre class="out" data-label="真实输出">shape: (240, 320) uint8
+corner: 45 45
+roi: (80, 120) 127
+view changed parent: 255 45
+copy changed parent: 255
+mask: (240, 320) 39600 0.5156
+first white: 0 0
+where sum: 39600
+fancy: [45, 210, 45]
+take: (3, 320)
+newaxis: (240, 320, 1)</pre>
+  <p>棋盘图高 240、宽 320，左上与右下角都是深色格，灰度值为 45。
+  <code>image[40:120, 60:180]</code> 取第 40 到 119 行、第 60 到 179 列，
+  形状 80×120；这块区域深浅各半，平均值 127。视图
+  <code>image[0:40, 0:60]</code> 被整体写成 255 后，父图的
+  <code>(0, 0)</code> 变成 255，而视图之外的 <code>(40, 0)</code> 仍是 45。
+  副本是在视图修改之后取的，再把副本写成 0，父图仍是 255，说明副本与父图
+  不共用内存。</p>
+  <p>掩码统计发生在视图修改之后。原棋盘图的白色像素恰好占一半，共
+  320×240÷2=38400 个；视图区域 40×60 中原来有 1200 个白像素，整体写成
+  255 后增加 1200 个，得到 39600 个，占 76800 个像素的 0.5156。第一个
+  白像素因此是 <code>(0, 0)</code>；若没有前面的视图修改，扫描会先遇到
+  第一行第 20 列的白色格。<code>np.where(mask, 1, 0)</code> 的求和与
+  <code>mask.sum()</code> 相同，都是 39600。</p>
+  <p>花式索引取 (40,0)、(60,40)、(80,80) 三个点，它们在视图区域之外，
+  灰度随棋盘格交替，得到 <code>[45, 210, 45]</code>。前三个行被取出后形状
+  是 <code>(3, 320)</code>；<code>image[..., np.newaxis]</code> 在最末增加
+  一个轴，形状从 <code>(240, 320)</code> 变成 <code>(240, 320, 1)</code>，
+  数据没有复制。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-3</div>
+  <p>写一个脚本 <code>4-3.py</code>，读取 <code>素材/synth_grid.png</code> 的灰度图。裁出 <code>[100:180, 200:360]</code> 的区域，打印形状、最小值与最大值；统计灰度不低于 200 的像素数量与比例（比例保留三位小数）；用 <code>gray[[0, 20], 0:41:20]</code> 取一个 2×3 的子数组并打印；用 <code>np.where(gray &lt; 50)</code> 找到第一个暗像素，打印它的横坐标与纵坐标。</p>
+    <pre class="out" data-label="预期输出">roi: (80, 120) 45 210
+white: 38400 0.5
+rows: [[45, 210, 45], [210, 45, 210]]
+dark first: 0 0</pre>
+  <!-- 答案 4-3 -->
+  <details class="ans" data-run="示例代码/答案/4-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第 100 到 179 行、第 200 到 359 列的区域是 80×120，灰度最小值 45、
+        最大值 210。灰度不低于 200 的像素正好占一半，共 38400 个，比例为
+        0.5。花式索引取第 0、20 行与第 0、20、40 列，结果是一个 2×3 的
+        棋盘格子。按行优先扫描，第一个小于 50 的像素是左上角的 (0, 0)，
+        灰度 45。
+      </p>
+      <pre data-lang="Python"><code>import cv2
+import numpy as np
+
+
+gray = cv2.imread("素材/synth_grid.png", cv2.IMREAD_GRAYSCALE)
+roi = gray[100:180, 200:360]
+print("roi:", roi.shape, int(roi.min()), int(roi.max()))
+
+mask = gray &gt;= 200
+print("white:", int(mask.sum()), round(float(mask.mean()), 3))
+print("rows:", gray[[0, 20], 0:41:20].tolist())
+ys, xs = np.where(gray &lt; 50)
+print("dark first:", int(xs[0]), int(ys[0]))</code></pre>
+      <pre class="out" data-label="真实输出">roi: (80, 120) 45 210
+white: 38400 0.5
+rows: [[45, 210, 45], [210, 45, 210]]
+dark first: 0 0</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-4</div>
+  <p>写一个脚本 <code>4-4.py</code>，创建 <code>base = np.arange(20).reshape(4, 5)</code>。取 <code>base[1:3, 2:4]</code> 作为视图，整体加 100，打印 <code>base</code> 的元素和；再复制一份 <code>base</code> 并整体写成 0，打印副本的和与 <code>base</code> 的和；用 <code>np.take(base, [0, 3], axis=0)</code> 取第 0、3 行并打印；统计偶数的个数；用 <code>np.where(条件, base, -1)</code> 生成新数组并打印第一行；最后打印 <code>base[:, 0][:, np.newaxis]</code> 的形状。</p>
+    <pre class="out" data-label="预期输出">base sum: 590
+copy sum: 0 base sum: 590
+take: [[0, 1, 2, 3, 4], [15, 16, 17, 18, 19]]
+even: 10
+where row0: [0, -1, 2, -1, 4]
+newaxis: (4, 1)</pre>
+  <!-- 答案 4-4 -->
+  <details class="ans" data-run="示例代码/答案/4-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        视图 <code>base[1:3, 2:4]</code> 覆盖四个元素，整体加 100 后
+        <code>base</code> 的总和从 190 增加到 590。副本清零后自己的和为 0，
+        <code>base</code> 仍是 590。<code>take</code> 按行号取第 0、3 行，
+        得到首行与末行。20 个元素中偶数有 10 个；<code>where</code> 保留偶数、
+        把奇数换成 −1，所以第一行是 <code>[0, −1, 2, −1, 4]</code>。
+        取第一列再加一个新轴，形状从 <code>(4,)</code> 变成 <code>(4, 1)</code>。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+base = np.arange(20).reshape(4, 5)
+view = base[1:3, 2:4]
+view += 100
+print("base sum:", int(base.sum()))
+
+copied = base.copy()
+copied[:] = 0
+print("copy sum:", int(copied.sum()), "base sum:", int(base.sum()))
+print("take:", np.take(base, [0, 3], axis=0).tolist())
+
+mask = base % 2 == 0
+print("even:", int(mask.sum()))
+selected = np.where(mask, base, -1)
+print("where row0:", selected[0].tolist())
+print("newaxis:", base[:, 0][:, np.newaxis].shape)</code></pre>
+      <pre class="out" data-label="真实输出">base sum: 590
+copy sum: 0 base sum: 590
+take: [[0, 1, 2, 3, 4], [15, 16, 17, 18, 19]]
+even: 10
+where row0: [0, -1, 2, -1, 4]
+newaxis: (4, 1)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用切片取出图像区域，判断结果是视图还是副本，用掩码与 <code>where</code> 筛选像素，并用花式索引按坐标批量取数。</p>
+</section>
+
+<section class="lesson" id="l4-3">
+<h2><span class="no">4.3</span>形状、广播与向量化</h2>
+
+<p>
+  数组的形状决定索引方式，广播（broadcasting）决定两个不同形状的数组
+  怎样逐元素运算。把循环写成数组运算称为向量化（vectorization）：表达式
+  更短，循环交给底层编译好的代码执行，通常也更快。这一课从改变形状开始，
+  再讲拼接、广播与按轴聚合。
+</p>
+
+<h3 id="s4-3-1">reshape 与转置</h3>
+
+<p>
+  <code>reshape(shape)</code> 在不改变元素顺序的前提下重新解释形状，元素
+  总数必须一致；某一维写 −1 表示由其余维自动推算。能返回视图时返回视图，
+  否则复制一份。<code>transpose(axes)</code> 按给定顺序重排各轴，
+  <code>a.T</code> 等价于把轴的顺序完全颠倒；转置只改步长，不搬动数据。
+</p>
+
+<p>
+  <code>np.squeeze(a)</code> 去掉长度为 1 的轴，<code>np.expand_dims(a, axis)</code>
+  在指定位置增加一个长度为 1 的轴。两者都不复制数据。处理单张图像时，
+  模型或函数常要求输入带批次维，形状从 <code>(高, 宽, 3)</code> 变成
+  <code>(1, 高, 宽, 3)</code>，用 <code>expand_dims(image, axis=0)</code>
+  即可。
+</p>
+
+<h3 id="s4-3-2">拼接与堆叠</h3>
+
+<p>
+  <code>np.concatenate([a, b], axis=0)</code> 沿已有轴把多个数组接起来，
+  除拼接轴外其余各维长度必须相同。<code>np.stack([a, b], axis=0)</code>
+  新建一个轴，把两个同形状数组叠成更高一维的数组。前者把两张 240×640 的
+  图接成 480×640，后者叠成 2×240×640。
+</p>
+
+<p>
+  二维场景常用 <code>np.vstack</code> 与 <code>np.hstack</code>：
+  <code>vstack</code> 沿第 0 轴、<code>hstack</code> 沿第 1 轴拼接；
+  <code>np.column_stack([x, y])</code> 把两个一维数组按列拼成设计矩阵。
+  拼接会复制数据，得到新数组；在循环里反复拼接会让耗时按平方增长，
+  需要累积时先放进列表，最后一次性拼接。
+</p>
+
+<h3 id="s4-3-3">广播规则</h3>
+
+<p>
+  两个数组形状不同时，NumPy 从最后一维开始向前对齐，逐维比较：长度相等，
+  或其中一个为 1，就可以广播；缺少的前导维按 1 处理。结果为每一维取较大
+  的长度。长度为 1 的维在运算时被复制到与另一侧相同，但不会真的分配那么多
+  内存。
+</p>
+  <pre data-lang="Python"><code>a = np.arange(6).reshape(2, 3)
+a + np.array([10, 20, 30])
+a.mean(axis=0)
+a.mean(axis=1)</code></pre>
+
+<p>
+  <code>a</code> 是两行三列，每行加上 <code>[10, 20, 30]</code> 得到
+  <code>[[10, 21, 32], [13, 24, 35]]</code>；按列与按行的平均值分别为
+  <code>[1.5, 2.5, 3.5]</code> 与 <code>[1.0, 4.0]</code>。
+</p>
+
+<p>
+  形状 <code>(2, 3)</code> 与 <code>(3,)</code> 相加时，一维数组被当成
+  <code>(1, 3)</code>，沿行方向复制到两行，因此每一列加上同一个数。
+  <code>axis=0</code> 沿行方向求平均，得到每一列的平均值，形状
+  <code>(3,)</code>；<code>axis=1</code> 沿列方向求平均，得到每一行的
+  平均值，形状 <code>(2,)</code>。
+</p>
+
+<p>
+  增加轴可以控制广播的方向。形状 <code>(2, 3, 1)</code> 与
+  <code>(2,)</code> 运算时，<code>(2,)</code> 先补成 <code>(1, 1, 2)</code>，
+  再广播到 <code>(2, 3, 2)</code>。若两个数组在某一维长度既不相等也都不是
+  1，NumPy 抛出“operands could not be broadcast together”，报错里会写出
+  两边的形状，按从右往左的顺序核对。
+</p>
+
+<h3 id="s4-3-4">按轴聚合与归一化</h3>
+
+<p>
+  <code>mean</code>、<code>sum</code>、<code>max</code> 等聚合函数默认把
+  整个数组压成一个标量；给 <code>axis</code> 就只压掉指定的轴，其余轴保留。
+  <code>keepdims=True</code> 让被压掉的轴保留为长度 1，结果的维数不变，
+  可以直接参与广播。
+</p>
+
+<p>
+  图像归一化常写成 <code>(gray - gray.mean()) / gray.std()</code>：先转成
+  浮点，减去均值再除以标准差，得到均值 0、标准差 1 的数组。对彩色图按通道
+  处理时，<code>image.mean(axis=(0, 1))</code> 得到三个通道各自的均值，
+  形状 <code>(3,)</code>，可以直接与 <code>(高, 宽, 3)</code> 的图像广播。
+  归一化结果可能超出 0 到 255，显示前用 <code>np.clip</code> 裁剪并转回
+  <code>uint8</code>。
+</p>
+
+<div class="eg" id="e4-3">
+  <div class="eg-h">例题 · 形状变换与图像归一化</div>
+  <p>题目：创建一个三维数组，练习 <code>transpose</code>、<code>squeeze</code>、<code>expand_dims</code> 与 <code>reshape</code>；沿不同轴拼接与堆叠；用一维偏置演示广播；按轴求平均；读取彩色图，做零均值归一化，并按通道乘以不同系数后统计通道均值。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.3-shape.py"><code>import cv2
+import numpy as np
+
+
+a = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+print("a:", a.shape, a.size)
+print("transpose:", a.transpose(1, 0, 2).shape)
+print("squeeze:", np.squeeze(a[:, :1, :]).shape)
+print("expand:", np.expand_dims(a, axis=0).shape)
+
+rows = a.reshape(6, 4)
+print("reshape:", rows.shape, rows[0].tolist())
+joined = np.concatenate([rows, rows], axis=0)
+stacked = np.stack([rows, rows], axis=0)
+print("join/stack:", joined.shape, stacked.shape)
+
+bias = np.array([10.0, 0.0, -10.0, 5.0])
+print("bias:", np.round(rows + bias, 1)[0].tolist())
+grouped = rows.reshape(2, 3, 4)
+print("axis mean:", np.round(grouped.mean(axis=1), 2).tolist())
+
+image = cv2.imread("素材/synth_shapes.png")
+print("image:", image.shape, image.dtype)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY).astype(np.float32)
+normalized = (gray - gray.mean()) / gray.std()
+print("norm:", round(float(normalized.mean()), 4), round(float(normalized.std()), 4))
+
+scale = np.array([1.0, 1.1, 0.9], dtype=np.float32)
+adjusted = np.clip(image.astype(np.float32) * scale, 0, 255).astype(np.uint8)
+means = adjusted.reshape(-1, 3).mean(axis=0)
+print("channel means:", np.round(means, 2).tolist())</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.3-shape.py</code></pre>
+    <pre class="out" data-label="真实输出">a: (2, 3, 4) 24
+transpose: (3, 2, 4)
+squeeze: (2, 4)
+expand: (1, 2, 3, 4)
+reshape: (6, 4) [0.0, 1.0, 2.0, 3.0]
+join/stack: (12, 4) (2, 6, 4)
+bias: [10.0, 1.0, -8.0, 8.0]
+axis mean: [[4.0, 5.0, 6.0, 7.0], [16.0, 17.0, 18.0, 19.0]]
+image: (480, 640, 3) uint8
+norm: 0.0 1.0
+channel means: [215.01, 226.66, 186.17]</pre>
+  <p><code>a</code> 的形状是 <code>(2, 3, 4)</code>，共 24 个元素。
+  <code>transpose(1, 0, 2)</code> 把前两个轴交换，得到
+  <code>(3, 2, 4)</code>；切片 <code>a[:, :1, :]</code> 的形状是
+  <code>(2, 1, 4)</code>，去掉长度为 1 的轴后是 <code>(2, 4)</code>；
+  <code>expand_dims(axis=0)</code> 在最前面增加一维，得到
+  <code>(1, 2, 3, 4)</code>。<code>reshape(6, 4)</code> 把 24 个元素排成
+  六行，第一行是 0、1、2、3。</p>
+  <p>沿第 0 轴拼接得到 <code>(12, 4)</code>，堆叠在新建的第 0 轴上得到
+  <code>(2, 6, 4)</code>。偏置 <code>[10, 0, −10, 5]</code> 与第一行
+  <code>[0, 1, 2, 3]</code> 逐列相加，得到 <code>[10, 1, −8, 8]</code>。
+  把六行重新看成两组三行，按 <code>axis=1</code> 求平均：第一组是 0 到 11，
+  每列平均为 4 到 7；第二组是 12 到 23，每列平均为 16 到 19。</p>
+  <p>彩色图形是 480×640 的三通道 <code>uint8</code>，转灰度并归一化后，
+  均值 0、标准差 1，四舍五入后打印 0.0 与 1.0。按通道缩放时，系数
+  <code>[1.0, 1.1, 0.9]</code> 按 OpenCV 的蓝、绿、红顺序逐个通道相乘：
+  蓝色不变，绿色乘 1.1，红色乘 0.9，结果裁剪到 0 到 255 再转回
+  <code>uint8</code>。三个通道的均值因此变成 215.01、226.66 与 186.17。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-5</div>
+  <p>写一个脚本 <code>4-5.py</code>，创建形状 <code>(3, 4)</code> 的 <code>float32</code> 温度数组 <code>[[20, 22, 24, 26], [18, 20, 22, 24], [25, 25, 24, 23]]</code>。打印形状；取第一列并打印它的形状；用数组减去第一列（广播），打印保留一位小数的结果；用权重 <code>[1.0, 2.0, 2.0, 1.0]</code> 按列加权、按行求和后除以权重总和，打印保留两位小数的结果；把数组展平，打印形状与平均值；打印按行求平均并保留维数后的形状。</p>
+    <pre class="out" data-label="预期输出">shape: (3, 4)
+base: (3, 1)
+centered: [[0.0, 2.0, 4.0, 6.0], [0.0, 2.0, 4.0, 6.0], [0.0, 0.0, -1.0, -2.0]]
+weighted: [3.0, 3.0, -0.67]
+flat: (12,) 22.75
+keepdims: (3, 1)</pre>
+  <!-- 答案 4-5 -->
+  <details class="ans" data-run="示例代码/答案/4-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        温度数组是三行四列。取第一列得到形状 <code>(3, 1)</code>，按广播规则
+        从每一行减去本行首列，第一、二行分别变成 0 到 6 的等差序列，第三行
+        相对首列 25 变成 0、0、−1、−2。权重总和为 6，前两行加权和为 18，
+        平均 3.0；第三行加权和为 −4，平均约 −0.67。展平后 12 个元素的平均
+        是 22.75；按行求平均并保留维数，形状是 <code>(3, 1)</code>。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+temperatures = np.array([[20, 22, 24, 26],
+                         [18, 20, 22, 24],
+                         [25, 25, 24, 23]], dtype=np.float32)
+print("shape:", temperatures.shape)
+print("base:", temperatures[:, :1].shape)
+centered = temperatures - temperatures[:, :1]
+print("centered:", np.round(centered, 1).tolist())
+
+weights = np.array([1.0, 2.0, 2.0, 1.0])
+weighted = np.sum(centered * weights, axis=1) / weights.sum()
+print("weighted:", np.round(weighted, 2).tolist())
+flat = temperatures.reshape(-1)
+print("flat:", flat.shape, float(np.mean(flat)))
+print("keepdims:", np.mean(temperatures, axis=1, keepdims=True).shape)</code></pre>
+      <pre class="out" data-label="真实输出">shape: (3, 4)
+base: (3, 1)
+centered: [[0.0, 2.0, 4.0, 6.0], [0.0, 2.0, 4.0, 6.0], [0.0, 0.0, -1.0, -2.0]]
+weighted: [3.0, 3.0, -0.67]
+flat: (12,) 22.75
+keepdims: (3, 1)</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-6</div>
+  <p>写一个脚本 <code>4-6.py</code>，读取 <code>素材/synth_shapes.png</code> 的灰度图，把它分成上下两半，沿第 1 轴拼接后打印形状；用 <code>np.roll(image, 1, axis=1)</code> 把图像向右平移一列，与原图相加后除以 2，打印模糊结果的平均值；计算原图与模糊结果的绝对差，打印最大值与平均值（平均值保留两位小数）；把上下两半沿新轴堆叠后打印形状。</p>
+    <pre class="out" data-label="预期输出">joined: (240, 1280)
+blur mean: 207.5
+diff max/mean: 73 0.27
+stack: (2, 240, 640)</pre>
+  <!-- 答案 4-6 -->
+  <details class="ans" data-run="示例代码/答案/4-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        上下两半各是 240×640，沿第 1 轴拼接得到 240×1280。向右滚动一列再与
+        原图求平均，模糊图的均值是 207.5，与原图一致到一位小数。逐像素绝对差
+        最大 73，出现在左右边界与形状边缘；平均差 0.27。两半沿新建的第 0 轴
+        堆叠，形状是 <code>(2, 240, 640)</code>。
+      </p>
+      <pre data-lang="Python"><code>import cv2
+import numpy as np
+
+
+image = cv2.imread("素材/synth_shapes.png", cv2.IMREAD_GRAYSCALE)
+top = image[:240]
+bottom = image[240:]
+joined = np.concatenate([top, bottom], axis=1)
+print("joined:", joined.shape)
+
+shifted = np.roll(image, 1, axis=1).astype(np.float32)
+blur = (image.astype(np.float32) + shifted) / 2.0
+print("blur mean:", round(float(blur.mean()), 2))
+
+diff = np.abs(image.astype(np.int16) - blur.astype(np.int16))
+print("diff max/mean:", int(diff.max()), round(float(diff.mean()), 2))
+print("stack:", np.stack([top, bottom], axis=0).shape)</code></pre>
+      <pre class="out" data-label="真实输出">joined: (240, 1280)
+blur mean: 207.5
+diff max/mean: 73 0.27
+stack: (2, 240, 640)</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>改变数组形状与轴顺序，按轴拼接或堆叠图像，用广播把一维偏置加到整幅图上，并按通道统计处理后的结果。</p>
+</section>
+
+<section class="lesson" id="l4-4">
+<h2><span class="no">4.4</span>统计、排序与直方图</h2>
+
+<p>
+  检测结果常要汇总成一个数：区域的平均灰度、通道的最大值、最亮点的坐标、
+  灰度分布的分位数。NumPy 把这些计算写成数组方法或函数，指定轴就能按行、
+  按列或按通道分别统计。这一课从均值与标准差开始，再讲最值、分位数、
+  直方图与缺失值。
+</p>
+
+<h3 id="s4-4-1">均值、标准差与极值</h3>
+
+<p>
+  <code>mean</code> 返回算术平均，<code>std</code> 返回标准差，
+  <code>min</code> 与 <code>max</code> 返回最小与最大值。默认对整个数组
+  计算；给 <code>axis</code> 就沿指定轴计算，轴被压掉。对彩色图写
+  <code>axis=(0, 1)</code>，同时压掉高与宽两个轴，得到每个通道一个值。
+</p>
+
+<p>
+  <code>std</code> 默认除以元素个数，得到总体标准差；样本标准差要写
+  <code>ddof=1</code>，分母改为元素个数减一。元素较少时两者差别明显，
+  报告数据时要写明用的是哪一种。<code>uint8</code> 数组求均值会返回浮点数，
+  不会回绕；求最大值仍返回 <code>uint8</code> 标量。
+</p>
+
+<h3 id="s4-4-2">最值与坐标</h3>
+
+<p>
+  <code>argmax</code> 与 <code>argmin</code> 返回最值在展平后的一维下标，
+  不是坐标。多维数组要先用 <code>np.unravel_index(index, shape)</code>
+  把一维下标换成各维下标。存在并列最值时，返回按行优先扫描遇到的第一个。
+</p>
+  <pre data-lang="Python"><code>values = np.array([[4, 7, 2], [9, 1, 5]])
+values.mean()
+values.max()
+values.min()
+values.mean(axis=0)
+index = np.argmax(values)
+np.unravel_index(index, values.shape)</code></pre>
+
+<p>
+  均值为 4.667，最小值为 1。最大值 9 位于第 1 行第 0 列，展平下标是 3，
+  <code>unravel_index</code>
+  换回 <code>(1, 0)</code>。按列求平均得到 <code>[6.5, 4.0, 3.5]</code>，
+  分别对应三列。图像中定位最亮像素时，返回值是 <code>(y, x)</code>，
+  打印给读者看时要按横、纵坐标的顺序说明，避免把行列写反。
+</p>
+
+<h3 id="s4-4-3">分位数与直方图</h3>
+
+<p>
+  <code>np.percentile(a, q)</code> 返回第 q 百分位数，q 可以是单个数字或
+  列表；中位数就是第 50 百分位数。默认用线性插值，结果可能是小数；
+  需要整数灰度时再转换。<code>np.median(a)</code> 是求中位数的简写。
+</p>
+  <pre data-lang="Python"><code>values = np.array([3, 1, 2, 3, 5, 1])
+np.sort(values)
+np.argsort(values)
+np.percentile(values, [25, 75])</code></pre>
+
+<p>
+  对 <code>[3, 1, 2, 3, 5, 1]</code>，排序结果为
+  <code>[1, 1, 2, 3, 3, 5]</code>，<code>argsort</code> 的下标为
+  <code>[1, 5, 2, 0, 3, 4]</code>，四分位数为 1.25 与 3.0。
+</p>
+
+<p>
+  <code>np.histogram(a, bins=..., range=...)</code> 统计落在每个区间的元素
+  个数，返回计数与区间边界；边界个数比区间数多一。灰度图通常写
+  <code>bins=256, range=(0, 256)</code>，每个灰度一个区间；区间数少时，
+  计数之和仍等于像素总数，可以用来核对。
+</p>
+
+<p>
+  <code>np.sort</code> 返回排好序的副本，原数组不变；<code>array.sort()</code>
+  原地排序。降序写成 <code>np.sort(a)[::-1]</code>。<code>argsort</code>
+  返回排序后的下标，用它可以按分数排出名字，而不只是排出分数。默认排序
+  不保证并列值的先后，需要稳定顺序时写 <code>kind="stable"</code>。
+</p>
+
+<h3 id="s4-4-4">排序、排名与缺失值</h3>
+
+<p>
+  <code>np.unique(a, return_counts=True)</code> 返回去重后的值及每个值出现
+  的次数，值按升序排列；加 <code>return_index</code> 还能得到每个唯一值
+  第一次出现的位置。统计灰度分布、标签类别与重复坐标时常用这一组返回值。
+</p>
+
+<p>
+  数据中的缺失值用 <code>np.nan</code> 表示。普通 <code>mean</code> 遇到
+  <code>nan</code> 会把它传播到结果，整个均值变成 <code>nan</code>；
+  <code>np.nanmean</code>、<code>np.nanstd</code>、<code>np.nanmax</code>
+  会跳过缺失值再计算。排序时 <code>nan</code> 被放到末尾。不是每个函数都有
+  <code>nan</code> 版本，拿不准时先打印结果，确认没有静默变成
+  <code>nan</code>。
+</p>
+
+<div class="eg" id="e4-4">
+  <div class="eg-h">例题 · 一张图的统计量</div>
+  <p>题目：读取 <code>素材/synth_balls.png</code>，按通道统计均值、标准差、最大值与最小值；统计灰度图的均值与标准差；用 <code>argmax</code> 与 <code>unravel_index</code> 定位最亮像素；计算 10、50、90 分位数；把灰度分成四个区间做直方图；对一维数组排序、取排名与唯一值；最后比较普通聚合与 <code>nan</code> 聚合。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.4-stats.py"><code>import cv2
+import numpy as np
+
+
+image = cv2.imread("素材/synth_balls.png")
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+print("channel mean:", np.round(image.mean(axis=(0, 1)), 2).tolist())
+print("channel std:", np.round(image.std(axis=(0, 1)), 2).tolist())
+print("channel max:", image.max(axis=(0, 1)).tolist())
+print("channel min:", image.min(axis=(0, 1)).tolist())
+print("gray mean/std:", round(float(gray.mean()), 2), round(float(gray.std()), 2))
+
+flat_index = int(np.argmax(gray))
+y, x = np.unravel_index(flat_index, gray.shape)
+print("brightest:", int(gray[y, x]), int(x), int(y))
+print("percentiles:", np.percentile(gray, [10, 50, 90]).astype(int).tolist())
+
+hist, edges = np.histogram(gray, bins=4, range=(0, 256))
+print("hist:", hist.tolist())
+print("edges:", edges.astype(int).tolist())
+
+values = np.array([3, 1, 2, 3, 5, 1])
+print("sort:", np.sort(values).tolist())
+print("argsort:", np.argsort(values, kind="stable").tolist())
+unique, counts = np.unique(values, return_counts=True)
+print("unique:", unique.tolist(), counts.tolist())
+
+data = np.array([1.0, np.nan, 3.0])
+print("nan:", float(np.nanmean(data)), float(np.nanstd(data)))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.4-stats.py</code></pre>
+    <pre class="out" data-label="真实输出">channel mean: [217.32, 221.6, 214.09]
+channel std: [49.14, 24.44, 41.8]
+channel max: [244, 240, 238]
+channel min: [50, 50, 60]
+gray mean/std: 218.97 30.19
+brightest: 240 639 0
+percentiles: [216, 226, 237]
+hist: [0, 23975, 0, 283225]
+edges: [0, 64, 128, 192, 256]
+sort: [1, 1, 2, 3, 3, 5]
+argsort: [1, 5, 2, 0, 3, 4]
+unique: [1, 2, 3, 5] [2, 1, 2, 1]
+nan: 2.0 1.0</pre>
+  <p>三个通道的均值分别是 217.32、221.60 与 214.09，标准差是 49.14、
+  24.44 与 41.80；最大值都接近 240，最小值在 50 到 60 之间。灰度图的均值
+  是 218.97，标准差 30.19，整体偏亮且起伏不大。最亮像素灰度 240，坐标
+  <code>x=639, y=0</code>，位于第一行最后一个像素；按行优先扫描时它是
+  第一个达到最大值的点。10、50、90 分位数分别是 216、226、237，
+  说明九成像素都不低于 216。</p>
+  <p>四个区间的计数是 0、23975、0、283225：0 到 63 与 128 到 191 没有
+  像素，64 到 127 有 23975 个，192 到 255 有 283225 个，合计 307200，
+  正好是 640×480。排序结果从 1 到 5；<code>argsort</code> 指定了稳定
+  排序，第一个 1 是下标 1，第二个 1 是下标 5，并列值的先后与原数组一致。
+  唯一值 1、2、3、5 的计数分别是 2、1、2、1。含 <code>nan</code> 的数组
+  跳过缺失值后均值是 2.0，总体标准差是 1.0。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-7</div>
+  <p>写一个脚本 <code>4-7.py</code>，读取 <code>素材/synth_balls.png</code>，转成灰度图。按通道打印均值、最大值与标准差（均保留两位小数）；用 <code>argmax</code> 与 <code>unravel_index</code> 定位最亮像素，按“横坐标 纵坐标 灰度值”的顺序打印；统计灰度大于 200 的像素数；打印灰度图的第 50 与第 90 百分位数（转成整数）。</p>
+    <pre class="out" data-label="预期输出">mean: [217.32, 221.6, 214.09]
+max: [244, 240, 238]
+std: [49.14, 24.44, 41.8]
+brightest: 639 0 240
+over 200: 283225
+percentile 50/90: [226, 237]</pre>
+  <!-- 答案 4-7 -->
+  <details class="ans" data-run="示例代码/答案/4-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个通道的均值、最大值与标准差与例题一致。最亮像素坐标按横、纵顺序
+        打印为 <code>639 0 240</code>，即第一行最后一列。灰度大于 200 的
+        像素有 283225 个；第 50 与第 90 百分位数分别是 226 与 237。
+      </p>
+      <pre data-lang="Python"><code>import cv2
+import numpy as np
+
+
+image = cv2.imread("素材/synth_balls.png")
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+print("mean:", np.round(image.mean(axis=(0, 1)), 2).tolist())
+print("max:", image.max(axis=(0, 1)).tolist())
+print("std:", np.round(image.std(axis=(0, 1)), 2).tolist())
+
+flat_index = int(np.argmax(gray))
+y, x = np.unravel_index(flat_index, gray.shape)
+print("brightest:", x, y, int(gray[y, x]))
+print("over 200:", int((gray &gt; 200).sum()))
+print("percentile 50/90:", np.percentile(gray, [50, 90]).astype(int).tolist())</code></pre>
+      <pre class="out" data-label="真实输出">mean: [217.32, 221.6, 214.09]
+max: [244, 240, 238]
+std: [49.14, 24.44, 41.8]
+brightest: 639 0 240
+over 200: 283225
+percentile 50/90: [226, 237]</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-8</div>
+  <p>写一个脚本 <code>4-8.py</code>，对分数数组 <code>[72, 88, 91, 72, 65, 88, 100]</code> 排序并打印，取最大的三个数打印，打印 <code>argsort</code> 的结果；用 <code>np.unique</code> 打印唯一值与计数；打印中位数、保留一位小数的第 90 百分位数；对数组 <code>[1.0, np.nan, 3.0, 5.0]</code> 打印 <code>nanmean</code> 与 <code>nanmax</code>。</p>
+    <pre class="out" data-label="预期输出">sorted: [65, 72, 72, 88, 88, 91, 100]
+top3: [88, 91, 100]
+argsort: [4, 0, 3, 1, 5, 2, 6]
+unique: [65, 72, 88, 91, 100] [1, 2, 2, 1, 1]
+median: 88.0
+p90: 94.6
+nanmean: 3.0
+nanmax: 5.0</pre>
+  <!-- 答案 4-8 -->
+  <details class="ans" data-run="示例代码/答案/4-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        排序后的分数从 65 到 100，最大的三个是 88、91、100。
+        <code>argsort</code> 给出按分数升序排列的下标；采用稳定排序后，并列的
+        72 保留原顺序，下标 0 在 3 前，并列的 88 中下标 1 在 5 前。唯一值是 65、72、88、
+        91、100，计数分别是 1、2、2、1、1。中位数是第 4 个值 88；第 90
+        百分位在 91 与 100 之间插值，得到 94.6。跳过缺失值后，四个数的均值
+        是 3.0，最大值是 5.0。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+scores = np.array([72, 88, 91, 72, 65, 88, 100])
+ordered = np.sort(scores)
+print("sorted:", ordered.tolist())
+print("top3:", ordered[-3:].tolist())
+print("argsort:", np.argsort(scores, kind="stable").tolist())
+
+unique, counts = np.unique(scores, return_counts=True)
+print("unique:", unique.tolist(), counts.tolist())
+print("median:", float(np.median(scores)))
+print("p90:", round(float(np.percentile(scores, 90)), 1))
+
+data = np.array([1.0, np.nan, 3.0, 5.0])
+print("nanmean:", float(np.nanmean(data)))
+print("nanmax:", float(np.nanmax(data)))</code></pre>
+      <pre class="out" data-label="真实输出">sorted: [65, 72, 72, 88, 88, 91, 100]
+top3: [88, 91, 100]
+argsort: [4, 0, 3, 1, 5, 2, 6]
+unique: [65, 72, 88, 91, 100] [1, 2, 2, 1, 1]
+median: 88.0
+p90: 94.6
+nanmean: 3.0
+nanmax: 5.0</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按通道或整幅图计算均值、标准差与极值，定位最亮点的坐标，统计分位数与直方图，并在含缺失值的数据上选择正确的聚合函数。</p>
+</section>
+
+<section class="lesson" id="l4-5">
+<h2><span class="no">4.5</span>线性代数</h2>
+
+<p>
+  相机投影、坐标变换与直线拟合都能写成矩阵运算。NumPy 的
+  <code>numpy.linalg</code> 提供解方程、求逆、行列式、范数、最小二乘与
+  奇异值分解。这一课用一个小型方程组与一条带误差的直线，走完求解、验算与
+  拟合的流程。
+</p>
+
+<h3 id="s4-5-1">矩阵与向量</h3>
+
+<p>
+  一维数组表示向量，形状 <code>(n,)</code>；二维数组表示矩阵，形状
+  <code>(m, n)</code>。<code>A @ b</code> 是矩阵乘法，结果的第 i 个分量是
+  <code>A</code> 的第 i 行与 <code>b</code> 的点积；<code>A * B</code> 是
+  逐元素相乘，两者含义不同。矩阵乘法要求左侧的列数等于右侧的行数。
+</p>
+
+<p>
+  设计矩阵把每个样本的特征排成一行：线性拟合 <code>y = k t + b</code>
+  用两列，第一列是 <code>t</code>，第二列全是 1。构造写成
+  <code>np.column_stack([t, np.ones_like(t)])</code>，形状
+  <code>(样本数, 2)</code>。求出的系数是一个长度为 2 的向量，顺序与列一致。
+</p>
+
+<h3 id="s4-5-2">解线性方程组</h3>
+
+<p>
+  <code>np.linalg.solve(A, b)</code> 解 <code>A x = b</code>，要求
+  <code>A</code> 是方阵且满秩。它内部做分解，不显式求逆，速度与数值稳定性
+  都优于先算 <code>inv(A)</code> 再乘。<code>A</code> 奇异时抛出
+  <code>np.linalg.LinAlgError</code>，消息为“Singular matrix”。
+</p>
+  <pre data-lang="Python"><code>A = np.array([[2.0, 1.0], [1.0, 3.0]])
+b = np.array([5.0, 10.0])
+x = np.linalg.solve(A, b)
+np.linalg.det(A)</code></pre>
+
+<p>
+  解出 <code>x = [1, 3]</code>（行列式为 5.0）后要代回原方程验算：第一行 2×1+1×3=5，
+  第二行 1×1+3×3=10，与右端一致。程序里用
+  <code>np.linalg.norm(A @ x - b)</code> 计算残差，接近 0 说明解正确。
+  残差明显不为 0 时，检查矩阵是否抄错、是否病态，而不是直接接受结果。
+</p>
+
+<h3 id="s4-5-3">逆、行列式与范数</h3>
+
+<p>
+  <code>np.linalg.inv(A)</code> 返回逆矩阵，<code>np.linalg.det(A)</code>
+  返回行列式。方阵可逆的判据是行列式不为 0；行列式接近 0 时矩阵病态，
+  求逆与解方程的结果对输入误差很敏感。<code>A @ inv(A)</code> 应当接近
+  单位阵，判断时用 <code>np.allclose</code>，不要用 <code>==</code>。
+</p>
+
+<p>
+  <code>np.linalg.norm(x)</code> 默认计算向量的 2 范数，即各分量平方和
+  的平方根；对矩阵默认计算 Frobenius 范数。第二个参数 <code>ord</code>
+  可以指定 1 范数、无穷范数等。范数把误差与系数量化成单个非负数，便于比较
+  不同方案。
+</p>
+
+<h3 id="s4-5-4">最小二乘与 SVD</h3>
+
+<p>
+  方程个数多于未知数时通常没有精确解，最小二乘（least squares）找使
+  <code>‖A x − b‖²</code> 最小的 <code>x</code>。
+  <code>np.linalg.lstsq(A, b, rcond=None)</code> 返回四个值：系数、残差
+  平方和、矩阵的秩与奇异值。拟合直线时，系数依次是斜率与截距。
+</p>
+  <pre data-lang="Python"><code>x = np.array([0.0, 1.0, 2.0, 3.0])
+y = np.array([1.0, 3.0, 5.0, 7.0])
+design = np.column_stack([x, np.ones_like(x)])
+coef, residuals, rank, singular = np.linalg.lstsq(design, y, rcond=None)</code></pre>
+
+<p>
+  这组数据的系数为 <code>[2.0, 1.0]</code>，秩为 2。
+</p>
+
+<p>
+  奇异值分解（singular value decomposition，SVD）把矩阵写成
+  <code>U S Vᵀ</code>，<code>S</code> 的对角线是奇异值，按从大到小排列。
+  <code>np.linalg.svd(A, full_matrices=False)</code> 只保留与秩相关的部分，
+  适合大矩阵。奇异值的个数与大小可以看出矩阵的有效秩；最小奇异值接近 0
+  说明矩阵接近奇异。
+</p>
+
+<div class="eg" id="e4-5">
+  <div class="eg-h">例题 · 方程组与直线拟合</div>
+  <p>题目：解一个三元线性方程组，打印解、残差、行列式、逆矩阵与单位阵核对结果；再用最小二乘拟合一条直线，打印系数、秩、预测值、系数范数与设计矩阵的奇异值分解。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.5-linalg.py"><code>import numpy as np
+
+
+A = np.array([[2.0, 1.0, -1.0],
+              [-3.0, -1.0, 2.0],
+              [-2.0, 1.0, 2.0]])
+b = np.array([8.0, -11.0, -3.0])
+
+x = np.linalg.solve(A, b)
+print("x:", np.round(x, 3).tolist())
+print("residual:", np.round(np.linalg.norm(A @ x - b), 6))
+print("det:", round(float(np.linalg.det(A)), 3))
+print("inv:", np.round(np.linalg.inv(A), 2).tolist())
+print("eye:", bool(np.allclose(A @ np.linalg.inv(A), np.eye(3))))
+
+t = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
+y = np.array([1.1, 2.9, 5.2, 6.8, 9.1])
+design = np.column_stack([t, np.ones_like(t)])
+coef, _, rank, _ = np.linalg.lstsq(design, y, rcond=None)
+print("fit:", np.round(coef, 3).tolist(), "rank:", int(rank))
+print("pred:", np.round(design @ coef, 2).tolist())
+print("coef norm:", round(float(np.linalg.norm(coef)), 3))
+
+u, s, vt = np.linalg.svd(design, full_matrices=False)
+print("svd:", np.round(s, 3).tolist(), u.shape, vt.shape)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.5-linalg.py</code></pre>
+    <pre class="out" data-label="真实输出">x: [2.0, 3.0, -1.0]
+residual: 0.0
+det: -1.0
+inv: [[4.0, 3.0, -1.0], [-2.0, -2.0, 1.0], [5.0, 4.0, -1.0]]
+eye: True
+fit: [1.99, 1.04] rank: 2
+pred: [1.04, 3.03, 5.02, 7.01, 9.0]
+coef norm: 2.245
+svd: [5.789, 1.222] (5, 2) (2, 2)</pre>
+  <p>三元方程组的解是 <code>[2, 3, −1]</code>。代回三行：
+  2×2+1×3−(−1)=8；−3×2−1×3+2×(−1)=−11；
+  −2×2+1×3+2×(−1)=−3，三行都与右端一致，残差为 0。行列式为 −1，
+  矩阵可逆；逆矩阵与 <code>A</code> 相乘与单位阵逐元素接近，
+  <code>allclose</code> 返回 <code>True</code>。</p>
+  <p>直线拟合的系数是斜率 1.99、截距 1.04，秩为 2。五个预测值从 1.04
+  到 9.00，与观测值 1.1、2.9、5.2、6.8、9.1 接近。系数范数是
+  <code>√(1.99² + 1.04²)</code>，约 2.245。设计矩阵是 5×2，SVD 的奇异值
+  是 5.789 与 1.222，左奇异向量矩阵形状 <code>(5, 2)</code>，右奇异向量
+  的转置形状 <code>(2, 2)</code>。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-9</div>
+  <p>写一个脚本 <code>4-9.py</code>，解方程组 <code>A = [[4.0, 2.0], [1.0, 3.0]]</code>、<code>b = [10.0, 8.0]</code>，打印保留两位小数的解；打印行列式；打印保留两位小数的逆矩阵；用 <code>np.allclose(A @ x, b)</code> 打印解的核对结果；用 <code>np.allclose(A @ np.linalg.inv(A), np.eye(2))</code> 打印逆矩阵的核对结果。</p>
+    <pre class="out" data-label="预期输出">x: [1.4, 2.2]
+det: 10.0
+inv: [[0.3, -0.2], [-0.1, 0.4]]
+check: True
+identity: True</pre>
+  <!-- 答案 4-9 -->
+  <details class="ans" data-run="示例代码/答案/4-9.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        解出 <code>x = [1.4, 2.2]</code>，代回第一行 4×1.4+2×2.2=10，
+        第二行 1.4+3×2.2=8。行列式 4×3−2×1=10；逆矩阵是
+        <code>[[0.3, −0.2], [−0.1, 0.4]]</code>。解代回右端与逆矩阵乘原矩阵
+        接近单位阵，两个核对都返回 <code>True</code>。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+A = np.array([[4.0, 2.0], [1.0, 3.0]])
+b = np.array([10.0, 8.0])
+x = np.linalg.solve(A, b)
+print("x:", np.round(x, 2).tolist())
+print("det:", round(float(np.linalg.det(A)), 2))
+print("inv:", np.round(np.linalg.inv(A), 2).tolist())
+print("check:", bool(np.allclose(A @ x, b)))
+print("identity:", bool(np.allclose(A @ np.linalg.inv(A), np.eye(2))))</code></pre>
+      <pre class="out" data-label="真实输出">x: [1.4, 2.2]
+det: 10.0
+inv: [[0.3, -0.2], [-0.1, 0.4]]
+check: True
+identity: True</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-10</div>
+  <p>写一个脚本 <code>4-10.py</code>，用 <code>t = [0, 1, 2, 3, 4, 5]</code> 与 <code>y = [2.0, 4.1, 6.2, 7.9, 10.1, 12.2]</code> 构建设计矩阵，做最小二乘拟合。打印保留两位小数的斜率与截距、全部预测值、预测与观测的误差范数（保留三位小数）；用 <code>np.linalg.svd</code> 打印保留两位小数的奇异值，并用 <code>np.linalg.matrix_rank</code> 打印秩。</p>
+    <pre class="out" data-label="预期输出">slope/intercept: [2.02, 2.03]
+pred: [2.03, 4.05, 6.07, 8.09, 10.11, 12.13]
+error: 0.248
+svd: [7.7, 1.33]
+rank: 2</pre>
+  <!-- 答案 4-10 -->
+  <details class="ans" data-run="示例代码/答案/4-10.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        六个点大致落在斜率 2 的直线上，最小二乘给出斜率 2.02、截距 2.03。
+        预测值从 2.03 递增到 12.13，与观测值的误差范数是 0.248。设计矩阵的
+        两个奇异值是 7.70 与 1.33，秩为 2，说明两列线性无关。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+t = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
+y = np.array([2.0, 4.1, 6.2, 7.9, 10.1, 12.2])
+design = np.column_stack([t, np.ones_like(t)])
+coef, _, _, _ = np.linalg.lstsq(design, y, rcond=None)
+print("slope/intercept:", np.round(coef, 2).tolist())
+print("pred:", np.round(design @ coef, 2).tolist())
+print("error:", round(float(np.linalg.norm(design @ coef - y)), 3))
+
+_, s, _ = np.linalg.svd(design, full_matrices=False)
+print("svd:", np.round(s, 2).tolist())
+print("rank:", int(np.linalg.matrix_rank(design)))</code></pre>
+      <pre class="out" data-label="真实输出">slope/intercept: [2.02, 2.03]
+pred: [2.03, 4.05, 6.07, 8.09, 10.11, 12.13]
+error: 0.248
+svd: [7.7, 1.33]
+rank: 2</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把线性关系写成矩阵方程，用 <code>solve</code> 求解并验算残差，用 <code>lstsq</code> 拟合直线，并用奇异值判断矩阵的有效秩。</p>
+</section>
+
+<section class="lesson" id="l4-6">
+<h2><span class="no">4.6</span>随机数与可复现</h2>
+
+<p>
+  模拟噪声、生成测试数据、随机划分训练集都离不开随机数。计算机给出的是
+  伪随机数（pseudo-random number），由确定性的算法从一个初始值生成；
+  初始值称为种子（seed），种子相同，序列就相同。这一课用
+  <code>numpy.random</code> 的新式生成器演示如何得到可复现的结果。
+</p>
+
+<h3 id="s4-6-1">生成器与种子</h3>
+
+<p>
+  <code>np.random.default_rng(seed)</code> 返回一个生成器对象，之后所有
+  随机数都从它取得。同一个种子创建的两个生成器产生完全相同的序列；
+  不传种子时使用系统提供的随机初始值，每次运行结果不同。生成器之间互相
+  独立，不会因为调用顺序不同而互相干扰。
+</p>
+  <pre data-lang="Python"><code>rng = np.random.default_rng(5)
+first = rng.integers(0, 10, size=4)
+second = np.random.default_rng(5).integers(0, 10, size=4)</code></pre>
+
+<p>
+  两个生成器用同一个种子 5，各自第一次取四个 0 到 9 的整数，结果逐位相同。
+  老式写法 <code>np.random.seed</code> 设置的是全局状态，任何库调用都可能
+  改变后续序列；新代码统一使用 <code>default_rng</code>，把生成器作为参数
+  传入函数，调用者能控制自己的随机源。
+</p>
+
+<h3 id="s4-6-2">常见分布</h3>
+
+<p>
+  <code>normal(loc, scale, size)</code> 生成均值为 <code>loc</code>、
+  标准差为 <code>scale</code> 的正态分布样本；
+  <code>uniform(low, high, size)</code> 在左闭右开区间内均匀取值；
+  <code>integers(low, high, size)</code> 生成整数，右端不包含；
+  <code>random(size)</code> 生成 0 到 1 之间的浮点数。
+</p>
+
+<p>
+  样本均值与标准差只是对分布参数的估计，样本越少，偏差越明显。需要精确
+  复现某个统计量时，固定种子与样本量，并记录库的版本；不同版本的生成器
+  算法可能变化，不能保证逐位相同。需要长期复现的实验，把生成的数据一并
+  保存。
+</p>
+
+<h3 id="s4-6-3">随机掩码与抽样</h3>
+
+<p>
+  <code>rng.random(shape) &lt; p</code> 生成布尔掩码，每个位置为真的概率
+  是 p。掩码可以统计覆盖率，也可以作为索引取出子集。
+  <code>rng.choice(values, size, replace=False)</code> 做无放回抽样，
+  <code>replace=True</code> 做有放回抽样；无放回时样本数不能超过总体。
+</p>
+  <pre data-lang="Python"><code>rng = np.random.default_rng(5)
+rng.choice(["a", "b", "c"], size=2, replace=False)
+values = np.arange(5)
+rng.shuffle(values)</code></pre>
+
+<p>
+  种子 5 下，<code>choice</code> 取出 <code>['c', 'b']</code>，
+  <code>shuffle</code> 后的 <code>values</code> 为 <code>[1, 4, 2, 3, 0]</code>。
+  <code>shuffle(values)</code> 原地打乱数组，返回 <code>None</code>；
+  <code>permutation(values)</code> 返回打乱后的副本，原数组不变。按样本
+  划分训练集与验证集时，先对下标做 <code>permutation</code>，再按比例切片，
+  两份数据不会重叠。
+</p>
+
+<h3 id="s4-6-4">保存与复现</h3>
+
+<p>
+  <code>np.savetxt(path, array, delimiter=",", fmt="%.3f", header="x,y", comments="")</code>
+  把二维数组写成文本表格：<code>delimiter</code> 是列分隔符，
+  <code>fmt</code> 控制每个数的格式，<code>header</code> 写表头，
+  <code>comments=""</code> 让表头前面不带 <code>#</code>。
+  <code>np.loadtxt</code> 按同样的分隔符读回。
+</p>
+
+<p>
+  保存浮点结果时要确定小数位数。默认格式会写出很多位，文件变大，肉眼也
+  难核对；固定三位小数足以记录坐标与拟合结果。复现实验时同时保存种子、
+  样本量与生成参数，读回数据后先用均值、行数等摘要核对，再进入后续计算。
+</p>
+
+<div class="eg" id="e4-6">
+  <div class="eg-h">例题 · 带噪声的直线</div>
+  <p>题目：用种子 2026 创建生成器，在 0 到 4 之间取 9 个点，叠加均值 0、标准差 0.15 的正态噪声；打印前三个观测值、噪声均值、拟合系数与最大误差；生成 4×5 的随机掩码并统计为真的个数；演示整数、无放回抽样与原地打乱；用同一个种子重建生成器，核对序列一致；最后把点保存为 <code>out_points.csv</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="4.6-random.py"><code>import numpy as np
+
+
+rng = np.random.default_rng(2026)
+x = np.linspace(0.0, 4.0, 9)
+noise = rng.normal(0.0, 0.15, size=x.size)
+y = 2.0 * x + 1.0 + noise
+print("first y:", np.round(y[:3], 3).tolist())
+print("noise mean:", round(float(noise.mean()), 3))
+
+design = np.column_stack([x, np.ones_like(x)])
+coef, _, _, _ = np.linalg.lstsq(design, y, rcond=None)
+print("fit:", np.round(coef, 3).tolist())
+print("max error:", round(float(np.max(np.abs(design @ coef - y))), 3))
+
+mask = rng.random((4, 5)) &lt; 0.5
+print("mask:", mask.shape, int(mask.sum()))
+print("ints:", rng.integers(0, 10, size=5).tolist())
+print("choice:", rng.choice(["a", "b", "c"], size=3, replace=False).tolist())
+
+names = np.array(["a", "b", "c", "d"])
+rng.shuffle(names)
+print("shuffle:", names.tolist())
+
+again = np.random.default_rng(2026)
+repeat = again.normal(0.0, 0.15, size=x.size)
+print("reproducible:", bool(np.allclose(repeat, noise)))
+
+points = np.column_stack([x, y])
+np.savetxt("out_points.csv", points, delimiter=",", fmt="%.3f",
+           header="x,y", comments="")
+print("saved rows:", points.shape[0])</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/4.6-random.py</code></pre>
+    <pre class="out" data-label="真实输出">first y: [0.881, 2.036, 2.716]
+noise mean: -0.016
+fit: [2.019, 0.946]
+max error: 0.249
+mask: (4, 5) 11
+ints: [6, 2, 9, 2, 9]
+choice: ['a', 'b', 'c']
+shuffle: ['c', 'b', 'a', 'd']
+reproducible: True
+saved rows: 9</pre>
+  <p>直线只有斜率与截距两个参数，是最简单的拟合情形：真值斜率 2、
+  截距 1，叠加噪声后拟合得到 2.019 与 0.946，最大偏差 0.249，与噪声
+  标准差 0.15 同一量级。前三个
+  观测值 0.881、2.036、2.716 分别在 <code>x=0、0.5、1.0</code> 处，
+  噪声均值 −0.016 接近 0。4×5 的掩码中有 11 个位置为真；整数抽样得到
+  五个 0 到 9 的数；三个字母无放回抽样恰好取到 a、b、c；打乱后的名字顺序
+  是 c、b、a、d。</p>
+  <p>用同一个种子 2026 重新创建生成器，再取同样长度的正态噪声，与原噪声
+  逐位接近，<code>reproducible</code> 为 <code>True</code>。九个点写入
+  <code>out_points.csv</code>，表头是 <code>x,y</code>，每行保留三位小数。
+  文件内容如下：</p>
+    <pre class="out" data-label="结果文件 out_points.csv">x,y
+0.000,0.881
+0.500,2.036
+1.000,2.716
+1.500,4.209
+2.000,5.096
+2.500,5.956
+3.000,6.953
+3.500,8.046
+4.000,8.960</pre>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-11</div>
+  <p>写一个脚本 <code>4-11.py</code>，创建 <code>line = np.linspace(0.0, 1.0, 6)</code>。用种子 7 生成生成器，叠加均值 0、标准差 0.05 的正态噪声，得到第一个数组；用同一个种子重建生成器并重复一次，打印两个数组是否接近；打印第一个数组保留三位小数的均值、标准差与最小、最大值；用种子 8 生成第三个数组，打印它与第一个数组是否不同。</p>
+    <pre class="out" data-label="预期输出">same: True
+mean: 0.481
+std: 0.323
+min/max: [0.0, 0.95]
+different: True</pre>
+  <!-- 答案 4-11 -->
+  <details class="ans" data-run="示例代码/答案/4-11.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两次都用种子 7，生成器产生的噪声序列相同，两个数组逐位接近。
+        含噪声的直线均值 0.481、标准差 0.323，最小值 0.0、最大值 0.95。
+        换成种子 8 后序列改变，两个数组不再接近，最后一行因此是
+        <code>True</code>。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+line = np.linspace(0.0, 1.0, 6)
+rng = np.random.default_rng(7)
+first = line + rng.normal(0.0, 0.05, size=line.size)
+rng2 = np.random.default_rng(7)
+second = line + rng2.normal(0.0, 0.05, size=line.size)
+
+print("same:", bool(np.allclose(first, second)))
+print("mean:", round(float(first.mean()), 3))
+print("std:", round(float(first.std()), 3))
+print("min/max:", np.round([first.min(), first.max()], 3).tolist())
+
+rng3 = np.random.default_rng(8)
+other = line + rng3.normal(0.0, 0.05, size=line.size)
+print("different:", bool(not np.allclose(first, other)))</code></pre>
+      <pre class="out" data-label="真实输出">same: True
+mean: 0.481
+std: 0.323
+min/max: [0.0, 0.95]
+different: True</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 4-12</div>
+  <p>写一个脚本 <code>4-12.py</code>，用种子 42 创建生成器。生成 6×8 的布尔掩码，每个位置为真的概率是 0.3；打印形状与为真的个数、每行为真的个数、为真的比例（保留三位小数）；从 0 到 4 中有放回抽取 6 个数并打印；用 <code>shuffle</code> 打乱 <code>np.arange(6)</code> 并打印；生成 10 到 19 之间、形状 2×3 的整数数组并打印。</p>
+    <pre class="out" data-label="预期输出">shape/count: (6, 8) 11
+row counts: [1, 2, 1, 3, 3, 1]
+coverage: 0.229
+choices: [1, 3, 3, 0, 4, 0]
+shuffle: [0, 2, 5, 4, 1, 3]
+ints: [[17, 12, 17], [15, 14, 15]]</pre>
+  <!-- 答案 4-12 -->
+  <details class="ans" data-run="示例代码/答案/4-12.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        6×8 的掩码中有 11 个位置为真，每行为真的个数依次是 1、2、1、3、3、1，
+        覆盖率为 11/48≈0.229。从 0 到 4 中有放回抽取 6 次，得到
+        <code>[1, 3, 3, 0, 4, 0]</code>。打乱后的下标顺序是
+        <code>[0, 2, 5, 4, 1, 3]</code>；10 到 19 之间的 2×3 整数矩阵
+        每个元素都在范围内。
+      </p>
+      <pre data-lang="Python"><code>import numpy as np
+
+
+rng = np.random.default_rng(42)
+mask = rng.random((6, 8)) &lt; 0.3
+print("shape/count:", mask.shape, int(mask.sum()))
+print("row counts:", mask.sum(axis=1).tolist())
+print("coverage:", round(float(mask.mean()), 3))
+
+choices = rng.choice(np.arange(5), size=6, replace=True)
+print("choices:", choices.tolist())
+order = np.arange(6)
+rng.shuffle(order)
+print("shuffle:", order.tolist())
+print("ints:", rng.integers(10, 20, size=(2, 3)).tolist())</code></pre>
+      <pre class="out" data-label="真实输出">shape/count: (6, 8) 11
+row counts: [1, 2, 1, 3, 3, 1]
+coverage: 0.229
+choices: [1, 3, 3, 0, 4, 0]
+shuffle: [0, 2, 5, 4, 1, 3]
+ints: [[17, 12, 17], [15, 14, 15]]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用固定种子生成可复现的噪声与随机掩码，做有放回或无放回抽样，并把结果按固定格式保存成文本表格。</p>
+</section>
+
+<nav class="pager">
+  <a href="03-文件异常与标准库.html">← 第 3 部分 · 文件、异常与标准库</a>
+  <span class="spacer"></span>
+  <a href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

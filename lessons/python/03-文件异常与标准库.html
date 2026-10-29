@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 部分 · 文件、异常与标准库 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a class="active" href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" aria-current="page" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 3 部分 · 文件、异常与标准库</div>
+  <a class="toc-l" href="#l3-1"><span class="n">3.1</span>文件读写与 with</a>
+  <a class="toc-sub" href="#s3-1-1">打开与关闭</a>
+  <a class="toc-sub" href="#s3-1-2">逐行读取</a>
+  <a class="toc-sub" href="#s3-1-3">写入与追加</a>
+  <a class="toc-sub" href="#s3-1-4">编码与换行</a>
+  <a class="toc-sub" href="#e3-1">例题：读取分数表</a>
+  <a class="toc-l" href="#l3-2"><span class="n">3.2</span>异常与错误处理</a>
+  <a class="toc-sub" href="#s3-2-1">常见异常</a>
+  <a class="toc-sub" href="#s3-2-2">try 的分支</a>
+  <a class="toc-sub" href="#s3-2-3">抛出与自定义异常</a>
+  <a class="toc-sub" href="#s3-2-4">批处理与退出码</a>
+  <a class="toc-sub" href="#e3-2">例题：逐行校验</a>
+  <a class="toc-l" href="#l3-3"><span class="n">3.3</span>pathlib 与目录遍历</a>
+  <a class="toc-sub" href="#s3-3-1">构造与拼接</a>
+  <a class="toc-sub" href="#s3-3-2">查询属性</a>
+  <a class="toc-sub" href="#s3-3-3">遍历与筛选</a>
+  <a class="toc-sub" href="#s3-3-4">创建与改名</a>
+  <a class="toc-sub" href="#e3-3">例题：按后缀分组</a>
+  <a class="toc-l" href="#l3-4"><span class="n">3.4</span>CSV、JSON 与 YAML 配置</a>
+  <a class="toc-sub" href="#s3-4-1">CSV 读写</a>
+  <a class="toc-sub" href="#s3-4-2">JSON 读写</a>
+  <a class="toc-sub" href="#s3-4-3">YAML 读取</a>
+  <a class="toc-sub" href="#s3-4-4">校验与默认值</a>
+  <a class="toc-sub" href="#e3-4">例题：配置与摘要</a>
+  <a class="toc-l" href="#l3-5"><span class="n">3.5</span>argparse 与命令行工具</a>
+  <a class="toc-sub" href="#s3-5-1">建立解析器</a>
+  <a class="toc-sub" href="#s3-5-2">参数类型与默认值</a>
+  <a class="toc-sub" href="#s3-5-3">main 与退出码</a>
+  <a class="toc-sub" href="#s3-5-4">帮助与错误</a>
+  <a class="toc-sub" href="#e3-5">例题：统计工具</a>
+  <a class="toc-l" href="#l3-6"><span class="n">3.6</span>logging 与调试输出</a>
+  <a class="toc-sub" href="#s3-6-1">级别与记录器</a>
+  <a class="toc-sub" href="#s3-6-2">处理器与格式</a>
+  <a class="toc-sub" href="#s3-6-3">延迟格式化</a>
+  <a class="toc-sub" href="#s3-6-4">记录异常</a>
+  <a class="toc-sub" href="#e3-6">例题：批处理日志</a>
+  <a class="toc-l" href="#l3-7"><span class="n">3.7</span>选学：二进制数据与帧解析</a>
+  <a class="toc-sub" href="#s3-7-1">字节与整数</a>
+  <a class="toc-sub" href="#s3-7-2">struct 打包</a>
+  <a class="toc-sub" href="#s3-7-3">校验与帧结构</a>
+  <a class="toc-sub" href="#s3-7-4">缓冲区与半包</a>
+  <a class="toc-sub" href="#e3-7">例题：合成帧解析</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 3 部分</div>
+  <h1>文件、异常与标准库</h1>
+  <p class="part-lead">
+    这一部分处理脚本与外部数据的交界：文本、目录、CSV、JSON 与 YAML 配置，
+    命令行参数，运行日志，以及选学的二进制帧。每课都从一份合成素材出发，
+    给出完整程序与真实输出；坏行、缺失文件与校验失败都按真实报错处理，
+    练习要求读者独立写出可运行的脚本。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l1-6 l2-1 l2-3">
+  <b>前置</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="01-语法与容器.html#l1-1">1.1</a>（值、变量与类型）、
+    <a href="01-语法与容器.html#l1-2">1.2</a>（字符串与格式化）、
+    <a href="01-语法与容器.html#l1-3">1.3</a>（列表、元组与切片）、
+    <a href="01-语法与容器.html#l1-4">1.4</a>（字典与集合）、
+    <a href="01-语法与容器.html#l1-5">1.5</a>（控制流与推导式）、
+    <a href="01-语法与容器.html#l1-6">1.6</a>（函数）、
+    <a href="02-函数类与模块.html#l2-1">2.1</a>（参数、作用域与闭包）与
+    <a href="02-函数类与模块.html#l2-3">2.3</a>（模块、包与导入）。
+  </p>
+</div>
+
+<section class="lesson" id="l3-1">
+<h2><span class="no">3.1</span>文件读写与 with</h2>
+
+<p>
+  文件是程序与磁盘之间的边界。读文件要把字节按某种编码解释成文本，写文件
+  要把文本编码回字节；打开的文件用完必须关闭，否则数据可能留在缓冲区里。
+  这一课从 <code>with</code> 与逐行读取开始，最后处理编码与换行带来的差异。
+</p>
+
+<h3 id="s3-1-1">打开与关闭</h3>
+
+<p>
+  <code>open(path, mode, encoding)</code> 返回文件对象。文本模式用
+  <code>"r"</code> 读、<code>"w"</code> 写、<code>"a"</code> 追加，
+  <code>"x"</code> 只在文件不存在时创建；二进制模式在字母后加
+  <code>b</code>，读写的是 <code>bytes</code>，不接受 <code>encoding</code>。
+  写模式会截断已有文件，追加模式保留原内容并在末尾写入。
+</p>
+  <pre data-lang="Python"><code>with Path("素材/synth_notes.txt").open(encoding="utf-8") as handle:
+    text = handle.read()</code></pre>
+
+<p>
+  <code>with open(...) as handle:</code> 在代码块结束时关闭文件，即使块内
+  抛出异常也会关闭。手工调用 <code>close()</code> 一旦中途返回或报错就容易
+  漏掉，因此文件操作一律用 <code>with</code>。文件对象关闭后再读写会抛出
+  <code>ValueError</code>。
+</p>
+
+<h3 id="s3-1-2">逐行读取</h3>
+
+<p>
+  文件对象可以直接放进 <code>for</code> 循环，每次得到一行，行尾保留
+  <code>\n</code>。逐行处理的内存占用与单行长度相关，不随文件总大小增长，
+  适合读日志与表格。<code>read()</code> 一次读回整个文件，
+  <code>readline()</code> 读一行，<code>readlines()</code> 把所有行读成
+  列表；文件很大时这三种写法都会占用较多内存。
+</p>
+  <pre data-lang="Python"><code>with Path("素材/synth_notes.txt").open(encoding="utf-8") as handle:
+    lines = [line.rstrip() for line in handle]</code></pre>
+
+<p>
+  行首行尾的空白用 <code>strip()</code> 去掉，需要保留行内空格时用
+  <code>rstrip("\n")</code>。表头通常先读一次再进入循环：
+  <code>next(handle)</code> 取走第一行，后面的循环从数据行开始。
+  空行也会被当成一行，处理前要判断 <code>if not text:</code>。
+</p>
+
+<h3 id="s3-1-3">写入与追加</h3>
+
+<p>
+  <code>handle.write(text)</code> 返回写入的字符数，不会自动补换行；
+  需要分行时自己写 <code>"\n"</code> 或用 <code>writelines</code> 传入
+  带换行的字符串列表。<code>Path.write_text(text, encoding="utf-8")</code>
+  是一次性写入的简写，内部同样会打开、写入并关闭文件，适合结果不大的场合。
+</p>
+  <pre data-lang="Python"><code>path = Path("note.txt")
+path.write_text("alpha\n", encoding="utf-8")
+
+with path.open("a", encoding="utf-8") as handle:
+    handle.write("beta\n")</code></pre>
+
+<p>
+  写入前要确认父目录存在。<code>Path("out").mkdir(parents=True,
+  exist_ok=True)</code> 会创建缺失的各级目录，已存在时不报错。覆盖原文件
+  之前先确认路径；需要保留旧结果时改用追加模式或带序号的新文件名。
+</p>
+
+<h3 id="s3-1-4">编码与换行</h3>
+
+<p>
+  文本模式必须约定编码，课程统一使用 UTF-8，并在每次打开时显式写出。
+  编码不一致时，读入的中文会变成乱码，或者抛出
+  <code>UnicodeDecodeError</code>。二进制文件不要用文本模式打开，
+  图像、压缩包与自定义协议都按字节处理。
+</p>
+  <pre data-lang="Python"><code>text = "分数表"
+data = text.encode("utf-8")
+print(data.hex())
+print(data.decode("utf-8"))
+try:
+    data.decode("ascii")
+except UnicodeDecodeError:
+    print("ascii failed")</code></pre>
+  <pre class="out" data-label="真实输出">e58886e695b0e8a1a8
+分数表
+ascii failed</pre>
+
+<p>
+  不同系统的换行符不同，Python 读文本时默认做换行转换。处理 CSV 时应写
+  <code>open(..., newline="")</code>，把换行交给 CSV 模块管理，避免多出
+  空行。自己写文本时统一写 <code>\n</code>，读回后用
+  <code>splitlines()</code> 拆行，它不保留行尾换行符。
+</p>
+
+<div class="eg" id="e3-1">
+  <div class="eg-h">例题 · 读取分数表</div>
+  <p>题目：逐行读取 <code>素材/synth_scores.csv</code>，跳过表头、空行与格式不对的行，统计有效行数、跳过数、总分与平均分，并把汇总写到 <code>out_summary.txt</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.1-files.py"><code>from pathlib import Path
+
+source = Path("素材/synth_scores.csv")
+rows = []
+skipped = 0
+with source.open(encoding="utf-8") as handle:
+    next(handle)
+    for line in handle:
+        text = line.strip()
+        if not text:
+            skipped += 1
+            continue
+        parts = text.split(",")
+        if len(parts) != 3:
+            skipped += 1
+            continue
+        name, subject, score_text = parts
+        try:
+            score = int(score_text)
+        except ValueError:
+            skipped += 1
+            continue
+        rows.append((name, subject, score))
+
+total = sum(score for _, _, score in rows)
+summary = [
+    f"rows: {len(rows)}",
+    f"skipped: {skipped}",
+    f"total: {total}",
+    f"mean: {total / len(rows):.2f}",
+]
+text = "\n".join(summary)
+Path("out_summary.txt").write_text(text + "\n", encoding="utf-8")
+print(text)
+print("wrote:", Path("out_summary.txt").name)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.1-files.py</code></pre>
+    <pre class="out" data-label="真实输出">rows: 4
+skipped: 2
+total: 321
+mean: 80.25
+wrote: out_summary.txt</pre>
+  <p><code>next(handle)</code> 先取走表头，循环从第一行数据开始。空行在
+  <code>strip</code> 后长度为 0，直接计入跳过；字段数不是 3 的行同样跳过；
+  <code>delta,math,oops</code> 的分数无法转成整数，<code>int</code> 抛出
+  <code>ValueError</code> 后也计入跳过。四行有效分数的总分是
+  92+78+85+66=321，平均 80.25。汇总先拼成四行文本，再一次性写入结果文件，
+  屏幕输出与文件内容一致。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-1</div>
+  <p>写一个脚本 <code>3-1.py</code>，读取 <code>素材/synth_notes.txt</code>，用 <code>splitlines()</code> 拆成行。打印总行数、空白行数、最长的一行与所有行的字符总数；字符总数按去掉换行后的长度累加。</p>
+    <pre class="out" data-label="预期输出">lines: 4
+empty: 0
+longest: alpha,92
+chars: 31</pre>
+  <!-- 答案 3-1 -->
+  <details class="ans" data-run="示例代码/答案/3-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>read_text</code> 一次读入全文，<code>splitlines</code> 按行拆开
+        并去掉换行符。四行都不为空；最长的一行是 <code>alpha,92</code>，
+        长度 8；四行长度相加为 8+7+8+8=31。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+path = Path("素材/synth_notes.txt")
+lines = path.read_text(encoding="utf-8").splitlines()
+print("lines:", len(lines))
+print("empty:", sum(1 for line in lines if not line.strip()))
+print("longest:", max(lines, key=len))
+print("chars:", sum(len(line) for line in lines))</code></pre>
+      <pre class="out" data-label="真实输出">lines: 4
+empty: 0
+longest: alpha,92
+chars: 31</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-2</div>
+  <p>写一个脚本 <code>3-2.py</code>，读取 <code>素材/synth_notes.txt</code>，把全文转成大写后写到 <code>out/notes_copy.txt</code>。写入前创建父目录；写完后读回文件，打印文件是否存在、行数、第一行与字节大小。</p>
+    <pre class="out" data-label="预期输出">exists: True
+lines: 4
+first: ALPHA,92
+size: 35</pre>
+  <!-- 答案 3-2 -->
+  <details class="ans" data-run="示例代码/答案/3-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>Path("out/notes_copy.txt")</code> 的父目录先创建，
+        <code>write_text</code> 写入大写文本。读回后四行仍在，第一行变成
+        <code>ALPHA,92</code>；字符数不变，但每行末尾都有一个换行符，
+        字节数因此是 31+4=35。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+out = Path("out/notes_copy.txt")
+out.parent.mkdir(parents=True, exist_ok=True)
+source = Path("素材/synth_notes.txt")
+text = source.read_text(encoding="utf-8")
+out.write_text(text.upper(), encoding="utf-8")
+print("exists:", out.exists())
+print("lines:", len(out.read_text(encoding="utf-8").splitlines()))
+print("first:", out.read_text(encoding="utf-8").splitlines()[0])
+print("size:", out.stat().st_size)</code></pre>
+      <pre class="out" data-label="真实输出">exists: True
+lines: 4
+first: ALPHA,92
+size: 35</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>with</code> 安全地读写文本文件，逐行处理表格并为结果文件创建目录。</p>
+</section>
+
+<section class="lesson" id="l3-2">
+<h2><span class="no">3.2</span>异常与错误处理</h2>
+
+<p>
+  程序遇到无法继续的情况时抛出异常（exception），调用栈逐层向上寻找处理
+  代码。没有处理就打印回溯（traceback）并退出。这一课讲清常见异常类型、
+  <code>try</code> 的四个分支、自定义异常与批处理中的跳过策略。
+</p>
+
+<h3 id="s3-2-1">常见异常</h3>
+
+<p>
+  所有内置异常都继承自 <code>BaseException</code>，日常处理的是
+  <code>Exception</code> 这一支。<code>ValueError</code> 表示值不合适，
+  例如 <code>int("oops")</code>；<code>TypeError</code> 表示类型不支持该
+  操作；<code>KeyError</code> 是字典缺少键；<code>IndexError</code> 是序列
+  下标越界；<code>FileNotFoundError</code> 是文件不存在；
+  <code>ZeroDivisionError</code> 是除数为零。
+</p>
+
+<p>
+  回溯从下往上读：最后一行是异常类型与消息，上面是抛出位置与调用链。
+  定位问题时先看最后一行，再看最靠近自己代码的那一帧。
+  <code>FileNotFoundError</code> 属于 <code>OSError</code>，
+  <code>KeyError</code> 与 <code>IndexError</code> 都属于
+  <code>LookupError</code>；捕获父类会连带捕获子类，范围要按需要收窄。
+</p>
+
+<h3 id="s3-2-2">try 的分支</h3>
+
+<p>
+  <code>try</code> 包住可能出错的语句，<code>except</code> 捕获指定异常，
+  <code>else</code> 在没有异常时执行，<code>finally</code> 无论是否出错都
+  执行。<code>else</code> 用来放“只有成功后才做”的后续步骤，
+  避免把无关语句也放进 <code>try</code> 而被同一个 <code>except</code>
+  误捕；<code>finally</code> 用来关闭资源或记录收尾。
+</p>
+  <pre data-lang="Python"><code>try:
+    value = int("12x")
+except ValueError as error:
+    print("bad:", error)
+else:
+    print("ok:", value)
+finally:
+    print("done")</code></pre>
+  <pre class="out" data-label="真实输出">bad: invalid literal for int() with base 10: '12x'
+done</pre>
+
+<p>
+  捕获时写出具体类型并绑定异常对象：<code>except ValueError as error:</code>。
+  裸 <code>except:</code> 会连键盘中断与程序退出一起吞掉，也会掩盖真正的
+  编程错误。捕获后要么处理，要么用 <code>raise</code> 重新抛出；吞掉异常
+  再继续，问题会以更远的形式出现。
+</p>
+
+<h3 id="s3-2-3">抛出与自定义异常</h3>
+
+<p>
+  <code>raise ValueError("score must be 0..100")</code> 主动抛出一个异常，
+  消息要写清哪个值、违反了哪条规则。需要区分“输入格式不对”与“程序内部
+  错误”时，可以定义自己的异常类：
+  <code>class ScoreError(ValueError): pass</code>。继承
+  <code>ValueError</code> 让调用方既能按自定义类型捕获，也能按值错误统一
+  处理。
+</p>
+  <pre data-lang="Python"><code>class ScoreError(ValueError):
+    """分数行格式不对。"""
+
+
+def parse_score(text):
+    if "," not in text:
+        raise ScoreError("expected name,score")
+    name, score = text.split(",")
+    return name, int(score)
+
+
+def parse_int(text):
+    try:
+        return int(text)
+    except ValueError as error:
+        raise ScoreError("score is not an integer") from error
+
+
+print(parse_score("alpha,92"))
+try:
+    parse_score("alpha")
+except ScoreError as error:
+    print(type(error).__name__, error)</code></pre>
+  <pre class="out" data-label="真实输出">('alpha', 92)
+ScoreError expected name,score</pre>
+
+<p>
+  在 <code>except</code> 中抛出另一种异常时写
+  <code>raise ScoreError(...) from error</code>，保留原始异常作为原因，
+  回溯里会同时显示两层。若只是想补充上下文，可以重新抛出原异常；
+  若已经能处理，就不要抛出。
+</p>
+
+<h3 id="s3-2-4">批处理与退出码</h3>
+
+<p>
+  批量处理数据时，单行失败不应终止整个任务。把每行的解析放进
+  <code>try</code>，成功加入结果列表，失败记录行号与原因，循环继续。
+  最后打印成功与失败数量，读者能判断这批数据是否可用。
+  <code>finally</code> 可以逐行打印进度或清理临时状态。
+</p>
+
+<p>
+  整个程序失败时用 <code>sys.exit(1)</code> 或让异常冒泡，退出码非零，
+  调用脚本的上层程序才能察觉。全部成功返回 0；参数错误通常用 2。
+  退出码与日志消息一起看，才知道失败发生在哪一步。
+</p>
+
+<div class="eg" id="e3-2">
+  <div class="eg-h">例题 · 逐行校验分数</div>
+  <p>题目：定义 <code>ScoreError</code>，校验“名字,分数”行：字段数、空名字、整数转换与 0 到 100 的范围；逐行处理五条输入，记录成功与失败，并在每行结束时打印检查进度。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.2-errors.py"><code>class ScoreError(ValueError):
+    """分数行格式不对。"""
+
+
+def parse_score(line):
+    parts = line.split(",")
+    if len(parts) != 2:
+        raise ScoreError(f"expected 2 fields, got {len(parts)}")
+    name, text = parts
+    name = name.strip()
+    if not name:
+        raise ScoreError("empty name")
+    try:
+        score = int(text)
+    except ValueError as error:
+        raise ScoreError(f"score is not an integer: {text.strip()}") from error
+    if not 0 &lt;= score &lt;= 100:
+        raise ScoreError(f"score out of range: {score}")
+    return name, score
+
+
+lines = ["alpha,92", "beta,oops", "", "gamma,105", "delta,66"]
+ok = []
+failed = []
+for number, line in enumerate(lines, start=1):
+    try:
+        ok.append(parse_score(line))
+    except ScoreError as error:
+        failed.append((number, str(error)))
+    finally:
+        print("checked:", number)
+
+print("ok:", ok)
+print("failed:", len(failed))
+for number, message in failed:
+    print(" ", number, message)
+print("counts:", len(ok), len(failed))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.2-errors.py</code></pre>
+    <pre class="out" data-label="真实输出">checked: 1
+checked: 2
+checked: 3
+checked: 4
+checked: 5
+ok: [('alpha', 92), ('delta', 66)]
+failed: 3
+  2 score is not an integer: oops
+  3 expected 2 fields, got 1
+  4 score out of range: 105
+counts: 2 3</pre>
+  <p>五条输入都进入 <code>try</code>，<code>finally</code> 每次都打印
+  <code>checked</code>，所以进度行完整。第二条的分数 <code>oops</code>
+  无法转换，第三条是空串、拆出的字段数为 1，第四条 105 超出范围，
+  三者都抛出 <code>ScoreError</code> 并被记录行号。第一条与第五条通过，
+  成功 2 条、失败 3 条。分数转换失败的那条用 <code>from error</code>
+  保留了原始 <code>ValueError</code>，消息里带上出错的文本。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-3</div>
+  <p>写一个脚本 <code>3-3.py</code>。定义 <code>parse_int(text)</code>，转换失败时返回 <code>None</code>；定义 <code>safe_div(a, b)</code>，除数为零时返回 <code>None</code>。对 <code>["12", "x", "0", "7"]</code> 逐个调用 <code>parse_int</code> 并打印结果列表；打印 <code>safe_div(10, 2)</code> 与 <code>safe_div(1, 0)</code>。最后直接执行 <code>5 / 0</code>，捕获 <code>ZeroDivisionError</code> 并打印异常消息。</p>
+    <pre class="out" data-label="预期输出">parsed: [12, None, 0, 7]
+div: 5.0 None
+message: division by zero</pre>
+  <!-- 答案 3-3 -->
+  <details class="ans" data-run="示例代码/答案/3-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>parse_int</code> 与 <code>safe_div</code> 都把可恢复的错误转成
+        <code>None</code>，列表推导式因此能得到四个结果与两个商。
+        最后一段主动执行 <code>5 / 0</code>，捕获 <code>ZeroDivisionError</code>
+        后打印它的消息，验证异常对象保存的文本。
+      </p>
+      <pre data-lang="Python"><code>def parse_int(text):
+    try:
+        return int(text)
+    except ValueError:
+        return None
+
+
+def safe_div(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return None
+
+
+values = ["12", "x", "0", "7"]
+print("parsed:", [parse_int(text) for text in values])
+print("div:", safe_div(10, 2), safe_div(1, 0))
+try:
+    5 / 0
+except ZeroDivisionError as error:
+    print("message:", str(error))</code></pre>
+      <pre class="out" data-label="真实输出">parsed: [12, None, 0, 7]
+div: 5.0 None
+message: division by zero</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-4</div>
+  <p>写一个脚本 <code>3-4.py</code>，定义 <code>ConfigError(ValueError)</code> 与 <code>require(config, key)</code>：键不存在时抛出 <code>missing key: 键名</code>，值不是整数时抛出 <code>键名 must be int</code>，否则返回该值。配置为 <code>{"width": 640, "height": "480"}</code>，依次检查 <code>width</code>、<code>height</code>、<code>fps</code>；每项用 <code>try</code> 打印返回值或错误消息，并用 <code>finally</code> 打印 <code>checked: 键名</code>。</p>
+    <pre class="out" data-label="预期输出">width 640
+checked: width
+error: height must be int
+checked: height
+error: missing key: fps
+checked: fps</pre>
+  <!-- 答案 3-4 -->
+  <details class="ans" data-run="示例代码/答案/3-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>require</code> 先检查键是否存在，再检查值是否为整数。
+        <code>width</code> 通过并返回 640；<code>height</code> 的值是字符串
+        <code>"480"</code>，抛出类型错误；<code>fps</code> 不在字典里，
+        抛出缺键错误。每轮的 <code>finally</code> 都执行，所以三行
+        <code>checked</code> 依次出现在返回值或错误消息之后。
+      </p>
+      <pre data-lang="Python"><code>class ConfigError(ValueError):
+    pass
+
+
+def require(config, key):
+    if key not in config:
+        raise ConfigError(f"missing key: {key}")
+    value = config[key]
+    if not isinstance(value, int):
+        raise ConfigError(f"{key} must be int")
+    return value
+
+
+config = {"width": 640, "height": "480"}
+for key in ("width", "height", "fps"):
+    try:
+        print(key, require(config, key))
+    except ConfigError as error:
+        print("error:", error)
+    finally:
+        print("checked:", key)</code></pre>
+      <pre class="out" data-label="真实输出">width 640
+checked: width
+error: height must be int
+checked: height
+error: missing key: fps
+checked: fps</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>捕获具体异常、定义自己的异常类，并在批处理中跳过坏行、记录行号与原因。</p>
+</section>
+
+<section class="lesson" id="l3-3">
+<h2><span class="no">3.3</span>pathlib 与目录遍历</h2>
+
+<p>
+  <code>pathlib</code> 把路径表示成对象，拼接、取文件名、判断类型与遍历
+  目录都变成方法调用，不必手动拼字符串。这一课用 <code>Path</code> 遍历
+  素材目录，按后缀分组、打印大小，并把清单写到结果目录。
+</p>
+
+<h3 id="s3-3-1">构造与拼接</h3>
+
+<p>
+  <code>Path("素材")</code> 创建相对路径，<code>Path("/tmp")</code> 创建
+  绝对路径。路径之间用斜杠拼接：<code>Path("素材") / "synth_notes.txt"</code>，
+  斜杠由 <code>pathlib</code> 按当前系统处理，代码里不必区分分隔符。
+  <code>Path.cwd()</code> 是当前工作目录，<code>Path.home()</code> 是用户
+  主目录，<code>resolve()</code> 把相对路径转成绝对路径并消除
+  <code>..</code> 与符号链接。
+</p>
+  <pre data-lang="Python"><code>root = Path("素材")
+path = root / "synth_notes.txt"</code></pre>
+
+<p>
+  相对路径按当前工作目录解析，而不是按脚本文件所在目录解析。从不同目录
+  运行同一个脚本，相对路径可能指向不同位置；需要固定基准时，用
+  <code>Path(__file__).parent</code> 取脚本所在目录，再拼出素材路径。
+</p>
+
+<h3 id="s3-3-2">查询属性</h3>
+
+<p>
+  <code>exists()</code> 判断路径是否存在，<code>is_file()</code> 与
+  <code>is_dir()</code> 区分文件与目录。路径本身的组成部分用
+  <code>name</code>（带扩展名）、<code>stem</code>（去掉最后一个扩展名）、
+  <code>suffix</code>（最后一个扩展名，带点）、<code>parent</code>
+  （上一级目录）读取；<code>suffixes</code> 返回全部扩展名。
+</p>
+  <pre data-lang="Python"><code>path = Path("素材/synth_notes.txt")
+path.name
+path.stem
+path.suffix
+path.parent</code></pre>
+
+<p>
+  <code>stat()</code> 返回文件状态，<code>st_size</code> 是以字节为单位的
+  大小，<code>st_mtime</code> 是修改时间。目录本身也有状态，取大小前先用
+  <code>is_file()</code> 筛掉目录。路径可以不指向真实文件，查询属性不会
+  因为不存在而报错；真正读写时才会抛出 <code>FileNotFoundError</code>。
+</p>
+
+<h3 id="s3-3-3">遍历与筛选</h3>
+
+<p>
+  <code>iterdir()</code> 逐项列出目录内容，<code>glob(pattern)</code> 按
+  通配符筛选当前目录，<code>rglob(pattern)</code> 递归筛选子目录。
+  三者都返回迭代器，顺序由文件系统决定，输出前应 <code>sorted</code>，
+  否则同一份素材在不同机器上的打印顺序可能不同。
+</p>
+  <pre data-lang="Python"><code>for path in sorted(Path("素材").glob("*.txt")):
+    name = path.name
+    size = path.stat().st_size</code></pre>
+
+<p>
+  筛选通常写成生成器表达式：
+  <code>sorted(path for path in root.iterdir() if path.suffix == ".png")</code>。
+  只要文件时加 <code>path.is_file()</code>；要按名字排序时用
+  <code>key=lambda path: path.name</code>。遍历大目录时不要一次转成列表，
+  边遍历边处理可以降低内存占用。
+</p>
+
+<h3 id="s3-3-4">创建与改名</h3>
+
+<p>
+  <code>mkdir(parents=True, exist_ok=True)</code> 创建目录，缺失的父目录
+  一起创建，已存在时不报错。<code>write_text</code> 与
+  <code>read_text</code> 直接读写文本；<code>rename(target)</code> 改名，
+  目标已存在时覆盖，<code>replace(target)</code> 的语义更明确。
+</p>
+
+<p>
+  <code>unlink()</code> 删除文件，<code>rmdir()</code> 删除空目录，
+  删除前先确认路径与文件类型。批量删除不要拼通配符字符串，先把候选路径
+  列出来核对，再逐个删除。需要保留旧结果时，先写临时文件名，成功后再改名
+  替换，避免中途失败留下半个文件。
+</p>
+
+<div class="eg" id="e3-3">
+  <div class="eg-h">例题 · 按后缀分组</div>
+  <p>题目：遍历 <code>素材/</code>，按后缀分组统计文件数，打印每个文件的名称与字节大小，再写一份 <code>名称,大小</code> 的清单到 <code>out/manifest.txt</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.3-paths.py"><code>from pathlib import Path
+
+root = Path("素材")
+files = sorted(path for path in root.iterdir() if path.is_file())
+groups = {}
+for path in files:
+    groups.setdefault(path.suffix, []).append(path)
+
+for suffix in sorted(groups):
+    print(suffix, len(groups[suffix]))
+for path in files:
+    print(f"{path.name:&lt;20}{path.stat().st_size:&gt;7}")
+
+out_dir = Path("out")
+out_dir.mkdir(exist_ok=True)
+manifest = out_dir / "manifest.txt"
+lines = [f"{path.name},{path.stat().st_size}" for path in files]
+manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+print("manifest:", manifest.name)
+print("lines:", len(lines))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.3-paths.py</code></pre>
+    <pre class="out" data-label="真实输出">.csv 2
+.json 1
+.mp4 1
+.png 6
+.txt 1
+.yaml 1
+synth_balls.png       26173
+synth_chess_1.png     34941
+synth_chess_2.png     37444
+synth_chess_3.png     30691
+synth_config.json       157
+synth_config.yaml        89
+synth_cube.mp4        24063
+synth_grid.png         4373
+synth_notes.txt          35
+synth_scores.csv         93
+synth_shapes.png      23971
+synth_track.csv        1390
+manifest: manifest.txt
+lines: 12</pre>
+  <p><code>iterdir()</code> 加 <code>is_file()</code> 排除了目录，再用
+  <code>sorted</code> 固定顺序。<code>setdefault</code> 把同一个后缀的文件
+  收进同一列表，后缀按字符串排序后依次打印。大小来自
+  <code>stat().st_size</code>，单位是字节；六张 PNG 明显大于文本文件，
+  视频文件也占有一定体积。清单与屏幕上的文件顺序一致，共十二行，
+  文件名与大小用逗号分开。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-5</div>
+  <p>写一个脚本 <code>3-5.py</code>，用 <code>Path</code> 遍历 <code>素材/</code>，找出所有 <code>.png</code> 文件并按名称排序。打印图片数量，逐个打印去掉扩展名的文件名与字节大小，最后打印目录中所有文件的后缀集合（排序后的列表）。</p>
+    <pre class="out" data-label="预期输出">count: 6
+synth_balls 26173
+synth_chess_1 34941
+synth_chess_2 37444
+synth_chess_3 30691
+synth_grid 4373
+synth_shapes 23971
+suffixes: ['.csv', '.json', '.mp4', '.png', '.txt', '.yaml']</pre>
+  <!-- 答案 3-5 -->
+  <details class="ans" data-run="示例代码/答案/3-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>iterdir</code> 列出目录项，后缀等于 <code>.png</code> 的留下，
+        排序后得到六张图。大小来自 <code>stat().st_size</code>，单位是字节；
+        后缀集合来自所有普通文件，排序后是 CSV、JSON、MP4、PNG、TXT、YAML
+        六种。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+root = Path("素材")
+pngs = sorted(path for path in root.iterdir() if path.suffix == ".png")
+print("count:", len(pngs))
+for path in pngs:
+    print(path.stem, path.stat().st_size)
+print("suffixes:", sorted({path.suffix for path in root.iterdir() if path.is_file()}))</code></pre>
+      <pre class="out" data-label="真实输出">count: 6
+synth_balls 26173
+synth_chess_1 34941
+synth_chess_2 37444
+synth_chess_3 30691
+synth_grid 4373
+synth_shapes 23971
+suffixes: ['.csv', '.json', '.mp4', '.png', '.txt', '.yaml']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-6</div>
+  <p>写一个脚本 <code>3-6.py</code>，创建 <code>out/</code> 目录，连续写入 <code>result_1.txt</code>、<code>result_2.txt</code>、<code>result_3.txt</code>，每写一个就打印文件名与是否存在。然后从 <code>result_3.txt</code> 出发，检查同名文件是否已存在，存在就把编号加一，直到找到不重名的路径，打印该文件名。</p>
+    <pre class="out" data-label="预期输出">result_1.txt True
+result_2.txt True
+result_3.txt True
+next: result_4.txt</pre>
+  <!-- 答案 3-6 -->
+  <details class="ans" data-run="示例代码/答案/3-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        循环写三个文件，<code>exists()</code> 在写入后都为真。为下一个结果找
+        路径时，从 <code>result_3.txt</code> 开始检查；该文件已存在，编号加一
+        得到 <code>result_4.txt</code>，此时路径不存在，循环停止。
+        <code>mkdir(exist_ok=True)</code> 让目录已存在时也能继续。
+      </p>
+      <pre data-lang="Python"><code>from pathlib import Path
+
+out_dir = Path("out")
+out_dir.mkdir(exist_ok=True)
+for index in range(1, 4):
+    path = out_dir / f"result_{index}.txt"
+    path.write_text(f"run {index}\n", encoding="utf-8")
+    print(path.name, path.exists())
+
+candidate = out_dir / "result_3.txt"
+number = 3
+while candidate.exists():
+    number += 1
+    candidate = out_dir / f"result_{number}.txt"
+print("next:", candidate.name)</code></pre>
+      <pre class="out" data-label="真实输出">result_1.txt True
+result_2.txt True
+result_3.txt True
+next: result_4.txt</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>Path</code> 拼接路径、取文件名与大小，按后缀筛选目录并为结果文件生成不重名的路径。</p>
+</section>
+
+<section class="lesson" id="l3-4">
+<h2><span class="no">3.4</span>CSV、JSON 与 YAML 配置</h2>
+
+<p>
+  表格常用 CSV，结构化配置常用 JSON 或 YAML。三种格式都只是文本，读进来
+  之后要自己转换类型、补默认值并校验范围。这一课用成绩表与一份 YAML 配置
+  走完读取、合并、校验与写出的全过程。
+</p>
+
+<h3 id="s3-4-1">CSV 读写</h3>
+
+<p>
+  <code>csv.reader</code> 把每行拆成字符串列表，<code>csv.DictReader</code>
+  用第一行作表头，把每行变成字典。所有字段都是字符串，
+  <code>"92"</code> 需要 <code>int</code> 转换后才能比较大小；空行通常被
+  跳过，字段数多于表头时多出的部分放在键 <code>None</code> 下。
+</p>
+  <pre data-lang="Python"><code>with Path("素材/synth_scores.csv").open(encoding="utf-8", newline="") as handle:
+    rows = list(csv.DictReader(handle))</code></pre>
+
+<p>
+  写入用 <code>csv.writer</code> 或 <code>csv.DictWriter</code>。打开文件时
+  写 <code>newline=""</code>，把换行交给 CSV 模块处理，否则在部分系统上会
+  多出空行。字段顺序由 <code>fieldnames</code> 决定，写表头用
+  <code>writeheader()</code>。字段里含逗号、引号或换行时，模块会自动加
+  引号并转义，不要自己拼分隔符。
+</p>
+
+<h3 id="s3-4-2">JSON 读写</h3>
+
+<p>
+  <code>json.load(handle)</code> 从文件读，<code>json.loads(text)</code>
+  从字符串读；<code>json.dump</code> 与 <code>json.dumps</code> 负责写出。
+  JSON 支持对象、数组、字符串、数字、布尔与 <code>null</code>，读进 Python
+  后分别对应字典、列表、字符串、整数或浮点数、布尔与 <code>None</code>。
+</p>
+  <pre data-lang="Python"><code>text = json.dumps({"fps": 30, "width": 640}, ensure_ascii=False)
+data = json.loads(text)</code></pre>
+
+<p>
+  写出中文时加 <code>ensure_ascii=False</code>，否则中文会被转成
+  <code>\uXXXX</code> 转义；加 <code>indent=2</code> 便于人读，
+  <code>sort_keys=True</code> 让键顺序稳定，便于比较两次输出。JSON 不允许
+  注释与尾随逗号，格式错误会抛出 <code>json.JSONDecodeError</code>。
+</p>
+
+<h3 id="s3-4-3">YAML 读取</h3>
+
+<p>
+  YAML 用缩进表示层级，支持映射、列表与标量，写起来比 JSON 简洁。读取用
+  <code>yaml.safe_load(text)</code>，它只构造字典、列表、字符串、数字、
+  布尔与空值这些安全类型，不执行配置里的任意对象构造。不要使用不带
+  <code>Loader</code> 的 <code>yaml.load()</code>，也不要开启自定义标签。
+</p>
+  <pre data-lang="Python"><code>text = Path("素材/synth_config.yaml").read_text(encoding="utf-8")
+data = yaml.safe_load(text)</code></pre>
+
+<p>
+  缩进必须一致，冒号后要有空格，列表项以短横线加空格开头。一份配置读进来
+  通常是一个字典，顶层键对应各个配置段。YAML 的数字与布尔会保留类型，
+  例如 <code>false</code> 读成 <code>False</code>，<code>0.55</code>
+  读成浮点数，这一点与 CSV 全为字符串不同。
+</p>
+
+<h3 id="s3-4-4">校验与默认值</h3>
+
+<p>
+  配置文件来自外部，字段可能缺失、类型可能不对。先准备一份默认配置，再把
+  读到的字典逐层合并：字典键递归更新，标量直接覆盖。合并后检查必需字段是否
+  存在、类型是否正确、数值是否落在允许范围；发现问题时抛出带键名的
+  <code>ValueError</code>，让使用者知道改哪一项。
+</p>
+
+<p>
+  校验通过后再写出摘要。摘要里保留完整配置与统计结果，用
+  <code>json.dumps(..., ensure_ascii=False, indent=2, sort_keys=True)</code>
+  写文件，屏幕上也打印一份便于核对。默认值与读入值分开保存，下次调整默认值
+  时不会把用户配置一起改掉。
+</p>
+
+<div class="eg" id="e3-4">
+  <div class="eg-h">例题 · 配置与摘要</div>
+  <p>题目：读取成绩 CSV 与 <code>素材/synth_config.yaml</code>，把配置合并到默认值上，校验相机宽高与检测阈值，计算有效分数的数量与平均分，写出 <code>out_summary.json</code>。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.4-config.py"><code>import csv
+import json
+from pathlib import Path
+
+import yaml
+
+DEFAULTS = {
+    "camera": {"width": 640, "height": 480, "fps": 30},
+    "detector": {"threshold": 0.5, "min_area": 100},
+    "verbose": False,
+}
+
+
+def load_config(path):
+    data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    config = {key: dict(value) if isinstance(value, dict) else value
+              for key, value in DEFAULTS.items()}
+    for key, value in data.items():
+        if isinstance(value, dict):
+            config.setdefault(key, {}).update(value)
+        else:
+            config[key] = value
+    width = config["camera"]["width"]
+    height = config["camera"]["height"]
+    if not isinstance(width, int) or not isinstance(height, int):
+        raise ValueError("camera width and height must be integers")
+    if not 0.0 &lt;= config["detector"]["threshold"] &lt;= 1.0:
+        raise ValueError("threshold must be in 0..1")
+    return config
+
+
+rows = []
+with Path("素材/synth_scores.csv").open(encoding="utf-8", newline="") as handle:
+    for row in csv.DictReader(handle):
+        if row.get(None) or not row.get("name") or not row.get("score"):
+            continue
+        try:
+            score = int(row["score"])
+        except ValueError:
+            continue
+        rows.append((row["name"], score))
+
+config = load_config("素材/synth_config.yaml")
+summary = {
+    "config": config,
+    "rows": len(rows),
+    "mean": round(sum(score for _, score in rows) / len(rows), 2),
+}
+Path("out_summary.json").write_text(
+    json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8")
+print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+print("saved:", Path("out_summary.json").name)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.4-config.py</code></pre>
+    <pre class="out" data-label="真实输出">{
+  "config": {
+    "camera": {
+      "fps": 30,
+      "height": 480,
+      "width": 640
+    },
+    "detector": {
+      "min_area": 120,
+      "threshold": 0.55
+    },
+    "verbose": false
+  },
+  "mean": 80.25,
+  "rows": 4
+}
+saved: out_summary.json</pre>
+  <p>成绩表里空行与坏行被跳过，留下四行有效分数，平均分仍是 80.25。
+  YAML 中的 <code>min_area: 120</code> 与 <code>threshold: 0.55</code>
+  覆盖默认值，<code>verbose</code> 保留默认的 <code>False</code>；相机三项
+  来自 YAML，宽高都是整数，阈值在 0 到 1 之间，校验通过。屏幕与文件都按
+  键排序、用两格缩进展开，两处内容一致。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-7</div>
+  <p>写一个脚本 <code>3-7.py</code>，用 <code>csv.DictReader</code> 读取 <code>素材/synth_scores.csv</code>，跳过空行与分数无法转成整数的行，保留分数不低于 80 的记录。用 <code>csv.DictWriter</code> 把结果写到 <code>out_high.csv</code>，表头为 <code>name,score</code>，换行符写 <code>\n</code>。打印保留数量、名字列表与结果文件的全部内容（换行显示为分号）。</p>
+    <pre class="out" data-label="预期输出">kept: 2
+names: ['alpha', 'gamma']
+csv: name,score; alpha,92; gamma,85</pre>
+  <!-- 答案 3-7 -->
+  <details class="ans" data-run="示例代码/答案/3-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>DictReader</code> 把每行变成字典，分数先转整数再比较；
+        空行与 <code>oops</code> 都在转换时被跳过。保留 92 与 85 两条，
+        名字依次是 <code>alpha</code> 与 <code>gamma</code>。
+        <code>DictWriter</code> 指定字段顺序与 <code>
+  </code> 换行，
+        写出的文件只有表头与两行数据。
+      </p>
+      <pre data-lang="Python"><code>import csv
+from pathlib import Path
+
+rows = []
+with Path("素材/synth_scores.csv").open(encoding="utf-8", newline="") as handle:
+    for row in csv.DictReader(handle):
+        try:
+            score = int(row["score"])
+        except (TypeError, ValueError):
+            continue
+        if score &gt;= 80:
+            rows.append({"name": row["name"], "score": score})
+
+out = Path("out_high.csv")
+with out.open("w", encoding="utf-8", newline="") as handle:
+    writer = csv.DictWriter(handle, fieldnames=["name", "score"], lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+
+print("kept:", len(rows))
+print("names:", [row["name"] for row in rows])
+print("csv:", out.read_text(encoding="utf-8").strip().replace("\n", "; "))</code></pre>
+      <pre class="out" data-label="真实输出">kept: 2
+names: ['alpha', 'gamma']
+csv: name,score; alpha,92; gamma,85</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-8</div>
+  <p>写一个脚本 <code>3-8.py</code>，读取 <code>素材/synth_config.json</code> 与 <code>素材/synth_config.yaml</code>，按“后读到的覆盖先读到的”逐层合并：字典段用 <code>update</code> 合并，标量直接覆盖。打印合并后的相机配置、检测阈值、<code>verbose</code>、排序后的顶层键，以及相机配置按键排序后的 JSON 字符串。</p>
+    <pre class="out" data-label="预期输出">camera: {'fps': 30, 'height': 480, 'width': 640}
+threshold: 0.55
+verbose: False
+keys: ['camera', 'detector', 'verbose']
+json: {"fps": 30, "height": 480, "width": 640}</pre>
+  <!-- 答案 3-8 -->
+  <details class="ans" data-run="示例代码/答案/3-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        先读 JSON，再读 YAML，同一段里的字典用 <code>update</code> 合并，
+        标量直接覆盖。两份配置的相机三项相同；YAML 的阈值 0.55 覆盖 JSON 的
+        同名值，<code>verbose</code> 只在 JSON 中出现，保留 <code>False</code>。
+        <code>sort_keys=True</code> 让相机 JSON 的键按字母顺序排列。
+      </p>
+      <pre data-lang="Python"><code>import json
+from pathlib import Path
+
+import yaml
+
+base = json.loads(Path("素材/synth_config.json").read_text(encoding="utf-8"))
+override = yaml.safe_load(Path("素材/synth_config.yaml").read_text(encoding="utf-8"))
+
+merged = {}
+for source in (base, override):
+    for key, value in source.items():
+        if isinstance(value, dict):
+            merged.setdefault(key, {}).update(value)
+        else:
+            merged[key] = value
+
+print("camera:", merged["camera"])
+print("threshold:", merged["detector"]["threshold"])
+print("verbose:", merged.get("verbose"))
+print("keys:", sorted(merged))
+print("json:", json.dumps(merged["camera"], sort_keys=True))</code></pre>
+      <pre class="out" data-label="真实输出">camera: {'fps': 30, 'height': 480, 'width': 640}
+threshold: 0.55
+verbose: False
+keys: ['camera', 'detector', 'verbose']
+json: {"fps": 30, "height": 480, "width": 640}</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>读取 CSV、JSON 与 YAML，转换字段类型、合并默认值，并在写出前校验配置。</p>
+</section>
+
+<section class="lesson" id="l3-5">
+<h2><span class="no">3.5</span>argparse 与命令行工具</h2>
+
+<p>
+  命令行工具把输入、筛选条件与输出位置交给使用者选择，而不是改源码。
+  <code>argparse</code> 负责声明参数、解析命令行、生成帮助并在参数错误时
+  给出提示。这一课把上一课的成绩表读入改成带参数的工具。
+</p>
+
+<h3 id="s3-5-1">建立解析器</h3>
+
+<p>
+  <code>argparse.ArgumentParser(description="...")</code> 创建解析器，
+  <code>add_argument</code> 逐个声明参数，<code>parse_args()</code> 读取
+  <code>sys.argv</code> 并返回一个命名空间对象。位置参数直接写名字，
+  可选参数以 <code>--</code> 开头；解析结果用 <code>args.input</code>、
+  <code>args.top</code> 这样的属性读取。
+</p>
+  <pre data-lang="Python"><code>parser = argparse.ArgumentParser(description="统计分数表")
+parser.add_argument("--top", type=int, default=2)
+args = parser.parse_args()</code></pre>
+
+<p>
+  省略 <code>--top</code> 时 <code>args.top</code> 取默认值 2，写成
+  <code>--top 5</code> 时为整数 5。
+</p>
+
+<p>
+  <code>prog</code> 指定帮助里显示的程序名，<code>help</code> 给每个参数写
+  一句说明，<code>description</code> 说明工具做什么。参数名里的短横线在
+  属性名中变成下划线：<code>--min-score</code> 对应
+  <code>args.min_score</code>。
+</p>
+
+<h3 id="s3-5-2">参数类型与默认值</h3>
+
+<p>
+  命令行参数默认是字符串，需要整数时写 <code>type=int</code>，需要浮点数
+  时写 <code>type=float</code>。转换失败时解析器打印用法并以退出码 2 结束。
+  <code>default</code> 指定省略参数时的值，<code>choices</code> 限定取值
+  范围，<code>nargs="+"</code> 让一个参数接收多个值。
+</p>
+  <pre data-lang="Python"><code>parser = argparse.ArgumentParser()
+parser.add_argument("--top", type=int, default=2)
+parser.add_argument("--mode", choices=["fast", "full"], default="fast")
+parser.add_argument("--input", nargs="+")</code></pre>
+
+<p>
+  <code>store_true</code> 适合开关，省略时为 <code>False</code>，出现时为
+  <code>True</code>。默认值应写成使用者无需额外输入也能得到合理结果的取值；
+  需要强制给出的参数不要设默认值，让解析器在缺失时报错。
+</p>
+
+<h3 id="s3-5-3">main 与退出码</h3>
+
+<p>
+  把参数解析与业务逻辑放进 <code>main(argv=None)</code>，<code>argv</code>
+  为 <code>None</code> 时读取真实命令行，传入列表时读取该列表，测试与演示
+  都不必改 <code>sys.argv</code>。函数成功返回 0，失败返回非零整数。
+</p>
+
+<p>
+  文件末尾写 <code>if __name__ == "__main__": raise SystemExit(main())</code>。
+  <code>SystemExit</code> 把返回值交给解释器作为进程退出码，模块被导入时
+  则不执行。业务函数与命令行入口分开后，其他脚本可以直接导入并调用
+  <code>main(["--top", "2"])</code>。
+</p>
+  <pre data-lang="Python"><code>import argparse
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--top", type=int, default=2)
+    args = parser.parse_args(argv)
+    print(args.top)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())</code></pre>
+  <pre class="out" data-label="真实输出">2</pre>
+
+<h3 id="s3-5-4">帮助与错误</h3>
+
+<p>
+  <code>--help</code> 由解析器自动生成，列出用法、位置参数、可选参数与
+  默认值，执行后以 0 退出。缺少必需参数、类型转换失败或取值不在
+  <code>choices</code> 中时，解析器把用法与错误写到标准错误，并以 2 退出。
+</p>
+
+<p>
+  测试错误分支时可以传入 <code>parse_args</code> 一个列表，并用
+  <code>contextlib.redirect_stderr</code> 捕获错误文本，再用
+  <code>SystemExit</code> 的 <code>code</code> 属性核对退出码。这样不会
+  真的终止当前程序，也不会在终端里留下多余的帮助信息。
+</p>
+
+<div class="eg" id="e3-5">
+  <div class="eg-h">例题 · 统计工具</div>
+  <p>题目：把成绩统计写成命令行工具，支持 <code>--input</code>、<code>--top</code>、<code>--min-score</code> 与 <code>--output</code>；读取 CSV，筛选达到最低分的记录，按分数取前几名，把结果写到指定文件。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.5-argparse.py"><code>import argparse
+import csv
+from pathlib import Path
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(description="统计分数表")
+    parser.add_argument("--input", default="素材/synth_scores.csv")
+    parser.add_argument("--top", type=int, default=2)
+    parser.add_argument("--min-score", type=int, default=60)
+    parser.add_argument("--output", default="out_stats.txt")
+    return parser
+
+
+def read_scores(path):
+    scores = []
+    with Path(path).open(encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            try:
+                scores.append((row["name"], int(row["score"])))
+            except (TypeError, ValueError):
+                continue
+    return scores
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    scores = read_scores(args.input)
+    passed = [(name, score) for name, score in scores if score &gt;= args.min_score]
+    top = sorted(passed, key=lambda item: item[1], reverse=True)[:args.top]
+    lines = [f"input: {Path(args.input).name}", f"passed: {len(passed)}"]
+    lines += [f"{name}:{score}" for name, score in top]
+    text = "\n".join(lines)
+    Path(args.output).write_text(text + "\n", encoding="utf-8")
+    print(text)
+    print("output:", Path(args.output).name)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.5-argparse.py --top 2 --min-score 80</code></pre>
+    <pre class="out" data-label="真实输出">input: synth_scores.csv
+passed: 2
+alpha:92
+gamma:85
+output: out_stats.txt</pre>
+  <p>输入文件默认是 <code>素材/synth_scores.csv</code>，四行有效分数为
+  92、78、85、66；最低分设为 80 后剩两条，按分数从高到低取前两名，
+  得到 <code>alpha:92</code> 与 <code>gamma:85</code>。输出文件名取路径的
+  <code>name</code>，屏幕只显示 <code>out_stats.txt</code>，文件内容与前三行
+  相同。把 <code>--top</code> 或 <code>--min-score</code> 换成其他值，
+  筛选与排序结果随之变化，程序不需要修改。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-9</div>
+  <p>写一个脚本 <code>3-9.py</code>。定义 <code>build_parser()</code>，包含位置参数 <code>input</code>、可选参数 <code>--top</code>（整数，默认 3）与 <code>--mode</code>（取值 <code>fast</code> 或 <code>full</code>，默认 <code>fast</code>）。用列表 <code>["data.csv", "--top", "5", "--mode", "full"]</code> 解析并打印三个字段。再用 <code>["data.csv", "--mode", "slow"]</code> 解析一次，捕获 <code>SystemExit</code> 并打印 <code>exit:</code> 与退出码；用 <code>redirect_stderr</code> 捕获标准错误，打印错误文本中是否包含 <code>invalid choice</code>。</p>
+    <pre class="out" data-label="预期输出">input: data.csv
+top: 5
+mode: full
+exit: 2
+error: True</pre>
+  <!-- 答案 3-9 -->
+  <details class="ans" data-run="示例代码/答案/3-9.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第一组参数都合法，位置参数与两个可选参数分别绑定到
+        <code>input</code>、<code>top</code> 与 <code>mode</code>。
+        第二组的 <code>slow</code> 不在 <code>choices</code> 里，解析器把用法
+        与错误写到标准错误，并以状态码 2 退出；<code>redirect_stderr</code>
+        把这段文本收进缓冲区，再检查是否包含 <code>invalid choice</code>。
+      </p>
+      <pre data-lang="Python"><code>import argparse
+import contextlib
+import io
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="tool")
+    parser.add_argument("input")
+    parser.add_argument("--top", type=int, default=3)
+    parser.add_argument("--mode", choices=["fast", "full"], default="fast")
+    return parser
+
+
+args = build_parser().parse_args(["data.csv", "--top", "5", "--mode", "full"])
+print("input:", args.input)
+print("top:", args.top)
+print("mode:", args.mode)
+
+buffer = io.StringIO()
+with contextlib.redirect_stderr(buffer):
+    try:
+        build_parser().parse_args(["data.csv", "--mode", "slow"])
+    except SystemExit as error:
+        print("exit:", error.code)
+print("error:", "invalid choice" in buffer.getvalue())</code></pre>
+      <pre class="out" data-label="真实输出">input: data.csv
+top: 5
+mode: full
+exit: 2
+error: True</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-10</div>
+  <p>写一个脚本 <code>3-10.py</code>。定义解析器，包含 <code>--min-score</code>（整数，默认 60）与 <code>--output</code>（默认 <code>out/min.txt</code>）。用 <code>["--min-score", "80", "--output", "out/pass.txt"]</code> 解析；对分数 <code>[92, 78, 85, 66]</code> 筛选不低于最低分的记录，把每行一个分数写到输出文件，创建缺失的父目录。打印最低分、通过的分数列表、输出文件名与文件内容拆出的字符串列表。</p>
+    <pre class="out" data-label="预期输出">min: 80
+passed: [92, 85]
+file: pass.txt
+content: ['92', '85']</pre>
+  <!-- 答案 3-10 -->
+  <details class="ans" data-run="示例代码/答案/3-10.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        最低分设为 80，四个分数中 92 与 85 通过。输出路径的父目录先创建，
+        分数逐行写入 <code>out/pass.txt</code>；读回后用 <code>split()</code>
+        按空白拆开，得到两个字符串。文件名只取路径的
+        <code>name</code>，所以屏幕显示 <code>pass.txt</code>。
+      </p>
+      <pre data-lang="Python"><code>import argparse
+from pathlib import Path
+
+
+def build_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--min-score", type=int, default=60)
+    parser.add_argument("--output", default="out/min.txt")
+    return parser
+
+
+args = build_parser().parse_args(["--min-score", "80", "--output", "out/pass.txt"])
+scores = [92, 78, 85, 66]
+passed = [score for score in scores if score &gt;= args.min_score]
+path = Path(args.output)
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text("\n".join(str(score) for score in passed) + "\n", encoding="utf-8")
+print("min:", args.min_score)
+print("passed:", passed)
+print("file:", path.name)
+print("content:", path.read_text(encoding="utf-8").split())</code></pre>
+      <pre class="out" data-label="真实输出">min: 80
+passed: [92, 85]
+file: pass.txt
+content: ['92', '85']</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>给脚本加上位置参数与可选参数，组织 <code>main</code> 的返回值，并用退出码区分成功与参数错误。</p>
+</section>
+
+<section class="lesson" id="l3-6">
+<h2><span class="no">3.6</span>logging 与调试输出</h2>
+
+<p>
+  <code>print</code> 适合让人当场看见结果，日志（logging）适合记录程序
+  运行过程中发生了什么。日志带级别、时间与来源，可以同时写到终端和文件，
+  也可以按级别过滤。这一课用批处理任务演示控制台与文件两个输出目的地。
+</p>
+
+<h3 id="s3-6-1">级别与记录器</h3>
+
+<p>
+  日志级别从低到高是 <code>DEBUG</code>、<code>INFO</code>、
+  <code>WARNING</code>、<code>ERROR</code>、<code>CRITICAL</code>。
+  记录器（logger）设置的级别是门槛，低于它的记录直接丢弃；处理器
+  （handler）还有自己的级别，可以进一步过滤。两级门槛同时生效，
+  最终是否输出取更严格的那一个。
+</p>
+  <pre data-lang="Python"><code>import logging
+
+
+logging.basicConfig(level=logging.INFO,
+                    format="%(levelname)s %(message)s")
+logging.debug("细节")
+logging.info("开始处理")
+logging.warning("跳过一行")</code></pre>
+  <pre class="out" data-label="真实输出">INFO 开始处理
+WARNING 跳过一行</pre>
+
+<p>
+  用 <code>logging.getLogger("batch")</code> 取具名记录器，名字通常用模块名
+  <code>__name__</code>。记录器默认把记录交给父记录器，最终到达根记录器；
+  自己挂了处理器之后，把 <code>propagate</code> 设为 <code>False</code>，
+  避免同一条记录被打印两次。<code>setLevel</code> 只在记录器上设置一次，
+  不要在每次调用前重复设置。
+</p>
+
+<h3 id="s3-6-2">处理器与格式</h3>
+
+<p>
+  <code>StreamHandler(sys.stdout)</code> 写到标准输出，
+  <code>FileHandler(path, encoding="utf-8")</code> 写到文件。每个处理器
+  可以有自己的级别与格式器（formatter）。格式串里的
+  <code>%(levelname)s</code>、<code>%(name)s</code>、<code>%(message)s</code>
+  分别填入级别名、记录器名与消息；需要时间时加
+  <code>%(asctime)s</code>，并在格式器里给出日期格式。
+</p>
+  <pre data-lang="Python"><code>logger = logging.getLogger("batch")
+handler = logging.FileHandler("out_run.log", encoding="utf-8")
+handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+logger.info("start")</code></pre>
+
+<p>
+  一条记录会依次经过记录器与各级处理器，处理器再调用格式器排版。文件处理器
+  默认追加写入，需要每次运行重新开始时传 <code>mode="w"</code>。程序结束前
+  调用 <code>logging.shutdown()</code> 刷新并关闭所有处理器，否则文件末尾
+  可能缺少最后几行。
+</p>
+
+<h3 id="s3-6-3">延迟格式化</h3>
+
+<p>
+  记录日志时把参数单独传给记录方法：
+  <code>logger.info("count=%d", count)</code>。字符串格式化要等到记录确实
+  会被输出时才执行；级别被过滤掉时，这部分工作完全省去。用 f-string 先把
+  消息拼好再传进去，即使日志被丢弃，拼接也已经发生。
+</p>
+  <pre data-lang="Python"><code>import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("batch")
+count = 3
+logger.debug("count=%d", count)
+logger.info("count=%d", count)</code></pre>
+  <pre class="out" data-label="真实输出">INFO:batch:count=3</pre>
+
+<p>
+  消息模板里的占位符数量要与参数一致，否则格式化阶段会抛出异常。需要记录
+  多个值时按顺序传参，或者用 <code>%s</code> 接收任意对象。日志消息面向
+  排错，写清动作与关键数值即可，不要把整份数据倒进一行。
+</p>
+
+<h3 id="s3-6-4">记录异常</h3>
+
+<p>
+  在 <code>except</code> 块里调用 <code>logger.exception("...")</code>，
+  会以 <code>ERROR</code> 级别记录消息，并自动附上当前异常的完整回溯。
+  它等价于 <code>logger.error("...", exc_info=True)</code>，只能用在异常
+  处理块内。回溯写入日志文件后，终端可以只留一行简短消息，细节去文件里查。
+</p>
+  <pre data-lang="Python"><code>logger = logging.getLogger("batch")
+try:
+    int("12x")
+except ValueError:
+    logger.exception("parse failed")</code></pre>
+
+<p>
+  日志里不写个人路径、账号与主机名，也不把密码或令牌写进消息。需要定位
+  文件时写相对路径或文件名；需要标识一次运行，用任务名或批次号，而不是
+  当前用户的主目录。日志文件同样要控制大小，长期运行的工具应轮转或定期
+  清理。
+</p>
+
+<div class="eg" id="e3-6">
+  <div class="eg-h">例题 · 批处理日志</div>
+  <p>题目：处理四个文件名，跳过非 Python 文件，记录一次读取失败；控制台只显示消息，文件里保留级别与异常回溯，最后打印成功数、跳过数与日志的首尾行。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.6-logging.py"><code>import logging
+import sys
+from pathlib import Path
+
+LOG_PATH = Path("out_run.log")
+
+
+def process(logger, file_logger, names):
+    ok = skipped = 0
+    for name in names:
+        if not name.endswith(".py"):
+            logger.warning("skip %s", name)
+            skipped += 1
+            continue
+        if name == "bad.py":
+            try:
+                raise ValueError("cannot read bad.py")
+            except ValueError as error:
+                logger.error("failed %s: %s", name, error)
+                file_logger.exception("failed %s", name)
+            continue
+        logger.info("ok %s", name)
+        ok += 1
+    return ok, skipped
+
+
+def main():
+    console = logging.StreamHandler(sys.stdout)
+    console.setLevel(logging.INFO)
+    console.setFormatter(logging.Formatter("%(levelname)s %(name)s %(message)s"))
+    file_handler = logging.FileHandler(LOG_PATH, mode="w", encoding="utf-8")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+
+    logger = logging.getLogger("batch")
+    logger.setLevel(logging.DEBUG)
+    logger.handlers[:] = [console, file_handler]
+    logger.propagate = False
+
+    file_logger = logging.getLogger("batch.file")
+    file_logger.setLevel(logging.DEBUG)
+    file_logger.handlers[:] = [file_handler]
+    file_logger.propagate = False
+
+    ok, skipped = process(logger, file_logger, ["a.py", "notes.txt", "bad.py", "b.py"])
+    logger.info("done ok=%d skipped=%d", ok, skipped)
+    logging.shutdown()
+
+    lines = LOG_PATH.read_text(encoding="utf-8").splitlines()
+    print("ok:", ok, "skipped:", skipped)
+    print("log first:", lines[0])
+    print("log last:", lines[-1])
+    print("traceback logged:", any(line.startswith("Traceback") for line in lines))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.6-logging.py</code></pre>
+    <pre class="out" data-label="真实输出">INFO batch ok a.py
+WARNING batch skip notes.txt
+ERROR batch failed bad.py: cannot read bad.py
+INFO batch ok b.py
+INFO batch done ok=2 skipped=1
+ok: 2 skipped: 1
+log first: INFO ok a.py
+log last: INFO done ok=2 skipped=1
+traceback logged: True</pre>
+  <p><code>a.py</code> 与 <code>b.py</code> 成功，<code>notes.txt</code>
+  因后缀不对被跳过，<code>bad.py</code> 在读取时抛出
+  <code>ValueError</code>。控制台格式是“级别 记录器名 消息”，所以每行
+  开头能看到 <code>INFO batch</code> 或 <code>WARNING batch</code>。
+  文件格式只保留“级别 消息”，第一条是 <code>INFO ok a.py</code>，
+  最后一条是完成汇总。<code>bad.py</code> 的回溯由
+  <code>file_logger.exception</code> 写进文件，因此
+  <code>traceback logged</code> 为真，而终端只显示一行错误。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-11</div>
+  <p>写一个脚本 <code>3-11.py</code>，创建名为 <code>levels</code> 的记录器，级别设为 <code>DEBUG</code>，只挂一个写文件的处理器。处理器级别设为 <code>WARNING</code>，格式为 <code>级别 消息</code>，文件为 <code>out_levels.log</code>。依次记录 <code>debug</code>、<code>info</code>、<code>warn</code>、<code>error</code> 四条消息，关闭日志后读回文件，打印行数与全部行。</p>
+    <pre class="out" data-label="预期输出">lines: 2
+['WARNING warn', 'ERROR error']</pre>
+  <!-- 答案 3-11 -->
+  <details class="ans" data-run="示例代码/答案/3-11.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        记录器级别是 <code>DEBUG</code>，但处理器级别是 <code>WARNING</code>，
+        低于它的 <code>debug</code> 与 <code>info</code> 被处理器丢弃。
+        文件里只剩 <code>WARNING warn</code> 与 <code>ERROR error</code> 两行，
+        格式串把级别名与消息用空格连接。
+      </p>
+      <pre data-lang="Python"><code>import logging
+from pathlib import Path
+
+path = Path("out_levels.log")
+logger = logging.getLogger("levels")
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(path, mode="w", encoding="utf-8")
+handler.setLevel(logging.WARNING)
+handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+logger.handlers[:] = [handler]
+logger.propagate = False
+
+logger.debug("debug")
+logger.info("info")
+logger.warning("warn")
+logger.error("error")
+logging.shutdown()
+
+lines = path.read_text(encoding="utf-8").splitlines()
+print("lines:", len(lines))
+print(lines)</code></pre>
+      <pre class="out" data-label="真实输出">lines: 2
+['WARNING warn', 'ERROR error']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-12</div>
+  <p>写一个脚本 <code>3-12.py</code>，创建名为 <code>errors</code> 的记录器，只挂一个写文件的处理器，格式为 <code>级别 消息</code>，文件为 <code>out_error.log</code>。在 <code>try</code> 中执行 <code>int("12x")</code>，捕获 <code>ValueError</code> 后调用 <code>logger.exception("parse failed")</code>。关闭日志后读回文件，打印第一行、第二行是否以 <code>Traceback</code> 开头，以及最后一行。</p>
+    <pre class="out" data-label="预期输出">first: ERROR parse failed
+traceback: True
+last: ValueError: invalid literal for int() with base 10: '12x'</pre>
+  <!-- 答案 3-12 -->
+  <details class="ans" data-run="示例代码/答案/3-12.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>logger.exception</code> 在异常处理块内记录消息，并自动附上当前
+        异常的回溯。文件第一行是 <code>ERROR parse failed</code>，第二行以
+        <code>Traceback</code> 开头，最后一行是异常类型与消息。
+        关闭日志后读回文件，三行内容都来自这次记录。
+      </p>
+      <pre data-lang="Python"><code>import logging
+from pathlib import Path
+
+path = Path("out_error.log")
+logger = logging.getLogger("errors")
+logger.setLevel(logging.ERROR)
+handler = logging.FileHandler(path, mode="w", encoding="utf-8")
+handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+logger.handlers[:] = [handler]
+logger.propagate = False
+
+try:
+    value = int("12x")
+except ValueError:
+    logger.exception("parse failed")
+
+logging.shutdown()
+lines = path.read_text(encoding="utf-8").splitlines()
+print("first:", lines[0])
+print("traceback:", lines[1].startswith("Traceback"))
+print("last:", lines[-1])</code></pre>
+      <pre class="out" data-label="真实输出">first: ERROR parse failed
+traceback: True
+last: ValueError: invalid literal for int() with base 10: '12x'</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按级别过滤日志，把消息同时送到终端与文件，并用 <code>exception</code> 把回溯留在文件里。</p>
+</section>
+
+<section class="lesson" id="l3-7">
+<h2><span class="no">3.7</span>选学：二进制数据与帧解析</h2>
+
+<p>
+  这一课是选学内容，处理不经文本编码的字节流。串口、网络与传感器协议通常
+  按固定字段排列字节，再用校验值确认传输没有出错。课程只使用合成字节，
+  不连接真实设备；读完后应能看懂帧头、长度、载荷与校验各自占哪几个字节。
+</p>
+
+<h3 id="s3-7-1">字节与整数</h3>
+
+<p>
+  <code>bytes</code> 是不可变的字节序列，<code>bytearray</code> 可变，
+  <code>memoryview</code> 在不复制的前提下查看同一段内存。字节序列的每个
+  元素是 0 到 255 的整数，索引得到整数而不是长度为 1 的字符串；
+  <code>data.hex()</code> 把它显示成十六进制字符串，便于抄写与比较。
+</p>
+
+<p>
+  多字节整数有字节序问题。<code>int.from_bytes(data, "little")</code> 按小端
+  解释，低字节在前；<code>"big"</code> 相反。
+  <code>total.to_bytes(4, "little")</code> 把整数写成固定长度。文本编码是
+  另一回事：<code>"A".encode("utf-8")</code> 得到字节，解码失败会抛出
+  <code>UnicodeDecodeError</code>；二进制协议不经过这一步，直接按字段宽度
+  切分。
+</p>
+  <pre data-lang="Python"><code>data = bytes([0x07, 0x2C])
+data.hex()
+int.from_bytes(data, "big")
+(70000).to_bytes(4, "little").hex()</code></pre>
+
+<p>
+  <code>data</code> 的十六进制是 <code>072c</code>，按大端读成 1836；
+  70000 写成四字节小端是 <code>70110100</code>。
+</p>
+
+<h3 id="s3-7-2">struct 打包</h3>
+
+<p>
+  <code>struct.pack(format, *values)</code> 按格式串把数值排成字节，
+  <code>struct.unpack(format, data)</code> 反向拆开，返回元组；
+  <code>struct.calcsize(format)</code> 给出格式占用的字节数。常用格式字符
+  有 <code>B</code>（无符号 1 字节）、<code>H</code>（无符号 2 字节）、
+  <code>I</code>（无符号 4 字节）与 <code>f</code>（4 字节浮点数）。
+</p>
+
+<p>
+  格式串开头的 <code>&lt;</code> 指定小端并取消对齐填充，<code>&gt;</code>
+  指定大端。不加前缀时使用本机字节序，还可能插入填充字节，同样的字段在
+  不同机器上长度不同。协议文档写明字节序时，格式串也要写明；
+  <code>unpack</code> 要求输入长度与 <code>calcsize</code> 完全一致，
+  多一个字节或少一个字节都会抛出 <code>struct.error</code>。
+  <code>&lt;BHIf</code> 四个字段依次占 1、2、4、4 字节，共 11 字节。
+</p>
+  <pre data-lang="Python"><code>payload = struct.pack("&lt;BHIf", 1, 300, 70000, 1.5)
+struct.unpack("&lt;BHIf", payload)
+struct.calcsize("&lt;BHIf")</code></pre>
+
+<h3 id="s3-7-3">校验与帧结构</h3>
+
+<p>
+  CRC（cyclic redundancy check，循环冗余校验）把一段字节压成一个短校验值。
+  课程使用 CRC8，多项式 <code>0x07</code>，逐字节异或后处理 8 位；
+  同样的字节总得到同样的结果，任意一位改变通常会让结果不同。CRC 只负责
+  发现传输错误，不负责纠错，也不提供加密。
+</p>
+  <pre data-lang="Python"><code>def crc8(data):
+    value = 0
+    for byte in data:
+        value ^= byte
+        for _ in range(8):
+            if value &amp; 0x80:
+                value = ((value &lt;&lt; 1) ^ 0x07) &amp; 0xFF
+            else:
+                value = (value &lt;&lt; 1) &amp; 0xFF
+    return value
+
+
+print(crc8(bytes([2, 1])))</code></pre>
+  <pre class="out" data-label="真实输出">45</pre>
+
+<p>
+  合成帧的结构是：帧头 <code>0xA5</code>、载荷长度、命令字、载荷、CRC8。
+  长度字段只数载荷字节，整帧长度等于 <code>4 + 长度</code>。计算 CRC 的
+  范围是长度、命令与载荷，不包括帧头，也不包括校验字节本身。解析时先核对
+  长度，再核对 CRC，两项都通过才返回命令与载荷。
+</p>
+
+<h3 id="s3-7-4">缓冲区与半包</h3>
+
+<p>
+  接收端一次读到的字节数不固定：一帧可能分几次到达，也可能几帧连在一起。
+  解析器维护一个 <code>bytearray</code>，每次把新数据追加到末尾，然后循环
+  处理：找到帧头，丢掉帧头之前的噪声；不足两个字节时等待长度字段；不足整帧
+  长度时等待剩余字节；凑齐一帧就取出、解析并从缓冲区删除。
+</p>
+
+<p>
+  循环要一直跑到缓冲区里没有完整帧为止，剩余半帧留在缓冲区等下一次输入。
+  校验失败时记录错误并继续找下一帧，不能因为一帧坏掉就清空整个缓冲区。
+  缓冲区长期不增长需要设置上限，防止对端持续发送噪声导致内存占用上升。
+</p>
+
+<div class="eg" id="e3-7">
+  <div class="eg-h">例题 · 合成帧解析</div>
+  <p>题目：实现 CRC8、构帧与解帧，用缓冲区解析器处理两帧相连、半帧分两次到达与带噪声的坏帧，观察每步的返回值与剩余缓冲区。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="3.7-frames.py"><code>HEADER = 0xA5
+
+
+def crc8(data):
+    value = 0
+    for byte in data:
+        value ^= byte
+        for _ in range(8):
+            if value &amp; 0x80:
+                value = ((value &lt;&lt; 1) ^ 0x07) &amp; 0xFF
+            else:
+                value = (value &lt;&lt; 1) &amp; 0xFF
+    return value
+
+
+def build_frame(command, payload):
+    body = bytes([len(payload), command]) + payload
+    return bytes([HEADER]) + body + bytes([crc8(body)])
+
+
+def parse_frame(frame):
+    length = frame[1]
+    command = frame[2]
+    payload = frame[3:3 + length]
+    checksum = frame[3 + length]
+    if len(frame) != 4 + length:
+        raise ValueError("length mismatch")
+    if crc8(frame[1:3 + length]) != checksum:
+        raise ValueError("crc mismatch")
+    return command, payload
+
+
+class FrameParser:
+    def __init__(self):
+        self.buffer = bytearray()
+
+    def feed(self, data):
+        self.buffer.extend(data)
+        frames = []
+        while True:
+            start = self.buffer.find(HEADER)
+            if start &lt; 0:
+                self.buffer.clear()
+                break
+            if start:
+                del self.buffer[:start]
+            if len(self.buffer) &lt; 2:
+                break
+            total = 4 + self.buffer[1]
+            if len(self.buffer) &lt; total:
+                break
+            raw = bytes(self.buffer[:total])
+            del self.buffer[:total]
+            try:
+                frames.append(parse_frame(raw))
+            except ValueError as error:
+                frames.append(("error", str(error)))
+        return frames
+
+
+frame_a = build_frame(0x01, b"\x0a\x0b")
+frame_b = build_frame(0x02, b"\x64")
+print("crc:", hex(crc8(b"\x01\x02")))
+print("frame:", frame_a.hex())
+print("fields:", parse_frame(frame_a))
+
+parser = FrameParser()
+print("combined:", parser.feed(frame_a + frame_b))
+print("rest:", bytes(parser.buffer).hex())
+print("split:", parser.feed(frame_a[:3]))
+print("split:", parser.feed(frame_a[3:]))
+bad = bytearray(frame_a)
+bad[-1] ^= 0xFF
+print("noise:", parser.feed(b"\x00" + bytes(bad)))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/3.7-frames.py</code></pre>
+    <pre class="out" data-label="真实输出">crc: 0x1b
+frame: a502010a0bf4
+fields: (1, b'\n\x0b')
+combined: [(1, b'\n\x0b'), (2, b'd')]
+rest: 
+split: []
+split: [(1, b'\n\x0b')]
+noise: [('error', 'crc mismatch')]</pre>
+  <p>第一帧的命令是 1，载荷两个字节 <code>0a 0b</code>，组帧后是
+  <code>a5 02 01 0a 0b f4</code>；<code>crc8(b"\x01\x02")</code> 单独算出
+  <code>0x1b</code>，用于核对算法。把两帧一起送入，解析器一次返回两个
+  元组，缓冲区清空。第二次把第一帧拆成前三字节与后三字节：第一次不足整帧，
+  返回空列表；第二次凑齐后返回同一组命令与载荷。最后在前面加一个噪声字节，
+  并把校验字节取反，解析器丢掉噪声后认出坏帧，返回
+  <code>error</code> 与 <code>crc mismatch</code>。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-13</div>
+  <p>写一个脚本 <code>3-13.py</code>，用 <code>struct.pack("&lt;BHIf", 7, 300, 70000, 1.5)</code> 打包一个命令字、长度、总数与浮点系数。打印字节长度与 <code>calcsize</code> 的结果、十六进制字符串，再用 <code>unpack</code> 拆回四个字段并打印。最后把总数用 <code>to_bytes(4, "little")</code> 转成字节，打印十六进制，再用 <code>from_bytes</code> 转回整数。</p>
+    <pre class="out" data-label="预期输出">size: 11 11
+hex: 072c01701101000000c03f
+fields: 7 300 70000 1.5
+bytes: 70110100
+back: 70000</pre>
+  <!-- 答案 3-13 -->
+  <details class="ans" data-run="示例代码/答案/3-13.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        格式串 <code>&lt;BHIf</code> 依次占 1、2、4、4 字节，共 11 字节。
+        小端打包后，命令 7 在首字节，长度 300 写成 <code>2c01</code>，
+        总数 70000 写成 <code>70110100</code>，浮点 1.5 写成
+        <code>0000c03f</code>。拆包得到原值；把总数单独转成 4 字节再转回整数，
+        仍是 70000。
+      </p>
+      <pre data-lang="Python"><code>import struct
+
+data = struct.pack("&lt;BHIf", 7, 300, 70000, 1.5)
+print("size:", len(data), struct.calcsize("&lt;BHIf"))
+print("hex:", data.hex())
+command, length, total, scale = struct.unpack("&lt;BHIf", data)
+print("fields:", command, length, total, scale)
+raw = total.to_bytes(4, "little")
+print("bytes:", raw.hex())
+print("back:", int.from_bytes(raw, "little"))</code></pre>
+      <pre class="out" data-label="真实输出">size: 11 11
+hex: 072c01701101000000c03f
+fields: 7 300 70000 1.5
+bytes: 70110100
+back: 70000</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-14</div>
+  <p>写一个脚本 <code>3-14.py</code>，实现 CRC8 与构帧函数，构造命令 2、载荷 <code>b"\x01\x02\x03"</code> 的一帧。把帧拆成前三段：前 2 字节、接下来 3 字节、剩余字节，依次追加到缓冲区。每次追加后，若缓冲区不足整帧就打印等待的字节数，否则取出整帧、打印解析出的命令与载荷，并核对 CRC 是否一致。</p>
+    <pre class="out" data-label="预期输出">waiting: 2
+waiting: 5
+(2, b'\x01\x02\x03')
+crc ok: True</pre>
+  <!-- 答案 3-14 -->
+  <details class="ans" data-run="示例代码/答案/3-14.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        整帧共 7 字节，前两次追加后分别只有 2 与 5 字节，不足
+        <code>4 + 长度</code>，因此打印等待的字节数。第三次补齐剩余字节，
+        缓冲区凑满一帧，解析出命令 2 与三个载荷字节，并用 CRC8 核对通过。
+        缓冲区在取出整帧后被清空，不会影响下一帧。
+      </p>
+      <pre data-lang="Python"><code>HEADER = 0xA5
+
+
+def crc8(data):
+    value = 0
+    for byte in data:
+        value ^= byte
+        for _ in range(8):
+            if value &amp; 0x80:
+                value = ((value &lt;&lt; 1) ^ 0x07) &amp; 0xFF
+            else:
+                value = (value &lt;&lt; 1) &amp; 0xFF
+    return value
+
+
+def build_frame(command, payload):
+    body = bytes([len(payload), command]) + payload
+    return bytes([HEADER]) + body + bytes([crc8(body)])
+
+
+def parse_frame(frame):
+    length = frame[1]
+    command = frame[2]
+    payload = frame[3:3 + length]
+    return command, payload
+
+
+buffer = bytearray()
+frame = build_frame(0x02, b"\x01\x02\x03")
+
+for part in (frame[:2], frame[2:5], frame[5:]):
+    buffer.extend(part)
+    total = 4 + buffer[1]
+    if len(buffer) &gt;= total:
+        raw = bytes(buffer[:total])
+        del buffer[:total]
+        print(parse_frame(raw))
+        print("crc ok:", crc8(raw[1:-1]) == raw[-1])
+    else:
+        print("waiting:", len(buffer))</code></pre>
+      <pre class="out" data-label="真实输出">waiting: 2
+waiting: 5
+(2, b'\x01\x02\x03')
+crc ok: True</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>读写字节序列，按小端格式打包与拆包，并用缓冲区从半帧与粘包中恢复完整的校验帧。</p>
+</section>
+
+<nav class="pager">
+  <a href="02-函数类与模块.html">← 第 2 部分 · 函数、类与模块</a>
+  <span class="spacer"></span>
+  <a href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 6 部分 · 数据与图表 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a class="active" href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" aria-current="page" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 6 部分 · 数据与图表</div>
+  <a class="toc-l" href="#l6-1"><span class="n">6.1</span>画布、坐标轴与折线图</a>
+  <a class="toc-sub" href="#s6-1-1">画布与坐标轴</a>
+  <a class="toc-sub" href="#s6-1-2">折线与数据</a>
+  <a class="toc-sub" href="#s6-1-3">标题、标签与图例</a>
+  <a class="toc-sub" href="#s6-1-4">保存与关闭</a>
+  <a class="toc-sub" href="#e6-1">例题：画布、折线与图例</a>
+  <a class="toc-l" href="#l6-2"><span class="n">6.2</span>多条曲线、样式与子图</a>
+  <a class="toc-sub" href="#s6-2-1">多条曲线与样式</a>
+  <a class="toc-sub" href="#s6-2-2">图例、网格与参考线</a>
+  <a class="toc-sub" href="#s6-2-3">子图布局</a>
+  <a class="toc-sub" href="#s6-2-4">读回图表对象</a>
+  <a class="toc-sub" href="#e6-2">例题：两条曲线与两个子图</a>
+  <a class="toc-l" href="#l6-3"><span class="n">6.3</span>散点图与直方图</a>
+  <a class="toc-sub" href="#s6-3-1">散点图</a>
+  <a class="toc-sub" href="#s6-3-2">直方图</a>
+  <a class="toc-sub" href="#s6-3-3">分布与分箱</a>
+  <a class="toc-sub" href="#s6-3-4">可复现的随机数据</a>
+  <a class="toc-sub" href="#e6-3">例题：散点图与直方图</a>
+  <a class="toc-l" href="#l6-4"><span class="n">6.4</span>尺寸、分辨率与保存</a>
+  <a class="toc-sub" href="#s6-4-1">英寸与像素</a>
+  <a class="toc-sub" href="#s6-4-2">紧凑边界</a>
+  <a class="toc-sub" href="#s6-4-3">背景与格式</a>
+  <a class="toc-sub" href="#s6-4-4">多子图保存</a>
+  <a class="toc-sub" href="#e6-4">例题：保存四格图</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 6 部分</div>
+  <h1>数据与图表</h1>
+  <p class="part-lead">
+    这一部分把第 4 部分的数组数据画成图表：先建立画布与坐标轴，画折线并
+    设置标题、范围与图例；再画多条曲线与并排子图；接着用散点图与直方图
+    观察关系与分布；最后控制尺寸、分辨率与保存边界，得到可复用的图片文件。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-2 l1-3 l4-1 l4-2 l4-3 l4-4 l4-6">
+  <b>前置</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="01-语法与容器.html#l1-2">1.2</a>（字符串与格式化）、
+    <a href="01-语法与容器.html#l1-3">1.3</a>（列表、元组与切片）、
+    <a href="04-NumPy.html#l4-1">4.1</a>（ndarray 的创建与内存）、
+    <a href="04-NumPy.html#l4-2">4.2</a>（索引、切片与视图）、
+    <a href="04-NumPy.html#l4-3">4.3</a>（形状、广播与向量化）、
+    <a href="04-NumPy.html#l4-4">4.4</a>（统计、排序与直方图）、
+    <a href="04-NumPy.html#l4-6">4.6</a>（随机数与可复现）。
+  </p>
+</div>
+
+<section class="lesson" id="l6-1">
+<h2><span class="no">6.1</span>画布、坐标轴与折线图</h2>
+
+<p>
+  Matplotlib 是 Python 的绘图库，常用的入口是 <code>matplotlib.pyplot</code>。
+  一次绘图可以分成两层：画布（Figure）表示整张图，坐标轴（Axes）表示带
+  坐标范围、刻度与线条的绘图区。一个画布可以放一个或多个坐标轴；本部分的
+  折线图、散点图与直方图都画在坐标轴上。
+</p>
+
+<p>
+  课程中的脚本在终端运行，因此先选择无窗口后端，再导入 <code>pyplot</code>。
+  这样绘图结果直接写入文件，不需要桌面窗口，也不会等待人工关闭窗口。
+</p>
+
+<h3 id="s6-1-1">画布与坐标轴</h3>
+
+<p>
+  <code>fig, ax = plt.subplots(figsize=(5, 3), dpi=100)</code> 同时建立一张
+  画布和一个坐标轴。<code>figsize</code> 的单位是英寸，<code>dpi</code> 是
+  每英寸点数（dots per inch，DPI），两者相乘得到默认像素尺寸：5×100 与
+  3×100，即宽 500 像素、高 300 像素。省略 <code>figsize</code> 时使用默认
+  尺寸；省略 <code>dpi</code> 时使用默认分辨率。
+</p>
+
+<p>
+  <code>matplotlib.use("Agg")</code> 必须在导入 <code>pyplot</code> 之前调用。
+  Agg 是无窗口的渲染后端（backend），适合服务器、批处理与自动检查。若先
+  导入 <code>pyplot</code>，后端已经选定，再调用 <code>use</code> 可能没有
+  效果，甚至报错。
+</p>
+
+<h3 id="s6-1-2">折线与数据</h3>
+
+<p>
+  <code>ax.plot(x, y)</code> 按点的顺序画折线，<code>x</code> 与
+  <code>y</code> 的长度必须相同。两个参数都可以是列表或 NumPy 数组；
+  数组的逐元素运算可以直接生成纵坐标，例如 <code>y = x ** 2</code>。
+  折线图（line plot）适合表示随顺序变化的量，横轴通常是时间、序号或
+  另一个连续变量。
+</p>
+
+<p>
+  <code>plot</code> 返回一个列表，里面是 <code>Line2D</code> 对象。
+  只画一条线时写 <code>line, = ax.plot(...)</code>，把唯一元素解包出来，
+  后面可以用 <code>line.get_xdata()</code> 与 <code>line.get_ydata()</code>
+  读回数据。颜色、标记与线型通过 <code>color</code>、<code>marker</code>、
+  <code>linestyle</code>、<code>linewidth</code> 设置；颜色
+  <code>"tab:blue"</code> 来自默认色板 <code>tab10</code>，是其中的第一种
+  颜色。
+</p>
+
+<h3 id="s6-1-3">标题、标签与图例</h3>
+
+<p>
+  <code>ax.set_title</code> 设置坐标轴标题，<code>set_xlabel</code> 与
+  <code>set_ylabel</code> 设置两个坐标轴的标签。<code>set_xlim</code> 与
+  <code>set_ylim</code> 固定显示范围；不设置时，Matplotlib 按数据自动留出
+  边距。固定范围可以保证多张图使用同一尺度，便于比较。
+</p>
+
+<p>
+  在 <code>plot</code> 时给 <code>label</code> 赋值，再调用
+  <code>ax.legend()</code>，图例（legend）就会列出每条线的说明。没有
+  <code>label</code> 的线不会出现在图例里。图例位置默认自动选择，数据
+  密集时可以用 <code>loc</code> 指定角落。图中的文字使用英文，是为了避免
+  默认字体缺少中文字形时显示成方块。
+</p>
+
+<h3 id="s6-1-4">保存与关闭</h3>
+
+<p>
+  <code>fig.savefig(path)</code> 把画布写入文件，格式由扩展名决定：
+  <code>.png</code> 无损并支持透明通道，<code>.jpg</code> 有损。
+  <code>savefig</code> 默认使用画布建立时的 DPI，也可以在调用时用
+  <code>dpi</code> 覆盖。保存完成后调用 <code>plt.close(fig)</code> 释放
+  画布；循环里创建很多图而不关闭，会持续占用内存。
+</p>
+
+<p>
+  终端环境不使用 <code>plt.show()</code>。如果脚本同时需要显示与保存，
+  可以在保存之后再显示；自动运行的脚本只保存文件，避免等待窗口关闭。
+</p>
+
+<div class="eg" id="e6-1">
+  <div class="eg-h">例题 · 画布、折线与图例</div>
+  <p>题目：用 0 到 5 的整数及其平方画一条带圆点的折线，设置标题、坐标标签、显示范围与图例；打印画布尺寸、DPI、坐标轴数量、点数与图例文字，并把图保存成 PNG 文件。</p>
+  <p>输出图像：</p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/图表示例/out_plot_basic.png" alt="平方数折线图，六个圆点落在 y 等于 x 平方的曲线上，左上角有图例" width="500" height="300">
+    <figcaption>
+      横轴为 0 到 5 的整数，纵轴为对应的平方值；六个圆点落在
+      <code>y = x^2</code> 上，右上角的点到达 (5, 25)，左上角图例只有
+      一条记录。
+    </figcaption>
+  </figure>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="6.1-plot.py"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x = np.arange(6)
+y = x ** 2
+fig, ax = plt.subplots(figsize=(5, 3), dpi=100)
+line, = ax.plot(x, y, color="tab:blue", marker="o", linewidth=2,
+                label="y = x^2")
+ax.set_title("Square numbers")
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_xlim(0, 5)
+ax.set_ylim(0, 25)
+ax.legend()
+fig.savefig("out_plot_basic.png")
+print("figure size:", fig.get_size_inches().tolist())
+print("dpi:", int(fig.get_dpi()))
+print("axes:", len(fig.axes))
+print("line points:", len(line.get_xdata()))
+print("legend:", [t.get_text() for t in ax.get_legend().get_texts()])
+plt.close(fig)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/6.1-plot.py</code></pre>
+    <pre class="out" data-label="真实输出">figure size: [5.0, 3.0]
+dpi: 100
+axes: 1
+line points: 6
+legend: ['y = x^2']</pre>
+  <p>画布尺寸是 5×3 英寸，DPI 为 100，因此默认像素尺寸为 500×300。
+  <code>len(fig.axes)</code> 为 1，说明这张画布上只有一个坐标轴；
+  <code>line.get_xdata()</code> 有 6 个点，对应 0 到 5 的整数。图例从
+  <code>plot</code> 的 <code>label</code> 取得文字，内容为
+  <code>y = x^2</code>。</p>
+  <p>横轴范围固定为 0 到 5，纵轴范围固定为 0 到 25，最后一个点
+  (5, 25) 正好落在右上角。保存后关闭画布，脚本结束时不留下打开的图形
+  对象。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-1</div>
+  <p>写一个脚本 <code>6-1.py</code>，用 <code>x = [1, 2, 3, 4]</code> 与 <code>y = [2, 4, 8, 16]</code> 画一条红色虚线，线标签为 <code>growth</code>；画布大小为 4×2 英寸，DPI 为 80；把横轴范围设为 1 到 4，纵轴范围设为 0 到 16；调用图例并把图保存成 <code>out_ex_6_1.png</code>。打印画布尺寸、DPI、坐标轴数量、颜色与线型、横轴范围与图例文字。</p>
+    <pre class="out" data-label="预期输出">size: [4.0, 2.0]
+dpi: 80
+axes: 1
+color/style: red --
+xlim: (1.0, 4.0)
+legend: ['growth']</pre>
+  <!-- 答案 6-1 -->
+  <details class="ans" data-run="示例代码/答案/6-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        画布为 4×2 英寸、DPI 80，画一条红色虚线，标签为
+        <code>growth</code>。横轴范围固定为 1 到 4，纵轴范围固定为 0 到
+        16；设置范围后读回的下界与上界是 1.0 与 4.0。图例只有一条记录。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
+fig, ax = plt.subplots(figsize=(4, 2), dpi=80)
+line, = ax.plot([1, 2, 3, 4], [2, 4, 8, 16],
+                color="red", linestyle="--", label="growth")
+ax.set_xlim(1.0, 4.0)
+ax.set_ylim(0.0, 16.0)
+ax.legend()
+fig.savefig("out_ex_6_1.png")
+print("size:", fig.get_size_inches().tolist())
+print("dpi:", int(fig.get_dpi()))
+print("axes:", len(fig.axes))
+print("color/style:", line.get_color(), line.get_linestyle())
+print("xlim:", ax.get_xlim())
+print("legend:", [t.get_text() for t in ax.get_legend().get_texts()])
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">size: [4.0, 2.0]
+dpi: 80
+axes: 1
+color/style: red --
+xlim: (1.0, 4.0)
+legend: ['growth']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-2</div>
+  <p>写一个脚本 <code>6-2.py</code>，用 <code>x = [1, 2, 3, 4]</code> 在同一个坐标轴里画平方与立方两条曲线，标签分别为 <code>square</code> 与 <code>cube</code>；画布大小为 4×3 英寸，DPI 为 100；调用图例并把图保存成 <code>out_ex_6_2.png</code>。打印坐标轴数量、线条数量、图例文字，以及立方曲线读回的纵坐标。</p>
+    <pre class="out" data-label="预期输出">axes: 1
+lines: 2
+labels: ['square', 'cube']
+cube y: [1, 8, 27, 64]</pre>
+  <!-- 答案 6-2 -->
+  <details class="ans" data-run="示例代码/答案/6-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        平方与立方两条曲线画在同一个坐标轴上，图例按绘制顺序列出
+        <code>square</code> 与 <code>cube</code>。立方曲线读回的纵坐标是
+        <code>[1, 8, 27, 64]</code>，与输入数据一致。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x = np.array([1, 2, 3, 4])
+fig, ax = plt.subplots(figsize=(4, 3), dpi=100)
+ax.plot(x, x ** 2, label="square")
+ax.plot(x, x ** 3, label="cube")
+ax.legend()
+fig.savefig("out_ex_6_2.png")
+print("axes:", len(fig.axes))
+print("lines:", len(ax.lines))
+print("labels:", [t.get_text() for t in ax.get_legend().get_texts()])
+print("cube y:", ax.lines[1].get_ydata().tolist())
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">axes: 1
+lines: 2
+labels: ['square', 'cube']
+cube y: [1, 8, 27, 64]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>建立画布与坐标轴，画一条折线，设置标题、坐标标签、显示范围与图例，并把图保存成图片文件。</p>
+</section>
+
+<section class="lesson" id="l6-2">
+<h2><span class="no">6.2</span>多条曲线、样式与子图</h2>
+
+<p>
+  实际比较往往不止一条曲线。可以在同一个坐标轴上重复调用 <code>plot</code>，
+  用颜色与线型区分；也可以建立并排子图（subplot），让每个坐标轴独立设置
+  标题与范围。这一课先看样式与图例，再看子图布局，最后从图表对象读回
+  线条、标题与网格状态。
+</p>
+
+<h3 id="s6-2-1">多条曲线与样式</h3>
+
+<p>
+  同一个 <code>ax</code> 上每次 <code>plot</code> 都会新增一条线，线条按
+  调用顺序叠放。颜色可以用名称、十六进制字符串或色板名；线型用
+  <code>"-"</code> 实线、<code>"--"</code> 虚线、<code>":"</code> 点线；
+  标记用 <code>"o"</code> 圆点、<code>"s"</code> 方块等。线宽用
+  <code>linewidth</code> 设置，单位是点。
+</p>
+
+<p>
+  多条线使用同一横轴时，把 <code>x</code> 与每组 <code>y</code> 分别传给
+  <code>plot</code>。如果各条线的数据长度不同，分别调用即可，Matplotlib
+  不要求不同曲线共享同一个数组。为每条线设置 <code>label</code>，图例才能
+  区分它们；颜色与线型也应与标签一起考虑，避免只靠颜色传达信息。
+</p>
+
+<h3 id="s6-2-2">图例、网格与参考线</h3>
+
+<p>
+  <code>ax.grid(True)</code> 打开主网格，刻度线与网格线对齐，便于读数值。
+  <code>ax.axhline(y)</code> 画一条水平参考线，<code>ax.axvline(x)</code>
+  画一条垂直参考线；它们都返回 <code>Line2D</code>，并计入
+  <code>ax.lines</code>。<code>ax.text(x, y, text)</code> 在数据坐标的
+  指定位置写文字，常用于标注阈值或特殊点。
+</p>
+
+<p>
+  参考线使用数据坐标：水平线的位置是纵轴数值，垂直线的位置是横轴数值。
+  线条颜色与线宽要与数据线区分，通常选灰色、细线或点线。图例只收录带
+  <code>label</code> 的线；参考线如果没有标签，不会进入图例。
+</p>
+
+<h3 id="s6-2-3">子图布局</h3>
+
+<p>
+  <code>fig, (left, right) = plt.subplots(1, 2, figsize=(7, 3))</code> 建立
+  一行两列的坐标轴，按从左到右的顺序解包。行列数可以换成
+  <code>2, 2</code> 等；行列数都大于 1 时，返回的 <code>axes</code> 是
+  二维数组，按 <code>axes[行, 列]</code> 访问。每个子图有自己的标题、
+  坐标范围与图例。
+</p>
+
+<p>
+  <code>fig.tight_layout()</code> 自动调整子图间距，减少标题与标签重叠。
+  它应在设置标题、标签之后、保存之前调用。子图很多时，间距仍可能不足，
+  可以配合 <code>fig.subplots_adjust</code> 手动留边；课程例子先使用
+  <code>tight_layout</code>，让默认布局保持整齐。
+</p>
+
+<h3 id="s6-2-4">读回图表对象</h3>
+
+<p>
+  画完图后可以从对象读回状态，用于检查程序是否按预期建立结构：
+  <code>len(fig.axes)</code> 是坐标轴数量，<code>len(ax.lines)</code> 是
+  该坐标轴的线条数量，<code>ax.get_title()</code> 返回标题，
+  <code>ax.get_legend().get_texts()</code> 返回图例文字列表。
+  <code>ax.get_xgridlines()[0].get_visible()</code> 返回横轴主网格是否可见。
+</p>
+
+<p>
+  这些读取操作不改变图形，适合在自动检查与调试中使用。注意参考线也会
+  增加 <code>ax.lines</code> 的长度：一个数据序列加一条水平线与一条垂直
+  参考线，合计三条线。读回数量时要按实际画过的对象计算，不能只统计
+  数据序列。
+</p>
+
+<div class="eg" id="e6-2">
+  <div class="eg-h">例题 · 两条曲线与两个子图</div>
+  <p>题目：在左子图画出正弦与余弦两条曲线，设置图例与网格；在右子图画出阻尼振荡，并加上一条水平参考线、一条垂直参考线与一段文字；打印坐标轴数量、两个子图的线条数量、左图图例与网格状态，并保存图像。</p>
+  <p>输出图像：</p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/图表示例/out_plot_curves.png" alt="左图为正弦与余弦曲线并带网格与图例，右图为带水平和垂直参考线的阻尼振荡" width="700" height="300">
+    <figcaption>
+      左图两条曲线在 0 到 2π 之间各完成一个周期，网格与图例都已打开；
+      右图的水平参考线在 <code>y = 0</code>，垂直参考线在
+      <code>x = 1.5</code>，旁边的文字标出同一个位置。
+    </figcaption>
+  </figure>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="6.2-curves.py"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x = np.linspace(0.0, 2.0 * np.pi, 101)
+fig, (left, right) = plt.subplots(1, 2, figsize=(7, 3), dpi=100)
+left.plot(x, np.sin(x), color="tab:blue", label="sin")
+left.plot(x, np.cos(x), color="tab:orange", linestyle="--", label="cos")
+left.set_title("sin and cos")
+left.set_xlabel("x")
+left.grid(True)
+left.legend()
+damped = np.exp(-x / 4.0) * np.sin(2.0 * x)
+right.plot(x, damped, color="tab:red")
+right.axhline(0.0, color="gray", linewidth=0.8)
+right.axvline(1.5, color="gray", linestyle=":", linewidth=0.8)
+right.text(1.6, 0.75, "x = 1.5")
+right.set_title("damped wave")
+right.set_xlabel("x")
+fig.tight_layout()
+fig.savefig("out_plot_curves.png")
+print("axes:", len(fig.axes))
+print("left lines:", len(left.lines))
+print("right lines:", len(right.lines))
+print("legend:", [t.get_text() for t in left.get_legend().get_texts()])
+print("grid:", bool(left.get_xgridlines()[0].get_visible()))
+plt.close(fig)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/6.2-curves.py</code></pre>
+    <pre class="out" data-label="真实输出">axes: 2
+left lines: 2
+right lines: 3
+legend: ['sin', 'cos']
+grid: True</pre>
+  <p>画布上有两个坐标轴，左图有两条数据曲线，右图有一条阻尼曲线、一条
+  水平参考线与一条垂直参考线，所以 <code>right.lines</code> 是 3。左图
+  图例按绘制顺序列出 <code>sin</code> 与 <code>cos</code>；网格已打开，
+  <code>get_visible()</code> 返回 <code>True</code>。</p>
+  <p>右图的水平参考线在 <code>y = 0</code>，垂直参考线在
+  <code>x = 1.5</code>，文字标在
+  <code>(1.6, 0.75)</code> 附近。右图没有调用 <code>legend()</code>，
+  两条参考线也没有标签，因此不会出现在任何图例中。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-3</div>
+  <p>写一个脚本 <code>6-3.py</code>，在 0 到 π 之间取 50 个点，用一行两列的子图分别画正弦与余弦；左图标题为 <code>Sine</code>，右图标题为 <code>Cosine</code>，两个子图都调用图例；画布大小为 6×2.5 英寸，DPI 为 100；保存成 <code>out_ex_6_3.png</code>。打印坐标轴数量、两个标题、两个子图的线条数量与右图图例文字。</p>
+    <pre class="out" data-label="预期输出">axes: 2
+titles: Sine Cosine
+lines: 1 1
+legend: ['cos']</pre>
+  <!-- 答案 6-3 -->
+  <details class="ans" data-run="示例代码/答案/6-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        一行两列的子图各有自己的标题与图例。左图标题为
+        <code>Sine</code>，右图为 <code>Cosine</code>，两个子图各有一条
+        曲线；右图图例文字是 <code>cos</code>。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+x = np.linspace(0.0, np.pi, 50)
+fig, (left, right) = plt.subplots(1, 2, figsize=(6, 2.5), dpi=100)
+left.plot(x, np.sin(x), label="sin")
+left.set_title("Sine")
+left.legend()
+right.plot(x, np.cos(x), label="cos")
+right.set_title("Cosine")
+right.legend()
+fig.tight_layout()
+fig.savefig("out_ex_6_3.png")
+print("axes:", len(fig.axes))
+print("titles:", left.get_title(), right.get_title())
+print("lines:", len(left.lines), len(right.lines))
+print("legend:", [t.get_text() for t in right.get_legend().get_texts()])
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">axes: 2
+titles: Sine Cosine
+lines: 1 1
+legend: ['cos']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-4</div>
+  <p>写一个脚本 <code>6-4.py</code>，用 <code>x = [0, 1, 2, 3]</code> 在同一个坐标轴里画两条线：第一条纵坐标为 <code>[0, 1, 4, 9]</code>，实线、圆点标记、标签 <code>square</code>；第二条纵坐标为 <code>[0, 1, 8, 27]</code>，点线、方块标记、标签 <code>cube</code>。调用图例并保存成 <code>out_ex_6_4.png</code>。打印线条数量、两条线的线型、标记与图例文字。</p>
+    <pre class="out" data-label="预期输出">lines: 2
+styles: - :
+markers: o s
+legend: ['square', 'cube']</pre>
+  <!-- 答案 6-4 -->
+  <details class="ans" data-run="示例代码/答案/6-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        第一条线使用实线与圆点标记，第二条线使用点线与方块标记；图例按
+        标签列出 <code>square</code> 与 <code>cube</code>。读回的线型分别
+        是 <code>-</code> 与 <code>:</code>，标记分别是 <code>o</code> 与
+        <code>s</code>。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
+x = [0, 1, 2, 3]
+fig, ax = plt.subplots(figsize=(4, 2.5), dpi=100)
+square, = ax.plot(x, [0, 1, 4, 9], linestyle="-", marker="o",
+                  label="square")
+cube, = ax.plot(x, [0, 1, 8, 27], linestyle=":", marker="s",
+                label="cube")
+ax.legend()
+fig.savefig("out_ex_6_4.png")
+print("lines:", len(ax.lines))
+print("styles:", square.get_linestyle(), cube.get_linestyle())
+print("markers:", square.get_marker(), cube.get_marker())
+print("legend:", [t.get_text() for t in ax.get_legend().get_texts()])
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">lines: 2
+styles: - :
+markers: o s
+legend: ['square', 'cube']</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在同一张图上画多条曲线，用颜色、线型与标记区分数据，添加网格、参考线与图例，并把内容分到多个子图中。</p>
+</section>
+
+<section class="lesson" id="l6-3">
+<h2><span class="no">6.3</span>散点图与直方图</h2>
+
+<p>
+  折线图强调顺序，散点图（scatter plot）强调两个变量的对应关系，
+  直方图（histogram）强调一个变量的分布。这一课用固定随机种子生成
+  一组学习时长与分数，先画散点，再画直方图，最后检查分箱范围与计数。
+</p>
+
+<h3 id="s6-3-1">散点图</h3>
+
+<p>
+  <code>ax.scatter(x, y)</code> 为每组数据画一个点，<code>x</code> 与
+  <code>y</code> 长度相同。点的大小由 <code>s</code> 设置，颜色由
+  <code>c</code> 设置；<code>c</code> 可以是一组数值，配合
+  <code>cmap</code> 把数值映射成颜色。<code>alpha</code> 设置透明度，
+  点密集时能看出重叠程度。
+</p>
+
+<p>
+  <code>fig.colorbar(points, ax=left)</code> 为散点添加颜色条，说明数值与
+  颜色的对应关系。颜色条会占用画布上的一块区域，因此
+  <code>len(fig.axes)</code> 可能大于数据子图的数量。散点对象存放在
+  <code>ax.collections</code> 里，通常一组散点占一个集合。
+</p>
+
+<h3 id="s6-3-2">直方图</h3>
+
+<p>
+  <code>counts, edges, patches = ax.hist(values, bins=8, range=(40, 100))</code>
+  把数据分成 8 个等宽区间。返回值里 <code>counts</code> 是每个区间的计数，
+  <code>edges</code> 是区间边界，长度比计数多 1；<code>patches</code> 是
+  画出的矩形。区间左闭右开，最后一个区间包含右端点。
+</p>
+
+<p>
+  <code>range</code> 之外的数据不进入任何区间，也不计入计数总和。因此
+  <code>counts.sum()</code> 可能小于输入数据的总数，差值是落在范围外的
+  样本数。画图前先检查数据的实际最小与最大值，避免用错范围而漏掉样本。
+</p>
+
+<h3 id="s6-3-3">分布与分箱</h3>
+
+<p>
+  散点图看趋势与离群点，直方图看集中位置与分散程度。分箱数量影响形状：
+  区间太少会掩盖细节，太多会让每个区间只剩少量样本、图形起伏明显。
+  常见做法是先按数据范围与样本量选一个适中数量，再观察形状是否稳定。
+</p>
+
+<p>
+  <code>ax.hist</code> 默认画计数；设置 <code>density=True</code> 后纵轴变成
+  概率密度，所有矩形面积之和为 1，适合比较样本量不同的两组数据。例子
+  使用计数，因为可以直接看到每个区间有多少个样本。
+</p>
+
+<h3 id="s6-3-4">可复现的随机数据</h3>
+
+<p>
+  <code>rng = np.random.default_rng(7)</code> 建立带种子的随机数生成器，
+  之后每次调用 <code>rng.uniform</code> 或 <code>rng.normal</code> 都按顺序
+  从该生成器的序列中取值。固定种子后，同一环境下重复运行得到相同的数组，
+  图表与打印结果才能逐字核对。
+</p>
+
+<p>
+  <code>rng.uniform(low, high, size)</code> 生成区间内均匀分布的数，
+  <code>rng.normal(mean, std, size)</code> 生成正态分布的数。例子把学习
+  时长设为 0 到 10 的均匀分布，把分数设为随时长上升的线性关系再加一点
+  正态扰动，因此散点图呈现上升趋势，直方图的大部分样本集中在 55 到 100
+  分之间。
+</p>
+
+<div class="eg" id="e6-3">
+  <div class="eg-h">例题 · 散点图与直方图</div>
+  <p>题目：用种子 7 生成 120 名样本的学习时长与分数，左子图画带颜色映射的散点图并添加颜色条，右子图画出分数在 40 到 100 之间的 8 个区间直方图；打印点数、集合数量、各区间计数、区间边界与计数总和。</p>
+  <p>输出图像：</p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/图表示例/out_plot_scatter.png" alt="左图为学习时长与分数的散点图并带颜色条，右图为分数直方图" width="800" height="300">
+    <figcaption>
+      左图的横轴为学习时长、纵轴为分数，点色与右侧颜色条对应分数，时长
+      越长分数越高；右图把 40 到 100 分分成 8 个区间，最高的区间在
+      62.5 到 70 分之间。
+    </figcaption>
+  </figure>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="6.3-scatter.py"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+rng = np.random.default_rng(7)
+hours = rng.uniform(0.0, 10.0, 120)
+scores = 55.0 + 4.2 * hours + rng.normal(0.0, 4.0, 120)
+fig, (left, right) = plt.subplots(1, 2, figsize=(8, 3), dpi=100)
+points = left.scatter(hours, scores, s=18, c=scores, cmap="viridis",
+                      alpha=0.8)
+left.set_title("Hours vs score")
+left.set_xlabel("hours")
+left.set_ylabel("score")
+left.grid(True)
+fig.colorbar(points, ax=left, label="score")
+counts, edges, _ = right.hist(scores, bins=8, range=(40.0, 100.0),
+                              color="tab:orange", edgecolor="white")
+right.set_title("Score distribution")
+right.set_xlabel("score")
+right.set_ylabel("count")
+fig.tight_layout()
+fig.savefig("out_plot_scatter.png")
+print("points:", len(hours))
+print("collections:", len(left.collections))
+print("counts:", counts.astype(int).tolist())
+print("edges:", np.round(edges, 1).tolist())
+print("bins total:", int(counts.sum()))
+plt.close(fig)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/6.3-scatter.py</code></pre>
+    <pre class="out" data-label="真实输出">points: 120
+collections: 1
+counts: [0, 4, 18, 26, 16, 25, 15, 15]
+edges: [40.0, 47.5, 55.0, 62.5, 70.0, 77.5, 85.0, 92.5, 100.0]
+bins total: 119</pre>
+  <p>左图的散点是一个集合，所以 <code>collections</code> 为 1；颜色映射
+  使用分数本身，分数越高颜色越靠后。右图把 40 到 100 分成 8 个等宽区间，
+  每个区间宽度为 7.5；计数依次为 0、4、18、26、16、25、15、15，总和为
+  119。</p>
+  <p>输入有 120 个分数，但计数总和是 119，说明有一个分数高于 100，落在
+  <code>range</code> 之外，没有进入任何区间。直方图只统计给定范围内的
+  样本；需要覆盖全部数据时，应把上界扩大到实际最大值以上，或先检查
+  数据的范围。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-5</div>
+  <p>写一个脚本 <code>6-5.py</code>，用种子 3 生成 80 个横坐标（0 到 5 的均匀分布）与对应的纵坐标（斜率为 2、截距为 0，叠加标准差为 1 的正态扰动）；画散点图，点大小为 20，颜色为 <code>tab:green</code>；设置标题与两个坐标标签，保存成 <code>out_ex_6_5.png</code>。打印点数、集合数量与横坐标的最小值、最大值（保留两位小数）。</p>
+    <pre class="out" data-label="预期输出">points: 80
+collections: 1
+x range: 0.01 4.87</pre>
+  <!-- 答案 6-5 -->
+  <details class="ans" data-run="示例代码/答案/6-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        固定种子 3 生成 80 个点，散点对象占一个集合。横坐标在 0 到 5 之间，
+        读回的最小值为 0.01、最大值为 4.87，保留两位小数。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+rng = np.random.default_rng(3)
+x = rng.uniform(0.0, 5.0, 80)
+y = 2.0 * x + rng.normal(0.0, 1.0, 80)
+fig, ax = plt.subplots(figsize=(4, 3), dpi=100)
+ax.scatter(x, y, s=20, color="tab:green")
+ax.set_title("Generated points")
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+fig.savefig("out_ex_6_5.png")
+print("points:", len(x))
+print("collections:", len(ax.collections))
+print("x range:", round(float(x.min()), 2), round(float(x.max()), 2))
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">points: 80
+collections: 1
+x range: 0.01 4.87</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-6</div>
+  <p>写一个脚本 <code>6-6.py</code>，用分数 <code>[52, 61, 64, 68, 72, 75, 79, 83, 88, 95]</code> 画直方图，分成 5 个区间，范围为 50 到 100；设置标题与两个坐标标签，保存成 <code>out_ex_6_6.png</code>。打印各区间计数、区间边界与计数总和。</p>
+    <pre class="out" data-label="预期输出">counts: [1, 3, 3, 2, 1]
+edges: [50.0, 60.0, 70.0, 80.0, 90.0, 100.0]
+total: 10</pre>
+  <!-- 答案 6-6 -->
+  <details class="ans" data-run="示例代码/答案/6-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        十个分数分成 5 个等宽区间，边界从 50 到 100，步长为 10。计数依次
+        为 1、3、3、2、1，总和为 10，所有分数都在给定范围内。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+scores = np.array([52, 61, 64, 68, 72, 75, 79, 83, 88, 95])
+fig, ax = plt.subplots(figsize=(4, 3), dpi=100)
+counts, edges, _ = ax.hist(scores, bins=5, range=(50, 100),
+                           color="tab:purple", edgecolor="white")
+ax.set_title("Score histogram")
+ax.set_xlabel("score")
+ax.set_ylabel("count")
+fig.savefig("out_ex_6_6.png")
+print("counts:", counts.astype(int).tolist())
+print("edges:", edges.tolist())
+print("total:", int(counts.sum()))
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">counts: [1, 3, 3, 2, 1]
+edges: [50.0, 60.0, 70.0, 80.0, 90.0, 100.0]
+total: 10</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用散点图观察两个变量的关系，用直方图观察分布，读回分箱计数与边界，并用固定随机种子生成可复现的数据。</p>
+</section>
+
+<section class="lesson" id="l6-4">
+<h2><span class="no">6.4</span>尺寸、分辨率与保存</h2>
+
+<p>
+  图表最终要进入报告、网页或论文，文件尺寸与清晰度需要提前控制。这一课
+  说明英寸、DPI 与像素的关系，比较固定边界与紧凑边界保存的差异，检查
+  背景颜色与 PNG 通道，最后保存一张包含四个子图的报告图。
+</p>
+
+<h3 id="s6-4-1">英寸与像素</h3>
+
+<p>
+  画布的物理尺寸用英寸表示，<code>figsize=(6, 4)</code> 表示宽 6 英寸、
+  高 4 英寸。<code>dpi</code> 是每英寸点数，像素数等于英寸数乘以 DPI：
+  6×120 与 4×120 得到宽 720、高 480。屏幕显示时 DPI 影响观感，保存文件时
+  <code>savefig(dpi=...)</code> 决定输出像素，可以与画布建立时的 DPI
+  不同。
+</p>
+
+<p>
+  提高 DPI 会增加像素数，也会增加文件大小与绘制时间，但不会改变线条的
+  数据位置与画布比例。需要打印的图通常用 150 到 300 DPI；网页预览用
+  72 到 120 DPI 已经足够。先确定用途，再选择尺寸与 DPI，避免最后再缩放
+  位图。
+</p>
+
+<h3 id="s6-4-2">紧凑边界</h3>
+
+<p>
+  <code>fig.savefig(path, bbox_inches="tight")</code> 把画布裁剪到实际内容
+  的边界，去掉标题、标签之外的空白。裁剪后的像素尺寸不再严格等于
+  <code>figsize × dpi</code>，通常会小一些；默认还会在外围保留 0.1 英寸
+  的边距，可以用 <code>pad_inches</code> 调整。
+</p>
+
+<p>
+  紧凑边界适合单张报告图与网页插图，因为内容占满画面、空白较少。若多张
+  图需要严格对齐，固定边界更容易控制像素尺寸；两种方式各有用途，保存后
+  读回图像数组可以确认实际尺寸。
+</p>
+
+<h3 id="s6-4-3">背景与格式</h3>
+
+<p>
+  <code>facecolor</code> 设置画布背景，保存时也可以单独指定；
+  <code>transparent=True</code> 让背景透明，但只有支持透明通道的格式能
+  保留。PNG 可以保存 RGBA 四通道，JPEG 不支持透明通道，透明区域会被填成
+  白色或黑色。
+</p>
+
+<p>
+  <code>matplotlib.image.imread(path)</code> 把图片读成浮点数组，数值范围
+  是 0 到 1，形状是 <code>(高, 宽, 通道数)</code>。PNG 常见四通道：
+  红、绿、蓝与透明度。读回数组可以检查尺寸、通道与最大值，适合自动核对
+  保存结果。
+</p>
+
+<h3 id="s6-4-4">多子图保存</h3>
+
+<p>
+  <code>plt.subplots(2, 2, figsize=(6, 4))</code> 建立 2×2 的坐标轴数组，
+  按行列索引访问。先给每个子图设置标题与数据，再调用
+  <code>fig.tight_layout()</code> 调整间距，最后保存整张画布。子图标题、
+  坐标标签与图例都属于画布内容，保存时会一起写入。
+</p>
+
+<p>
+  同一张画布可以保存多次：例如先保存紧凑版本，再保存固定边界版本，
+  比较两者的像素尺寸。每次 <code>savefig</code> 使用调用时给出的参数，
+  不会改动画布本身；全部保存完成后关闭画布。
+</p>
+
+<div class="eg" id="e6-4">
+  <div class="eg-h">例题 · 保存四格图</div>
+  <p>题目：建立 2×2 共四个子图，分别画正弦、余弦、指数衰减与直线；先以 120 DPI、紧凑边界保存一张，再以 120 DPI、固定边界保存一张；读回两张图，打印坐标轴数量、画布英寸尺寸、两种像素形状、数组类型与最大值。</p>
+  <p>输出图像：</p>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/图表示例/out_plot_report.png" alt="紧凑边界保存的四格报告图，四个子图分别为 sin、cos、exp 与 linear" width="707" height="466">
+    <figcaption>
+      紧凑边界保存：裁去四周空白后为 707×466。
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/图表示例/out_plot_report_plain.png" alt="固定边界保存的四格报告图，四个子图与上图相同，四周留白更多" width="720" height="480">
+    <figcaption>
+      固定边界保存：按 6×4 英寸与 120 DPI 得到 720×480。四个子图内容
+      与上图相同，区别只在四周留白。
+    </figcaption>
+  </figure>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="6.4-saveplot.py"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import image as mpimg
+
+
+x = np.linspace(0.0, 4.0, 121)
+fig, axes = plt.subplots(2, 2, figsize=(6, 4), dpi=100)
+axes[0, 0].plot(x, np.sin(x))
+axes[0, 0].set_title("sin")
+axes[0, 1].plot(x, np.cos(x))
+axes[0, 1].set_title("cos")
+axes[1, 0].plot(x, np.exp(-x))
+axes[1, 0].set_title("exp")
+axes[1, 1].plot(x, x)
+axes[1, 1].set_title("linear")
+fig.tight_layout()
+fig.savefig("out_plot_report.png", dpi=120, bbox_inches="tight",
+            facecolor="white")
+fig.savefig("out_plot_report_plain.png", dpi=120, facecolor="white")
+tight = mpimg.imread("out_plot_report.png")
+plain = mpimg.imread("out_plot_report_plain.png")
+print("axes:", len(fig.axes))
+print("size inches:", fig.get_size_inches().tolist())
+print("tight pixels:", tight.shape)
+print("plain pixels:", plain.shape)
+print("dtype:", tight.dtype)
+print("max value:", float(tight.max()))
+plt.close(fig)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/6.4-saveplot.py</code></pre>
+    <pre class="out" data-label="真实输出">axes: 4
+size inches: [6.0, 4.0]
+tight pixels: (466, 707, 4)
+plain pixels: (480, 720, 4)
+dtype: float32
+max value: 1.0</pre>
+  <p>画布为 6×4 英寸，包含四个坐标轴。固定边界版本按 120 DPI 保存，
+  宽 720、高 480，正好等于 6×120 与 4×120；紧凑边界版本裁掉多余空白，
+  变成宽 707、高 466。两张 PNG 都读成四通道浮点数组，类型为
+  <code>float32</code>，最大值是 1.0，说明数值已经归一化到 0 到 1。</p>
+  <p>紧凑边界的高度与宽度都比固定边界小，说明裁剪确实去掉了空白。
+  <code>fig.get_size_inches()</code> 仍返回建立时的 6×4，保存参数不会
+  改动画布的英寸尺寸；像素变化只发生在输出文件里。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-7</div>
+  <p>写一个脚本 <code>6-7.py</code>，画一条 0 到 1 之间的平方曲线，画布为 4×2 英寸、建立时 DPI 为 100；分别以 DPI 72 与 DPI 144 保存成 <code>out_ex_6_7_72.png</code> 与 <code>out_ex_6_7_144.png</code>；读回两张图，打印像素形状，并打印高分辨率图的宽高是否正好是低分辨率图的两倍。</p>
+    <pre class="out" data-label="预期输出">72: (144, 288, 4)
+144: (288, 576, 4)
+double: True</pre>
+  <!-- 答案 6-7 -->
+  <details class="ans" data-run="示例代码/答案/6-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        同一张 4×2 英寸的图按 72 与 144 DPI 保存，像素形状分别是
+        <code>(144, 288, 4)</code> 与 <code>(288, 576, 4)</code>。高分辨率
+        图的宽与高都正好是低分辨率图的两倍，所以判断为
+        <code>True</code>。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import image as mpimg
+
+
+x = np.linspace(0.0, 1.0, 40)
+fig, ax = plt.subplots(figsize=(4, 2), dpi=100)
+ax.plot(x, x ** 2)
+fig.savefig("out_ex_6_7_72.png", dpi=72)
+fig.savefig("out_ex_6_7_144.png", dpi=144)
+small = mpimg.imread("out_ex_6_7_72.png")
+large = mpimg.imread("out_ex_6_7_144.png")
+print("72:", small.shape)
+print("144:", large.shape)
+print("double:", large.shape[:2] == tuple(2 * n for n in small.shape[:2]))
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">72: (144, 288, 4)
+144: (288, 576, 4)
+double: True</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-8</div>
+  <p>写一个脚本 <code>6-8.py</code>，建立一行两列的子图，画布为 5×2 英寸、DPI 为 110；左图画平方，标题为 <code>square</code>，右图画立方，标题为 <code>cube</code>；用紧凑边界与浅灰背景 <code>#f0f0f0</code> 保存成 <code>out_ex_6_8.png</code>；读回图像，打印坐标轴数量、像素形状、数组类型与画布英寸尺寸。</p>
+    <pre class="out" data-label="预期输出">axes: 2
+shape: (209, 540, 4)
+dtype: float32
+size inches: [5.0, 2.0]</pre>
+  <!-- 答案 6-8 -->
+  <details class="ans" data-run="示例代码/答案/6-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个子图用紧凑边界与浅灰背景保存，读回的 PNG 形状是
+        <code>(209, 540, 4)</code>，类型为 <code>float32</code>。画布的英寸
+        尺寸仍是建立时的 5×2；紧凑边界只改变输出文件的像素，不改变画布
+        记录。
+      </p>
+      <pre data-lang="Python"><code>import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import image as mpimg
+
+
+fig, axes = plt.subplots(1, 2, figsize=(5, 2), dpi=110)
+axes[0].plot([0, 1, 2], [0, 1, 4])
+axes[0].set_title("square")
+axes[1].plot([0, 1, 2], [0, 1, 8])
+axes[1].set_title("cube")
+fig.tight_layout()
+fig.savefig("out_ex_6_8.png", bbox_inches="tight", facecolor="#f0f0f0")
+pixels = mpimg.imread("out_ex_6_8.png")
+print("axes:", len(fig.axes))
+print("shape:", pixels.shape)
+print("dtype:", pixels.dtype)
+print("size inches:", fig.get_size_inches().tolist())
+plt.close(fig)</code></pre>
+      <pre class="out" data-label="真实输出">axes: 2
+shape: (209, 540, 4)
+dtype: float32
+size inches: [5.0, 2.0]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按英寸与 DPI 控制图片尺寸，用紧凑边界裁剪空白，选择背景与文件格式，保存包含多个子图的完整报告图，并读回图像检查结果。</p>
+</section>
+
+<nav class="pager">
+  <a href="05-OpenCV-Python.html">← 第 5 部分 · OpenCV 图像、视频与标定</a>
+  <span class="spacer"></span>
+  <a href="07-工程与测试.html">第 7 部分 · 工程与测试 →</a>
+</nav>
+
+</main>
+</div>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

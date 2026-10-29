@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · 函数、类与模块 — Python 工具与视觉脚本</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-语法与容器.html">第 1 部分</a>
+      <a class="active" href="02-函数类与模块.html">第 2 部分</a>
+      <a href="03-文件异常与标准库.html">第 3 部分</a>
+      <a href="04-NumPy.html">第 4 部分</a>
+      <a href="05-OpenCV-Python.html">第 5 部分</a>
+      <a href="06-数据与图表.html">第 6 部分</a>
+      <a href="07-工程与测试.html">第 7 部分</a>
+      <a href="08-综合.html">第 8 部分</a>
+      <a href="09-检测题.html">第 9 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a class="active" href="index.html">Python</a>
+      <a href="../ros2/index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-语法与容器.html">第 1 部分 · 语法与容器</a>
+  <a class="tree-l" aria-current="page" href="02-函数类与模块.html">第 2 部分 · 函数、类与模块</a>
+  <a class="tree-l" href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库</a>
+  <a class="tree-l" href="04-NumPy.html">第 4 部分 · NumPy 数组与向量化</a>
+  <a class="tree-l" href="05-OpenCV-Python.html">第 5 部分 · OpenCV 图像、视频与标定</a>
+  <a class="tree-l" href="06-数据与图表.html">第 6 部分 · 数据与图表</a>
+  <a class="tree-l" href="07-工程与测试.html">第 7 部分 · 工程与测试</a>
+  <a class="tree-l" href="08-综合.html">第 8 部分 · 综合</a>
+  <a class="tree-l" href="09-检测题.html">第 9 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · 函数、类与模块</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>参数、作用域与闭包</a>
+  <a class="toc-sub" href="#s2-1-1">参数形式</a>
+  <a class="toc-sub" href="#s2-1-2">默认值与可变默认参数</a>
+  <a class="toc-sub" href="#s2-1-3">作用域与 nonlocal</a>
+  <a class="toc-sub" href="#s2-1-4">闭包与 partial</a>
+  <a class="toc-sub" href="#e2-1">例题：闭包与参数</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>类与对象</a>
+  <a class="toc-sub" href="#s2-2-1">类与实例</a>
+  <a class="toc-sub" href="#s2-2-2">dataclass</a>
+  <a class="toc-sub" href="#s2-2-3">组合与继承</a>
+  <a class="toc-sub" href="#s2-2-4">对象列表的处理</a>
+  <a class="toc-sub" href="#e2-2">例题：检测结果</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>模块、包与导入</a>
+  <a class="toc-sub" href="#s2-3-1">模块与包</a>
+  <a class="toc-sub" href="#s2-3-2">导入写法</a>
+  <a class="toc-sub" href="#s2-3-3">主程序入口</a>
+  <a class="toc-sub" href="#s2-3-4">导入路径与排错</a>
+  <a class="toc-sub" href="#e2-3">例题：拆分统计工具</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>类型标注与文档字符串</a>
+  <a class="toc-sub" href="#s2-4-1">变量与函数标注</a>
+  <a class="toc-sub" href="#s2-4-2">常用容器标注</a>
+  <a class="toc-sub" href="#s2-4-3">运行时不检查</a>
+  <a class="toc-sub" href="#s2-4-4">文档字符串</a>
+  <a class="toc-sub" href="#e2-4">例题：标注与文档</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>选学：迭代器、生成器与装饰器</a>
+  <a class="toc-sub" href="#s2-5-1">迭代协议</a>
+  <a class="toc-sub" href="#s2-5-2">生成器</a>
+  <a class="toc-sub" href="#s2-5-3">装饰器</a>
+  <a class="toc-sub" href="#s2-5-4">用途与边界</a>
+  <a class="toc-sub" href="#e2-5">例题：分批与计数</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>函数、类与模块</h1>
+  <p class="part-lead">
+    这一部分把函数、类与模块连起来：先补齐参数形式、作用域与闭包，
+    再用类与 dataclass 组织检测结果，随后把统计与报表拆成可导入的包，
+    最后补上类型标注、文档字符串、生成器与装饰器。
+  </p>
+</header>
+
+<div class="aside req" data-prereq="l1-1 l1-2 l1-3 l1-4 l1-5 l1-6">
+  <b>前置</b>
+  <p>
+    读本部分之前，需要先读
+    <a href="01-语法与容器.html#l1-1">1.1</a>（值、变量与类型）、
+    <a href="01-语法与容器.html#l1-2">1.2</a>（字符串与格式化）、
+    <a href="01-语法与容器.html#l1-3">1.3</a>（列表、元组与切片）、
+    <a href="01-语法与容器.html#l1-4">1.4</a>（字典与集合）、
+    <a href="01-语法与容器.html#l1-5">1.5</a>（控制流与推导式）与
+    <a href="01-语法与容器.html#l1-6">1.6</a>（函数）。
+  </p>
+</div>
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>参数、作用域与闭包</h2>
+
+<p>
+  函数的参数形式决定了调用时哪些写法合法，名字查找规则决定了函数体里的
+  变量从哪里取值。这一课先收紧参数形式，再讲默认值在什么时候求值，
+  最后用闭包（closure）把一小份状态保存在函数里，不需要额外的类。
+</p>
+
+<h3 id="s2-1-1">参数形式</h3>
+
+<p>
+  在参数表里写一个斜杠 <code>/</code>，它前面的参数只能用位置传递，
+  称为仅位置参数（positional-only parameter）。写一个星号 <code>*</code>，
+  它后面的参数只能用关键字传递，称为仅关键字参数（keyword-only parameter）。
+  两者可以同时出现：
+  <code>def describe(name, /, value, *, digits=2)</code>。
+  调用时 <code>name</code> 必须按位置给出，<code>value</code> 可以按位置
+  或关键字给出，<code>digits</code> 必须写成 <code>digits=1</code>。
+</p>
+  <pre data-lang="Python"><code>def describe(name, /, value, *, digits=2):
+    return f"{name}={value:.{digits}f}"
+
+print(describe("gain", 2.34567, digits=1))</code></pre>
+  <pre class="out" data-label="真实输出">gain=2.3</pre>
+
+<p>
+  这样写有两个直接好处。仅位置参数的名字不再属于对外接口，实现里改名不会
+  影响调用方；仅关键字参数迫使调用处写出参数名，
+  <code>circle(2, 5)</code> 与 <code>circle(2, radius=5)</code> 哪个更难读
+  一眼可见。给函数追加仅关键字参数时，已有调用也不会因为多了一个位置参数
+  而悄悄错位。
+</p>
+
+<p>
+  读别人写的函数时还会遇见 <code>*args</code> 与 <code>**kwargs</code>：
+  前者把多出来的位置参数收成元组，后者把多出来的关键字参数收成字典。
+  它们适合转发参数，不适合把所有参数都收进来再在函数体里逐个判断。
+</p>
+
+<h3 id="s2-1-2">默认值与可变默认参数</h3>
+
+<p>
+  默认值在函数定义时求值一次，之后每次调用都复用同一个对象。数字、字符串、
+  元组这类不可变对象没有问题；列表、字典这类可变对象会在调用之间保留修改。
+  下面这个函数第一次调用返回 <code>[1]</code>，第二次返回
+  <code>[1, 2]</code>，因为两次用的是同一个列表：
+  <code>def append_bad(value, bucket=[])</code>。
+</p>
+
+<p>
+  正确写法是把默认值设成 <code>None</code>，进入函数后再创建容器：
+  <code>def append(value, bucket=None)</code>，函数体开头判断
+  <code>if bucket is None: bucket = []</code>。这样每次调用都得到新的列表，
+  同时仍允许调用方传入自己的列表。
+</p>
+  <pre data-lang="Python"><code>def append_bad(value, bucket=[]):
+    bucket.append(value)
+    return bucket
+
+
+def append(value, bucket=None):
+    if bucket is None:
+        bucket = []
+    bucket.append(value)
+    return bucket
+
+
+print(append_bad(1))
+print(append_bad(2))
+print(append(1))
+print(append(2))</code></pre>
+  <pre class="out" data-label="真实输出">[1]
+[1, 2]
+[1]
+[2]</pre>
+
+<p>
+  <code>dataclasses.field(default_factory=list)</code> 解决的是同一类问题：
+  它把“每次创建实例时调用一次工厂”写进声明，而不是让多个实例共享一个
+  默认列表。下一课会用到这种写法。
+</p>
+
+<h3 id="s2-1-3">作用域与 nonlocal</h3>
+
+<p>
+  名字查找按局部、外层函数、模块、内置四层依次进行，通常记作 LEGB
+  （local、enclosing、global、builtin）。函数体里只要出现赋值语句，
+  这个名字就被视为局部变量，除非在函数开头声明了 <code>global</code>
+  或 <code>nonlocal</code>。因此在函数里读一个外层变量之后又给它赋值，
+  而没写声明，会得到 <code>UnboundLocalError</code>。
+</p>
+
+<p>
+  <code>global</code> 修改模块级名字，适合少量配置或计数器；大量使用会让
+  数据流向难以追踪。<code>nonlocal</code> 修改外层函数的局部变量，只在外层
+  确实存在同名绑定时合法。闭包保存状态靠的就是 <code>nonlocal</code>：
+  内层函数对外层变量赋值，外层函数返回后，那份绑定仍然活着。
+</p>
+  <pre data-lang="Python"><code>def make_counter(start=0, step=1):
+    count = start
+
+    def counter():
+        nonlocal count
+        count += step
+        return count
+
+    return counter
+
+
+first = make_counter()
+print(first(), first())
+second = make_counter(10, 5)
+print(second(), second())
+print(first())</code></pre>
+  <pre class="out" data-label="真实输出">1 2
+15 20
+3</pre>
+
+<h3 id="s2-1-4">闭包与 partial</h3>
+
+<p>
+  内层函数引用了外层函数的变量，外层函数返回内层函数，这个内层函数就是
+  闭包。每次调用外层函数都会创建一套新的局部变量，因此
+  <code>make_counter()</code> 两次得到的计数器互不影响。计数器把
+  <code>count</code> 藏在闭包里，外部只能通过调用递增，不能直接改。
+</p>
+
+<p>
+  <code>functools.partial</code> 把部分参数提前固定，得到一个新的可调用
+  对象。<code>partial(describe, "scale")</code> 固定了第一个位置参数，
+  之后仍可传 <code>value</code> 与仅关键字参数 <code>digits</code>。
+  它适合把通用函数改造成某个场景专用的版本，不必再写一层包装函数。
+  调用 <code>scale(0.5, digits=3)</code> 得到 <code>scale=0.500</code>。
+</p>
+  <pre data-lang="Python"><code>scale = partial(describe, "scale")
+scale(0.5, digits=3)</code></pre>
+
+<div class="eg" id="e2-1">
+  <div class="eg-h">例题 · 闭包、参数形式与 partial</div>
+  <p>题目：写两个互不共享状态的计数器；用仅位置参数与仅关键字参数格式化测量值；演示可变默认参数的共享；用 <code>partial</code> 固定名称。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="2.1-closure.py"><code>from functools import partial
+
+
+def make_counter(start=0, step=1):
+    count = start
+
+    def counter():
+        nonlocal count
+        count += step
+        return count
+
+    return counter
+
+
+def describe(name, /, value, *, digits=2):
+    return f"{name}={value:.{digits}f}"
+
+
+def append_bad(value, bucket=[]):
+    bucket.append(value)
+    return bucket
+
+
+counter_a = make_counter()
+counter_b = make_counter(10, 5)
+print("a:", counter_a(), counter_a())
+print("b:", counter_b(), counter_b())
+print("a again:", counter_a())
+print(describe("gain", 2.34567))
+print(describe("gain", 2.34567, digits=1))
+print("bad1:", append_bad(1))
+print("bad2:", append_bad(2))
+scale = partial(describe, "scale")
+print(scale(0.5, digits=3))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/2.1-closure.py</code></pre>
+    <pre class="out" data-label="真实输出">a: 1 2
+b: 15 20
+a again: 3
+gain=2.35
+gain=2.3
+bad1: [1]
+bad2: [1, 2]
+scale=0.500</pre>
+  <p><code>counter_a</code> 与 <code>counter_b</code> 来自两次 <code>make_counter</code> 调用，各自保存一份 <code>count</code>，所以 <code>a</code> 从 1 走到 2 再走到 3，<code>b</code> 从 10 按步长 5 走到 15、20。<code>describe</code> 中 <code>name</code> 只能按位置传，<code>digits</code> 只能按关键字传；第二次调用把小数位数改成 1，输出随之变化。<code>append_bad</code> 的默认列表在定义时创建一次，两次调用共享它，因此第二次看到前一次留下的 1。<code>partial</code> 固定名称后，<code>scale(0.5, digits=3)</code> 补上数值与位数。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-1</div>
+  <p>写一个脚本 <code>2-1.py</code>。定义 <code>format_measure(value, /, unit, *, digits=1)</code>，返回形如 <code>3.1 V</code> 的字符串。依次打印 <code>format_measure(3.14159, "V")</code> 与 <code>format_measure(2.5, "A", digits=0)</code>。再用关键字形式传 <code>value=1.0, unit="V"</code> 调用一次，捕获 <code>TypeError</code> 并打印 <code>rejected: TypeError</code>。</p>
+    <pre class="out" data-label="预期输出">3.1 V
+2 A
+rejected: TypeError</pre>
+  <!-- 答案 2-1 -->
+  <details class="ans" data-run="示例代码/答案/2-1.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        斜杠之前的 <code>value</code> 只能按位置传入，星号之后的
+        <code>digits</code> 只能按关键字传入。按关键字写
+        <code>value=1.0</code> 时，解析器在绑定参数阶段就抛出
+        <code>TypeError</code>，函数体不会执行。
+      </p>
+      <pre data-lang="Python"><code>def format_measure(value, /, unit, *, digits=1):
+    return f"{value:.{digits}f} {unit}"
+
+
+print(format_measure(3.14159, "V"))
+print(format_measure(2.5, "A", digits=0))
+try:
+    format_measure(value=1.0, unit="V")
+except TypeError:
+    print("rejected: TypeError")</code></pre>
+      <pre class="out" data-label="真实输出">3.1 V
+2 A
+rejected: TypeError</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-2</div>
+  <p>写一个脚本 <code>2-2.py</code>，定义 <code>make_counter(start=0, step=1)</code>，内层函数每次调用返回递增后的值。创建 <code>first = make_counter()</code> 与 <code>second = make_counter(10, 5)</code>。先连续调用 <code>first()</code> 两次并打印两个值，再打印 <code>second()</code>，最后再打印一次 <code>first()</code>，确认两个计数器互不影响。</p>
+    <pre class="out" data-label="预期输出">1 2
+15
+3</pre>
+  <!-- 答案 2-2 -->
+  <details class="ans" data-run="示例代码/答案/2-2.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        每次调用 <code>make_counter</code> 都创建一份新的 <code>count</code>，
+        内层函数用 <code>nonlocal</code> 修改它。两个计数器各自递增，
+        <code>first</code> 走到 2 之后，<code>second</code> 从 10 开始按步长
+        5 得到 15，再调用 <code>first</code> 仍接着得到 3。
+      </p>
+      <pre data-lang="Python"><code>def make_counter(start=0, step=1):
+    count = start
+
+    def counter():
+        nonlocal count
+        count += step
+        return count
+
+    return counter
+
+
+first = make_counter()
+second = make_counter(10, 5)
+print(first(), first())
+print(second())
+print(first())</code></pre>
+      <pre class="out" data-label="真实输出">1 2
+15
+3</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用仅位置参数与仅关键字参数写清接口，用闭包保存一小份状态，并解释可变默认参数为什么会共享。</p>
+</section>
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>类与对象</h2>
+
+<p>
+  类把一组数据与操作这些数据的方法放在同一个名字下。检测结果有类别、
+  位置、尺寸与分数，用类保存比用平行列表或含义不明的字典更容易读，
+  也便于把面积、中心点这类派生值写成属性。这一课从最基本的类写起，
+  再说明 dataclass 省掉了哪些样板代码。
+</p>
+
+<h3 id="s2-2-1">类与实例</h3>
+
+<p>
+  <code>class</code> 语句创建一个类型对象。<code>__init__</code> 在实例
+  创建后调用，第一个参数 <code>self</code> 指向新实例；在它里面赋值
+  <code>self.x = x</code> 就把 <code>x</code> 放进实例的属性字典。
+  方法同样定义在类里，调用 <code>item.area()</code> 时 Python 自动把
+  <code>item</code> 作为第一个参数传入。
+</p>
+  <pre data-lang="Python"><code>class Point:
+    dimensions = 2
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def distance_to(self, other):
+        dx = self.x - other.x
+        dy = self.y - other.y
+        return (dx ** 2 + dy ** 2) ** 0.5
+
+
+point = Point(3, 4)
+print(point.x, point.y)
+print(point.distance_to(Point(0, 0)))</code></pre>
+  <pre class="out" data-label="真实输出">3 4
+5.0</pre>
+
+<p>
+  写在类体里、方法外的名字是类属性，由所有实例共享；实例属性放在
+  <code>__init__</code> 里，每个实例各有一份。读取属性时先找实例字典，
+  找不到再找类字典。类属性适合存放所有实例都相同的常量，例如
+  <code>dimensions = 2</code>；需要每个对象独立变化的数据应放进实例。
+</p>
+
+<h3 id="s2-2-2">dataclass</h3>
+
+<p>
+  只用来保存字段的类，<code>__init__</code>、<code>__repr__</code> 与
+  <code>__eq__</code> 往往写成固定套路。<code>@dataclass</code> 根据类体里的
+  类型标注生成这三个方法：标注 <code>label: str</code> 就是一个构造参数，
+  打印实例时能看到字段名与值，两个实例的字段全部相等时比较结果为真。
+</p>
+  <pre data-lang="Python"><code>from dataclasses import dataclass, field
+
+
+@dataclass
+class Detection:
+    label: str
+    x: int
+    y: int
+    width: int
+    height: int
+    score: float = 0.0
+    tags: list[str] = field(default_factory=list)
+
+
+first = Detection("ball", 10, 20, 30, 40)
+print(first)
+print(first == Detection("ball", 10, 20, 30, 40))</code></pre>
+  <pre class="out" data-label="真实输出">Detection(label='ball', x=10, y=20, width=30, height=40, score=0.0, tags=[])
+True</pre>
+
+<p>
+  可变默认值仍然要小心。<code>tags: list[str] = field(default_factory=list)</code>
+  让每个实例创建时调用一次 <code>list</code>，避免所有实例共享同一个列表。
+  普通默认值可以直接写在等号后面，例如 <code>score: float = 0.0</code>。
+  用 <code>@property</code> 修饰的方法不带括号读取，适合面积、中心点这类
+  由字段算出的值。
+</p>
+
+<h3 id="s2-2-3">组合与继承</h3>
+
+<p>
+  组合（composition）是一个对象持有另一个对象：<code>Scene</code> 里放一个
+  检测结果列表，场景负责添加、筛选与统计，检测结果只负责自己的字段。
+  这种分工让两边的修改互不牵连，通常是组织检测结果的首选。
+</p>
+  <pre data-lang="Python"><code>class Scene:
+    def __init__(self, name):
+        self.name = name
+        self.items = []
+
+    def add(self, detection):
+        self.items.append(detection)
+
+    def large(self, minimum):
+        return [item for item in self.items if item.area &gt;= minimum]
+
+
+scene = Scene("frame-01")
+print(scene.name)</code></pre>
+  <pre class="out" data-label="真实输出">frame-01</pre>
+
+<p>
+  继承（inheritance）表达“是一种”的关系，写法是
+  <code>class Child(Base)</code>。子类可以复用父类的方法，也可以在
+  <code>__init__</code> 里调用 <code>super().__init__(...)</code> 先完成
+  父类的初始化。继承层次一旦变深，方法查找与初始化顺序就不容易一眼看清；
+  本课程的示例以组合为主，只在确实需要复用同一套接口时使用一层继承。
+</p>
+
+<h3 id="s2-2-4">对象列表的处理</h3>
+
+<p>
+  一组对象就是普通列表，排序、筛选与统计照常使用内置函数。
+  <code>sorted(items, key=lambda det: det.area, reverse=True)</code> 按面积
+  从大到小排序；<code>key</code> 返回用于比较的值，<code>reverse</code>
+  控制方向。排序是稳定的，面积相同的对象保持原来的先后顺序。
+</p>
+
+<p>
+  筛选写成列表推导式，条件直接读对象属性：
+  <code>[item for item in items if item.area >= minimum]</code>。
+  统计数量用 <code>len</code>，求和用生成器表达式配合 <code>sum</code>。
+  对象与字典各有适用场合：字段固定、需要方法与打印格式时用对象；
+  只是一次性的键值集合，用字典更轻。
+</p>
+
+<div class="eg" id="e2-2">
+  <div class="eg-h">例题 · 检测结果与场景</div>
+  <p>题目：用 dataclass 定义 <code>Detection</code>，保存类别、左上角坐标、宽高与分数，提供面积、中心点与自定义打印；用 <code>Scene</code> 组合多个结果，按面积排序并筛选大目标。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="2.2-detections.py"><code>from dataclasses import dataclass, field
+
+
+@dataclass
+class Detection:
+    label: str
+    x: int
+    y: int
+    width: int
+    height: int
+    score: float = 0.0
+    tags: list[str] = field(default_factory=list)
+
+    @property
+    def area(self):
+        return self.width * self.height
+
+    @property
+    def center(self):
+        return self.x + self.width / 2, self.y + self.height / 2
+
+    def __repr__(self):
+        return (f"Detection({self.label!r}, area={self.area}, "
+                f"score={self.score:.2f})")
+
+
+class Scene:
+    def __init__(self, name):
+        self.name = name
+        self.items = []
+
+    def add(self, detection):
+        self.items.append(detection)
+
+    def large(self, minimum):
+        return [item for item in self.items if item.area &gt;= minimum]
+
+
+items = [
+    Detection("ball", 10, 20, 30, 40, 0.91),
+    Detection("plate", 100, 50, 80, 60, 0.75),
+    Detection("ball", 200, 10, 20, 20, 0.66),
+]
+scene = Scene("frame-01")
+for item in items:
+    scene.add(item)
+
+for item in sorted(scene.items, key=lambda det: det.area, reverse=True):
+    print(item)
+print("count:", len(scene.items))
+print("large:", len(scene.large(1000)))
+print("centers:", [item.center for item in sorted(items, key=lambda det: det.label)])
+print("tags independent:", items[0].tags is not items[1].tags)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/2.2-detections.py</code></pre>
+    <pre class="out" data-label="真实输出">Detection('plate', area=4800, score=0.75)
+Detection('ball', area=1200, score=0.91)
+Detection('ball', area=400, score=0.66)
+count: 3
+large: 2
+centers: [(25.0, 40.0), (210.0, 20.0), (140.0, 80.0)]
+tags independent: True</pre>
+  <p>三个结果的面积分别是 80×60=4800、30×40=1200 与 20×20=400，排序后从大到小打印。<code>large(1000)</code> 只保留前两个，因此数量是 2。中心点按左上角加半个宽高计算：第一个 ball 的中心是 (25.0, 40.0)，第二个 ball 是 (210.0, 20.0)，plate 是 (140.0, 80.0)；按类别排序后输出顺序随之调整。<code>tags</code> 使用 <code>default_factory=list</code>，两个实例拿到不同的列表，最后一行因此为真。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-3</div>
+  <p>写一个脚本 <code>2-3.py</code>，定义类 <code>Point</code>。类属性 <code>dimensions = 2</code>，实例属性 <code>x</code> 与 <code>y</code>，方法 <code>distance_to(other)</code> 返回两点间的欧氏距离，<code>__repr__</code> 返回 <code>Point(x, y)</code> 形式。创建 <code>Point(0, 0)</code> 与 <code>Point(3, 4)</code>，打印两个对象、距离、类属性与实例属性名；再把第二个点改成 (6, 8)，重新打印距离与实例属性名。</p>
+    <pre class="out" data-label="预期输出">Point(0, 0) Point(3, 4)
+distance: 5.0
+dimensions: 2 2
+distance: 10.0
+attributes: ['x', 'y']</pre>
+  <!-- 答案 2-3 -->
+  <details class="ans" data-run="示例代码/答案/2-3.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>__repr__</code> 决定打印对象时的文本，两个点因此显示为
+        <code>Point(x, y)</code>。距离由横纵坐标差求平方和再开方，
+        (3, 4) 到原点为 5.0；改成 (6, 8) 后为 10.0。
+        类属性通过 <code>Point.dimensions</code> 与实例都能读到，
+        <code>vars(b)</code> 只列出实例自己的 <code>x</code> 与 <code>y</code>。
+      </p>
+      <pre data-lang="Python"><code>class Point:
+    dimensions = 2
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def distance_to(self, other):
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+
+    def __repr__(self):
+        return f"Point({self.x}, {self.y})"
+
+
+a = Point(0, 0)
+b = Point(3, 4)
+print(a, b)
+print("distance:", a.distance_to(b))
+print("dimensions:", Point.dimensions, a.dimensions)
+b.x = 6
+b.y = 8
+print("distance:", a.distance_to(b))
+print("attributes:", sorted(vars(b)))</code></pre>
+      <pre class="out" data-label="真实输出">Point(0, 0) Point(3, 4)
+distance: 5.0
+dimensions: 2 2
+distance: 10.0
+attributes: ['x', 'y']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-4</div>
+  <p>写一个脚本 <code>2-4.py</code>，用 <code>@dataclass</code> 定义 <code>BoundingBox</code>，字段为 <code>x</code>、<code>y</code>、<code>width</code>、<code>height</code>，并提供只读属性 <code>area</code> 与 <code>center</code>。创建三个包围盒：<code>(0, 0, 10, 20)</code>、<code>(30, 10, 20, 20)</code>、<code>(60, 40, 5, 5)</code>。打印各自的面积、面积不小于 200 的包围盒中心点、按面积从大到小排序后的面积列表，以及用相同字段新建的包围盒与原对象是否相等。</p>
+    <pre class="out" data-label="预期输出">areas: [200, 400, 25]
+large: [(5.0, 10.0), (40.0, 20.0)]
+sorted: [400, 200, 25]
+same: True</pre>
+  <!-- 答案 2-4 -->
+  <details class="ans" data-run="示例代码/答案/2-4.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        三个包围盒的面积分别为 200、400 与 25；面积不小于 200 的是前两个，
+        中心点由左上角加半个宽高得到。排序按面积从大到小，得到 400、200、25。
+        <code>@dataclass</code> 生成的相等比较逐个字段对比，新建的同字段对象
+        与原对象相等，因此最后一行是 <code>True</code>。
+      </p>
+      <pre data-lang="Python"><code>from dataclasses import dataclass
+
+
+@dataclass
+class BoundingBox:
+    x: int
+    y: int
+    width: int
+    height: int
+
+    @property
+    def area(self):
+        return self.width * self.height
+
+    @property
+    def center(self):
+        return self.x + self.width / 2, self.y + self.height / 2
+
+
+boxes = [
+    BoundingBox(0, 0, 10, 20),
+    BoundingBox(30, 10, 20, 20),
+    BoundingBox(60, 40, 5, 5),
+]
+large = [box for box in boxes if box.area &gt;= 200]
+print("areas:", [box.area for box in boxes])
+print("large:", [box.center for box in large])
+ordered = sorted(boxes, key=lambda b: b.area, reverse=True)
+print("sorted:", [box.area for box in ordered])
+print("same:", BoundingBox(0, 0, 10, 20) == boxes[0])</code></pre>
+      <pre class="out" data-label="真实输出">areas: [200, 400, 25]
+large: [(5.0, 10.0), (40.0, 20.0)]
+sorted: [400, 200, 25]
+same: True</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用类或 dataclass 组织检测结果，按字段排序与筛选，并在组合与继承之间作出选择。</p>
+</section>
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>模块、包与导入</h2>
+
+<p>
+  脚本超过一屏之后，把统计、格式化与入口拆成不同文件更容易维护。
+  Python 用模块（module）与包（package）组织这种拆分：一个
+  <code>.py</code> 文件是一个模块，带 <code>__init__.py</code> 的目录是一个包。
+  这一课讲清导入路径、两种导入写法与主程序入口，最后处理常见的导入失败。
+</p>
+
+<h3 id="s2-3-1">模块与包</h3>
+
+<p>
+  模块的名字来自文件名去掉 <code>.py</code>。<code>stats.py</code> 被导入后，
+  其中的函数、类与变量都住在名为 <code>stats</code> 的模块命名空间里，
+  模块自己还保存着 <code>__name__</code>。包是目录，目录里的
+  <code>__init__.py</code> 在包第一次被导入时执行，通常只写一句说明，
+  或者从子模块中挑几个名字对外暴露。
+</p>
+
+<p>
+  包内的子模块用点号连接：<code>toolbox.stats</code>、
+  <code>toolbox.report</code>。导入一个子模块会先导入它的父包，
+  因此 <code>__init__.py</code> 会在子模块之前运行。包名与模块名都区分
+  大小写，也应避免与标准库模块同名，否则导入时可能拿到另一个对象。
+</p>
+
+<h3 id="s2-3-2">导入写法</h3>
+
+<p>
+  <code>import toolbox.stats</code> 绑定名字 <code>toolbox</code>，使用时写
+  <code>toolbox.stats.summarize(...)</code>；
+  <code>from toolbox.stats import summarize</code> 直接把函数绑定到当前
+  命名空间，使用时写 <code>summarize(...)</code>。前者保留了来源，后者的
+  调用更短；名字较多时，保留模块名通常更容易读。
+</p>
+  <pre data-lang="Python"><code>import toolbox.stats
+from toolbox.stats import summarize
+from toolbox.report import format_summary
+
+
+print(toolbox.stats.summarize([88, 92, 79]))
+print(format_summary("scores", summarize([88, 92, 79])))</code></pre>
+  <pre class="out" data-label="真实输出">(3, 86.33, 92)
+scores: n=3 mean=86.33 max=92</pre>
+
+<p>
+  包内模块互相引用有两种写法。绝对导入从项目根写起，例如
+  <code>from toolbox.stats import summarize</code>，入口用
+  <code>python3 -m toolbox.main</code> 从项目根运行时可以找到包。相对导入
+  写成 <code>from .stats import summarize</code>，点号表示当前包，只能在包内
+  使用，直接运行这个文件会失败。课程示例统一使用绝对导入，读起来不需要
+  先判断当前文件在包里的位置。
+</p>
+
+<h3 id="s2-3-3">主程序入口</h3>
+
+<p>
+  每个模块都有 <code>__name__</code>。文件被当作程序直接运行时，
+  <code>__name__</code> 是字符串 <code>"__main__"</code>；被别的模块导入时，
+  它是模块名。把只在命令行执行的代码放进
+  <code>if __name__ == "__main__":</code> 之下，同一个文件就既能被导入，
+  又能单独运行。
+</p>
+  <pre data-lang="Python"><code>def main():
+    print("run")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  <pre class="out" data-label="真实输出">run</pre>
+
+<p>
+  包内的入口模块用 <code>python3 -m toolbox.main</code> 运行。此时 Python
+  把当前目录加入搜索路径，按包结构导入 <code>toolbox.main</code>，
+  同时把它的 <code>__name__</code> 设为 <code>"__main__"</code>。相比
+  <code>python3 toolbox/main.py</code>，<code>-m</code> 保留了包上下文，
+  绝对导入才能找到兄弟模块。
+</p>
+
+<h3 id="s2-3-4">导入路径与排错</h3>
+
+<p>
+  导入时 Python 按 <code>sys.path</code> 中的目录依次查找。直接运行脚本时，
+  脚本所在目录排在第一项；用 <code>-m</code> 运行时，当前目录排在第一项。
+  找不到模块会抛出 <code>ModuleNotFoundError</code>，常见原因有：入口不在
+  项目根、包目录少了 <code>__init__.py</code>、文件名拼错，或者模块名与
+  标准库重名。
+</p>
+
+<p>
+  排错时先打印 <code>sys.path</code> 与当前工作目录，确认包所在的目录是否
+  在搜索范围内；再确认包内文件的相对位置与导入语句一致。临时把目录插入
+  <code>sys.path</code> 可以让一次演示跑通，但项目代码不应依赖这种写法，
+  否则换一个工作目录就会失效。
+</p>
+
+<div class="eg" id="e2-3">
+  <div class="eg-h">例题 · 拆分统计工具</div>
+  <p>题目：把均值与摘要放进 <code>stats.py</code>，把一行报表放进 <code>report.py</code>，再用 <code>main.py</code> 组合两者；整个目录作为包，用 <code>-m</code> 运行入口。</p>
+  <p>工程文件 <code>toolbox/__init__.py</code>：</p>
+  <pre data-lang="Python" data-file="2.3-project/toolbox/__init__.py"><code>"""统计与报表的小工具包。"""</code></pre>
+  <p>工程文件 <code>toolbox/stats.py</code>：</p>
+  <pre data-lang="Python" data-file="2.3-project/toolbox/stats.py"><code>def mean(values):
+    return sum(values) / len(values)
+
+
+def summarize(values):
+    return len(values), round(mean(values), 2), max(values)</code></pre>
+  <p>工程文件 <code>toolbox/report.py</code>：</p>
+  <pre data-lang="Python" data-file="2.3-project/toolbox/report.py"><code>def format_summary(name, summary):
+    count, average, top = summary
+    return f"{name}: n={count} mean={average:.2f} max={top}"</code></pre>
+  <p>入口 <code>toolbox/main.py</code>：</p>
+  <pre data-lang="Python" data-name="2.3-project/toolbox/main.py"><code>from toolbox.report import format_summary
+from toolbox.stats import summarize
+
+scores = [88, 92, 79, 95, 84]
+summary = summarize(scores)
+print(format_summary("scores", summary))
+print("module:", __name__)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>cd 示例代码/2.3-project
+python3 -m toolbox.main</code></pre>
+    <pre class="out" data-label="真实输出">scores: n=5 mean=87.60 max=95
+module: __main__</pre>
+  <p>五个分数之和是 438，均值 87.6，保留两位小数后为 87.60。入口从
+  <code>toolbox.stats</code> 取 <code>summarize</code>，从
+  <code>toolbox.report</code> 取 <code>format_summary</code>，两处都是绝对
+  导入。用 <code>-m</code> 运行时入口模块的 <code>__name__</code> 是
+  <code>"__main__"</code>，所以第二行输出 <code>module: __main__</code>；
+  如果另一个模块导入它，这一行会变成 <code>toolbox.main</code>。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-5</div>
+  <p>写一个脚本 <code>2-5.py</code>，定义 <code>mean(values)</code>，并在主程序入口打印 <code>main: __name__</code>。再用 <code>runpy.run_path(__file__, run_name="tool")</code> 以另一个模块名加载同一份文件，调用加载结果里的 <code>mean</code> 计算 <code>[1, 2, 3]</code> 的平均值，并打印加载结果中不以双下划线开头的名字。预期第一行说明直接运行时名字是 <code>__main__</code>，第二行说明另一份模块命名空间里的函数可以使用。</p>
+    <pre class="out" data-label="预期输出">main: __main__
+tool mean: 2.0
+names: ['mean', 'runpy']</pre>
+  <!-- 答案 2-5 -->
+  <details class="ans" data-run="示例代码/答案/2-5.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>runpy.run_path</code> 以 <code>run_name="tool"</code> 再执行一次
+        同一份文件；此时 <code>__name__</code> 不是 <code>"__main__"</code>，
+        入口判断不成立，只有函数定义与导入被执行。返回的命名空间里有
+        <code>mean</code> 与顶部导入的 <code>runpy</code>，
+        不含双下划线开头的内部名字。
+      </p>
+      <pre data-lang="Python"><code>import runpy
+
+
+def mean(values):
+    return sum(values) / len(values)
+
+
+if __name__ == "__main__":
+    print("main:", __name__)
+    namespace = runpy.run_path(__file__, run_name="tool")
+    print("tool mean:", namespace["mean"]([1, 2, 3]))
+    print("names:", sorted(n for n in namespace if not n.startswith("__")))</code></pre>
+      <pre class="out" data-label="真实输出">main: __main__
+tool mean: 2.0
+names: ['mean', 'runpy']</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-6</div>
+  <p>写一个脚本 <code>2-6.py</code>，在临时目录里创建两个模块：<code>helpers.py</code> 定义 <code>double(value)</code>，<code>main.py</code> 从 <code>helpers</code> 导入 <code>double</code> 并打印 <code>imported: 42</code> 与自己的 <code>__name__</code>。把临时目录临时加入 <code>sys.path</code>，导入 <code>helpers</code> 并打印 <code>helpers: 10</code>，再导入 <code>main</code>；结束后从 <code>sys.path</code> 与 <code>sys.modules</code> 中移除这次导入留下的内容。</p>
+    <pre class="out" data-label="预期输出">helpers: 10
+imported: 42
+name: main</pre>
+  <!-- 答案 2-6 -->
+  <details class="ans" data-run="示例代码/答案/2-6.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        两个模块写在临时目录里，加入 <code>sys.path</code> 后按普通模块导入。
+        <code>helpers.double(5)</code> 得到 10；导入 <code>main</code> 时，
+        它的顶层语句立即执行，<code>from helpers import double</code> 找到
+        同一目录下的模块，<code>__name__</code> 是模块名 <code>main</code>
+        而不是 <code>"__main__"</code>。收尾时把临时目录与两个模块对象一起
+        移除，后续导入不会拿到旧模块。
+      </p>
+      <pre data-lang="Python"><code>import sys
+import tempfile
+from pathlib import Path
+
+with tempfile.TemporaryDirectory() as tmp:
+    folder = Path(tmp)
+    (folder / "helpers.py").write_text(
+        "def double(value):\n    return value * 2\n", encoding="utf-8")
+    (folder / "main.py").write_text(
+        "from helpers import double\n\n"
+        "print('imported:', double(21))\n"
+        "print('name:', __name__)\n", encoding="utf-8")
+
+    sys.path.insert(0, str(folder))
+    try:
+        import helpers
+        print("helpers:", helpers.double(5))
+        import main
+    finally:
+        sys.path.remove(str(folder))
+        sys.modules.pop("helpers", None)
+        sys.modules.pop("main", None)</code></pre>
+      <pre class="out" data-label="真实输出">helpers: 10
+imported: 42
+name: main</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把脚本拆成模块与包，用 <code>python3 -m</code> 运行入口，并在导入失败时定位路径问题。</p>
+</section>
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>类型标注与文档字符串</h2>
+
+<p>
+  类型标注（type annotation）写在变量名、参数与返回值旁边，说明作者期望的
+  类型。它不会在运行时强制检查，但能让编辑器提前提示错误，也让读代码的人
+  不必从函数体反推参数该传什么。文档字符串（docstring）补上文字说明，
+  与标注一起构成函数对外的说明书。
+</p>
+
+<h3 id="s2-4-1">变量与函数标注</h3>
+
+<p>
+  变量标注写成 <code>count: int = 0</code>，参数标注写成
+  <code>def mean(values: list[float]) -&gt; float</code>。返回值的标注放在
+  参数表之后、冒号之前；没有返回值时写 <code>-&gt; None</code>。
+  标注只是表达式，函数定义时求值并保存在函数的 <code>__annotations__</code>
+  字典里，参数名与 <code>return</code> 各占一个键。
+</p>
+  <pre data-lang="Python"><code>from collections.abc import Iterable
+
+
+def mean(values: Iterable[float]) -&gt; float:
+    """返回一组数的平均值。"""
+    items = list(values)
+    return sum(items) / len(items)
+
+
+print(mean([88, 92, 79]))</code></pre>
+  <pre class="out" data-label="真实输出">86.33333333333333</pre>
+
+<p>
+  标注应描述函数接受的接口，而不是函数体里每一步的中间类型。一个函数接收
+  任何可迭代的浮点数时，标注成 <code>Iterable[float]</code> 比
+  <code>list[float]</code> 更准确，调用方传元组或生成器也合法。
+</p>
+
+<h3 id="s2-4-2">常用容器标注</h3>
+
+<p>
+  内置容器可以直接下标：<code>list[int]</code>、<code>dict[str, float]</code>、
+  <code>tuple[int, int]</code>、<code>set[str]</code>。元组的元素类型不同时
+  按位置逐个写出；长度不固定的元组写成 <code>tuple[int, ...]</code>。
+  可能为空的类型写成 <code>str | None</code>，读作“字符串或空值”，
+  等价于 <code>typing.Optional[str]</code>。
+</p>
+  <pre data-lang="Python"><code>def scale(values: list[float], factor: float) -&gt; list[float]:
+    return [value * factor for value in values]
+
+
+def first_name(record: dict[str, str]) -&gt; str | None:
+    return record.get("name")
+
+
+print(scale([1.0, 2.0], 2.5))
+print(first_name({"name": "alpha"}))</code></pre>
+  <pre class="out" data-label="真实输出">[2.5, 5.0]
+alpha</pre>
+
+<p>
+  只读的序列参数常用 <code>typing.Sequence</code>，可迭代对象用
+  <code>typing.Iterable</code>。两者也可从 <code>collections.abc</code>
+  导入，课程统一用后者，因为它是这些抽象基类的定义处。泛型下标在运行时
+  会构造出 <code>list[float]</code> 这样的对象，打印标注时看到的就是它。
+</p>
+
+<h3 id="s2-4-3">运行时不检查</h3>
+
+<p>
+  传错类型不会因为标注而抛出异常。标注的作用在运行之前：编辑器根据它给出
+  补全与警告，静态检查工具根据它报告不一致，测试可以据此约定输入范围。
+  真正需要拦截非法值时，仍要在函数体里写判断并抛出
+  <code>TypeError</code> 或 <code>ValueError</code>。
+</p>
+  <pre data-lang="Python"><code>def add(left: int, right: int) -&gt; int:
+    return left + right
+
+
+print(add("1", "2"))</code></pre>
+  <pre class="out" data-label="真实输出">12</pre>
+
+<p>
+  <code>inspect.signature(func)</code> 把参数表、默认值与返回标注排成可读
+  文本；<code>typing.get_type_hints(func)</code> 把字符串形式的前向引用
+  解析成真正的类型对象。两者在调试标注与生成文档时都很有用。
+</p>
+
+<h3 id="s2-4-4">文档字符串</h3>
+
+<p>
+  函数体第一条语句若是字符串，它就是文档字符串。第一行用一句话说明函数
+  做什么，空一行后写参数、返回值与可能抛出的异常。参数说明按名字逐条列出，
+  返回说明写清值的形状；异常说明写清在什么条件下抛出。
+</p>
+  <pre data-lang="Python"><code>def mean(values):
+    """返回一组数的平均值。"""
+    return sum(values) / len(values)
+
+
+print(mean.__doc__)</code></pre>
+  <pre class="out" data-label="真实输出">返回一组数的平均值。</pre>
+
+<p>
+  <code>help(func)</code> 会打印文档字符串与签名，<code>func.__doc__</code>
+  取出原始文本。注释解释“为什么这样写”，文档字符串说明“怎么用”，两者
+  不互相替代。函数行为改变时，文档字符串与标注要一起更新，否则读者拿到的
+  是过时的约定。
+</p>
+
+<div class="eg" id="e2-4">
+  <div class="eg-h">例题 · 标注与文档字符串</div>
+  <p>题目：给求均值、三项摘要与等级判断三个函数补上参数、返回值标注和文档字符串，再打印运行时保存的标注与文档。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="2.4-annotations.py"><code>from collections.abc import Iterable
+from pprint import pprint
+
+
+def mean(values: Iterable[float]) -&gt; float:
+    """返回一组数的平均值。"""
+    items = list(values)
+    return sum(items) / len(items)
+
+
+def summarize(values: Iterable[float], digits: int = 2) -&gt; tuple[int, float, float]:
+    """返回数量、平均值与最大值。"""
+    items = list(values)
+    return len(items), round(mean(items), digits), max(items)
+
+
+def label(score: float, name: str | None = None) -&gt; str:
+    """按分数给出等级；name 为空时只返回等级。"""
+    level = "A" if score &gt;= 90 else "B" if score &gt;= 75 else "C"
+    return level if name is None else f"{name}:{level}"
+
+
+print(mean([88, 92, 79]))
+print(summarize([88, 92, 79], digits=1))
+print(label(92), label(60, "beta"))
+print("mean annotations:")
+pprint(mean.__annotations__, width=60, sort_dicts=False)
+print("summarize annotations:")
+pprint(summarize.__annotations__, width=60, sort_dicts=False)
+print("label annotations:")
+pprint(label.__annotations__, width=60, sort_dicts=False)
+print("mean doc:", mean.__doc__)</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/2.4-annotations.py</code></pre>
+    <pre class="out" data-label="真实输出">86.33333333333333
+(3, 86.3, 92)
+A beta:C
+mean annotations:
+{'values': collections.abc.Iterable[float],
+ 'return': &lt;class 'float'&gt;}
+summarize annotations:
+{'values': collections.abc.Iterable[float],
+ 'digits': &lt;class 'int'&gt;,
+ 'return': tuple[int, float, float]}
+label annotations:
+{'score': &lt;class 'float'&gt;,
+ 'name': str | None,
+ 'return': &lt;class 'str'&gt;}
+mean doc: 返回一组数的平均值。</pre>
+  <p><code>[88, 92, 79]</code> 的平均值是 259÷3，打印为无限循环小数
+  <code>86.33333333333333</code>。三项摘要返回数量、平均值与最大值，
+  <code>digits=1</code> 把平均值保留一位小数，得到
+  <code>(3, 86.3, 92)</code>。等级判断中 92 分是 A，60 分是 C，带名字时
+  拼成 <code>beta:C</code>。三段标注分别显示参数名与类型对象：
+  <code>Iterable[float]</code> 来自 <code>collections.abc</code>，
+  <code>str | None</code> 是联合类型，返回值的键名固定为
+  <code>return</code>。<code>pprint</code> 把过长的字典按宽度 60 拆成多行，
+  <code>sort_dicts=False</code> 保留定义时的键顺序。最后一行取出
+  <code>mean</code> 的第一句文档。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-7</div>
+  <p>写一个脚本 <code>2-7.py</code>，给三个函数补标注：<code>clamp(value, low=0.0, high=1.0)</code> 把数值限制在闭区间内并返回浮点数；<code>scale(values, factor)</code> 把一组浮点数按倍数缩放并返回新列表；<code>first_name(record)</code> 从字符串字典中取 <code>name</code>，没有时返回空值。打印 <code>clamp(1.4)</code>、<code>scale([1.0, 2.0], 2.5)</code>、<code>first_name({"name": "alpha"})</code> 与 <code>first_name({})</code>，再用 <code>pprint(..., width=60, sort_dicts=False)</code> 分行打印三个函数的 <code>__annotations__</code>。</p>
+    <pre class="out" data-label="预期输出">1.0
+[2.5, 5.0]
+alpha None
+clamp annotations:
+{'value': &lt;class 'float'&gt;,
+ 'low': &lt;class 'float'&gt;,
+ 'high': &lt;class 'float'&gt;,
+ 'return': &lt;class 'float'&gt;}
+scale annotations:
+{'values': list[float],
+ 'factor': &lt;class 'float'&gt;,
+ 'return': list[float]}
+first_name annotations:
+{'record': dict[str, str], 'return': str | None}</pre>
+  <!-- 答案 2-7 -->
+  <details class="ans" data-run="示例代码/答案/2-7.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>clamp</code> 用 <code>max</code> 与 <code>min</code> 把 1.4
+        限制到上界 1.0；<code>scale</code> 用列表推导式把两个元素各乘 2.5，
+        得到 <code>[2.5, 5.0]</code>；<code>first_name</code> 用
+        <code>get</code> 取不到键时返回空值。三段标注各先打印函数名，
+        再由 <code>pprint</code> 按宽度 60 分行列出参数名、类型对象与返回类型，
+        <code>list[float]</code> 与 <code>str | None</code> 都是
+        运行时构造出的泛型与联合类型对象。
+      </p>
+      <pre data-lang="Python"><code>from pprint import pprint
+
+
+def clamp(value: float, low: float = 0.0, high: float = 1.0) -&gt; float:
+    return max(low, min(value, high))
+
+
+def scale(values: list[float], factor: float) -&gt; list[float]:
+    return [value * factor for value in values]
+
+
+def first_name(record: dict[str, str]) -&gt; str | None:
+    return record.get("name")
+
+
+print(clamp(1.4))
+print(scale([1.0, 2.0], 2.5))
+print(first_name({"name": "alpha"}), first_name({}))
+print("clamp annotations:")
+pprint(clamp.__annotations__, width=60, sort_dicts=False)
+print("scale annotations:")
+pprint(scale.__annotations__, width=60, sort_dicts=False)
+print("first_name annotations:")
+pprint(first_name.__annotations__, width=60, sort_dicts=False)</code></pre>
+      <pre class="out" data-label="真实输出">1.0
+[2.5, 5.0]
+alpha None
+clamp annotations:
+{'value': &lt;class 'float'&gt;,
+ 'low': &lt;class 'float'&gt;,
+ 'high': &lt;class 'float'&gt;,
+ 'return': &lt;class 'float'&gt;}
+scale annotations:
+{'values': list[float],
+ 'factor': &lt;class 'float'&gt;,
+ 'return': list[float]}
+first_name annotations:
+{'record': dict[str, str], 'return': str | None}</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-8</div>
+  <p>写一个脚本 <code>2-8.py</code>，定义 <code>parse_line(line: str, sep: str = ",") -&gt; tuple[str, int] | None</code>，把“名字,分数”一行拆开并转换分数；字段数不对或分数不是整数时返回 <code>None</code>。为它写一段文档字符串，第一句是 <code>把“名字,分数”一行拆开。</code>。依次打印 <code>parse_line("alpha, 92")</code>、<code>parse_line("alpha")</code>，再用 <code>inspect.signature</code> 打印签名、用 <code>get_type_hints</code> 打印解析后的标注，最后打印文档字符串第一行。</p>
+    <pre class="out" data-label="预期输出">('alpha', 92)
+None
+signature: (line: str, sep: str = ',') -&gt; tuple[str, int] | None
+hints: {'line': &lt;class 'str'&gt;, 'sep': &lt;class 'str'&gt;, 'return': tuple[str, int] | None}
+first doc: 把“名字,分数”一行拆开。</pre>
+  <!-- 答案 2-8 -->
+  <details class="ans" data-run="示例代码/答案/2-8.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>parse_line</code> 按分隔符拆开，字段数不是 2 时返回
+        <code>None</code>；字段数正确时再尝试把分数转成整数，转换失败同样返回
+        <code>None</code>。签名打印出参数名、默认值与返回标注，
+        <code>get_type_hints</code> 把字符串形式的标注解析成真正的类型对象。
+        最后一行取文档字符串的第一句。
+      </p>
+      <pre data-lang="Python"><code>import inspect
+from typing import get_type_hints
+
+
+def parse_line(line: str, sep: str = ",") -&gt; tuple[str, int] | None:
+    """把“名字,分数”一行拆开。
+
+    参数：
+        line: 一行文本。
+        sep: 字段分隔符。
+    返回：
+        (名字, 分数)；格式不对时返回 None。
+    """
+    parts = line.split(sep)
+    if len(parts) != 2:
+        return None
+    name, text = parts
+    try:
+        return name.strip(), int(text)
+    except ValueError:
+        return None
+
+
+print(parse_line("alpha, 92"))
+print(parse_line("alpha"))
+print("signature:", inspect.signature(parse_line))
+print("hints:", get_type_hints(parse_line))
+print("first doc:", parse_line.__doc__.splitlines()[0])</code></pre>
+      <pre class="out" data-label="真实输出">('alpha', 92)
+None
+signature: (line: str, sep: str = ',') -&gt; tuple[str, int] | None
+hints: {'line': &lt;class 'str'&gt;, 'sep': &lt;class 'str'&gt;, 'return': tuple[str, int] | None}
+first doc: 把“名字,分数”一行拆开。</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>给函数补上类型标注与文档字符串，读懂 <code>__annotations__</code> 与 <code>inspect.signature</code> 的输出。</p>
+</section>
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>选学：迭代器、生成器与装饰器</h2>
+
+<p>
+  这一课是选学内容，目标是读懂并写出简单的生成器与装饰器。生成器让函数
+  一次产出一个值，适合分批读取大文件或逐帧处理视频；装饰器在不改函数体的
+  前提下给函数加上计时、日志或计数。两者都建立在函数是一等对象这一点上。
+</p>
+
+<h3 id="s2-5-1">迭代协议</h3>
+
+<p>
+  可迭代对象（iterable）实现了 <code>__iter__</code>，迭代器（iterator）
+  在可迭代对象的基础上实现了 <code>__next__</code>。列表、字符串、字典都是
+  可迭代对象，但不是迭代器；<code>iter(values)</code> 取到一个迭代器，
+  <code>next(iterator)</code> 每次取下一个值，取完后抛出
+  <code>StopIteration</code>。<code>for</code> 循环做的就是这件事：
+  先取迭代器，再反复调用 <code>next</code>，捕获 <code>StopIteration</code>
+  后结束。
+</p>
+  <pre data-lang="Python"><code>values = [10, 20]
+iterator = iter(values)
+print(next(iterator))
+print(next(iterator))
+try:
+    print(next(iterator))
+except StopIteration:
+    print("stop")</code></pre>
+  <pre class="out" data-label="真实输出">10
+20
+stop</pre>
+
+<p>
+  迭代器只往前走到头，不能回到起点。把同一个迭代器交给两个循环，第二个
+  循环拿不到任何值；需要重新遍历时应重新调用 <code>iter</code> 或重新创建
+  可迭代对象。
+</p>
+
+<h3 id="s2-5-2">生成器</h3>
+
+<p>
+  函数体里出现 <code>yield</code>，这个函数就是生成器函数（generator
+  function）。调用它不会立刻执行函数体，而是返回一个生成器（generator）；
+  每次 <code>next</code> 执行到下一个 <code>yield</code> 暂停，把值交给
+  调用方，下一次从暂停处继续。函数走完后抛出 <code>StopIteration</code>。
+</p>
+
+<p>
+  生成器按需计算，不会一次把所有结果放进内存。
+  <code>batches(items, size)</code> 在循环里逐个产出切片，
+  调用方取一批处理一批。生成器表达式
+  <code>(value * 2 for value in values)</code> 是同一机制的简写，适合直接
+  传给 <code>sum</code>、<code>max</code> 或 <code>any</code>。生成器只能
+  遍历一次，<code>list(generator)</code> 会把它取完。
+</p>
+  <pre data-lang="Python"><code>def batches(items, size):
+    for start in range(0, len(items), size):
+        yield items[start:start + size]
+
+
+print(list(batches([1, 2, 3, 4, 5], 2)))</code></pre>
+  <pre class="out" data-label="真实输出">[[1, 2], [3, 4], [5]]</pre>
+
+<h3 id="s2-5-3">装饰器</h3>
+
+<p>
+  装饰器（decorator）是一个接收函数并返回新函数的函数。写成
+  <code>@counted</code> 放在 <code>def total(...)</code> 上方，等价于
+  <code>total = counted(total)</code>。内层 <code>wrapper</code> 用
+  <code>*args, **kwargs</code> 接收任意参数，先做附加动作，再调用原函数
+  并返回结果。
+</p>
+  <pre data-lang="Python"><code>from functools import wraps
+
+
+def counted(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        wrapper.calls += 1
+        return func(*args, **kwargs)
+
+    wrapper.calls = 0
+    return wrapper
+
+
+@counted
+def total(values):
+    return sum(values)
+
+
+print(total([1, 2, 3]), total.calls)</code></pre>
+  <pre class="out" data-label="真实输出">6 1</pre>
+
+<p>
+  <code>functools.wraps</code> 把原函数的 <code>__name__</code>、
+  <code>__doc__</code> 等属性复制到包装函数上，否则打印出来的是
+  <code>wrapper</code>。状态可以挂在包装函数上，例如
+  <code>wrapper.calls = 0</code>，每次调用递增；这比用全局变量更清楚，
+  每个被装饰的函数各有自己的计数。
+</p>
+
+<h3 id="s2-5-4">用途与边界</h3>
+
+<p>
+  生成器适合“生产一批、消费一批”的流程：逐行读文件、按批取数据、
+  逐帧取图像。它把内存占用与批大小绑定，而不是与总量绑定。装饰器适合
+  横切关注点：计时、记录调用、重试、权限检查。包装层应尽量薄，只做一件
+  附加的事；多层装饰器叠在一起时，调用顺序从最靠近函数的那层开始。
+</p>
+
+<p>
+  两类工具都有适用边界。生成器的结果只能取一次，需要反复访问时应先转成
+  列表；装饰器会改变函数的身份与签名，调试时要记得看 <code>wraps</code>
+  是否保留了原信息。简单的一次性逻辑直接写在函数里，比引入装饰器更清楚。
+</p>
+
+<div class="eg" id="e2-5">
+  <div class="eg-h">例题 · 分批与计数</div>
+  <p>题目：写一个按固定大小切分列表的生成器，逐批取出并观察耗尽后的行为；再写一个记录调用次数的装饰器，用它包装求和函数并保留原函数名。</p>
+  <p>完整程序：</p>
+  <pre data-lang="Python" data-name="2.5-generators.py"><code>from functools import wraps
+
+
+def batches(items, size):
+    for start in range(0, len(items), size):
+        yield items[start:start + size]
+
+
+def counted(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        wrapper.calls += 1
+        return func(*args, **kwargs)
+
+    wrapper.calls = 0
+    return wrapper
+
+
+@counted
+def total(values):
+    return sum(values)
+
+
+data = list(range(1, 11))
+print("batches:", list(batches(data, 4)))
+stream = batches(data, 3)
+print("first:", next(stream))
+print("second:", next(stream))
+print("third:", next(stream))
+print("fourth:", next(stream))
+try:
+    next(stream)
+except StopIteration:
+    print("stop")
+print("total:", total([1, 2, 3]))
+print("total:", total([4, 5]))
+print("calls:", total.calls, total.__name__)
+print("lazy:", sum(1 for value in data if value % 2 == 0))</code></pre>
+  <p>运行：</p>
+  <pre data-lang="终端"><code>python3 示例代码/2.5-generators.py</code></pre>
+    <pre class="out" data-label="真实输出">batches: [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10]]
+first: [1, 2, 3]
+second: [4, 5, 6]
+third: [7, 8, 9]
+fourth: [10]
+stop
+total: 6
+total: 9
+calls: 2 total
+lazy: 5</pre>
+  <p><code>list(batches(data, 4))</code> 一次取完 1 到 10，得到三批：
+  4 个、4 个、2 个。第二个生成器按大小 3 逐次取：前三批是
+  <code>[1, 2, 3]</code>、<code>[4, 5, 6]</code>、<code>[7, 8, 9]</code>，
+  第四批只剩 <code>[10]</code>；再取一次就耗尽，异常被捕获后打印
+  <code>stop</code>。装饰后的 <code>total</code> 调用两次，计数为 2，
+  <code>wraps</code> 让 <code>__name__</code> 仍是 <code>total</code>。
+  最后一行用生成器表达式数出 1 到 10 中的偶数，共 5 个。</p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-9</div>
+  <p>写一个脚本 <code>2-9.py</code>，定义生成器 <code>batches(items, size)</code>，<code>size</code> 不大于 0 时抛出 <code>ValueError</code>，否则按固定大小产出切片。先遍历 <code>range(1, 8)</code>、批大小为 3，逐批打印；再对 <code>["a", "b", "c", "d", "e", "f"]</code> 创建批大小为 2 的生成器，打印第一批、把剩余批次一次性转成列表，最后再转一次列表，观察生成器耗尽后的结果。</p>
+    <pre class="out" data-label="预期输出">batch: [1, 2, 3]
+batch: [4, 5, 6]
+batch: [7]
+first: ['a', 'b']
+rest: [['c', 'd'], ['e', 'f']]
+exhausted: []</pre>
+  <!-- 答案 2-9 -->
+  <details class="ans" data-run="示例代码/答案/2-9.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>batches</code> 每产出一次切片就暂停，循环取完 1 到 7 得到三批：
+        3 个、3 个、1 个。第二个生成器先取第一批，<code>list(stream)</code>
+        把剩下的批次一次取完，得到两个列表；再次转列表时生成器已经耗尽，
+        结果是空列表。生成器只能遍历一次，需要重复访问时应先保存为列表。
+      </p>
+      <pre data-lang="Python"><code>def batches(items, size):
+    if size &lt;= 0:
+        raise ValueError("size must be positive")
+    for start in range(0, len(items), size):
+        yield items[start:start + size]
+
+
+data = list(range(1, 8))
+for batch in batches(data, 3):
+    print("batch:", batch)
+
+stream = batches(["a", "b", "c", "d", "e", "f"], 2)
+print("first:", next(stream))
+print("rest:", list(stream))
+print("exhausted:", list(stream))</code></pre>
+      <pre class="out" data-label="真实输出">batch: [1, 2, 3]
+batch: [4, 5, 6]
+batch: [7]
+first: ['a', 'b']
+rest: [['c', 'd'], ['e', 'f']]
+exhausted: []</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-10</div>
+  <p>写一个脚本 <code>2-10.py</code>，定义装饰器 <code>recorded(func)</code>：包装函数调用原函数后把结果追加到一份历史列表，并把该列表挂到包装函数上；用 <code>functools.wraps</code> 保留原函数信息。用它装饰 <code>add(a, b)</code>，依次打印 <code>add(1, 2)</code>、<code>add(5, 6)</code>、包装后的函数名与历史列表。</p>
+    <pre class="out" data-label="预期输出">3
+11
+name: add
+history: [3, 11]</pre>
+  <!-- 答案 2-10 -->
+  <details class="ans" data-run="示例代码/答案/2-10.py">
+    <summary>看答案</summary>
+    <div class="ans-b">
+      <p>
+        <code>recorded</code> 在闭包里保留一份 <code>history</code> 列表，
+        包装函数每次调用原函数后把结果追加进去。两次加法分别得到 3 与 11，
+        历史列表按调用顺序记录这两个值。<code>functools.wraps</code> 把原函数
+        的名字复制到包装函数上，所以打印出的名字仍是 <code>add</code>。
+      </p>
+      <pre data-lang="Python"><code>from functools import wraps
+
+
+def recorded(func):
+    history = []
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        history.append(result)
+        return result
+
+    wrapper.history = history
+    return wrapper
+
+
+@recorded
+def add(a, b):
+    return a + b
+
+
+print(add(1, 2))
+print(add(5, 6))
+print("name:", add.__name__)
+print("history:", add.history)</code></pre>
+      <pre class="out" data-label="真实输出">3
+11
+name: add
+history: [3, 11]</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写按批产出的生成器与简单的计数装饰器，并说明它们各自只适合解决什么问题。</p>
+</section>
+
+<nav class="pager">
+  <a href="01-语法与容器.html">← 第 1 部分 · 语法与容器</a>
+  <span class="spacer"></span>
+  <a href="03-文件异常与标准库.html">第 3 部分 · 文件、异常与标准库 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · Python 工具与视觉脚本
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>
