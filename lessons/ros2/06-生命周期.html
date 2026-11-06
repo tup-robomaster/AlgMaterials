@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 6 部分 · 生命周期 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 状态查询与切换的输出里有一行超过阅读栏宽；终端遇到长行本来就会折，
+   这里只让本页的输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a class="active" href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" aria-current="page" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 6 部分 · 生命周期</div>
+  <a class="toc-l" href="#l6-1"><span class="n">6.1</span>生命周期与状态机</a>
+  <a class="toc-sub" href="#s6-1-1">四个状态</a>
+  <a class="toc-sub" href="#s6-1-2">状态转换</a>
+  <a class="toc-sub" href="#s6-1-3">何时使用</a>
+  <a class="toc-sub" href="#e6-1">例题：走一遍状态</a>
+  <a class="toc-l" href="#l6-2"><span class="n">6.2</span>生命周期节点</a>
+  <a class="toc-sub" href="#s6-2-1">类与回调</a>
+  <a class="toc-sub" href="#s6-2-2">生命周期发布者</a>
+  <a class="toc-sub" href="#s6-2-3">运行与查询</a>
+  <a class="toc-sub" href="#e6-2">例题：lifecycle_talker</a>
+  <a class="toc-l" href="#l6-3"><span class="n">6.3</span>生命周期管理节点</a>
+  <a class="toc-sub" href="#s6-3-1">管理节点</a>
+  <a class="toc-sub" href="#s6-3-2">启动顺序</a>
+  <a class="toc-sub" href="#s6-3-3">失败处理</a>
+  <a class="toc-sub" href="#e6-3">例题：一个管理节点</a>
+  <a class="toc-l" href="#l6-4"><span class="n">6.4</span>启动文件与启动顺序</a>
+  <a class="toc-sub" href="#s6-4-1">启动文件</a>
+  <a class="toc-sub" href="#s6-4-2">顺序与依赖</a>
+  <a class="toc-sub" href="#s6-4-3">检查话题端点</a>
+  <a class="toc-sub" href="#e6-4">例题：按顺序启动</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 6 部分</div>
+  <h1>生命周期</h1>
+  <p class="part-lead">
+    普通节点创建后立即开始工作，生命周期（lifecycle）节点则把启动过程拆成
+    配置、激活、停用与清理几个有名字的状态。状态由服务驱动，节点可以在
+    未激活时保留资源，也可以在激活后才对外发布或订阅。这一部分先看状态机，
+    再写生命周期节点与管理节点，最后把启动顺序放进 launch 文件。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="1.1 1.2 2.2 5.1 5.2 5.3">
+  <b>前置</b>
+  <p>
+    先读过 1.1、1.2、2.2 与 5.1–5.3：会写发布者与订阅者，会声明节点参数，
+    会写 XML 启动文件。生命周期节点沿用这些接口，只把创建与启动的时机
+    分开。
+  </p>
+</div>
+
+<section class="lesson" id="l6-1">
+<h2><span class="no">6.1</span>生命周期与状态机</h2>
+
+<p>
+  生命周期（lifecycle）是节点的一组约定状态。节点创建后先处于未配置状态，
+  收到配置请求才申请资源；收到激活请求后才开始发布、订阅或驱动硬件；
+  停用后保留资源但停止对外工作；清理后释放资源，回到未配置。
+  这些状态与允许的转换构成一个状态机（state machine）。
+</p>
+
+<p>
+  状态机的价值在于把“对象已经创建”和“对象可以工作”分开。构造函数只做
+  不会失败或容易回滚的初始化；打开设备、分配大块内存、建立连接放到配置
+  回调；真正开始发布与接收放到激活回调。启动失败时，节点停在未激活状态，
+  上层可以重试、换参数或安全退出。
+</p>
+
+<h3 id="s6-1-1">四个状态</h3>
+
+<p>
+  主状态有四个。<code>unconfigured</code> 表示节点已创建，但还没有申请
+  工作资源；<code>inactive</code> 表示资源已经就绪，但节点不对外发布、
+  不接收消息；<code>active</code> 表示节点正在工作；<code>finalized</code>
+  表示节点已经关闭，不能再回到前面的状态。
+</p>
+
+<p>
+  状态之间还有短暂的过渡状态，例如正在配置时的 <code>configuring</code>、
+  正在激活时的 <code>activating</code>。命令行查询通常只看到稳定后的主状态；
+  <code>ros2 lifecycle list</code> 会把这些过渡状态写成目标的名称。
+</p>
+
+<h3 id="s6-1-2">状态转换</h3>
+
+<p>
+  转换（transition）由生命周期服务触发，常用的有五个：
+  <code>configure</code> 从 <code>unconfigured</code> 进入
+  <code>inactive</code>；<code>activate</code> 从 <code>inactive</code>
+  进入 <code>active</code>；<code>deactivate</code> 从 <code>active</code>
+  回到 <code>inactive</code>；<code>cleanup</code> 从
+  <code>inactive</code> 回到 <code>unconfigured</code>；
+  <code>shutdown</code> 从任一主状态进入 <code>finalized</code>。
+</p>
+
+<p>
+  每个生命周期节点提供三个服务：<code>&lt;节点名&gt;/change_state</code>
+  请求转换，<code>&lt;节点名&gt;/get_state</code> 查询当前状态，
+  <code>&lt;节点名&gt;/get_available_transitions</code> 列出当前可用的转换。
+  命令行工具 <code>ros2 lifecycle</code> 封装了这三个服务。
+</p>
+
+<h3 id="s6-1-3">何时使用</h3>
+
+<p>
+  需要控制启动时机的节点适合使用生命周期：传感器驱动要在标定完成后才
+  开始发布，控制器要等上游节点就绪后才激活，调试时希望暂停某个节点而不
+  销毁它。普通计算节点不需要这层结构，直接继承 <code>rclcpp::Node</code>
+  更简单。
+</p>
+
+<div class="eg" id="e6-1">
+  <div class="eg-h">例题 · 走一遍状态</div>
+  <p>
+    终端一启动生命周期节点 <code>lifecycle_talker</code>。终端二先查询初始
+    状态，再依次发送 <code>configure</code> 与 <code>activate</code>，
+    每次转换后查询一次。方括号里的数字是状态编号。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes lifecycle_talker</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 lifecycle get /lifecycle_talker
+ros2 lifecycle set /lifecycle_talker configure
+ros2 lifecycle get /lifecycle_talker
+ros2 lifecycle set /lifecycle_talker activate
+ros2 lifecycle get /lifecycle_talker</code></pre>
+<pre class="out" data-label="预期输出">unconfigured [1]
+inactive [2]
+active [3]</pre>
+  <p>
+    第一行来自刚启动的节点；配置成功后进入 <code>inactive</code>，激活后
+    进入 <code>active</code>。<code>ros2 lifecycle set</code> 自己会打印
+    转换结果，这里只保留 <code>get</code> 的三行输出。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-1</div>
+  <p>启动 <code>lifecycle_talker</code>，先打印一次初始状态，再依次执行 <code>configure</code>、<code>activate</code>、<code>deactivate</code> 与 <code>cleanup</code>，每次转换后打印状态。</p>
+<pre class="out" data-label="预期输出">unconfigured [1]
+inactive [2]
+active [3]
+inactive [2]
+unconfigured [1]</pre>
+  <details class="ans" data-run="示例代码/答案/6-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    节点启动后先打印初始状态，再对四个转换各发一次请求，每次请求后读回状态。
+    脚本在节点服务出现后才开始，避免第一条命令落在服务尚未注册的时候。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 lifecycle get /lifecycle_talker
+for transition in configure activate deactivate cleanup; do
+  ros2 lifecycle set /lifecycle_talker "$transition" &gt;/dev/null
+  ros2 lifecycle get /lifecycle_talker
+done</code></pre>
+  <pre class="out" data-label="真实输出">unconfigured [1]
+inactive [2]
+active [3]
+inactive [2]
+unconfigured [1]</pre>
+  <p>
+    状态依次是 <code>unconfigured</code>、<code>inactive</code>、
+    <code>active</code>、<code>inactive</code>、<code>unconfigured</code>。
+    <code>cleanup</code> 回到起点，节点仍可再次配置。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-2</div>
+  <p>启动 <code>lifecycle_talker</code>，打印初始状态，再列出当前可用的转换。</p>
+<pre class="out" data-label="预期输出">unconfigured [1]
+- configure [1]
+	Start: unconfigured
+	Goal: configuring
+- shutdown [5]
+	Start: unconfigured
+	Goal: shuttingdown</pre>
+  <details class="ans" data-run="示例代码/答案/6-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 lifecycle list</code> 只列出当前状态允许的转换。
+    <code>unconfigured</code> 下可以配置或关闭，因此列表只有
+    <code>configure</code> 与 <code>shutdown</code> 两项。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 lifecycle get /lifecycle_talker
+ros2 lifecycle list /lifecycle_talker</code></pre>
+  <pre class="out" data-label="真实输出">unconfigured [1]
+- configure [1]
+	Start: unconfigured
+	Goal: configuring
+- shutdown [5]
+	Start: unconfigured
+	Goal: shuttingdown</pre>
+  <p>
+    <code>Start</code> 与 <code>Goal</code> 两行说明转换的起点与目标；
+    目标写的是过渡状态 <code>configuring</code>，命令返回后节点停在
+    <code>inactive</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>ros2 lifecycle get</code>、<code>set</code> 与 <code>list</code> 观察生命周期节点的四个主状态与可用转换，并说明配置、激活、停用、清理各自改变什么。</p>
+</section>
+
+<section class="lesson" id="l6-2">
+<h2><span class="no">6.2</span>生命周期节点</h2>
+
+<p>
+  生命周期节点继承 <code>rclcpp_lifecycle::LifecycleNode</code>，并覆盖
+  配置、激活、停用、清理与关闭回调。构造函数只声明参数、创建定时器；
+  需要资源的操作放进 <code>on_configure</code>，开始对外工作的操作放进
+  <code>on_activate</code>。
+</p>
+
+<h3 id="s6-2-1">类与回调</h3>
+
+<p>
+  五个回调的返回类型都是
+  <code>rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn</code>，
+  通常简写为 <code>CallbackReturn</code>。返回 <code>SUCCESS</code> 表示
+  转换完成；返回 <code>FAILURE</code> 表示转换失败，节点留在原状态；
+  返回 <code>ERROR</code> 会把节点带入错误处理流程。回调里不要抛出异常，
+  失败要通过返回值报告。
+</p>
+
+<p>
+  <code>LifecycleNode</code> 不是 <code>rclcpp::Node</code>，不能直接交给
+  <code>rclcpp::spin</code>。主函数要用
+  <code>rclcpp::spin(node-&gt;get_node_base_interface())</code>，
+  把节点的基础接口交给执行器。
+</p>
+
+<h3 id="s6-2-2">生命周期发布者</h3>
+
+<p>
+  生命周期节点里的发布者通常写成
+  <code>rclcpp_lifecycle::LifecyclePublisher</code>。它在
+  <code>on_configure</code> 中创建，在 <code>on_activate</code> 中显式调用
+  <code>on_activate()</code>，在 <code>on_deactivate</code> 中调用
+  <code>on_deactivate()</code>。定时器每次发布前检查
+  <code>publisher_-&gt;is_activated()</code>；未激活时直接返回，不产生消息。
+</p>
+
+<p>
+  这一层检查不能省。节点的激活回调被覆盖后，生命周期发布者不会自动跟着
+  激活；只把节点状态改成 <code>active</code>，发布者仍然关闭，消息不会发出。
+</p>
+
+<h3 id="s6-2-3">运行与查询</h3>
+
+<p>
+  节点启动后处于 <code>unconfigured</code>。用
+  <code>ros2 lifecycle set</code> 发送转换，用 <code>ros2 lifecycle get</code>
+  查询状态。下面的源码把话题、周期、消息内容与激活失败开关都做成参数，
+  便于在命令行改变行为。
+</p>
+<pre data-lang="C++" data-name="6.2-lifecycle_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using CallbackReturn =
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+
+class LifecycleTalker : public rclcpp_lifecycle::LifecycleNode
+{
+public:
+  LifecycleTalker()
+  : LifecycleNode("lifecycle_talker")
+  {
+    topic_ = declare_parameter&lt;std::string&gt;("topic", "chatter");
+    period_ms_ = declare_parameter&lt;int&gt;("period_ms", 500);
+    message_ = declare_parameter&lt;std::string&gt;("message", "active");
+    fail_on_activate_ = declare_parameter&lt;bool&gt;("fail_on_activate", false);
+
+    timer_ = create_wall_timer(
+      std::chrono::milliseconds(period_ms_), [this]() {
+        if (!publisher_ || !publisher_-&gt;is_activated()) {
+          return;
+        }
+        std_msgs::msg::String message;
+        message.data = message_;
+        publisher_-&gt;publish(message);
+      });
+  }
+
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &amp;) override
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;(topic_, 10);
+    RCLCPP_INFO(get_logger(), "configured: message='%s'", message_.c_str());
+    return CallbackReturn::SUCCESS;
+  }
+
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &amp;) override
+  {
+    if (fail_on_activate_) {
+      RCLCPP_ERROR(get_logger(), "activation refused");
+      return CallbackReturn::FAILURE;
+    }
+    publisher_-&gt;on_activate();
+    RCLCPP_INFO(get_logger(), "activated");
+    return CallbackReturn::SUCCESS;
+  }
+
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &amp;) override
+  {
+    publisher_-&gt;on_deactivate();
+    RCLCPP_INFO(get_logger(), "deactivated");
+    return CallbackReturn::SUCCESS;
+  }
+
+  CallbackReturn on_cleanup(const rclcpp_lifecycle::State &amp;) override
+  {
+    publisher_.reset();
+    RCLCPP_INFO(get_logger(), "cleaned up");
+    return CallbackReturn::SUCCESS;
+  }
+
+  CallbackReturn on_shutdown(const rclcpp_lifecycle::State &amp;) override
+  {
+    publisher_.reset();
+    RCLCPP_INFO(get_logger(), "shut down");
+    return CallbackReturn::SUCCESS;
+  }
+
+private:
+  std::string topic_;
+  int period_ms_;
+  std::string message_;
+  bool fail_on_activate_;
+  rclcpp_lifecycle::LifecyclePublisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;LifecycleTalker&gt;();
+  rclcpp::spin(node-&gt;get_node_base_interface());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e6-2">
+  <div class="eg-h">例题 · lifecycle_talker</div>
+  <p>
+    终端一用参数 <code>message:=hello</code> 启动节点；终端二依次发送四个
+    转换。每条日志对应一个回调，顺序与发送顺序一致。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes lifecycle_talker --ros-args -p message:=hello</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 lifecycle set /lifecycle_talker configure
+ros2 lifecycle set /lifecycle_talker activate
+ros2 lifecycle set /lifecycle_talker deactivate
+ros2 lifecycle set /lifecycle_talker cleanup</code></pre>
+<pre class="out" data-label="预期输出">[INFO] [lifecycle_talker]: configured: message='hello'
+[INFO] [lifecycle_talker]: activated
+[INFO] [lifecycle_talker]: deactivated
+[INFO] [lifecycle_talker]: cleaned up</pre>
+  <p>
+    <code>configured</code> 一行带出配置时读到的消息内容；<code>activated</code>
+    表示发布者已经打开；<code>deactivated</code> 关闭发布；<code>cleaned up</code>
+    释放发布者。节点本身仍在运行，可以再次配置。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-3</div>
+  <p>用参数 <code>message:=calibration</code> 启动 <code>lifecycle_talker</code>，发送 <code>configure</code>，只保留配置回调打印的那一行。</p>
+<pre class="out" data-label="预期输出">[INFO] [lifecycle_talker]: configured: message='calibration'</pre>
+  <details class="ans" data-run="示例代码/答案/6-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    参数在构造节点时声明并赋值，<code>on_configure</code> 读到的就是
+    命令行传入的 <code>calibration</code>。日志写在节点进程里，脚本把
+    节点输出重定向到临时文件后再筛选。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+log=/tmp/lifecycle_6_3.log
+ros2 run robot_nodes lifecycle_talker \
+  --ros-args -p message:=calibration &gt;"$log" 2&gt;&amp;1 &amp;
+sleep 1
+ros2 lifecycle set /lifecycle_talker configure &gt;/dev/null
+sleep 0.2
+grep 'configured' "$log"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [lifecycle_talker]: configured: message='calibration'</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-4</div>
+  <p>启动 <code>lifecycle_talker</code>，配置并激活后读取一条 <code>/chatter</code> 消息；再停用，等待一秒后重新读取。第二次读取没有消息时打印 <code>no message</code>。</p>
+<pre class="out" data-label="预期输出">active
+no message</pre>
+  <details class="ans" data-run="示例代码/答案/6-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    激活后生命周期发布者打开，定时器每 500 毫秒发布一次
+    <code>active</code>；停用后发布者关闭，定时器仍在运行但不再发布。
+    第一次读取用 <code>head -n1</code> 去掉 <code>topic echo</code> 的
+    分隔线，第二次读取超时后打印 <code>no message</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 lifecycle set /lifecycle_talker configure &gt;/dev/null
+ros2 lifecycle set /lifecycle_talker activate &gt;/dev/null
+timeout 3 ros2 topic echo --once --field data /chatter 2&gt;/dev/null \
+  | head -n1
+ros2 lifecycle set /lifecycle_talker deactivate &gt;/dev/null
+sleep 0.7
+timeout 1.5 ros2 topic echo --once --field data /chatter 2&gt;/dev/null \
+  || echo 'no message'</code></pre>
+  <pre class="out" data-label="真实输出">active
+no message</pre>
+  <p>
+    第一段输出 <code>active</code>；停用后没有新消息，第二次读取超时。
+    这说明发布者的开关跟着生命周期状态变化，而不是跟着节点进程是否存活。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>继承 <code>LifecycleNode</code>，在配置回调里创建生命周期发布者，在激活与停用回调里开关它，并让定时器只在发布者激活时发送消息。</p>
+</section>
+
+<section class="lesson" id="l6-3">
+<h2><span class="no">6.3</span>生命周期管理节点</h2>
+
+<p>
+  生命周期节点不会自己转换状态，需要有调用者发送服务请求。管理节点
+  （manager node）是普通 <code>rclcpp::Node</code>，为每个被管理的节点创建
+  一个 <code>lifecycle_msgs/srv/ChangeState</code> 客户端，按给定顺序调用
+  <code>change_state</code>。
+</p>
+
+<h3 id="s6-3-1">管理节点</h3>
+
+<p>
+  转换名称在命令行里是字符串，在服务里是编号。
+  <code>lifecycle_msgs/msg/Transition</code> 定义了
+  <code>TRANSITION_CONFIGURE</code>、<code>TRANSITION_ACTIVATE</code>、
+  <code>TRANSITION_DEACTIVATE</code> 与 <code>TRANSITION_CLEANUP</code>
+  等常量；请求的 <code>transition.id</code> 填常量，服务返回
+  <code>success</code> 表示转换是否完成。
+</p>
+
+<p>
+  管理节点在启动时用 <code>wait_for_service</code> 等每个
+  <code>&lt;节点名&gt;/change_state</code> 出现。被管理的节点可能比管理
+  节点晚启动，等待服务比固定睡眠可靠。
+</p>
+
+<h3 id="s6-3-2">启动顺序</h3>
+
+<p>
+  下面的实现按参数 <code>nodes</code> 给出的顺序配置全部节点，再按同一
+  顺序激活；激活之间留 <code>gap_ms</code> 毫秒，让发现与连接有时间完成。
+  保持 <code>hold_ms</code> 毫秒后，按相反顺序停用，再按相反顺序清理。
+  依赖方排在前面，因此激活时上游先就绪，停用时下游先停下。
+</p>
+
+<h3 id="s6-3-3">失败处理</h3>
+
+<p>
+  任何一步返回失败，管理节点打印 <code>stopped after failure</code> 并停止，
+  不再执行后面的转换。已经激活的节点保持在原状态，便于检查现场。放进
+  launch 文件时，管理节点设 <code>on_exit="shutdown"</code>，管理节点退出
+  后启动器关闭其余进程。
+</p>
+
+<pre data-lang="C++" data-name="6.3-lifecycle_manager.cpp"><code>#include &lt;chrono&gt;
+#include &lt;map&gt;
+#include &lt;memory&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include "lifecycle_msgs/msg/transition.hpp"
+#include "lifecycle_msgs/srv/change_state.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+using Transition = lifecycle_msgs::msg::Transition;
+
+class LifecycleManager : public rclcpp::Node
+{
+public:
+  LifecycleManager()
+  : Node("lifecycle_manager")
+  {
+    nodes_ = split(declare_parameter&lt;std::string&gt;("nodes", ""));
+    hold_ms_ = declare_parameter&lt;int&gt;("hold_ms", 1200);
+    gap_ms_ = declare_parameter&lt;int&gt;("gap_ms", 300);
+    for (const auto &amp; node : nodes_) {
+      clients_[node] = create_client&lt;lifecycle_msgs::srv::ChangeState&gt;(
+        node + "/change_state");
+    }
+  }
+
+  bool run()
+  {
+    if (nodes_.empty()) {
+      RCLCPP_ERROR(get_logger(), "parameter 'nodes' is empty");
+      return false;
+    }
+
+    for (const auto &amp; node : nodes_) {
+      if (!clients_[node]-&gt;wait_for_service(3s)) {
+        RCLCPP_ERROR(get_logger(), "%s/change_state is not available", node.c_str());
+        return false;
+      }
+    }
+
+    for (const auto &amp; node : nodes_) {
+      if (!change(node, Transition::TRANSITION_CONFIGURE, "configure")) {
+        RCLCPP_ERROR(get_logger(), "stopped after failure");
+        return false;
+      }
+    }
+    for (const auto &amp; node : nodes_) {
+      if (!change(node, Transition::TRANSITION_ACTIVATE, "activate")) {
+        RCLCPP_ERROR(get_logger(), "stopped after failure");
+        return false;
+      }
+      rclcpp::sleep_for(std::chrono::milliseconds(gap_ms_));
+    }
+
+    rclcpp::sleep_for(std::chrono::milliseconds(hold_ms_));
+
+    for (auto it = nodes_.rbegin(); it != nodes_.rend(); ++it) {
+      if (!change(*it, Transition::TRANSITION_DEACTIVATE, "deactivate")) {
+        RCLCPP_ERROR(get_logger(), "stopped after failure");
+        return false;
+      }
+    }
+    for (auto it = nodes_.rbegin(); it != nodes_.rend(); ++it) {
+      if (!change(*it, Transition::TRANSITION_CLEANUP, "cleanup")) {
+        RCLCPP_ERROR(get_logger(), "stopped after failure");
+        return false;
+      }
+    }
+
+    RCLCPP_INFO(get_logger(), "done");
+    return true;
+  }
+
+private:
+  static std::vector&lt;std::string&gt; split(const std::string &amp; text)
+  {
+    std::vector&lt;std::string&gt; out;
+    std::istringstream stream(text);
+    std::string item;
+    while (std::getline(stream, item, ',')) {
+      if (!item.empty()) {
+        out.push_back(item);
+      }
+    }
+    return out;
+  }
+
+  bool change(const std::string &amp; node, uint8_t id, const char * action)
+  {
+    auto request = std::make_shared&lt;lifecycle_msgs::srv::ChangeState::Request&gt;();
+    request-&gt;transition.id = id;
+    auto future = clients_[node]-&gt;async_send_request(request);
+    const auto code = rclcpp::spin_until_future_complete(
+      shared_from_this(), future, 2s);
+    if (code != rclcpp::FutureReturnCode::SUCCESS) {
+      RCLCPP_ERROR(get_logger(), "%s %s: service call failed", action, node.c_str());
+      return false;
+    }
+    if (!future.get()-&gt;success) {
+      RCLCPP_ERROR(get_logger(), "%s %s: failed", action, node.c_str());
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "%s %s: success", action, node.c_str());
+    return true;
+  }
+
+  std::vector&lt;std::string&gt; nodes_;
+  int hold_ms_;
+  int gap_ms_;
+  std::map&lt;std::string, rclcpp::Client&lt;lifecycle_msgs::srv::ChangeState&gt;::SharedPtr&gt;
+  clients_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto manager = std::make_shared&lt;LifecycleManager&gt;();
+  manager-&gt;run();
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e6-3">
+  <div class="eg-h">例题 · 一个管理节点</div>
+  <p>
+    终端一启动节点 <code>alpha</code>，终端二让管理节点只管理它。管理节点
+    配置、激活、等待一小段时间，再停用并清理，最后打印 <code>done</code>。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes lifecycle_talker --ros-args \
+  -r __node:=alpha -p topic:=/alpha</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 run robot_nodes lifecycle_manager --ros-args \
+  -p nodes:=/alpha -p hold_ms:=300 -p gap_ms:=100</code></pre>
+<pre class="out" data-label="预期输出">[INFO] [lifecycle_manager]: configure /alpha: success
+[INFO] [lifecycle_manager]: activate /alpha: success
+[INFO] [lifecycle_manager]: deactivate /alpha: success
+[INFO] [lifecycle_manager]: cleanup /alpha: success
+[INFO] [lifecycle_manager]: done</pre>
+  <p>
+    只有一台节点时，顺序看不出正反；下一道练习用两个节点，清理与停用的
+    输出会按相反顺序出现。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-5</div>
+  <p>启动 <code>alpha</code> 与 <code>beta</code> 两个生命周期节点，话题分别为 <code>/alpha</code> 与 <code>/beta</code>。用管理节点管理 <code>/alpha,/beta</code>，<code>hold_ms:=300</code>、<code>gap_ms:=200</code>。</p>
+<pre class="out" data-label="预期输出">[INFO] [lifecycle_manager]: configure /alpha: success
+[INFO] [lifecycle_manager]: configure /beta: success
+[INFO] [lifecycle_manager]: activate /alpha: success
+[INFO] [lifecycle_manager]: activate /beta: success
+[INFO] [lifecycle_manager]: deactivate /beta: success
+[INFO] [lifecycle_manager]: deactivate /alpha: success
+[INFO] [lifecycle_manager]: cleanup /beta: success
+[INFO] [lifecycle_manager]: cleanup /alpha: success
+[INFO] [lifecycle_manager]: done</pre>
+  <details class="ans" data-run="示例代码/答案/6-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    两个节点各自声明不同的节点名与话题。管理节点按
+    <code>nodes:=/alpha,/beta</code> 的顺序配置与激活，再反向停用与清理；
+    <code>gap_ms</code> 让两次激活之间留出发现时间。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker \
+  --ros-args -r __node:=alpha -p topic:=/alpha &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes lifecycle_talker \
+  --ros-args -r __node:=beta -p topic:=/beta &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes lifecycle_manager \
+  --ros-args -p nodes:=/alpha,/beta -p hold_ms:=300 -p gap_ms:=200</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [lifecycle_manager]: configure /alpha: success
+[INFO] [lifecycle_manager]: configure /beta: success
+[INFO] [lifecycle_manager]: activate /alpha: success
+[INFO] [lifecycle_manager]: activate /beta: success
+[INFO] [lifecycle_manager]: deactivate /beta: success
+[INFO] [lifecycle_manager]: deactivate /alpha: success
+[INFO] [lifecycle_manager]: cleanup /beta: success
+[INFO] [lifecycle_manager]: cleanup /alpha: success
+[INFO] [lifecycle_manager]: done</pre>
+  <p>
+    前四行按 <code>alpha</code>、<code>beta</code> 的顺序出现，后四行按
+    <code>beta</code>、<code>alpha</code> 的顺序出现。管理节点最后打印
+    <code>done</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-6</div>
+  <p>启动 <code>alpha</code> 与 <code>faulty</code>，其中 <code>faulty</code> 设 <code>fail_on_activate:=true</code>。用管理节点管理 <code>/alpha,/faulty</code>，观察失败后管理节点是否继续。</p>
+<pre class="out" data-label="预期输出">[INFO] [lifecycle_manager]: configure /alpha: success
+[INFO] [lifecycle_manager]: configure /faulty: success
+[INFO] [lifecycle_manager]: activate /alpha: success
+[ERROR] [lifecycle_manager]: activate /faulty: failed
+[ERROR] [lifecycle_manager]: stopped after failure
+[ERROR] [faulty]: activation refused</pre>
+  <details class="ans" data-run="示例代码/答案/6-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>faulty</code> 的 <code>on_activate</code> 返回
+    <code>CallbackReturn::FAILURE</code>，服务响应里的
+    <code>success</code> 为假。管理节点在激活 <code>faulty</code> 时停止，
+    不再发送停用与清理请求，已经激活的 <code>alpha</code> 留在激活状态。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker \
+  --ros-args -r __node:=alpha -p topic:=/alpha &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes lifecycle_talker \
+  --ros-args -r __node:=faulty -p topic:=/faulty \
+  -p fail_on_activate:=true &gt;/tmp/faulty.log 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes lifecycle_manager \
+  --ros-args -p nodes:=/alpha,/faulty -p hold_ms:=300 -p gap_ms:=200
+grep 'activation refused' /tmp/faulty.log</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [lifecycle_manager]: configure /alpha: success
+[INFO] [lifecycle_manager]: configure /faulty: success
+[INFO] [lifecycle_manager]: activate /alpha: success
+[ERROR] [lifecycle_manager]: activate /faulty: failed
+[ERROR] [lifecycle_manager]: stopped after failure
+[ERROR] [faulty]: activation refused</pre>
+  <p>
+    <code>activate /faulty: failed</code> 与管理节点的
+    <code>stopped after failure</code> 是同一件事的两侧：服务端拒绝转换，
+    管理节点收到失败的响应后停止。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个普通节点作为管理器，为多个生命周期节点建立 <code>ChangeState</code> 客户端，按列表顺序配置与激活、按相反顺序停用与清理，并在一步失败时停止。</p>
+</section>
+
+<section class="lesson" id="l6-4">
+<h2><span class="no">6.4</span>启动文件与启动顺序</h2>
+
+<p>
+  生命周期节点、订阅者与管理节点可以放进同一个 launch 文件。启动器负责
+  创建进程；状态转换仍由管理节点按列表执行。启动文件的进程顺序不等于
+  状态顺序，真正决定先激活谁的是管理节点的 <code>nodes</code> 参数。
+</p>
+
+<h3 id="s6-4-1">启动文件</h3>
+
+<p>
+  下面的文件先启动监听者与发布者，再启动管理节点。管理节点的
+  <code>on_exit="shutdown"</code> 让启动器在管理节点结束后关闭整个启动
+  系统；<code>nodes</code> 把监听者排在发布者前面，<code>gap_ms</code>
+  给激活之间留出间隔。
+</p>
+<pre data-lang="XML" data-name="6.4-lifecycle.launch.xml"><code>&lt;launch&gt;
+  &lt;node pkg="robot_nodes" exec="lifecycle_listener"
+        name="lifecycle_listener" output="screen"/&gt;
+  &lt;node pkg="robot_nodes" exec="lifecycle_talker"
+        name="lifecycle_talker" output="screen"/&gt;
+  &lt;node pkg="robot_nodes" exec="lifecycle_manager"
+        name="lifecycle_manager" output="screen" on_exit="shutdown"&gt;
+    &lt;param name="nodes" value="/lifecycle_listener,/lifecycle_talker"/&gt;
+    &lt;param name="hold_ms" value="1500"/&gt;
+    &lt;param name="gap_ms" value="300"/&gt;
+  &lt;/node&gt;
+&lt;/launch&gt;</code></pre>
+<h3 id="s6-4-2">顺序与依赖</h3>
+
+<p>
+  管理节点先等待两个 <code>change_state</code> 服务，再按
+  <code>nodes</code> 的顺序配置。激活也按同一顺序：监听者先激活，发布者
+  后激活，发布者的第一批消息不会落空；停用时反过来，发布者先停，监听者
+  后停，发布者先停止发送，监听者再结束订阅。
+</p>
+
+<p>
+  管理节点在激活之间睡眠 <code>gap_ms</code> 毫秒，是为了让 DDS 发现
+  完成。真实系统里这个值要按网络与节点数量调整；它不替代
+  <code>wait_for_service</code>，后者只保证服务出现，不保证话题连接已经
+  建立。
+</p>
+
+<h3 id="s6-4-3">检查话题端点</h3>
+
+<p>
+  生命周期发布者在配置时创建，在激活时打开；生命周期订阅者在激活时才
+  创建。因此可以在不同阶段用 <code>ros2 topic info</code> 看端点数量：
+  两个节点都只配置、不激活时，发布者已经存在，订阅者还不存在。
+</p>
+
+<div class="eg" id="e6-4">
+  <div class="eg-h">例题 · 按顺序启动</div>
+  <p>
+    运行 <code>6.4-lifecycle.launch.xml</code>，只保留管理节点的日志行。
+    启动器为每个进程加前缀，管理节点是第三个进程，因此前缀是
+    <code>[lifecycle_manager-3]</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 6.4-lifecycle.launch.xml 2&gt;&amp;1 \
+  | grep -E '^\[lifecycle_manager-[0-9]+\]'</code></pre>
+<pre class="out" data-label="预期输出">[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /lifecycle_listener: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /lifecycle_talker: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /lifecycle_listener: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /lifecycle_talker: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /lifecycle_talker: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /lifecycle_listener: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /lifecycle_talker: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /lifecycle_listener: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: done</pre>
+  <p>
+    配置与激活按列出的顺序进行，停用与清理按相反顺序进行。管理节点退出后，
+    <code>on_exit="shutdown"</code> 关闭启动器与其余节点。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-7</div>
+  <p>运行 <code>lifecycle_two.launch.xml</code>，只保留管理节点的日志行。两个节点名是 <code>alpha</code> 与 <code>beta</code>。</p>
+<pre class="out" data-label="预期输出">[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: done</pre>
+  <details class="ans" data-run="示例代码/答案/6-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    启动文件里管理节点是第三个进程，因此日志前缀是
+    <code>[lifecycle_manager-3]</code>。用 <code>grep</code> 只保留这一组行，
+    启动器自己的路径、时间与进程编号不进入页面。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup lifecycle_two.launch.xml 2&gt;&amp;1 \
+  | grep -E '^\[lifecycle_manager-[0-9]+\]'</code></pre>
+  <pre class="out" data-label="真实输出">[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: configure /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: activate /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: deactivate /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /beta: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: cleanup /alpha: success
+[lifecycle_manager-3] [INFO] [lifecycle_manager]: done</pre>
+  <p>
+    配置与激活按 <code>/alpha,/beta</code> 的顺序，停用与清理反向。
+    管理节点的 <code>on_exit="shutdown"</code> 让启动器在它退出后关闭
+    两个节点。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 6-8</div>
+  <p>启动 <code>lifecycle_talker</code> 与 <code>lifecycle_listener</code>，只对两者发送 <code>configure</code>，打印 <code>/chatter</code> 的发布者与订阅者数量。</p>
+<pre class="out" data-label="预期输出">Publisher count: 1
+Subscription count: 0</pre>
+  <details class="ans" data-run="示例代码/答案/6-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    两个节点都只配置、不激活。发布者在 <code>on_configure</code> 中创建，
+    所以计数为 1；订阅者在 <code>on_activate</code> 中才创建，所以计数为 0。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes lifecycle_talker &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes lifecycle_listener &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 lifecycle set /lifecycle_talker configure &gt;/dev/null
+ros2 lifecycle set /lifecycle_listener configure &gt;/dev/null
+sleep 0.3
+ros2 topic info /chatter | grep -E '^(Publisher|Subscription) count'</code></pre>
+  <pre class="out" data-label="真实输出">Publisher count: 1
+Subscription count: 0</pre>
+  <p>
+    再对两个节点发送 <code>activate</code>，订阅计数才会变成 1。端点数量
+    因此可以用来判断生命周期节点当前是否已经激活。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把生命周期节点与管理节点放进 launch 文件，用 <code>on_exit="shutdown"</code> 收尾，并通过管理节点的列表控制配置、激活、停用与清理的顺序。</p>
+</section>
+
+<nav class="pager">
+  <a href="05-Launch与组合.html">← 第 5 部分 · Launch 与组合</a>
+  <span class="spacer"></span>
+  <a href="07-TF2.html">第 7 部分 · TF2 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

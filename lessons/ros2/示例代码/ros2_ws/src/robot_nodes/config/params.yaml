@@ -1,0 +1,5 @@
+# 2.5 的参数文件：节点名下一层是 ros__parameters，再下一层是参数键值。
+param_demo:
+  ros__parameters:
+    rate_ms: 200
+    message: "from file"

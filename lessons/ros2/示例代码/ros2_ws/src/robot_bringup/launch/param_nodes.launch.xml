@@ -1,0 +1,12 @@
+<launch>
+  <node pkg="robot_nodes" exec="parameter_node"
+        name="param_left" namespace="left" output="screen">
+    <param name="rate_ms" value="300"/>
+    <param name="message" value="left"/>
+  </node>
+  <node pkg="robot_nodes" exec="parameter_node"
+        name="param_right" namespace="right" output="screen">
+    <param name="rate_ms" value="500"/>
+    <param name="message" value="right"/>
+  </node>
+</launch>

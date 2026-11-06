@@ -690,6 +690,25 @@ table.compare td:first-child {
   white-space: nowrap;
 }
 
+/* ROS 2 首页的课程结构表：五列，前四列都很短。自动布局会把中文列压到
+   一个字宽，类型与课数竖着排；这里用 colgroup 定好列宽再固定布局。
+   窄屏放不下，改回自动布局，让内容自己断行。 */
+table.structure {
+  table-layout: fixed;
+}
+table.structure th, table.structure td {
+  padding-right: 0.9rem;
+}
+@media (max-width: 620px) {
+  table.structure { table-layout: auto; }
+}
+
+/* ROS 2 首页的推荐路径表：目标名短，不要逐字断行。 */
+table.paths th:first-child,
+table.paths td:first-child {
+  white-space: nowrap;
+}
+
 /* 速查表（附录 A 和 B）：列宽定死。
  *
  * 为什么不用默认的自动布局：中文能在任意一个字符处断行，所以一列里只要

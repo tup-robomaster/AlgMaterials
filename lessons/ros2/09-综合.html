@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 9 部分 · 综合：巡检流程 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 9.3 的控制器日志与 9.4 的验收输出有长行；终端遇到长行本来就会折，
+   这里只让本页的输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a class="active" href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" aria-current="page" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 9 部分 · 综合：巡检流程</div>
+  <a class="toc-l" href="#l9-1"><span class="n">9.1</span>项目拆分与接口设计</a>
+  <a class="toc-sub" href="#s9-1-1">包结构</a>
+  <a class="toc-sub" href="#s9-1-2">消息与服务</a>
+  <a class="toc-sub" href="#s9-1-3">动作与状态</a>
+  <a class="toc-sub" href="#e9-1">例题：查看接口定义</a>
+  <a class="toc-l" href="#l9-2"><span class="n">9.2</span>感知节点</a>
+  <a class="toc-sub" href="#s9-2-1">目标序列</a>
+  <a class="toc-sub" href="#s9-2-2">过滤与顺序</a>
+  <a class="toc-sub" href="#s9-2-3">发布时机</a>
+  <a class="toc-sub" href="#e9-2">例题：发布五个目标</a>
+  <a class="toc-l" href="#l9-3"><span class="n">9.3</span>控制节点</a>
+  <a class="toc-sub" href="#s9-3-1">模式服务</a>
+  <a class="toc-sub" href="#s9-3-2">动作客户端</a>
+  <a class="toc-sub" href="#s9-3-3">状态与计数</a>
+  <a class="toc-sub" href="#e9-3">例题：执行巡检目标</a>
+  <a class="toc-l" href="#l9-4"><span class="n">9.4</span>启动、参数、回放与验收</a>
+  <a class="toc-sub" href="#s9-4-1">启动文件</a>
+  <a class="toc-sub" href="#s9-4-2">参数覆盖</a>
+  <a class="toc-sub" href="#s9-4-3">验收脚本</a>
+  <a class="toc-sub" href="#e9-4">例题：一条命令启动巡检</a>
+</nav>
+
+<main class="main">
+
+<div class="part-head">
+  <div class="kicker">第 9 部分</div>
+  <h1>综合：巡检流程</h1>
+  <p class="lead">
+    本部分把前八部分的接口、话题、服务、动作、参数、launch、TF2 与测试
+    组合成一条可运行的巡检流程：感知节点发布目标，控制节点按模式调度动作，
+    启动文件统一参数，验收脚本检查最终计数。
+  </p>
+</div>
+
+<div class="aside req" data-prereq="1.1 1.2 2.1 2.2 2.3 3.1 3.2 3.3 5.1 5.2 5.3 7.1 7.2 7.3 7.4 8.4 8.5">
+  <b>前置</b>
+  <p>
+    先读过 1.1–1.2、2.1–2.3、3.1–3.3、5.1–5.3、7.1–7.4 与 8.4–8.5：
+    会写话题、服务与动作，会写 launch，会使用 TF2，会写单元测试并
+    按包检查。工作空间位于 <code>$HOME/ros2_ws</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l9-1">
+<h2><span class="no">9.1</span>项目拆分与接口设计</h2>
+
+<p>
+  一个可维护的机器人项目按职责拆包：接口包只放消息、服务与动作定义；
+  节点包放可执行程序；启动包放 launch 文件与参数文件。接口包被其余两个
+  包依赖，节点包只通过接口通信，启动包不包含业务代码。这样修改接口会
+  同时触发所有依赖包重新构建，而修改启动参数不会碰节点源码。
+</p>
+
+<h3 id="s9-1-1">包结构</h3>
+
+<p>
+  巡检流程沿用已有的三个包。<code>robot_interfaces</code> 提供
+  <code>Target.msg</code>、<code>Patrol.action</code>，并新增
+  <code>SetMode.srv</code> 与 <code>PatrolStatus.msg</code>；
+  <code>robot_nodes</code> 提供 <code>target_source</code>、
+  <code>patrol_controller</code> 与已有的 <code>patrol_server</code>；
+  <code>robot_bringup</code> 提供 launch 文件与验收脚本。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+src/
+├── robot_interfaces/
+│   ├── msg/Target.msg
+│   ├── msg/PatrolStatus.msg
+│   ├── srv/SetMode.srv
+│   └── action/Patrol.action
+├── robot_nodes/
+│   ├── src/9.2-target_source.cpp
+│   └── src/9.3-patrol_controller.cpp
+└── robot_bringup/
+    ├── launch/9.4-patrol.launch.py
+    └── launch/9.4-verify.sh</code></pre>
+
+<h3 id="s9-1-2">消息与服务</h3>
+
+<p>
+  感知节点发布 <code>Target</code>，字段是坐标与标签。控制节点通过
+  <code>SetMode</code> 服务接收模式字符串，响应报告是否接受。模式只有
+  三个合法值：<code>idle</code> 表示待机并忽略目标，<code>patrol</code>
+  表示接受目标并执行，<code>stop</code> 表示停止当前动作并清空队列。
+  非法值返回 <code>success=false</code>，不改变当前模式。
+</p>
+
+<pre data-lang="SRV" data-name="SetMode.srv"><code>string mode
+---
+bool success
+string message</code></pre>
+<p>
+  状态消息 <code>PatrolStatus</code> 由控制节点发布。它把模式、当前目标、
+  坐标与三类计数放在一条消息里，外部工具只订阅一个话题就能看到整体进度。
+  计数分开记录完成、失败与取消，避免把取消误算成失败。
+</p>
+
+<pre data-lang="MSG" data-name="PatrolStatus.msg"><code>string state
+string current_target
+float64 x
+float64 y
+int32 completed
+int32 failed
+int32 canceled</code></pre>
+<h3 id="s9-1-3">动作与状态</h3>
+
+<p>
+  移动一个目标需要持续数秒，期间要报告剩余步数，还要允许取消，因此用
+  动作而不是服务。服务适合“发一次请求、立即得到响应”的操作，例如切换
+  模式；动作适合“目标、反馈、结果”三段式的长任务。
+  <code>Patrol.action</code> 的目标是步数，反馈是剩余步数，结果是是否
+  成功。
+</p>
+
+<div class="eg" id="e9-1">
+  <div class="eg-h">例题 · 查看接口定义</div>
+  <p>
+    接口定义由 <code>ros2 interface show</code> 从安装环境读取。
+    前半段是 <code>SetMode</code> 的请求与响应，中间的三条横线分隔两段；
+    后半段是 <code>PatrolStatus</code> 的字段。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show robot_interfaces/srv/SetMode
+ros2 interface show robot_interfaces/msg/PatrolStatus</code></pre>
+  <pre class="out" data-label="真实输出">string mode
+---
+bool success
+string message
+string state
+string current_target
+float64 x
+float64 y
+int32 completed
+int32 failed
+int32 canceled</pre>
+  <p>
+    <code>SetMode</code> 的请求只有 <code>mode</code>，响应有
+    <code>success</code> 与 <code>message</code>。状态消息的字段顺序
+    与定义文件一致；前四个字段描述当前状态，最后三个是计数。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-1</div>
+  <p>为巡检状态补一个 <code>PatrolStatus.msg</code>，包含模式、当前目标、坐标、完成数、失败数与取消数，并查看它的字段顺序。</p>
+  <pre class="out" data-label="预期输出">string state
+string current_target
+float64 x
+float64 y
+int32 completed
+int32 failed
+int32 canceled</pre>
+  <details class="ans" data-run="示例代码/答案/9-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    状态消息放在 <code>robot_interfaces/msg</code>，字段按“当前状态在前、
+    计数在后”排列。修改后必须重新构建接口包，安装目录里才会出现新的
+    消息定义。
+  </p>
+  <pre data-lang="MSG"><code>string state
+string current_target
+float64 x
+float64 y
+int32 completed
+int32 failed
+int32 canceled</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_interfaces &gt;/dev/null 2&gt;&amp;1
+source install/setup.bash
+ros2 interface show robot_interfaces/msg/PatrolStatus</code></pre>
+  <pre class="out" data-label="真实输出">string state
+string current_target
+float64 x
+float64 y
+int32 completed
+int32 failed
+int32 canceled</pre>
+  <p>
+    输出顺序与定义文件一致。两个字符串与两个坐标描述当前目标，后三个整数
+    分别记录完成、失败与取消，取消没有被并入失败。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-2</div>
+  <p>查看 <code>Patrol.action</code> 的三段定义，说明为什么巡检移动用动作而不是服务。</p>
+  <pre class="out" data-label="预期输出">int32 steps
+---
+bool success
+---
+int32 remaining</pre>
+  <details class="ans" data-run="示例代码/答案/9-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    动作定义用两条横线分成三段：目标、结果、反馈。巡检目标需要执行数秒，
+    期间要报告剩余步数，还要允许取消，这些都不是一次请求与响应能表达的。
+    服务只适合立即完成的切换操作。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show robot_interfaces/action/Patrol</code></pre>
+  <pre class="out" data-label="真实输出">int32 steps
+---
+bool success
+---
+int32 remaining</pre>
+  <p>
+    第一段 <code>steps</code> 是目标，第二段 <code>success</code> 是结果，
+    第三段 <code>remaining</code> 是反馈。客户端发送目标后可以先收到多次
+    反馈，最后收到一次结果。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按接口、节点、启动三层拆分 ROS 2 项目，为长任务选择动作、为即时切换选择服务，并用一条状态消息汇总模式、当前目标与完成、失败、取消计数。</p>
+</section>
+
+<section class="lesson" id="l9-2">
+<h2><span class="no">9.2</span>感知节点</h2>
+
+<p>
+  感知节点把检测结果转成目标消息。本课的节点不接真实传感器，而是按固定
+  顺序发布五个目标，其中一个与前面的目标重复。固定序列让后续控制逻辑
+  可复现，也方便检查去重、过滤与顺序。
+</p>
+
+<h3 id="s9-2-1">目标序列</h3>
+
+<p>
+  五个目标依次是 <code>alpha(1.0, 0.0)</code>、
+  <code>beta(2.0, 1.0)</code>、重复的 <code>beta</code>、
+  <code>gamma(0.5, −1.0)</code> 与 <code>delta(3.0, 0.5)</code>。
+  节点每 400 毫秒发布一条，发完最后一条后等待一个周期再关闭，给传输留出
+  时间。消息类型是第 1 部分定义的 <code>Target</code>。
+</p>
+
+<pre data-lang="C++" data-name="9.2-target_source.cpp"><code>#include &lt;chrono&gt;
+#include &lt;cmath&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/target.hpp"
+
+using namespace std::chrono_literals;
+
+namespace
+{
+struct TargetSpec
+{
+  double x;
+  double y;
+  const char * label;
+};
+}  // namespace
+
+class TargetSource : public rclcpp::Node
+{
+public:
+  TargetSource()
+  : Node("target_source")
+  {
+    reverse_ = declare_parameter&lt;bool&gt;("reverse", false);
+    max_distance_ = declare_parameter&lt;double&gt;("max_distance", 0.0);
+    start_delay_ms_ = declare_parameter&lt;int&gt;("start_delay_ms", 0);
+    wait_for_subscriber_ = declare_parameter&lt;bool&gt;("wait_for_subscriber", false);
+
+    specs_ = {
+      {1.0, 0.0, "alpha"},
+      {2.0, 1.0, "beta"},
+      {2.0, 1.0, "beta"},
+      {0.5, -1.0, "gamma"},
+      {3.0, 0.5, "delta"},
+    };
+    start_time_ = std::chrono::steady_clock::now();
+
+    publisher_ = create_publisher&lt;robot_interfaces::msg::Target&gt;("target", 10);
+    timer_ = create_wall_timer(400ms, [this]() {publish_next();});
+  }
+
+private:
+  void publish_next()
+  {
+    const auto elapsed =
+      std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(
+      std::chrono::steady_clock::now() - start_time_).count();
+    if (elapsed &lt; start_delay_ms_) {
+      return;
+    }
+    if (wait_for_subscriber_ &amp;&amp; index_ == 0 &amp;&amp;
+      publisher_-&gt;get_subscription_count() == 0)
+    {
+      return;
+    }
+    if (index_ &gt;= specs_.size()) {
+      rclcpp::shutdown();
+      return;
+    }
+
+    const TargetSpec &amp; spec = specs_[reverse_ ? specs_.size() - 1 - index_ : index_];
+    ++index_;
+
+    const double distance = std::hypot(spec.x, spec.y);
+    if (max_distance_ &gt; 0.0 &amp;&amp; distance &gt; max_distance_) {
+      RCLCPP_INFO(
+        get_logger(), "skip: %s (%.2f, %.2f) distance=%.2f",
+        spec.label, spec.x, spec.y, distance);
+    } else {
+      robot_interfaces::msg::Target target;
+      target.x = spec.x;
+      target.y = spec.y;
+      target.label = spec.label;
+      publisher_-&gt;publish(target);
+      ++published_;
+      RCLCPP_INFO(
+        get_logger(), "publish: %s (%.2f, %.2f)", spec.label, spec.x, spec.y);
+    }
+
+    if (index_ &gt;= specs_.size()) {
+      RCLCPP_INFO(get_logger(), "done: published %zu targets", published_);
+    }
+  }
+
+  bool reverse_{false};
+  bool wait_for_subscriber_{false};
+  double max_distance_{0.0};
+  int start_delay_ms_{0};
+  std::size_t index_{0};
+  std::size_t published_{0};
+  std::vector&lt;TargetSpec&gt; specs_;
+  std::chrono::steady_clock::time_point start_time_;
+  rclcpp::Publisher&lt;robot_interfaces::msg::Target&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TargetSource&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<h3 id="s9-2-2">过滤与顺序</h3>
+
+<p>
+  参数 <code>max_distance</code> 按目标到原点的距离过滤，默认 0 表示
+  不过滤。距离用 <code>hypot(x, y)</code> 计算，超过阈值的目标打印
+  <code>skip</code> 后跳过。参数 <code>reverse</code> 为真时从最后一个
+  目标开始发布，用于检查控制节点是否依赖输入顺序。
+</p>
+
+<h3 id="s9-2-3">发布时机</h3>
+
+<p>
+  参数 <code>start_delay_ms</code> 让节点启动后先等待一段时间，供控制
+  节点完成动作客户端连接。参数 <code>wait_for_subscriber</code> 让节点在
+  第一条消息前等待至少一个订阅者，避免启动瞬间的消息丢失。两者都只影响
+  发布时机，不改变消息内容。
+</p>
+
+<div class="eg" id="e9-2">
+  <div class="eg-h">例题 · 发布五个目标</div>
+  <p>
+    默认参数下按定义顺序发布五条，重复的 <code>beta</code> 仍出现在输出
+    中；节点发完后主动打印总数并退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes target_source</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [target_source]: publish: alpha (1.00, 0.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: gamma (0.50, -1.00)
+[INFO] [target_source]: publish: delta (3.00, 0.50)
+[INFO] [target_source]: done: published 5 targets</pre>
+  <p>
+    五条消息的标签与坐标按定义输出。重复项没有被源节点删除，因为“是否
+    去重”属于控制策略；感知层只负责如实报告检测结果。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-3</div>
+  <p>用参数 <code>reverse:=true</code> 让感知节点从最后一个目标开始发布，确认五条消息的顺序完全倒过来。</p>
+  <pre class="out" data-label="预期输出">[INFO] [target_source]: publish: delta (3.00, 0.50)
+[INFO] [target_source]: publish: gamma (0.50, -1.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: alpha (1.00, 0.00)
+[INFO] [target_source]: done: published 5 targets</pre>
+  <details class="ans" data-run="示例代码/答案/9-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>reverse</code> 为真时，节点从数组末尾向前遍历。五个目标的内容
+    不变，只是发布顺序完全倒置，重复的 <code>beta</code> 仍在原来的相对
+    位置。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes target_source --ros-args -p reverse:=true</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [target_source]: publish: delta (3.00, 0.50)
+[INFO] [target_source]: publish: gamma (0.50, -1.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: beta (2.00, 1.00)
+[INFO] [target_source]: publish: alpha (1.00, 0.00)
+[INFO] [target_source]: done: published 5 targets</pre>
+  <p>
+    第一行是 <code>delta</code>，最后一行是 <code>alpha</code>，与正序
+    相反。发布总数仍是 5，说明反向只改变顺序，不过滤消息。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-4</div>
+  <p>用参数 <code>max_distance:=1.5</code> 只保留距离原点不超过 1.5 的目标，打印被跳过的目标与最终发布数。</p>
+  <pre class="out" data-label="预期输出">[INFO] [target_source]: publish: alpha (1.00, 0.00)
+[INFO] [target_source]: skip: beta (2.00, 1.00) distance=2.24
+[INFO] [target_source]: skip: beta (2.00, 1.00) distance=2.24
+[INFO] [target_source]: publish: gamma (0.50, -1.00)
+[INFO] [target_source]: skip: delta (3.00, 0.50) distance=3.04
+[INFO] [target_source]: done: published 2 targets</pre>
+  <details class="ans" data-run="示例代码/答案/9-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    距离阈值 1.5 只保留 <code>alpha</code> 与 <code>gamma</code>。
+    <code>beta</code> 的距离约为 2.24，<code>delta</code> 约为 3.04，
+    都超过阈值，打印 <code>skip</code> 后跳过。重复的 <code>beta</code>
+    两次都被跳过，因此跳过行出现两次。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes target_source --ros-args -p max_distance:=1.5</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [target_source]: publish: alpha (1.00, 0.00)
+[INFO] [target_source]: skip: beta (2.00, 1.00) distance=2.24
+[INFO] [target_source]: skip: beta (2.00, 1.00) distance=2.24
+[INFO] [target_source]: publish: gamma (0.50, -1.00)
+[INFO] [target_source]: skip: delta (3.00, 0.50) distance=3.04
+[INFO] [target_source]: done: published 2 targets</pre>
+  <p>
+    发布总数是 2，跳过三个目标。过滤发生在发布之前，被跳过的目标不会
+    出现在话题上。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按固定序列发布目标消息，用距离阈值过滤远目标，用参数控制发布顺序与启动时机，并在结束时打印发布总数。</p>
+</section>
+
+<section class="lesson" id="l9-3">
+<h2><span class="no">9.3</span>控制节点</h2>
+
+<p>
+  控制节点接收目标，按当前模式决定是否入队，为每个目标发送动作，并把
+  进度发布到状态话题。它同时提供模式服务，让外部在不重启节点的情况下
+  切换待机、巡检与停止。
+</p>
+
+<h3 id="s9-3-1">模式服务</h3>
+
+<p>
+  节点启动时读取参数 <code>initial_mode</code>，默认 <code>patrol</code>。
+  <code>SetMode</code> 服务只接受三个值；切换到 <code>stop</code> 时清空
+  等待队列，并对正在执行的目标调用 <code>async_cancel_goal</code>。
+  切换到 <code>idle</code> 不取消已经执行的目标，只是不再接受新目标。
+</p>
+
+<h3 id="s9-3-2">动作客户端</h3>
+
+<p>
+  控制节点是 <code>/patrol</code> 的动作客户端。它用
+  <code>wait_for_action_server</code> 等服务端出现，然后用
+  <code>async_send_goal</code> 发送目标。目标响应回调判断服务端是否接受；
+  反馈回调打印剩余步数；结果回调按 <code>SUCCEEDED</code>、
+  <code>CANCELED</code> 与其余状态分别计数。
+</p>
+
+<h3 id="s9-3-3">状态与计数</h3>
+
+<p>
+  目标按标签与坐标去重，重复项打印 <code>duplicate ignored</code> 后丢弃。
+  队列为空且最后一个目标到达后超过一秒，节点打印汇总并关闭。汇总里的
+  <code>received</code> 是收到的消息数，<code>accepted</code> 是去重后
+  入队的目标数，后三项是动作结果计数。
+</p>
+
+<pre data-lang="C++" data-name="9.3-patrol_controller.cpp"><code>#include &lt;chrono&gt;
+#include &lt;deque&gt;
+#include &lt;memory&gt;
+#include &lt;set&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+#include "robot_interfaces/msg/patrol_status.hpp"
+#include "robot_interfaces/msg/target.hpp"
+#include "robot_interfaces/srv/set_mode.hpp"
+
+using namespace std::chrono_literals;
+using Patrol = robot_interfaces::action::Patrol;
+using GoalHandle = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+class PatrolController : public rclcpp::Node
+{
+public:
+  PatrolController()
+  : Node("patrol_controller")
+  {
+    initial_mode_ = declare_parameter&lt;std::string&gt;("initial_mode", "patrol");
+    steps_per_target_ = declare_parameter&lt;int&gt;("steps_per_target", 2);
+    dedupe_ = declare_parameter&lt;bool&gt;("dedupe", true);
+    finish_when_empty_ = declare_parameter&lt;bool&gt;("finish_when_empty", true);
+    idle_timeout_sec_ = declare_parameter&lt;double&gt;("idle_timeout", 1.0);
+
+    mode_ = valid_mode(initial_mode_) ? initial_mode_ : "idle";
+    if (mode_ != initial_mode_) {
+      RCLCPP_WARN(
+        get_logger(), "unknown initial_mode '%s', use idle", initial_mode_.c_str());
+    }
+
+    target_sub_ = create_subscription&lt;robot_interfaces::msg::Target&gt;(
+      "target", 10, [this](const robot_interfaces::msg::Target::SharedPtr msg) {
+        on_target(*msg);
+      });
+
+    status_pub_ = create_publisher&lt;robot_interfaces::msg::PatrolStatus&gt;(
+      "patrol_status", 10);
+
+    mode_srv_ = create_service&lt;robot_interfaces::srv::SetMode&gt;(
+      "set_mode",
+      [this](
+        const std::shared_ptr&lt;robot_interfaces::srv::SetMode::Request&gt; request,
+        std::shared_ptr&lt;robot_interfaces::srv::SetMode::Response&gt; response) {
+        set_mode(*request, *response);
+      });
+
+    action_client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+    if (!action_client_-&gt;wait_for_action_server(5s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available");
+      rclcpp::shutdown();
+      return;
+    }
+
+    last_target_time_ = std::chrono::steady_clock::now();
+    timer_ = create_wall_timer(100ms, [this]() {tick();});
+    publish_status();
+  }
+
+private:
+  static bool valid_mode(const std::string &amp; mode)
+  {
+    return mode == "idle" || mode == "patrol" || mode == "stop";
+  }
+
+  void on_target(const robot_interfaces::msg::Target &amp; target)
+  {
+    ++received_;
+    last_target_time_ = std::chrono::steady_clock::now();
+
+    if (mode_ != "patrol") {
+      RCLCPP_INFO(
+        get_logger(), "target ignored: %s mode=%s",
+        target.label.c_str(), mode_.c_str());
+      publish_status();
+      return;
+    }
+
+    const std::string key = target.label + "|" + std::to_string(target.x) + "|" +
+      std::to_string(target.y);
+    if (dedupe_ &amp;&amp; seen_.count(key) &gt; 0) {
+      ++duplicates_;
+      RCLCPP_INFO(get_logger(), "duplicate ignored: %s", target.label.c_str());
+      publish_status();
+      return;
+    }
+    seen_.insert(key);
+    queue_.push_back(target);
+    ++accepted_;
+    RCLCPP_INFO(
+      get_logger(), "target queued: %s (%.2f, %.2f)",
+      target.label.c_str(), target.x, target.y);
+    publish_status();
+  }
+
+  void set_mode(
+    const robot_interfaces::srv::SetMode::Request &amp; request,
+    robot_interfaces::srv::SetMode::Response &amp; response)
+  {
+    if (!valid_mode(request.mode)) {
+      response.success = false;
+      response.message = "unknown mode: " + request.mode;
+      RCLCPP_WARN(get_logger(), "set_mode failed: %s", response.message.c_str());
+      return;
+    }
+
+    mode_ = request.mode;
+    response.success = true;
+    response.message = "mode=" + mode_;
+    RCLCPP_INFO(get_logger(), "set_mode: %s success=true", mode_.c_str());
+
+    if (mode_ == "stop") {
+      queue_.clear();
+      if (active_goal_) {
+        RCLCPP_INFO(get_logger(), "cancel requested: %s", current_target_.c_str());
+        action_client_-&gt;async_cancel_goal(active_goal_);
+      }
+    }
+    publish_status();
+  }
+
+  void start_next()
+  {
+    current_target_msg_ = queue_.front();
+    queue_.pop_front();
+    current_target_ = current_target_msg_.label;
+    current_x_ = current_target_msg_.x;
+    current_y_ = current_target_msg_.y;
+    active_ = true;
+    publish_status();
+
+    Patrol::Goal goal;
+    goal.steps = steps_per_target_;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.goal_response_callback =
+      [this](GoalHandle::SharedPtr handle) {
+        if (!handle) {
+          ++failed_;
+          active_ = false;
+          active_goal_.reset();
+          RCLCPP_ERROR(
+            get_logger(), "goal rejected: %s", current_target_.c_str());
+          publish_status();
+          return;
+        }
+        active_goal_ = handle;
+        RCLCPP_INFO(
+          get_logger(), "goal accepted: %s steps=%d",
+          current_target_.c_str(), steps_per_target_);
+      };
+    options.feedback_callback =
+      [this](GoalHandle::SharedPtr, const std::shared_ptr&lt;const Patrol::Feedback&gt; feedback) {
+        RCLCPP_INFO(
+          get_logger(), "feedback: %s remaining=%d",
+          current_target_.c_str(), feedback-&gt;remaining);
+      };
+    options.result_callback =
+      [this](const GoalHandle::WrappedResult &amp; result) {
+        active_ = false;
+        active_goal_.reset();
+        if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+          ++completed_;
+          RCLCPP_INFO(
+            get_logger(), "result: %s success=true", current_target_.c_str());
+        } else if (result.code == rclcpp_action::ResultCode::CANCELED) {
+          ++canceled_;
+          RCLCPP_INFO(
+            get_logger(), "result: %s canceled=true", current_target_.c_str());
+        } else {
+          ++failed_;
+          RCLCPP_INFO(
+            get_logger(), "result: %s success=false", current_target_.c_str());
+        }
+        publish_status();
+      };
+
+    action_client_-&gt;async_send_goal(goal, options);
+  }
+
+  void tick()
+  {
+    publish_status();
+
+    if (mode_ == "stop" &amp;&amp; !active_) {
+      finish();
+      return;
+    }
+    if (mode_ != "patrol") {
+      return;
+    }
+    if (!active_ &amp;&amp; !queue_.empty()) {
+      start_next();
+      return;
+    }
+    if (finish_when_empty_ &amp;&amp; !active_ &amp;&amp; queue_.empty() &amp;&amp; received_ &gt; 0) {
+      const double idle =
+        std::chrono::duration&lt;double&gt;(
+        std::chrono::steady_clock::now() - last_target_time_).count();
+      if (idle &gt;= idle_timeout_sec_) {
+        finish();
+      }
+    }
+  }
+
+  void finish()
+  {
+    if (finished_) {
+      return;
+    }
+    finished_ = true;
+    RCLCPP_INFO(
+      get_logger(),
+      "controller done: received=%d accepted=%zu completed=%d failed=%d canceled=%d",
+      received_, accepted_, completed_, failed_, canceled_);
+    publish_status();
+    rclcpp::shutdown();
+  }
+
+  void publish_status()
+  {
+    robot_interfaces::msg::PatrolStatus status;
+    status.state = mode_;
+    status.current_target = current_target_.empty() ? "-" : current_target_;
+    status.x = current_x_;
+    status.y = current_y_;
+    status.completed = completed_;
+    status.failed = failed_;
+    status.canceled = canceled_;
+    status_pub_-&gt;publish(status);
+  }
+
+  std::string initial_mode_;
+  std::string mode_;
+  std::string current_target_;
+  robot_interfaces::msg::Target current_target_msg_;
+  double current_x_{0.0};
+  double current_y_{0.0};
+  int steps_per_target_{2};
+  bool dedupe_{true};
+  bool finish_when_empty_{true};
+  bool active_{false};
+  bool finished_{false};
+  double idle_timeout_sec_{1.0};
+  int received_{0};
+  int duplicates_{0};
+  int completed_{0};
+  int failed_{0};
+  int canceled_{0};
+  std::size_t accepted_{0};
+  std::set&lt;std::string&gt; seen_;
+  std::deque&lt;robot_interfaces::msg::Target&gt; queue_;
+  std::chrono::steady_clock::time_point last_target_time_;
+  GoalHandle::SharedPtr active_goal_;
+  rclcpp::Subscription&lt;robot_interfaces::msg::Target&gt;::SharedPtr target_sub_;
+  rclcpp::Publisher&lt;robot_interfaces::msg::PatrolStatus&gt;::SharedPtr status_pub_;
+  rclcpp::Service&lt;robot_interfaces::srv::SetMode&gt;::SharedPtr mode_srv_;
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr action_client_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;PatrolController&gt;();
+  // 等待服务端失败时构造函数里已经 shutdown，这时不再进入 spin。
+  if (rclcpp::ok()) {
+    rclcpp::spin(node);
+  }
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e9-3">
+  <div class="eg-h">例题 · 执行巡检目标</div>
+  <p>
+    先在另一个终端启动 <code>patrol_server</code>，再启动本控制器，最后
+    启动 9.2 的感知节点。控制器收到五个目标，去重后执行四个，每个目标
+    两步。最后一行给出完整计数。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes patrol_controller</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [patrol_controller]: target queued: alpha (1.00, 0.00)
+[INFO] [patrol_controller]: goal accepted: alpha steps=2
+[INFO] [patrol_controller]: target queued: beta (2.00, 1.00)
+[INFO] [patrol_controller]: duplicate ignored: beta
+[INFO] [patrol_controller]: feedback: alpha remaining=1
+[INFO] [patrol_controller]: target queued: gamma (0.50, -1.00)
+[INFO] [patrol_controller]: target queued: delta (3.00, 0.50)
+[INFO] [patrol_controller]: feedback: alpha remaining=0
+[INFO] [patrol_controller]: result: alpha success=true
+[INFO] [patrol_controller]: goal accepted: beta steps=2
+[INFO] [patrol_controller]: feedback: beta remaining=1
+[INFO] [patrol_controller]: feedback: beta remaining=0
+[INFO] [patrol_controller]: result: beta success=true
+[INFO] [patrol_controller]: goal accepted: gamma steps=2
+[INFO] [patrol_controller]: feedback: gamma remaining=1
+[INFO] [patrol_controller]: feedback: gamma remaining=0
+[INFO] [patrol_controller]: result: gamma success=true
+[INFO] [patrol_controller]: goal accepted: delta steps=2
+[INFO] [patrol_controller]: feedback: delta remaining=1
+[INFO] [patrol_controller]: feedback: delta remaining=0
+[INFO] [patrol_controller]: result: delta success=true
+[INFO] [patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <p>
+    重复的 <code>beta</code> 只入队一次，因此 <code>accepted</code> 是 4。
+    四个目标各执行两步，反馈从 1 降到 0，结果全部成功。汇总行中
+    <code>received</code> 仍为 5，说明去重发生在入队之前，没有丢弃原始
+    消息。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-5</div>
+  <p>用参数 <code>initial_mode:=idle</code> 启动控制器，再发送五个目标。确认每个目标都被忽略，并用 <code>ros2 service call</code> 调用 <code>/set_mode</code>，把模式设为 <code>idle</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [patrol_controller]: target ignored: alpha mode=idle
+[INFO] [patrol_controller]: target ignored: beta mode=idle
+[INFO] [patrol_controller]: target ignored: beta mode=idle
+[INFO] [patrol_controller]: target ignored: gamma mode=idle
+[INFO] [patrol_controller]: target ignored: delta mode=idle
+[INFO] [patrol_controller]: set_mode: idle success=true
+response:
+robot_interfaces.srv.SetMode_Response(success=True, message='mode=idle')</pre>
+  <details class="ans" data-run="示例代码/答案/9-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>initial_mode:=idle</code> 让控制器启动即为待机。待机时收到的
+    目标只打印忽略行，不入队、不发送动作。随后调用 <code>/set_mode</code>
+    把模式再次设为 <code>idle</code>，服务返回成功。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes patrol_server &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes patrol_controller --ros-args -p initial_mode:=idle &amp;
+ros2 run robot_nodes target_source --ros-args -p wait_for_subscriber:=true
+ros2 service call /set_mode robot_interfaces/srv/SetMode "{mode: 'idle'}"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [patrol_controller]: target ignored: alpha mode=idle
+[INFO] [patrol_controller]: target ignored: beta mode=idle
+[INFO] [patrol_controller]: target ignored: beta mode=idle
+[INFO] [patrol_controller]: target ignored: gamma mode=idle
+[INFO] [patrol_controller]: target ignored: delta mode=idle
+[INFO] [patrol_controller]: set_mode: idle success=true
+response:
+robot_interfaces.srv.SetMode_Response(success=True, message='mode=idle')</pre>
+  <p>
+    五行 <code>target ignored</code> 对应五个目标，模式字段都是
+    <code>idle</code>。服务响应的 <code>success=True</code> 表示模式值
+    合法；重复设置为当前模式也算成功。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-6</div>
+  <p>用参数 <code>steps_per_target:=0</code> 让服务端拒绝每个目标，确认控制器把四次拒绝都计入失败，并打印最终汇总。</p>
+  <pre class="out" data-label="预期输出">[ERROR] [patrol_controller]: goal rejected: alpha
+[ERROR] [patrol_controller]: goal rejected: beta
+[ERROR] [patrol_controller]: goal rejected: gamma
+[ERROR] [patrol_controller]: goal rejected: delta
+[INFO] [patrol_controller]: controller done: received=5 accepted=4 completed=0 failed=4 canceled=0</pre>
+  <details class="ans" data-run="示例代码/答案/9-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>steps_per_target:=0</code> 让服务端在收到目标时立即拒绝。
+    控制器的目标响应回调发现 <code>accepted=false</code>，打印拒绝行并把
+    失败计数加一。四个去重后的目标各拒绝一次。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes patrol_server &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes patrol_controller --ros-args -p steps_per_target:=0 &amp;
+ros2 run robot_nodes target_source --ros-args -p wait_for_subscriber:=true</code></pre>
+  <pre class="out" data-label="真实输出">[ERROR] [patrol_controller]: goal rejected: alpha
+[ERROR] [patrol_controller]: goal rejected: beta
+[ERROR] [patrol_controller]: goal rejected: gamma
+[ERROR] [patrol_controller]: goal rejected: delta
+[INFO] [patrol_controller]: controller done: received=5 accepted=4 completed=0 failed=4 canceled=0</pre>
+  <p>
+    四行 <code>goal rejected</code> 后是汇总行：收到 5 条、接受 4 个、
+    完成 0、失败 4、取消 0。拒绝发生在动作开始之前，因此完成数为 0，
+    失败数等于接受数。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用服务切换控制节点的待机、巡检与停止模式，用动作客户端执行目标并处理反馈、结果与取消，用状态消息和汇总行报告完成、失败与取消计数。</p>
+</section>
+
+<section class="lesson" id="l9-4">
+<h2><span class="no">9.4</span>启动、参数、回放与验收</h2>
+
+<p>
+  前面的节点分别启动时要记住终端顺序与参数。启动文件把节点、参数与
+  退出策略写在一起，验收脚本则在固定时间内等待结果并提取关键日志。
+  这样同一条命令可以在不同机器上重复执行，输出可以直接放进报告。
+</p>
+
+<h3 id="s9-4-1">启动文件</h3>
+
+<p>
+  <code>9.4-patrol.launch.py</code> 启动四个节点：静态坐标广播
+  <code>map → base_link</code>、动作服务端、控制器与感知节点。控制器加上
+  <code>on_exit=Shutdown()</code>，控制器退出后 launch 自动关闭其余节点，
+  不需要手工按 <kbd>Ctrl+C</kbd>。
+</p>
+
+<pre data-lang="Python" data-name="9.4-patrol.launch.py"><code>from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, Shutdown
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+
+
+def generate_launch_description():
+    steps = LaunchConfiguration("steps_per_target")
+    delay = LaunchConfiguration("start_delay_ms")
+    max_distance = LaunchConfiguration("max_distance")
+    initial_mode = LaunchConfiguration("initial_mode")
+
+    static_tf = Node(
+        package="robot_nodes",
+        executable="static_tf",
+        parameters=[
+            {
+                "parent_frame": "map",
+                "child_frame": "base_link",
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "yaw_deg": 0.0,
+            }
+        ],
+    )
+
+    patrol_server = Node(
+        package="robot_nodes",
+        executable="patrol_server",
+    )
+
+    controller = Node(
+        package="robot_nodes",
+        executable="patrol_controller",
+        parameters=[
+            {"initial_mode": initial_mode},
+            {"steps_per_target": ParameterValue(steps, value_type=int)},
+            {"finish_when_empty": True},
+        ],
+        on_exit=Shutdown(),
+    )
+
+    target_source = Node(
+        package="robot_nodes",
+        executable="target_source",
+        parameters=[
+            {"start_delay_ms": ParameterValue(delay, value_type=int)},
+            {"max_distance": ParameterValue(max_distance, value_type=float)},
+            {"wait_for_subscriber": True},
+        ],
+    )
+
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument("steps_per_target", default_value="2"),
+            DeclareLaunchArgument("start_delay_ms", default_value="1500"),
+            DeclareLaunchArgument("max_distance", default_value="0.0"),
+            DeclareLaunchArgument("initial_mode", default_value="patrol"),
+            static_tf,
+            patrol_server,
+            controller,
+            target_source,
+        ]
+    )</code></pre>
+<h3 id="s9-4-2">参数覆盖</h3>
+
+<p>
+  <code>DeclareLaunchArgument</code> 声明可在命令行覆盖的参数。运行
+  <code>ros2 launch 包名 文件 参数:=值</code> 时，值进入对应的
+  <code>Node</code>。数值参数用 <code>ParameterValue(..., value_type=int)</code>
+  转换，否则 launch 会把它们当成字符串。
+</p>
+
+<h3 id="s9-4-3">验收脚本</h3>
+
+<p>
+  <code>9.4-verify.sh</code> 运行 launch，把日志写入临时文件，等 launch
+  返回后提取发布、跳过、去重、目标接受与汇总行，并统一去掉进程编号与
+  时间戳。退出码由 <code>ros2 launch</code> 决定；节点断言失败或 launch
+  超时都会让脚本失败。
+</p>
+
+<pre data-lang="Bash" data-name="9.4-verify.sh"><code>set -euo pipefail
+
+steps=${1:-2}
+max_distance=${2:-0.0}
+log=$(mktemp)
+trap 'rm -f "$log"' EXIT
+
+ros2 launch robot_bringup 9.4-patrol.launch.py \
+  steps_per_target:="$steps" max_distance:="$max_distance" &gt;"$log" 2&gt;&amp;1
+
+grep -E 'publish:|skip:|duplicate ignored:|goal accepted:|controller done:' "$log" |
+  sed -E 's/^\[([a-z_]+)-[0-9]+\] \[INFO\] (\[[0-9.]+\] )?\[[a-z_]+\]: /[\1]: /'</code></pre>
+<div class="eg" id="e9-4">
+  <div class="eg-h">例题 · 一条命令启动巡检</div>
+  <p>
+    脚本按默认参数运行：等待 1.5 秒后发布五个目标，控制器去重后执行四个，
+    每个目标两步。控制器退出后 launch 关闭其余节点，脚本打印筛选后的日志。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash src/robot_bringup/launch/9.4-verify.sh</code></pre>
+  <pre class="out" data-label="真实输出">[target_source]: publish: alpha (1.00, 0.00)
+[patrol_server]: goal accepted: steps=2
+[patrol_controller]: goal accepted: alpha steps=2
+[target_source]: publish: beta (2.00, 1.00)
+[target_source]: publish: beta (2.00, 1.00)
+[patrol_controller]: duplicate ignored: beta
+[target_source]: publish: gamma (0.50, -1.00)
+[target_source]: publish: delta (3.00, 0.50)
+[patrol_server]: goal accepted: steps=2
+[patrol_controller]: goal accepted: beta steps=2
+[patrol_server]: goal accepted: steps=2
+[patrol_controller]: goal accepted: gamma steps=2
+[patrol_server]: goal accepted: steps=2
+[patrol_controller]: goal accepted: delta steps=2
+[patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <p>
+    五个目标全部到达，重复项被控制器忽略，四个目标各执行两步。最后的
+    汇总行与单独运行控制器时一致，说明 launch 没有改变业务逻辑。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-7</div>
+  <p>用参数覆盖把每个目标的步数改成 1，重新运行验收脚本，确认四个目标仍然完成。</p>
+  <pre class="out" data-label="预期输出">steps_per_target: 1
+[patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <details class="ans" data-run="示例代码/答案/9-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    验收脚本的第一个位置参数是每个目标的步数。传 1 后，launch 里的
+    <code>steps_per_target</code> 被覆盖，服务端每个目标只走一步。
+    去重与目标数量不变。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash src/robot_bringup/launch/9.4-verify.sh 1</code></pre>
+  <pre class="out" data-label="真实输出">steps_per_target: 1
+[patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <p>
+    汇总行仍是 <code>received=5 accepted=4 completed=4</code>。步数只改变
+    每个目标执行的时长与反馈次数，不改变目标个数与成功判定。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 9-8</div>
+  <p>用参数覆盖把 <code>max_distance</code> 设为 1.5，重新运行验收脚本。解释为什么汇总行的 <code>received</code> 与 <code>accepted</code> 都变成 2。</p>
+  <pre class="out" data-label="预期输出">max_distance: 1.5
+[patrol_controller]: controller done: received=2 accepted=2 completed=2 failed=0 canceled=0</pre>
+  <details class="ans" data-run="示例代码/答案/9-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    第二个位置参数是距离阈值。传 1.5 后，感知节点只发布
+    <code>alpha</code> 与 <code>gamma</code>，控制节点只收到两条消息，
+    去重后两个目标都入队并完成。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash src/robot_bringup/launch/9.4-verify.sh 2 1.5</code></pre>
+  <pre class="out" data-label="真实输出">max_distance: 1.5
+[patrol_controller]: controller done: received=2 accepted=2 completed=2 failed=0 canceled=0</pre>
+  <p>
+    <code>received</code> 统计控制器收到的话题消息，过滤发生在感知节点
+    发布之前，因此它降到 2；<code>accepted</code> 也降到 2，因为两条都
+    不重复。两个目标全部完成，失败与取消都是 0。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 launch 文件组合坐标广播、动作服务端、控制节点与感知节点，声明可覆盖的参数，用 <code>on_exit</code> 控制退出，并写一个提取关键日志的验收脚本。</p>
+</section>
+
+<nav class="pager">
+  <a href="08-工具与测试.html">← 第 8 部分 · 工具与测试</a>
+  <span class="spacer"></span>
+  <a href="10-检测题.html">第 10 部分 · 检测题 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

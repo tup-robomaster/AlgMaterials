@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 部分 · 服务与参数 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 2.6 的输出里有一行超过阅读栏宽；终端遇到长行本来就会折，这里只让本页的
+   输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a class="active" href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" aria-current="page" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 2 部分 · 服务与参数</div>
+  <a class="toc-l" href="#l2-1"><span class="n">2.1</span>服务端</a>
+  <a class="toc-sub" href="#s2-1-1">请求与响应</a>
+  <a class="toc-sub" href="#s2-1-2">创建服务端与回调</a>
+  <a class="toc-sub" href="#e2-1">例题：add_server</a>
+  <a class="toc-l" href="#l2-2"><span class="n">2.2</span>客户端</a>
+  <a class="toc-sub" href="#s2-2-1">创建客户端</a>
+  <a class="toc-sub" href="#s2-2-2">等待与读取响应</a>
+  <a class="toc-sub" href="#e2-2">例题：add_client</a>
+  <a class="toc-l" href="#l2-3"><span class="n">2.3</span>自定义服务</a>
+  <a class="toc-sub" href="#s2-3-1">.srv 文件</a>
+  <a class="toc-sub" href="#s2-3-2">构建接口包</a>
+  <a class="toc-sub" href="#s2-3-3">输入校验</a>
+  <a class="toc-sub" href="#e2-3">例题：面积服务</a>
+  <a class="toc-l" href="#l2-4"><span class="n">2.4</span>参数</a>
+  <a class="toc-sub" href="#s2-4-1">声明与读取</a>
+  <a class="toc-sub" href="#s2-4-2">命令行读写</a>
+  <a class="toc-sub" href="#s2-4-3">参数回调</a>
+  <a class="toc-sub" href="#e2-4">例题：parameter_node</a>
+  <a class="toc-l" href="#l2-5"><span class="n">2.5</span>参数文件与动态修改</a>
+  <a class="toc-sub" href="#s2-5-1">YAML 层级</a>
+  <a class="toc-sub" href="#s2-5-2">加载与覆盖</a>
+  <a class="toc-sub" href="#s2-5-3">动态修改</a>
+  <a class="toc-sub" href="#e2-5">例题：参数文件</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 2 部分</div>
+  <h1>服务与参数</h1>
+  <p class="part-lead">
+    服务是一次请求、一次响应的调用；参数是节点在运行期间可以读取与修改的
+    键值配置。这一部分先写服务端与客户端，再定义自己的服务类型，
+    最后用命令行与参数文件修改节点行为。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="1.1 1.2 1.3">
+  <b>前置</b>
+  <p>
+    先读完第 1 部分的 1.1–1.3：会写发布者与订阅者，会构建功能包，
+    会读生成的消息头文件与 <code>ros2 interface show</code> 的输出。
+    自定义服务沿用同一套接口包与构建流程。
+  </p>
+</div>
+
+<section class="lesson" id="l2-1">
+<h2><span class="no">2.1</span>服务端</h2>
+
+<p>
+  服务（service）采用请求—响应模型：客户端发送一次请求（request），
+  服务端（server）的回调处理这次请求，写回一次响应（response），
+  调用结束。与话题不同，服务端不持续发布数据，客户端也不订阅；
+  一次调用对应一次回调，调用方在收到响应之前一直等待。
+</p>
+
+<h3 id="s2-1-1">请求与响应</h3>
+
+<p>
+  服务由名称和类型共同确定。名称是话题图中的标识，类型决定请求与响应
+  各有哪些字段。课程沿用 <code>example_interfaces/srv/AddTwoInts</code>：
+  请求有两个 64 位整数字段 <code>a</code> 与 <code>b</code>，
+  响应有一个 64 位整数字段 <code>sum</code>。
+</p>
+
+<pre data-lang="SRV"><code>int64 a
+int64 b
+---
+int64 sum</code></pre>
+
+<p>
+  文件中的 <code>---</code> 把请求字段与响应字段分开。生成的头文件里，
+  请求类型是 <code>AddTwoInts::Request</code>，响应类型是
+  <code>AddTwoInts::Response</code>，两者都可以用
+  <code>std::make_shared</code> 创建。
+</p>
+
+<h3 id="s2-1-2">创建服务端与回调</h3>
+
+<p>
+  <code>create_service&lt;类型&gt;(名称, 回调)</code> 在节点上注册一个服务。
+  名称 <code>add_two_ints</code> 是相对名称，节点在根命名空间时解析为
+  <code>/add_two_ints</code>。返回值是
+  <code>rclcpp::Service&lt;…&gt;::SharedPtr</code>，必须存成节点成员，
+  否则注册的服务会随局部变量一起销毁。
+</p>
+
+<pre><code>service_ = create_service&lt;example_interfaces::srv::AddTwoInts&gt;(
+  "add_two_ints",
+  [this](
+    const std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Request&gt; request,
+    std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Response&gt; response) {
+    response-&gt;sum = request-&gt;a + request-&gt;b;
+  });</code></pre>
+
+<p>
+  回调的两个参数都是共享指针。请求由中间件填好，回调只读；响应由回调
+  写入，回调返回后由中间件发回调用方。回调的返回类型是 <code>void</code>，
+  结果通过 <code>response</code> 传递。日志在回调里记录请求与响应，
+  便于对照客户端看到的内容。
+</p>
+
+<pre data-lang="C++" data-name="add_server.cpp"><code>#include &lt;memory&gt;
+
+#include "example_interfaces/srv/add_two_ints.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+class AddServer : public rclcpp::Node
+{
+public:
+  AddServer()
+  : Node("add_server")
+  {
+    service_ = create_service&lt;example_interfaces::srv::AddTwoInts&gt;(
+      "add_two_ints",
+      [this](
+        const std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Request&gt; request,
+        std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Response&gt; response) {
+        response-&gt;sum = request-&gt;a + request-&gt;b;
+        RCLCPP_INFO(get_logger(), "request: %ld + %ld", request-&gt;a, request-&gt;b);
+        RCLCPP_INFO(get_logger(), "response: %ld", response-&gt;sum);
+      });
+  }
+
+private:
+  rclcpp::Service&lt;example_interfaces::srv::AddTwoInts&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;AddServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e2-1">
+  <div class="eg-h">例题 · add_server</div>
+  <p>
+    在一个终端启动服务端，在另一个终端用命令行调用。服务端收到请求后
+    打印两行日志，命令行打印请求与响应。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes add_server</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [add_server]: request: 5 + 3
+[INFO] [add_server]: response: 8</pre>
+  <p>
+    服务端启动后不打印内容，上面两行在调用到达时出现。
+    另一个终端执行下面的调用：
+  </p>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 5, b: 3}"</code></pre>
+  <pre class="out" data-label="真实输出">waiting for service to become available...
+requester: making request: example_interfaces.srv.AddTwoInts_Request(a=5, b=3)
+
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=8)</pre>
+  <p>
+    <code>waiting for service to become available...</code> 是命令行
+    在发现服务端之前打印的提示，位置在请求之前。
+    <code>requester</code> 与 <code>response</code> 两段分别是请求与响应，
+    字段名与 <code>AddTwoInts</code> 的定义一致。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-1</div>
+  <p>实现乘法服务：节点名取 <code>multiply_server</code>，服务名取 <code>multiply</code>，类型仍用 <code>example_interfaces/srv/AddTwoInts</code>，响应的 <code>sum</code> 写两个请求字段的乘积。日志按 <code>request: a x b</code> 与 <code>response: 值</code> 两行打印。用 <code>a=6</code>、<code>b=7</code> 调用。</p>
+  <pre class="out" data-label="预期输出">waiting for service to become available...
+requester: making request: example_interfaces.srv.AddTwoInts_Request(a=6, b=7)
+
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=42)</pre>
+  <details class="ans" data-run="示例代码/答案/2-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    请求字段沿用 <code>a</code> 与 <code>b</code>，响应字段仍是
+    <code>sum</code>；服务端把乘积写进 <code>sum</code>，接口类型不需要改。
+    服务名取相对名 <code>multiply</code>，节点启动后解析为
+    <code>/multiply</code>。输出里的
+    <code>waiting for service to become available...</code>
+    是命令行客户端启动时打印的提示，服务端已经就绪时也会出现一次。
+  </p>
+      <pre data-lang="C++" data-name="a2_1.cpp"><code>#include &lt;memory&gt;
+
+#include "example_interfaces/srv/add_two_ints.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+class MultiplyServer : public rclcpp::Node
+{
+public:
+  MultiplyServer()
+  : Node("multiply_server")
+  {
+    service_ = create_service&lt;example_interfaces::srv::AddTwoInts&gt;(
+      "multiply",
+      [this](
+        const std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Request&gt; request,
+        std::shared_ptr&lt;example_interfaces::srv::AddTwoInts::Response&gt; response) {
+        response-&gt;sum = request-&gt;a * request-&gt;b;
+        RCLCPP_INFO(get_logger(), "request: %ld x %ld", request-&gt;a, request-&gt;b);
+        RCLCPP_INFO(get_logger(), "response: %ld", response-&gt;sum);
+      });
+  }
+
+private:
+  rclcpp::Service&lt;example_interfaces::srv::AddTwoInts&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;MultiplyServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">waiting for service to become available...
+requester: making request: example_interfaces.srv.AddTwoInts_Request(a=6, b=7)
+
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=42)</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-2</div>
+  <p>实现字符串回显服务：节点名取 <code>echo_server</code>，服务名取 <code>echo</code>，类型用接口包里的 <code>robot_interfaces/srv/Echo</code>，响应的 <code>echo</code> 字段写请求的 <code>text</code>。用文本 <code>hello</code> 调用。</p>
+  <pre class="out" data-label="预期输出">waiting for service to become available...
+requester: making request: robot_interfaces.srv.Echo_Request(text='hello')
+
+response:
+robot_interfaces.srv.Echo_Response(echo='hello')</pre>
+  <details class="ans" data-run="示例代码/答案/2-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>Echo.srv</code> 的请求字段是 <code>text</code>，响应字段是
+    <code>echo</code>。回调把请求字符串直接赋给响应字段，服务名取
+    <code>echo</code>。命令行用单引号包住字符串，字段值按 YAML 解析。
+  </p>
+      <pre data-lang="C++" data-name="a2_2.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/echo.hpp"
+
+class EchoServer : public rclcpp::Node
+{
+public:
+  EchoServer()
+  : Node("echo_server")
+  {
+    service_ = create_service&lt;robot_interfaces::srv::Echo&gt;(
+      "echo",
+      [this](
+        const std::shared_ptr&lt;robot_interfaces::srv::Echo::Request&gt; request,
+        std::shared_ptr&lt;robot_interfaces::srv::Echo::Response&gt; response) {
+        response-&gt;echo = request-&gt;text;
+        RCLCPP_INFO(get_logger(), "request: '%s'", request-&gt;text.c_str());
+        RCLCPP_INFO(get_logger(), "response: '%s'", response-&gt;echo.c_str());
+      });
+  }
+
+private:
+  rclcpp::Service&lt;robot_interfaces::srv::Echo&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;EchoServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">waiting for service to become available...
+requester: making request: robot_interfaces.srv.Echo_Request(text='hello')
+
+response:
+robot_interfaces.srv.Echo_Response(echo='hello')</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个服务端节点，注册指定名称与类型的服务，在回调里读取请求字段、填写响应字段，并记录请求与响应日志。</p>
+</section>
+
+<section class="lesson" id="l2-2">
+<h2><span class="no">2.2</span>客户端</h2>
+
+<p>
+  客户端（client）向服务名发起请求，等待响应。客户端不持有服务端的对象，
+  只通过名称与类型找到服务；服务端没有启动时，请求无法送达。
+  这一课写一个请求 <code>5 + 3</code> 的客户端，打印响应后退出。
+</p>
+
+<h3 id="s2-2-1">创建客户端</h3>
+
+<p>
+  <code>create_client&lt;类型&gt;(名称)</code> 创建客户端，返回
+  <code>rclcpp::Client&lt;…&gt;::SharedPtr</code>。名称必须与服务端注册的
+  名称一致，类型也必须一致；名称相同而类型不同时，两端不会匹配。
+</p>
+
+<pre><code>client_ = create_client&lt;example_interfaces::srv::AddTwoInts&gt;("add_two_ints");</code></pre>
+
+<p>
+  创建客户端不会等待服务端。服务端可能尚未启动，也可能在调用过程中退出，
+  因此发送请求之前要先确认服务可用。
+</p>
+
+<h3 id="s2-2-2">等待与读取响应</h3>
+
+<p>
+  <code>wait_for_service(1s)</code> 最多等待 1 秒，返回布尔值。返回
+  <code>false</code> 说明这段时间内没有发现同名服务，此时应记录明确的
+  错误并结束，不要继续发送请求。
+</p>
+
+<p>
+  <code>async_send_request(request)</code> 立即返回一个 future。
+  <code>spin_until_future_complete(node, future)</code> 让执行器处理回调，
+  直到 future 就绪或超时；返回
+  <code>rclcpp::FutureReturnCode::SUCCESS</code> 时，用
+  <code>future.get()</code> 取出响应。响应字段的读取方式与请求相同。
+</p>
+
+<pre data-lang="C++" data-name="add_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "example_interfaces/srv/add_two_ints.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class AddClient : public rclcpp::Node
+{
+public:
+  AddClient()
+  : Node("add_client")
+  {
+    client_ = create_client&lt;example_interfaces::srv::AddTwoInts&gt;("add_two_ints");
+  }
+
+  bool call(int64_t a, int64_t b)
+  {
+    if (!client_-&gt;wait_for_service(1s)) {
+      RCLCPP_ERROR(get_logger(), "service /add_two_ints not available after 1s");
+      return false;
+    }
+
+    auto request = std::make_shared&lt;example_interfaces::srv::AddTwoInts::Request&gt;();
+    request-&gt;a = a;
+    request-&gt;b = b;
+    auto future = client_-&gt;async_send_request(request);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "request failed");
+      return false;
+    }
+
+    auto response = future.get();
+    RCLCPP_INFO(get_logger(), "request: %ld + %ld", a, b);
+    RCLCPP_INFO(get_logger(), "response: %ld", response-&gt;sum);
+    return true;
+  }
+
+private:
+  rclcpp::Client&lt;example_interfaces::srv::AddTwoInts&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;AddClient&gt;();
+  const bool ok = node-&gt;call(5, 3);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+<div class="eg" id="e2-2">
+  <div class="eg-h">例题 · add_client</div>
+  <p>
+    先启动 2.1 的服务端，再运行客户端。客户端打印请求与响应后退出；
+    服务端同时打印它收到的请求与写回的响应。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes add_client</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [add_client]: request: 5 + 3
+[INFO] [add_client]: response: 8</pre>
+  <p>
+    <code>request</code> 一行在发送前打印，<code>response</code> 一行在
+    future 就绪后打印。若服务端没有启动，客户端在等待 1 秒后打印
+    <code>service /add_two_ints not available after 1s</code> 并退出。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-3</div>
+  <p>写一个客户端：节点名取 <code>sum_client</code>，向 <code>add_two_ints</code> 请求 <code>10 + 20</code>，打印请求与响应后退出。先启动 2.1 的 <code>add_server</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [sum_client]: request: 10 + 20
+[INFO] [sum_client]: response: 30</pre>
+  <details class="ans" data-run="示例代码/答案/2-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>wait_for_service(1s)</code> 在超时后返回 <code>false</code>；
+    成功时用 <code>async_send_request</code> 发出请求，
+    <code>spin_until_future_complete</code> 等待响应。请求与响应都由同一个
+    节点打印；脚本先启动 <code>add_server</code>，再运行客户端。
+  </p>
+      <pre data-lang="C++" data-name="a2_3.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "example_interfaces/srv/add_two_ints.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class SumClient : public rclcpp::Node
+{
+public:
+  SumClient()
+  : Node("sum_client")
+  {
+    client_ = create_client&lt;example_interfaces::srv::AddTwoInts&gt;("add_two_ints");
+  }
+
+  bool call(int64_t a, int64_t b)
+  {
+    if (!client_-&gt;wait_for_service(1s)) {
+      RCLCPP_ERROR(get_logger(), "service /add_two_ints not available after 1s");
+      return false;
+    }
+
+    auto request = std::make_shared&lt;example_interfaces::srv::AddTwoInts::Request&gt;();
+    request-&gt;a = a;
+    request-&gt;b = b;
+    auto future = client_-&gt;async_send_request(request);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "request failed");
+      return false;
+    }
+
+    auto response = future.get();
+    RCLCPP_INFO(get_logger(), "request: %ld + %ld", a, b);
+    RCLCPP_INFO(get_logger(), "response: %ld", response-&gt;sum);
+    return true;
+  }
+
+private:
+  rclcpp::Client&lt;example_interfaces::srv::AddTwoInts&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;SumClient&gt;();
+  const bool ok = node-&gt;call(10, 20);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [sum_client]: request: 10 + 20
+[INFO] [sum_client]: response: 30</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-4</div>
+  <p>写一个客户端：节点名取 <code>missing_client</code>，向不存在的服务 <code>missing_service</code> 请求，等待 1 秒后打印明确错误并正常退出。错误文本为 <code>service /missing_service not available after 1s</code>。</p>
+  <pre class="out" data-label="预期输出">[ERROR] [missing_client]: service /missing_service not available after 1s</pre>
+  <details class="ans" data-run="示例代码/答案/2-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    客户端只等待，不发送请求。超时后 <code>wait_for_service</code> 返回
+    <code>false</code>，程序打印错误并返回 0，因此脚本正常结束。
+    错误文本与题目一致，服务名带前导斜杠。
+  </p>
+      <pre data-lang="C++" data-name="a2_4.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "example_interfaces/srv/add_two_ints.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class MissingClient : public rclcpp::Node
+{
+public:
+  MissingClient()
+  : Node("missing_client")
+  {
+    client_ = create_client&lt;example_interfaces::srv::AddTwoInts&gt;("missing_service");
+  }
+
+  bool wait()
+  {
+    return client_-&gt;wait_for_service(1s);
+  }
+
+private:
+  rclcpp::Client&lt;example_interfaces::srv::AddTwoInts&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;MissingClient&gt;();
+  if (!node-&gt;wait()) {
+    RCLCPP_ERROR(
+      node-&gt;get_logger(), "service /missing_service not available after 1s");
+  }
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[ERROR] [missing_client]: service /missing_service not available after 1s</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个客户端节点，等待服务可用，发送请求，处理 future 并读取响应；服务不可用时打印明确错误并退出。</p>
+</section>
+
+<section class="lesson" id="l2-3">
+<h2><span class="no">2.3</span>自定义服务</h2>
+
+<p>
+  自定义服务把请求与响应的字段写进 <code>.srv</code> 文件，由接口包生成
+  头文件，服务端与客户端都使用生成后的类型。这一课新增矩形面积服务，
+  并用一次失败的输入说明为什么要在服务端校验。
+</p>
+
+<h3 id="s2-3-1">.srv 文件</h3>
+
+<p>
+  <code>.srv</code> 文件分两部分：<code>---</code> 之前是请求字段，
+  之后是响应字段。字段的写法与 <code>.msg</code> 相同，每行先写类型，
+  再写字段名。类型可以是内置类型或消息类型。
+</p>
+
+<pre data-lang="SRV" data-name="ComputeArea.srv"><code>float64 width
+float64 height
+---
+float64 area
+string message</code></pre>
+<p>
+  这个文件生成 <code>robot_interfaces/srv/ComputeArea</code> 类型。
+  请求有 <code>width</code> 与 <code>height</code> 两个
+  <code>float64</code> 字段，响应有 <code>area</code> 与
+  <code>message</code>。响应同时返回数值与说明，调用方不必只凭数值
+  猜测失败原因。
+</p>
+
+<h3 id="s2-3-2">构建接口包</h3>
+
+<p>
+  在接口包的 <code>CMakeLists.txt</code> 中，把新文件加入
+  <code>rosidl_generate_interfaces</code> 的列表：
+</p>
+
+<pre data-lang="CMake"><code>"srv/ComputeArea.srv"</code></pre>
+
+<p>
+  然后重新构建接口包与节点包。接口包先生成消息、服务与动作的头文件，
+  节点包编译时才能找到 <code>robot_interfaces/srv/compute_area.hpp</code>。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_interfaces robot_nodes</code></pre>
+
+<p>
+  生成的头文件路径由包名与文件名决定：<code>srv/ComputeArea.srv</code>
+  生成 <code>robot_interfaces/srv/compute_area.hpp</code>，类型名保留
+  驼峰写法 <code>ComputeArea</code>。服务端与客户端使用同一个类型，
+  字段顺序与 <code>.srv</code> 文件一致。
+</p>
+
+<h3 id="s2-3-3">输入校验</h3>
+
+<p>
+  服务端收到的字段来自调用方，不能假定取值合法。矩形面积在宽度或高度
+  为负数时没有几何意义，在任一维度为零时面积为零。服务端应当在回调里
+  判断这些情况，把错误写进响应字段，而不是把负面积原样返回。这类检查
+  称为输入校验（input validation）。
+</p>
+
+<p>
+  下面的例题先不校验：客户端发送 <code>3.0 × 4.0</code> 与
+  <code>-2.0 × 3.0</code> 两次请求，第二次得到 <code>-6.00</code>。
+  练习 2-6 会补上校验。
+</p>
+
+<pre data-lang="C++" data-name="area_server.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/compute_area.hpp"
+
+class AreaServer : public rclcpp::Node
+{
+public:
+  AreaServer()
+  : Node("area_server")
+  {
+    service_ = create_service&lt;robot_interfaces::srv::ComputeArea&gt;(
+      "compute_area",
+      [this](
+        const std::shared_ptr&lt;robot_interfaces::srv::ComputeArea::Request&gt; request,
+        std::shared_ptr&lt;robot_interfaces::srv::ComputeArea::Response&gt; response) {
+        response-&gt;area = request-&gt;width * request-&gt;height;
+        response-&gt;message = "ok";
+        RCLCPP_INFO(
+          get_logger(), "request: %.2f x %.2f", request-&gt;width, request-&gt;height);
+        RCLCPP_INFO(
+          get_logger(), "response: area=%.2f message=%s",
+          response-&gt;area, response-&gt;message.c_str());
+      });
+  }
+
+private:
+  rclcpp::Service&lt;robot_interfaces::srv::ComputeArea&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;AreaServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<pre data-lang="C++" data-name="area_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/compute_area.hpp"
+
+using namespace std::chrono_literals;
+
+class AreaClient : public rclcpp::Node
+{
+public:
+  AreaClient()
+  : Node("area_client")
+  {
+    client_ = create_client&lt;robot_interfaces::srv::ComputeArea&gt;("compute_area");
+  }
+
+  bool call(double width, double height)
+  {
+    if (!client_-&gt;wait_for_service(1s)) {
+      RCLCPP_ERROR(get_logger(), "service /compute_area not available after 1s");
+      return false;
+    }
+
+    auto request = std::make_shared&lt;robot_interfaces::srv::ComputeArea::Request&gt;();
+    request-&gt;width = width;
+    request-&gt;height = height;
+    auto future = client_-&gt;async_send_request(request);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "request failed");
+      return false;
+    }
+
+    auto response = future.get();
+    RCLCPP_INFO(
+      get_logger(), "area: %.2f m^2 message: %s",
+      response-&gt;area, response-&gt;message.c_str());
+    return true;
+  }
+
+private:
+  rclcpp::Client&lt;robot_interfaces::srv::ComputeArea&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;AreaClient&gt;();
+  bool ok = node-&gt;call(3.0, 4.0);
+  ok = node-&gt;call(-2.0, 3.0) &amp;&amp; ok;
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+<div class="eg" id="e2-3">
+  <div class="eg-h">例题 · 面积服务</div>
+  <p>
+    先启动服务端，再运行客户端。客户端连续发送两次请求，服务端记录四次
+    请求与响应。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes area_server
+
+# 终端二（$HOME/ros2_ws）
+ros2 run robot_nodes area_client</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [area_client]: area: 12.00 m^2 message: ok
+[INFO] [area_client]: area: -6.00 m^2 message: ok
+[INFO] [area_server]: request: 3.00 x 4.00
+[INFO] [area_server]: response: area=12.00 message=ok
+[INFO] [area_server]: request: -2.00 x 3.00
+[INFO] [area_server]: response: area=-6.00 message=ok</pre>
+  <p>
+    两条客户端日志在前、四条服务端日志在后，是客户端输出与服务端日志按
+    采集顺序合在一起的结果；时间上服务端先处理请求，客户端收到响应后才
+    打印。第二次请求的负面积说明回调没有校验，<code>message</code>
+    仍然写着 <code>ok</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-5</div>
+  <p>把矩形面积服务改成圆形面积服务：在 <code>robot_interfaces/srv/</code> 下新增 <code>CircleArea.srv</code>，请求字段 <code>float64 radius</code>，响应字段 <code>float64 area</code> 与 <code>string message</code>；服务名取 <code>circle_area</code>，按半径 2.0 计算面积，保留两位小数并带单位 <code>m^2</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [circle_client]: area: 12.57 m^2 message: ok</pre>
+  <details class="ans" data-run="示例代码/答案/2-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    在接口包的 <code>srv/</code> 下新增 <code>CircleArea.srv</code>，
+    请求一个 <code>radius</code>，响应包含 <code>area</code> 与
+    <code>message</code>。把文件加入 <code>rosidl_generate_interfaces</code>
+    后重新构建接口包，再构建节点包。
+  </p>
+      <pre data-lang="SRV" data-name="CircleArea.srv"><code>float64 radius
+---
+float64 area
+string message</code></pre>
+  <pre data-lang="CMake"><code>rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/CircleArea.srv"
+)</code></pre>
+  <p>
+    服务端用 <code>3.14159 * r * r</code> 计算，客户端发送半径 2.0，
+    日志用 <code>%.2f</code> 保留两位小数并补上单位。
+  </p>
+      <pre data-lang="C++" data-name="circle_server.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/circle_area.hpp"
+
+class CircleServer : public rclcpp::Node
+{
+public:
+  CircleServer()
+  : Node("circle_server")
+  {
+    service_ = create_service&lt;robot_interfaces::srv::CircleArea&gt;(
+      "circle_area",
+      [this](
+        const std::shared_ptr&lt;robot_interfaces::srv::CircleArea::Request&gt; request,
+        std::shared_ptr&lt;robot_interfaces::srv::CircleArea::Response&gt; response) {
+        response-&gt;area = 3.14159 * request-&gt;radius * request-&gt;radius;
+        response-&gt;message = "ok";
+        RCLCPP_INFO(get_logger(), "request: radius=%.2f", request-&gt;radius);
+        RCLCPP_INFO(
+          get_logger(), "response: area=%.2f message='%s'",
+          response-&gt;area, response-&gt;message.c_str());
+      });
+  }
+
+private:
+  rclcpp::Service&lt;robot_interfaces::srv::CircleArea&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;CircleServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="circle_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/circle_area.hpp"
+
+using namespace std::chrono_literals;
+
+class CircleClient : public rclcpp::Node
+{
+public:
+  CircleClient()
+  : Node("circle_client")
+  {
+    client_ = create_client&lt;robot_interfaces::srv::CircleArea&gt;("circle_area");
+  }
+
+  bool send(double radius)
+  {
+    if (!client_-&gt;wait_for_service(1s)) {
+      RCLCPP_ERROR(get_logger(), "service /circle_area not available after 1s");
+      return false;
+    }
+
+    auto request = std::make_shared&lt;robot_interfaces::srv::CircleArea::Request&gt;();
+    request-&gt;radius = radius;
+    auto future = client_-&gt;async_send_request(request);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "request failed");
+      return false;
+    }
+
+    auto response = future.get();
+    RCLCPP_INFO(
+      get_logger(), "area: %.2f m^2 message: %s",
+      response-&gt;area, response-&gt;message.c_str());
+    return true;
+  }
+
+private:
+  rclcpp::Client&lt;robot_interfaces::srv::CircleArea&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;CircleClient&gt;();
+  const bool ok = node-&gt;send(2.0);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [circle_client]: area: 12.57 m^2 message: ok</pre>
+  <p>
+    答案在单独的工作空间里新增接口，课程示例工作空间保持不变；
+    在自己的练习工作空间里直接加到 <code>robot_interfaces</code> 也可以。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-6</div>
+  <p>给面积服务加入输入校验：宽度或高度为负时，面积写 0，<code>message</code> 写 <code>size must be non-negative</code>；任一维度为 0 时，面积写 0，<code>message</code> 写 <code>zero area</code>；合法尺寸返回面积与 <code>ok</code>。用 <code>-2.0 × 3.0</code> 与 <code>0.0 × 4.0</code> 各调用一次。</p>
+  <pre class="out" data-label="预期输出">waiting for service to become available...
+requester: making request: robot_interfaces.srv.ComputeArea_Request(width=-2.0, height=3.0)
+
+response:
+robot_interfaces.srv.ComputeArea_Response(area=0.0, message='size must be non-negative')
+
+waiting for service to become available...
+requester: making request: robot_interfaces.srv.ComputeArea_Request(width=0.0, height=4.0)
+
+response:
+robot_interfaces.srv.ComputeArea_Response(area=0.0, message='zero area')</pre>
+  <details class="ans" data-run="示例代码/答案/2-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    回调先判断负值，再判断零值，最后计算面积。两个非法分支都把
+    <code>area</code> 写 0，并用 <code>message</code> 区分原因。
+    脚本连续调用两次，命令行每次都会先打印等待提示。
+  </p>
+      <pre data-lang="C++" data-name="a2_6.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/srv/compute_area.hpp"
+
+class CheckedAreaServer : public rclcpp::Node
+{
+public:
+  CheckedAreaServer()
+  : Node("checked_area_server")
+  {
+    service_ = create_service&lt;robot_interfaces::srv::ComputeArea&gt;(
+      "compute_area",
+      [this](
+        const std::shared_ptr&lt;robot_interfaces::srv::ComputeArea::Request&gt; request,
+        std::shared_ptr&lt;robot_interfaces::srv::ComputeArea::Response&gt; response) {
+        if (request-&gt;width &lt; 0.0 || request-&gt;height &lt; 0.0) {
+          response-&gt;area = 0.0;
+          response-&gt;message = "size must be non-negative";
+        } else if (request-&gt;width == 0.0 || request-&gt;height == 0.0) {
+          response-&gt;area = 0.0;
+          response-&gt;message = "zero area";
+        } else {
+          response-&gt;area = request-&gt;width * request-&gt;height;
+          response-&gt;message = "ok";
+        }
+        RCLCPP_INFO(
+          get_logger(), "request: %.2f x %.2f", request-&gt;width, request-&gt;height);
+        RCLCPP_INFO(
+          get_logger(), "response: area=%.2f message=%s",
+          response-&gt;area, response-&gt;message.c_str());
+      });
+  }
+
+private:
+  rclcpp::Service&lt;robot_interfaces::srv::ComputeArea&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;CheckedAreaServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">waiting for service to become available...
+requester: making request: robot_interfaces.srv.ComputeArea_Request(width=-2.0, height=3.0)
+
+response:
+robot_interfaces.srv.ComputeArea_Response(area=0.0, message='size must be non-negative')
+
+waiting for service to become available...
+requester: making request: robot_interfaces.srv.ComputeArea_Request(width=0.0, height=4.0)
+
+response:
+robot_interfaces.srv.ComputeArea_Response(area=0.0, message='zero area')</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>定义一个新的服务文件，把它加入接口包并构建，写服务端与客户端，在回调里校验输入并把错误写进响应。</p>
+</section>
+
+<section class="lesson" id="l2-4">
+<h2><span class="no">2.4</span>参数</h2>
+
+<p>
+  参数（parameter）是节点上的键值配置，有名称、类型与默认值。参数属于
+  某个节点，不同节点的同名参数互不影响。节点在启动时声明参数，
+  运行时可以通过命令行读取与修改。
+</p>
+
+<h3 id="s2-4-1">声明与读取</h3>
+
+<p>
+  <code>declare_parameter&lt;T&gt;(名称, 默认值)</code> 声明一个参数并
+  返回当前值。参数必须先声明才能读取，未声明的名称不会出现在参数列表中。
+  声明时的类型决定后续赋值允许的类型，例如 <code>int</code> 参数
+  不能赋字符串。
+</p>
+
+<pre><code>rate_ms_ = declare_parameter&lt;int&gt;("rate_ms", 500);
+message_ = declare_parameter&lt;std::string&gt;("message", "hello");</code></pre>
+
+<p>
+  已经声明的参数用 <code>get_parameter("名称")</code> 读取，
+  返回值是 <code>rclcpp::Parameter</code>，用 <code>as_int</code>、
+  <code>as_string</code> 等方法取值。<code>get_parameter_or</code>
+  在参数不存在时返回给定的备用值，适合读取可选配置。
+</p>
+
+<h3 id="s2-4-2">命令行读写</h3>
+
+<p>
+  <code>ros2 param list</code> 列出节点声明的参数，
+  <code>ros2 param get</code> 读取一个参数的值，
+  <code>ros2 param set</code> 修改一个参数。参数名相对于节点名，
+  命令行用 <code>/节点名</code> 指定节点。
+</p>
+
+<p>
+  列表中除了代码声明的 <code>rate_ms</code> 与 <code>message</code>，
+  还会出现 <code>use_sim_time</code>、<code>start_type_description_service</code>
+  与若干 <code>qos_overrides</code>。这些由框架在节点创建时声明，
+  不是本节点的业务参数。
+</p>
+
+<h3 id="s2-4-3">参数回调</h3>
+
+<p>
+  <code>add_on_set_parameters_callback</code> 注册一个回调，在参数被修改
+  之前执行。回调收到本次要修改的参数列表，返回
+  <code>rcl_interfaces::msg::SetParametersResult</code>：<code>successful</code>
+  为 <code>true</code> 时修改生效，为 <code>false</code> 时修改被拒绝，
+  <code>reason</code> 会显示给调用方。
+</p>
+
+<p>
+  回调在参数值写入之前执行，因此拒绝时参数保持原值。回调里可以按名称
+  分支处理，也可以对一次修改多个参数的情况逐项检查；任何一项不合法，
+  整个请求都应被拒绝。
+</p>
+
+<pre data-lang="C++" data-name="parameter_node.cpp"><code>#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include "rcl_interfaces/msg/set_parameters_result.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+class ParameterNode : public rclcpp::Node
+{
+public:
+  ParameterNode()
+  : Node("parameter_node"), rate_ms_(500), message_("hello")
+  {
+    rate_ms_ = declare_parameter&lt;int&gt;("rate_ms", rate_ms_);
+    message_ = declare_parameter&lt;std::string&gt;("message", message_);
+    RCLCPP_INFO(
+      get_logger(), "startup: rate_ms=%d message='%s'", rate_ms_, message_.c_str());
+
+    callback_handle_ = add_on_set_parameters_callback(
+      [this](const std::vector&lt;rclcpp::Parameter&gt; &amp; parameters) {
+        rcl_interfaces::msg::SetParametersResult result;
+        result.successful = true;
+        for (const auto &amp; parameter : parameters) {
+          RCLCPP_INFO(
+            get_logger(), "set: %s=%s",
+            parameter.get_name().c_str(), parameter.value_to_string().c_str());
+          if (parameter.get_name() == "rate_ms") {
+            rate_ms_ = parameter.as_int();
+          } else if (parameter.get_name() == "message") {
+            message_ = parameter.as_string();
+          }
+        }
+        return result;
+      });
+  }
+
+private:
+  int rate_ms_;
+  std::string message_;
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;ParameterNode&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e2-4">
+  <div class="eg-h">例题 · parameter_node</div>
+  <p>
+    启动节点后，用命令行列出、读取并修改参数。节点在启动时打印两个参数，
+    在修改成功时打印回调日志。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes parameter_node</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [parameter_node]: startup: rate_ms=500 message='hello'
+[INFO] [parameter_node]: set: rate_ms=250</pre>
+  <p>
+    另一个终端依次执行：
+  </p>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 param list /parameter_node
+ros2 param get /parameter_node rate_ms
+ros2 param get /parameter_node message
+ros2 param set /parameter_node rate_ms 250</code></pre>
+  <pre class="out" data-label="真实输出">  message
+  qos_overrides./parameter_events.publisher.depth
+  qos_overrides./parameter_events.publisher.durability
+  qos_overrides./parameter_events.publisher.history
+  qos_overrides./parameter_events.publisher.reliability
+  rate_ms
+  start_type_description_service
+  use_sim_time
+Integer value is: 500
+String value is: hello
+Set parameter successful</pre>
+  <p>
+    <code>Integer value is:</code> 与 <code>String value is:</code> 是
+    命令行按参数类型打印的前缀。修改成功后，节点回调打印
+    <code>set: rate_ms=250</code>，说明新值已经写入。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-7</div>
+  <p>写一个节点：节点名取 <code>target_counter</code>，声明整数参数 <code>target_count</code>，默认值为 3，启动时打印 <code>target_count: 值</code>，打印后退出。</p>
+  <pre class="out" data-label="预期输出">[INFO] [target_counter]: target_count: 3</pre>
+  <details class="ans" data-run="示例代码/答案/2-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>declare_parameter&lt;int&gt;("target_count", 3)</code> 声明参数并返回
+    当前值；没有参数文件或命令行覆盖时就是默认值 3。节点打印后立即关闭，
+    不进入 <code>spin</code>。
+  </p>
+      <pre data-lang="C++" data-name="a2_7.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+
+class TargetCounter : public rclcpp::Node
+{
+public:
+  TargetCounter()
+  : Node("target_counter")
+  {
+    const int target_count = declare_parameter&lt;int&gt;("target_count", 3);
+    RCLCPP_INFO(get_logger(), "target_count: %d", target_count);
+  }
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;TargetCounter&gt;();
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [target_counter]: target_count: 3</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-8</div>
+  <p>在练习 2-7 的节点上注册参数回调：<code>target_count</code> 小于 0 时拒绝修改，返回原因 <code>target_count must be non-negative</code>；合法值接受并记录日志。依次把参数设为 5 与 -2，再读取一次 <code>target_count</code>，确认被拒绝的修改没有生效。</p>
+  <pre class="out" data-label="预期输出">Set parameter successful
+Setting parameter failed: target_count must be non-negative
+Integer value is: 5
+[INFO] [target_counter]: target_count: 3
+[INFO] [target_counter]: accepted: target_count=5
+[INFO] [target_counter]: rejected: target_count=-2</pre>
+  <details class="ans" data-run="示例代码/答案/2-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    回调遍历本次修改的参数，只处理 <code>target_count</code>。值为负时把
+    <code>successful</code> 置为 <code>false</code> 并写 <code>reason</code>；
+    合法时更新成员并打印。脚本先设置 5，再设置 -2，最后读取参数；
+    被拒绝的 -2 不生效，读取结果是 5。节点日志由脚本收集到最后统一打印，
+    所以三行节点日志出现在读取结果之后。
+  </p>
+      <pre data-lang="C++" data-name="a2_8.cpp"><code>#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+#include "rcl_interfaces/msg/set_parameters_result.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+class TargetCounter : public rclcpp::Node
+{
+public:
+  TargetCounter()
+  : Node("target_counter"), target_count_(3)
+  {
+    target_count_ = declare_parameter&lt;int&gt;("target_count", target_count_);
+    RCLCPP_INFO(get_logger(), "target_count: %d", target_count_);
+
+    callback_handle_ = add_on_set_parameters_callback(
+      [this](const std::vector&lt;rclcpp::Parameter&gt; &amp; parameters) {
+        rcl_interfaces::msg::SetParametersResult result;
+        result.successful = true;
+        for (const auto &amp; parameter : parameters) {
+          if (parameter.get_name() != "target_count") {
+            continue;
+          }
+          if (parameter.as_int() &lt; 0) {
+            result.successful = false;
+            result.reason = "target_count must be non-negative";
+            RCLCPP_INFO(
+              get_logger(), "rejected: target_count=%d", parameter.as_int());
+          } else {
+            target_count_ = parameter.as_int();
+            RCLCPP_INFO(
+              get_logger(), "accepted: target_count=%d", target_count_);
+          }
+        }
+        return result;
+      });
+  }
+
+private:
+  int target_count_;
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TargetCounter&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">Set parameter successful
+Setting parameter failed: target_count must be non-negative
+Integer value is: 5
+[INFO] [target_counter]: target_count: 3
+[INFO] [target_counter]: accepted: target_count=5
+[INFO] [target_counter]: rejected: target_count=-2</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>声明带默认值的参数并读取，用命令行查看与修改参数，在参数回调中接受合法值、拒绝非法值并给出原因。</p>
+</section>
+
+<section class="lesson" id="l2-5">
+<h2><span class="no">2.5</span>参数文件与动态修改</h2>
+
+<p>
+  参数文件把多个节点的参数写在同一个 YAML 文件里，启动时一次加载。
+  参数在运行期间仍可通过命令行修改；节点是否随参数改变行为，取决于
+  代码是否在回调里使用新值。这一课的节点按 <code>rate_ms</code>
+  周期发布 <code>message</code>，修改参数后立即生效。
+</p>
+
+<h3 id="s2-5-1">YAML 层级</h3>
+
+<p>
+  参数文件的第一层是节点名，第二层固定为 <code>ros__parameters</code>，
+  第三层是参数键值。节点名要与运行时的节点名一致；缩进用两个空格，
+  不能用制表符。值的类型由写法决定：整数、浮点数、布尔值与带引号的
+  字符串分别解析。
+</p>
+
+<pre data-lang="YAML" data-name="params.yaml"><code>param_demo:
+  ros__parameters:
+    rate_ms: 200
+    message: "from file"</code></pre>
+<p>
+  这个文件只配置了 <code>param_demo</code> 一个节点，
+  <code>rate_ms</code> 为 200，<code>message</code> 为
+  <code>from file</code>。一份文件可以写多个节点，每个节点各有一段
+  <code>ros__parameters</code>；练习 2-9 会写两个节点。
+</p>
+
+<h3 id="s2-5-2">加载与覆盖</h3>
+
+<p>
+  <code>--ros-args --params-file 文件路径</code> 让节点启动时读取参数
+  文件。节点只读取代码中已经声明的参数，文件里的键要与声明一致。
+</p>
+
+<p>
+  命令行 <code>-p 名称:=值</code> 与参数文件同名时，命令行优先。
+  下面的例题同时给出参数文件与 <code>-p message:=changed</code>，
+  节点最终使用 <code>changed</code>；文件里的 <code>from file</code>
+  被覆盖。<code>ros2 param dump</code> 导出的是当前值，不是文件原文。
+</p>
+
+<h3 id="s2-5-3">动态修改</h3>
+
+<p>
+  参数在运行期间可以修改，这类参数称为动态参数（dynamic parameter）。节点要响应修改，
+  需要在参数回调里更新成员变量，并让使用该变量的代码重新读取。
+  例题的节点在 <code>rate_ms</code> 改变时取消旧定时器并按新周期重建，
+  在 <code>message</code> 改变时更新下一条消息的内容。
+</p>
+
+<p>
+  若节点只在启动时读取一次参数，之后不再检查，参数虽然能改，节点行为
+  不会变化。声明参数与使用参数是两件事：前者让参数出现在列表中，
+  后者决定修改是否产生效果。
+</p>
+
+<pre data-lang="C++" data-name="param_demo.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include "rcl_interfaces/msg/set_parameters_result.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class ParamDemo : public rclcpp::Node
+{
+public:
+  ParamDemo()
+  : Node("param_demo"), rate_ms_(500), message_("tick")
+  {
+    rate_ms_ = declare_parameter&lt;int&gt;("rate_ms", rate_ms_);
+    message_ = declare_parameter&lt;std::string&gt;("message", message_);
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;("param_chatter", 10);
+    timer_ = create_wall_timer(
+      std::chrono::milliseconds(rate_ms_), [this]() { publish_tick(); });
+    RCLCPP_INFO(
+      get_logger(), "startup: rate_ms=%d message='%s'", rate_ms_, message_.c_str());
+
+    callback_handle_ = add_on_set_parameters_callback(
+      [this](const std::vector&lt;rclcpp::Parameter&gt; &amp; parameters) {
+        rcl_interfaces::msg::SetParametersResult result;
+        result.successful = true;
+        for (const auto &amp; parameter : parameters) {
+          if (parameter.get_name() == "rate_ms") {
+            rate_ms_ = parameter.as_int();
+            timer_-&gt;cancel();
+            timer_ = create_wall_timer(
+              std::chrono::milliseconds(rate_ms_), [this]() { publish_tick(); });
+            RCLCPP_INFO(get_logger(), "timer reset: rate_ms=%d", rate_ms_);
+          } else if (parameter.get_name() == "message") {
+            message_ = parameter.as_string();
+            RCLCPP_INFO(get_logger(), "message: '%s'", message_.c_str());
+          }
+        }
+        return result;
+      });
+  }
+
+private:
+  void publish_tick()
+  {
+    std_msgs::msg::String message;
+    message.data = message_;
+    publisher_-&gt;publish(message);
+  }
+
+  int rate_ms_;
+  std::string message_;
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr callback_handle_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;ParamDemo&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e2-5">
+  <div class="eg-h">例题 · 参数文件</div>
+  <p>
+    用参数文件启动节点，读取两个参数，取一条消息；修改
+    <code>message</code> 后再取一条，修改 <code>rate_ms</code> 后观察
+    定时器重建日志。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes param_demo --ros-args \
+  --params-file "$(ros2 pkg prefix robot_nodes)/share/robot_nodes/config/params.yaml"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [param_demo]: startup: rate_ms=200 message='from file'
+[INFO] [param_demo]: message: 'changed'
+[INFO] [param_demo]: timer reset: rate_ms=100</pre>
+  <p>
+    另一个终端依次执行：
+  </p>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 param get /param_demo rate_ms
+ros2 param get /param_demo message
+ros2 topic echo --once /param_chatter
+ros2 param set /param_demo message changed
+ros2 topic echo --once /param_chatter
+ros2 param set /param_demo rate_ms 100</code></pre>
+  <pre class="out" data-label="真实输出">Integer value is: 200
+String value is: from file
+data: from file
+---
+Set parameter successful
+data: changed
+---
+Set parameter successful</pre>
+  <p>
+    两次 <code>echo --once</code> 分别取到修改前后的消息。最后设置
+    <code>rate_ms</code> 时，节点回调取消旧定时器并按 100 毫秒重建，
+    因此日志出现 <code>timer reset: rate_ms=100</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-9</div>
+  <p>写一份包含两个节点的参数文件：<code>parameter_node</code> 的 <code>rate_ms</code> 为 300、<code>message</code> 为 <code>node one</code>；<code>param_demo</code> 的 <code>rate_ms</code> 为 400、<code>message</code> 为 <code>node two</code>。用同一份文件启动两个节点，分别读取两个参数。</p>
+  <pre class="out" data-label="预期输出">Integer value is: 300
+String value is: node one
+Integer value is: 400
+String value is: node two</pre>
+  <details class="ans" data-run="示例代码/答案/2-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    参数文件按节点名分层：第一层的键与节点名对应，第二层固定为
+    <code>ros__parameters</code>，第三层是参数键值。两个节点读同一份文件，
+    各自取自己名字下的那一组。脚本用这份文件启动两个节点，再逐个读取参数。
+  </p>
+      <pre data-lang="YAML" data-name="two_nodes.yaml"><code>parameter_node:
+  ros__parameters:
+    rate_ms: 300
+    message: "node one"
+
+param_demo:
+  ros__parameters:
+    rate_ms: 400
+    message: "node two"</code></pre>
+  <pre class="out" data-label="真实输出">Integer value is: 300
+String value is: node one
+Integer value is: 400
+String value is: node two</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 2-10</div>
+  <p>用 2.5 的参数文件启动 <code>param_demo</code>，同时在命令行加 <code>-p message:=command</code>，再用 <code>ros2 param dump</code> 导出当前参数。指出哪一项被命令行覆盖，以及 <code>rate_ms</code> 的来源。</p>
+  <pre class="out" data-label="预期输出">/param_demo:
+  ros__parameters:
+    message: command
+    qos_overrides:
+      /parameter_events:
+        publisher:
+          depth: 1000
+          durability: volatile
+          history: keep_last
+          reliability: reliable
+    rate_ms: 200
+    start_type_description_service: true
+    use_sim_time: false</pre>
+  <details class="ans" data-run="示例代码/答案/2-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    参数文件里的 <code>rate_ms</code> 是 200，<code>message</code> 是
+    <code>from file</code>；命令行用 <code>-p message:=command</code>
+    覆盖后者。导出结果中 <code>message</code> 为 <code>command</code>，
+    <code>rate_ms</code> 仍为 200，说明单项覆盖只改指定参数。
+    <code>qos_overrides</code> 与 <code>start_type_description_service</code>
+    是节点运行时自动登记的，不在参数文件里。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+params="$(ros2 pkg prefix robot_nodes)/share/robot_nodes/config/params.yaml"
+ros2 run robot_nodes param_demo --ros-args \
+  --params-file "$params" -p message:=command &amp;
+sleep 2
+ros2 param dump /param_demo</code></pre>
+  <pre class="out" data-label="真实输出">/param_demo:
+  ros__parameters:
+    message: command
+    qos_overrides:
+      /parameter_events:
+        publisher:
+          depth: 1000
+          durability: volatile
+          history: keep_last
+          reliability: reliable
+    rate_ms: 200
+    start_type_description_service: true
+    use_sim_time: false</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写参数文件并按节点名分层，用参数文件启动节点，用命令行覆盖其中一项，导出当前参数并解释每个值的来源。</p>
+</section>
+
+<nav class="pager">
+  <a href="01-话题.html">← 第 1 部分 · 话题</a>
+  <span class="spacer"></span>
+  <a href="03-动作.html">第 3 部分 · 动作 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

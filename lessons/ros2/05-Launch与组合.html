@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 5 部分 · Launch 与组合 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a class="active" href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" aria-current="page" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 5 部分 · Launch 与组合</div>
+  <a class="toc-l" href="#l5-1"><span class="n">5.1</span>XML launch</a>
+  <a class="toc-sub" href="#s5-1-1">启动文件</a>
+  <a class="toc-sub" href="#s5-1-2">节点动作</a>
+  <a class="toc-sub" href="#s5-1-3">运行与日志</a>
+  <a class="toc-sub" href="#e5-1">例题：talker.launch.xml</a>
+  <a class="toc-l" href="#l5-2"><span class="n">5.2</span>Python launch</a>
+  <a class="toc-sub" href="#s5-2-1">描述对象</a>
+  <a class="toc-sub" href="#s5-2-2">Node 动作</a>
+  <a class="toc-sub" href="#s5-2-3">两种写法</a>
+  <a class="toc-sub" href="#e5-2">例题：hello.launch.py</a>
+  <a class="toc-l" href="#l5-3"><span class="n">5.3</span>参数与命名空间</a>
+  <a class="toc-sub" href="#s5-3-1">命名空间</a>
+  <a class="toc-sub" href="#s5-3-2">节点参数</a>
+  <a class="toc-sub" href="#s5-3-3">查询</a>
+  <a class="toc-sub" href="#e5-3">例题：两个参数节点</a>
+  <a class="toc-l" href="#l5-4"><span class="n">5.4</span>条件与包含</a>
+  <a class="toc-sub" href="#s5-4-1">参数与变量</a>
+  <a class="toc-sub" href="#s5-4-2">include</a>
+  <a class="toc-sub" href="#s5-4-3">if 与 unless</a>
+  <a class="toc-sub" href="#e5-4">例题：按参数选择节点</a>
+  <a class="toc-l" href="#l5-5"><span class="n">5.5</span>组件（选学）</a>
+  <a class="toc-sub" href="#s5-5-1">组合</a>
+  <a class="toc-sub" href="#s5-5-2">注册与构建</a>
+  <a class="toc-sub" href="#s5-5-3">加载与查看</a>
+  <a class="toc-sub" href="#e5-5">例题：加载 talker_component</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 5 部分</div>
+  <h1>Launch 与组合</h1>
+  <p class="part-lead">
+    一个机器人系统通常由多个节点、参数与启动配置组成。启动文件把启动命令写成
+    文件，一次启动多个节点；组件把多个节点放入同一个进程，减少进程与通信开销。
+    这一部分先写 XML 与 Python 两种启动文件，再讲参数、命名空间、条件与包含，
+    最后加载可组合节点。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="0.4 1.1 1.2 2.4">
+  <b>前置</b>
+  <p>
+    先读过 0.4、1.1、1.2 与 2.4：会创建功能包与节点，会写发布者与订阅者，
+    会在启动时设置节点参数。启动文件本身不引入新的通信方式。
+  </p>
+</div>
+
+<section class="lesson" id="l5-1">
+<h2><span class="no">5.1</span>XML launch</h2>
+
+<p>
+  启动文件（launch file）把一组节点的启动方式写成文件：启动哪些可执行文件、
+  给每个节点取什么名字、设置哪些参数、输出到哪里。一个终端运行
+  <code>ros2 launch</code>，就能同时启动这些节点，不需要为每个节点各开一个终端。
+</p>
+
+<h3 id="s5-1-1">启动文件</h3>
+
+<p>
+  XML 启动文件以 <code>&lt;launch&gt;</code> 为根，里面放节点、参数、
+  包含与条件等标签。文件放在功能包的 <code>launch/</code> 目录下，
+  构建后安装到 <code>share/&lt;包名&gt;/launch/</code>；
+  <code>ros2 launch</code> 按包名与文件名在该目录中查找。
+</p>
+
+<h3 id="s5-1-2">节点动作</h3>
+
+<p>
+  <code>&lt;node&gt;</code> 是最常用的标签。<code>pkg</code> 指定功能包，
+  <code>exec</code> 指定可执行文件名，<code>name</code> 指定节点名，
+  <code>output="screen"</code> 把节点的标准输出与标准错误转发到启动终端。
+  省略 <code>output</code> 时，节点日志默认写入日志文件，终端只看到启动器
+  自己的提示。
+</p>
+
+<h3 id="s5-1-3">运行与日志</h3>
+
+<p>
+  启动器会为每个节点分配一个进程编号，并在日志行前加上
+  <code>[可执行文件名-序号]</code>。启动器本身还会打印日志目录与进程编号，
+  这些内容随机器变化，不适合作为教材输出；下面只保留节点自己的日志行，
+  命令里用 <code>grep</code> 过滤。
+</p>
+<pre data-lang="XML" data-name="talker.launch.xml"><code>&lt;launch&gt;
+  &lt;node pkg="robot_nodes" exec="talker" name="talker" output="screen"/&gt;
+&lt;/launch&gt;</code></pre>
+
+<div class="eg" id="e5-1">
+  <div class="eg-h">例题 · talker.launch.xml</div>
+  <p>
+    启动文件只包含一个节点：运行 <code>robot_nodes</code> 里的
+    <code>talker</code>，节点名为 <code>talker</code>，输出转发到终端。
+    节点发布三条消息后自行退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup talker.launch.xml 2&gt;&amp;1 \
+  | grep -E '^\[talker-[0-9]+\] \[INFO\]'</code></pre>
+<pre class="out" data-label="真实输出">[talker-1] [INFO] [talker]: publishing: 'hello 0'
+[talker-1] [INFO] [talker]: publishing: 'hello 1'
+[talker-1] [INFO] [talker]: publishing: 'hello 2'</pre>
+  <p>
+    三行都以 <code>[talker-1]</code> 开头，说明它们来自同一个节点进程。
+    <code>talker</code> 的源码在到达计数上限后调用 <code>rclcpp::shutdown</code>，
+    节点退出，启动器也随之结束。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-1</div>
+  <p>启动 <code>hello.launch.xml</code>，只保留节点日志行。节点名为 <code>hello_node</code>，打印三行后退出。</p>
+<pre class="out" data-label="预期输出">[hello_node-1] [INFO] [hello_node]: hello 0
+[hello_node-1] [INFO] [hello_node]: hello 1
+[hello_node-1] [INFO] [hello_node]: hello 2</pre>
+  <details class="ans" data-run="示例代码/答案/5-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>hello.launch.xml</code> 启动 <code>hello_node</code>，节点打印三行后
+    自行退出。命令用 <code>grep</code> 只保留节点日志行，启动器自己的日志行
+    含本机路径与进程编号，不放进页面。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup hello.launch.xml 2&gt;&amp;1 \
+  | grep -E '^\[hello_node-[0-9]+\] \[INFO\]'</code></pre>
+  <pre class="out" data-label="真实输出">[hello_node-1] [INFO] [hello_node]: hello 0
+[hello_node-1] [INFO] [hello_node]: hello 1
+[hello_node-1] [INFO] [hello_node]: hello 2</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-2</div>
+  <p>用 <code>--show-args</code> 查看 <code>talker.launch.xml</code> 接受哪些启动参数，不启动节点。</p>
+<pre class="out" data-label="预期输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+  No arguments.</pre>
+  <details class="ans" data-run="示例代码/答案/5-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>--show-args</code> 只打印启动文件接受的参数，不启动节点。
+    <code>talker.launch.xml</code> 没有声明 <code>&lt;arg&gt;</code>，所以输出是
+    <code>No arguments.</code>
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup talker.launch.xml --show-args</code></pre>
+  <pre class="out" data-label="真实输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+  No arguments.</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个 XML 启动文件，启动指定功能包中的节点，设置节点名与输出方式，并用 <code>ros2 launch</code> 运行它。</p>
+</section>
+
+<section class="lesson" id="l5-2">
+<h2><span class="no">5.2</span>Python launch</h2>
+
+<p>
+  Python 启动文件是一个普通的 Python 模块。启动器导入模块，调用
+  <code>generate_launch_description()</code>，得到一份启动描述
+  （launch description）；描述里按顺序列出要执行的动作。
+</p>
+
+<h3 id="s5-2-1">描述对象</h3>
+
+<p>
+  <code>LaunchDescription</code> 接收一个动作列表。最常用的动作是
+  <code>launch_ros.actions.Node</code>，字段与 XML 的
+  <code>&lt;node&gt;</code> 对应：<code>package</code>、<code>executable</code>、
+  <code>name</code>、<code>output</code>。
+</p>
+
+<h3 id="s5-2-2">Node 动作</h3>
+
+<p>
+  <code>Node</code> 在启动时解析为一个进程动作。启动器为它分配的名称来自
+  可执行文件名，而不是节点名；节点名只影响节点在 ROS 图中的名称与日志器名。
+  因此把 <code>name</code> 改成别的值后，日志前缀仍是可执行文件名。
+</p>
+
+<h3 id="s5-2-3">两种写法</h3>
+
+<p>
+  XML 与 Python 两种启动文件表达同一组动作。XML 适合结构固定的启动配置；
+  Python 可以在生成描述时做计算、读环境变量或按条件拼接动作列表。
+  同一个功能包可以同时提供两种文件。
+</p>
+<pre data-lang="Python" data-name="hello.launch.py"><code>from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='robot_nodes',
+            executable='hello_node',
+            name='hello_node',
+            output='screen',
+        ),
+    ])</code></pre>
+
+<div class="eg" id="e5-2">
+  <div class="eg-h">例题 · hello.launch.py</div>
+  <p>
+    这份启动文件只启动一个 <code>hello_node</code>，输出转发到终端。
+    节点打印三行后退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup hello.launch.py 2&gt;&amp;1 \
+  | grep -E '^\[hello_node-[0-9]+\] \[INFO\]'</code></pre>
+<pre class="out" data-label="真实输出">[hello_node-1] [INFO] [hello_node]: hello 0
+[hello_node-1] [INFO] [hello_node]: hello 1
+[hello_node-1] [INFO] [hello_node]: hello 2</pre>
+  <p>
+    输出与 XML 版本相同。启动器仍然用可执行文件名给进程编号，
+    所以前缀是 <code>[hello_node-1]</code>；节点日志器名也是
+    <code>hello_node</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-3</div>
+  <p>用 <code>--show-args</code> 查看 <code>hello.launch.py</code> 接受哪些启动参数，不启动节点。</p>
+<pre class="out" data-label="预期输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+  No arguments.</pre>
+  <details class="ans" data-run="示例代码/答案/5-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    Python 启动文件同样可以用 <code>--show-args</code> 查询参数。
+    <code>hello.launch.py</code> 没有声明启动参数，输出与 XML 版本一致。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup hello.launch.py --show-args</code></pre>
+  <pre class="out" data-label="真实输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+  No arguments.</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-4</div>
+  <p>写一份 Python 启动文件 <code>greeter.launch.py</code>，启动 <code>hello_node</code>，把节点名设为 <code>greeter</code>，输出转发到终端。运行后只保留节点日志行。</p>
+<pre class="out" data-label="预期输出">[hello_node-1] [INFO] [greeter]: hello 0
+[hello_node-1] [INFO] [greeter]: hello 1
+[hello_node-1] [INFO] [greeter]: hello 2</pre>
+  <details class="ans" data-run="示例代码/答案/5-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    新建 <code>greeter.launch.py</code>，把 <code>Node</code> 的
+    <code>name</code> 设为 <code>greeter</code>，其余字段与
+    <code>hello.launch.py</code> 相同。
+  </p>
+      <pre data-lang="Python" data-name="greeter.launch.py"><code>from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='robot_nodes',
+            executable='hello_node',
+            name='greeter',
+            output='screen',
+        ),
+    ])</code></pre>
+  <p>
+    启动器按可执行文件名给进程编号，所以日志前缀仍是
+    <code>[hello_node-1]</code>；节点日志器名已经变成 <code>greeter</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：课程目录
+ros2 launch 示例代码/答案/5-4/greeter.launch.py</code></pre>
+  <pre class="out" data-label="真实输出">[hello_node-1] [INFO] [greeter]: hello 0
+[hello_node-1] [INFO] [greeter]: hello 1
+[hello_node-1] [INFO] [greeter]: hello 2</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一份 Python 启动文件，用 <code>Node</code> 动作启动指定可执行文件，设置节点名，并把节点日志转发到终端。</p>
+</section>
+
+<section class="lesson" id="l5-3">
+<h2><span class="no">5.3</span>参数与命名空间</h2>
+
+<p>
+  同一个可执行文件可以启动多次。每次启动给一个命名空间（namespace）与节点名，
+  它们在 ROS 图中的完全限定名就互不相同，订阅、发布与服务也不会重名。
+  启动文件可以在启动时同时设置这些名称与节点参数。
+</p>
+
+<h3 id="s5-3-1">命名空间</h3>
+
+<p>
+  <code>namespace="left"</code> 与 <code>name="param_left"</code> 组合成完全
+  限定名 <code>/left/param_left</code>。命名空间以斜杠开头时按绝对路径解释；
+  不以斜杠开头时，拼在父命名空间之后。启动文件里写相对名称，
+  通常更便于把整组节点放进另一个命名空间。
+</p>
+
+<h3 id="s5-3-2">节点参数</h3>
+
+<p>
+  <code>&lt;param name="rate_ms" value="300"/&gt;</code> 给该节点设置参数
+  <code>rate_ms</code>。启动文件里的 <code>value</code> 写成字符串，
+  节点声明参数时给出类型，ROS 2 按声明类型解析：声明为整数时
+  <code>"300"</code> 解析为 300，声明为字符串时保持字符串。
+</p>
+
+<h3 id="s5-3-3">查询</h3>
+
+<p>
+  节点运行后，用 <code>ros2 node list</code> 查看完全限定名，用
+  <code>ros2 param get</code> 读取参数当前值。同一个可执行文件的两个实例
+  可以给同名参数设置不同的值，参数按节点分开保存。
+</p>
+<pre data-lang="XML" data-name="param_nodes.launch.xml"><code>&lt;launch&gt;
+  &lt;node pkg="robot_nodes" exec="parameter_node"
+        name="param_left" namespace="left" output="screen"&gt;
+    &lt;param name="rate_ms" value="300"/&gt;
+    &lt;param name="message" value="left"/&gt;
+  &lt;/node&gt;
+  &lt;node pkg="robot_nodes" exec="parameter_node"
+        name="param_right" namespace="right" output="screen"&gt;
+    &lt;param name="rate_ms" value="500"/&gt;
+    &lt;param name="message" value="right"/&gt;
+  &lt;/node&gt;
+&lt;/launch&gt;</code></pre>
+
+<div class="eg" id="e5-3">
+  <div class="eg-h">例题 · 两个参数节点</div>
+  <p>
+    在一个终端启动这份文件；它在 <code>/left</code> 与 <code>/right</code>
+    两个命名空间下各运行一个 <code>parameter_node</code>。在另一个终端执行
+    下面的查询。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 launch robot_bringup param_nodes.launch.xml</code></pre>
+  <p>查询完全限定名与四个参数值：</p>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 node list | grep -E '^/(left|right)/param_' | sort
+ros2 param get /left/param_left message
+ros2 param get /left/param_left rate_ms
+ros2 param get /right/param_right message
+ros2 param get /right/param_right rate_ms</code></pre>
+<pre class="out" data-label="真实输出">/left/param_left
+/right/param_right
+String value is: left
+Integer value is: 300
+String value is: right
+Integer value is: 500</pre>
+  <p>
+    两个节点来自同一个可执行文件，但完全限定名不同，参数也各自保存：
+    <code>/left/param_left</code> 的消息是 <code>left</code>、周期是 300 毫秒，
+    <code>/right/param_right</code> 的消息是 <code>right</code>、周期是
+    500 毫秒。查询结束后回到启动终端，按 <kbd>Ctrl</kbd>+<kbd>C</kbd>
+    停止两个节点。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-5</div>
+  <p>启动 <code>param_nodes.launch.xml</code>，只列出两个参数节点的完全限定名，按名称排序。</p>
+<pre class="out" data-label="预期输出">/left/param_left
+/right/param_right</pre>
+  <details class="ans" data-run="示例代码/答案/5-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    启动文件在后台启动两个参数节点。脚本等待两个完全限定名都出现在节点列表里，
+    再按名称排序；<code>grep</code> 过滤掉启动器与系统节点。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup param_nodes.launch.xml &gt;/dev/null 2&gt;&amp;1 &amp;
+for _ in $(seq 1 20); do
+  n=$(ros2 node list | grep -cE '^/(left|right)/param_')
+  [ "$n" -ge 2 ] &amp;&amp; break
+  sleep 0.5
+done
+ros2 node list | grep -E '^/(left|right)/param_' | sort</code></pre>
+  <pre class="out" data-label="真实输出">/left/param_left
+/right/param_right</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-6</div>
+  <p>在 <code>param_nodes.launch.xml</code> 运行期间，读取 <code>/right/param_right</code> 的 <code>rate_ms</code> 参数。</p>
+<pre class="out" data-label="预期输出">Integer value is: 500</pre>
+  <details class="ans" data-run="示例代码/答案/5-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>rate_ms</code> 在启动文件里写成 <code>500</code>，节点声明为整数，
+    因此 <code>ros2 param get</code> 打印 <code>Integer value is: 500</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 param get /right/param_right rate_ms</code></pre>
+  <pre class="out" data-label="真实输出">Integer value is: 500</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在启动文件里给节点设置命名空间、节点名与参数，并用 <code>ros2 node list</code> 与 <code>ros2 param get</code> 核对运行结果。</p>
+</section>
+
+<section class="lesson" id="l5-4">
+<h2><span class="no">5.4</span>条件与包含</h2>
+
+<p>
+  启动文件可以接受命令行参数，并按参数选择要执行的动作。多个启动文件还可以
+  互相包含：公共部分写在一份文件里，另一份文件只负责组合。
+</p>
+
+<h3 id="s5-4-1">参数与变量</h3>
+
+<p>
+  <code>&lt;arg name="with_hello" default="true"/&gt;</code> 声明一个启动参数，
+  命令行用 <code>with_hello:=false</code> 覆盖默认值。
+  <code>$(var with_hello)</code> 取出参数值，作为条件表达式的一部分。
+</p>
+
+<h3 id="s5-4-2">include</h3>
+
+<p>
+  <code>&lt;include file="..."/&gt;</code> 把另一份启动文件的内容插入当前位置。
+  <code>$(find-pkg-share robot_bringup)</code> 在运行时解析为已安装功能包的
+  共享目录，因此不依赖源码目录的位置。
+</p>
+
+<h3 id="s5-4-3">if 与 unless</h3>
+
+<p>
+  <code>if="$(var with_hello)"</code> 在参数为真时执行该动作，
+  <code>unless="$(var with_hello)"</code> 在参数为假时执行。两个条件互斥，
+  一次启动只会走其中一条分支。条件也可以写在 <code>&lt;node&gt;</code> 上。
+</p>
+<pre data-lang="XML" data-name="conditional.launch.xml"><code>&lt;launch&gt;
+  &lt;arg name="with_hello" default="true"/&gt;
+  &lt;include file="$(find-pkg-share robot_bringup)/launch/hello.launch.xml"
+           if="$(var with_hello)"/&gt;
+  &lt;node pkg="robot_nodes" exec="talker" name="talker" output="screen"
+        unless="$(var with_hello)"/&gt;
+&lt;/launch&gt;</code></pre>
+
+<p>
+  被包含的 <code>hello.launch.xml</code> 只启动一个 <code>hello_node</code>：
+</p>
+<pre data-lang="XML" data-name="hello.launch.xml"><code>&lt;launch&gt;
+  &lt;node pkg="robot_nodes" exec="hello_node" name="hello_node" output="screen"/&gt;
+&lt;/launch&gt;</code></pre>
+
+<div class="eg" id="e5-4">
+  <div class="eg-h">例题 · 按参数选择节点</div>
+  <p>
+    默认参数为真，包含 <code>hello.launch.xml</code>，因此启动
+    <code>hello_node</code>。节点打印三行后退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup conditional.launch.xml 2&gt;&amp;1 \
+  | grep -E '^\[hello_node-[0-9]+\] \[INFO\]'</code></pre>
+<pre class="out" data-label="真实输出">[hello_node-1] [INFO] [hello_node]: hello 0
+[hello_node-1] [INFO] [hello_node]: hello 1
+[hello_node-1] [INFO] [hello_node]: hello 2</pre>
+  <p>
+    把参数改为假时，<code>include</code> 不执行，<code>unless</code> 分支的
+    <code>talker</code> 节点启动。两个分支不会同时生效。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-7</div>
+  <p>用 <code>--show-args</code> 查看 <code>conditional.launch.xml</code> 的启动参数、说明与默认值，不启动节点。</p>
+<pre class="out" data-label="预期输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+    'with_hello':
+        no description given
+        (default: 'true')</pre>
+  <details class="ans" data-run="示例代码/答案/5-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>--show-args</code> 列出 <code>with_hello</code>、它的说明与默认值。
+    启动文件没有写 <code>description</code>，所以说明是
+    <code>no description given</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup conditional.launch.xml --show-args</code></pre>
+  <pre class="out" data-label="真实输出">Arguments (pass arguments as '&lt;name&gt;:=&lt;value&gt;'):
+
+    'with_hello':
+        no description given
+        (default: 'true')</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-8</div>
+  <p>用 <code>with_hello:=false</code> 启动 <code>conditional.launch.xml</code>，只保留 <code>talker</code> 的节点日志行。</p>
+<pre class="out" data-label="预期输出">[talker-1] [INFO] [talker]: publishing: 'hello 0'
+[talker-1] [INFO] [talker]: publishing: 'hello 1'
+[talker-1] [INFO] [talker]: publishing: 'hello 2'</pre>
+  <details class="ans" data-run="示例代码/答案/5-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>with_hello:=false</code> 覆盖默认值。包含 <code>hello.launch.xml</code>
+    的动作被 <code>if</code> 跳过，<code>unless</code> 分支的 <code>talker</code>
+    启动并打印三行。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup conditional.launch.xml with_hello:=false</code></pre>
+  <pre class="out" data-label="真实输出">[talker-1] [INFO] [talker]: publishing: 'hello 0'
+[talker-1] [INFO] [talker]: publishing: 'hello 1'
+[talker-1] [INFO] [talker]: publishing: 'hello 2'</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在启动文件里声明参数，用 <code>if</code> 与 <code>unless</code> 选择动作，用 <code>include</code> 复用另一份启动文件，并从命令行覆盖默认值。</p>
+</section>
+
+<section class="lesson" id="l5-5">
+<h2><span class="no">5.5</span>组件（选学）</h2>
+
+<p>
+  组合（composition）把多个节点装进同一个进程。每个节点仍是一个独立的
+  <code>rclcpp::Node</code>，但共享进程内的执行器与通信中间件资源，
+  进程间通信的开销因此减少。组件（component）是可按需加载的共享库，
+  由组件容器（component container）在运行时装入。
+</p>
+
+<h3 id="s5-5-1">组合</h3>
+
+<p>
+  容器本身是一个节点进程，提供 <code>/ComponentManager</code> 等管理接口。
+  启动容器时不指定具体节点；之后用命令行或启动文件把组件加载进去。
+  一个容器可以先后加载多个组件，每个组件都可以取自己的节点名。
+</p>
+
+<h3 id="s5-5-2">注册与构建</h3>
+
+<p>
+  可组合节点与普通节点的区别在构造函数：它接收
+  <code>const rclcpp::NodeOptions &amp;</code>，并把它传给基类。
+  源文件用 <code>RCLCPP_COMPONENTS_REGISTER_NODE</code> 注册类名；
+  CMake 用 <code>add_library(... SHARED)</code> 生成共享库，
+  再用 <code>rclcpp_components_register_nodes</code> 声明插件名。
+  类放在命名空间里时，注册名要带命名空间，加载命令也用同一个全名。
+</p>
+
+<h3 id="s5-5-3">加载与查看</h3>
+
+<p>
+  <code>ros2 component types</code> 列出环境中所有可用组件；
+  <code>ros2 component load &lt;容器&gt; &lt;包名&gt; &lt;插件名&gt;</code>
+  把组件装入容器；<code>ros2 component list</code> 查看容器与已加载的节点。
+  加载成功后，组件发布的话题与普通节点相同，可以直接用
+  <code>ros2 topic echo</code> 订阅。
+</p>
+<pre data-lang="C++" data-name="talker_component.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_components/register_node_macro.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+namespace robot_nodes
+{
+
+class TalkerComponent : public rclcpp::Node
+{
+public:
+  explicit TalkerComponent(const rclcpp::NodeOptions &amp; options)
+  : Node("talker_component", options), count_(0)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;("component_chatter", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::String message;
+      message.data = "component " + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      ++count_;
+    });
+  }
+
+private:
+  int count_;
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+RCLCPP_COMPONENTS_REGISTER_NODE(robot_nodes::TalkerComponent)
+
+}  // namespace robot_nodes</code></pre>
+
+<div class="eg" id="e5-5">
+  <div class="eg-h">例题 · 加载 talker_component</div>
+  <p>
+    在一个终端运行组件容器；在另一个终端确认组件已注册、加载组件，
+    再订阅它发布的一条消息。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run rclcpp_components component_container</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 component types | sed 's/^ *//' | grep '^robot_nodes::TalkerComponent$'
+ros2 component load /ComponentManager robot_nodes robot_nodes::TalkerComponent
+ros2 topic echo /component_chatter --once</code></pre>
+<pre class="out" data-label="真实输出">robot_nodes::TalkerComponent
+Loaded component 1 into '/ComponentManager' container node as '/talker_component'
+data: component &lt;n&gt;
+---</pre>
+  <p>
+    第一行说明插件名是 <code>robot_nodes::TalkerComponent</code>，与注册宏里
+    写的全名一致。第二行说明组件被装成节点 <code>/talker_component</code>，
+    编号 1 是容器内的加载序号。第三行是组件发布的消息；计数从 0 开始递增，
+    每次运行取到的数字不同，页面写成 <code>&lt;n&gt;</code>。末尾的
+    <code>---</code> 是 <code>ros2 topic echo</code> 在一条消息之后打印的
+    分隔线。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-9</div>
+  <p>启动组件容器，加载 <code>robot_nodes::TalkerComponent</code>，然后列出容器与已加载的节点。输出保留两行。</p>
+<pre class="out" data-label="预期输出">/ComponentManager
+  1  /talker_component</pre>
+  <details class="ans" data-run="示例代码/答案/5-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    终端一启动组件容器；容器的默认节点名是 <code>/ComponentManager</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run rclcpp_components component_container</code></pre>
+  <p>
+    终端二加载组件并列出。加载成功后，<code>ros2 component list</code> 先打印
+    容器名，再打印容器内的编号与节点名；加载命令本身的提示行用
+    <code>&gt;/dev/null</code> 去掉，只保留列表。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 component load /ComponentManager robot_nodes robot_nodes::TalkerComponent \
+  &gt;/dev/null
+ros2 component list</code></pre>
+  <pre class="out" data-label="真实输出">/ComponentManager
+  1  /talker_component</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 5-10</div>
+  <p>列出环境中已注册的组件，只保留 <code>TalkerComponent</code> 的那一行。组件类型列表每行前面有缩进，先去掉行首空格再筛选。</p>
+<pre class="out" data-label="预期输出">robot_nodes::TalkerComponent</pre>
+  <details class="ans" data-run="示例代码/答案/5-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 component types</code> 每行前面的空格是显示缩进。先用
+    <code>sed</code> 去掉行首空格，再用 <code>grep</code> 留下完全匹配的插件名。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 component types | sed 's/^ *//' | grep '^robot_nodes::TalkerComponent$'</code></pre>
+  <pre class="out" data-label="真实输出">robot_nodes::TalkerComponent</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把节点写成可组合组件，生成共享库，在组件容器中按插件名加载，并用话题命令确认它已经在运行。</p>
+</section>
+
+<nav class="pager">
+  <a href="04-执行器与回调.html">← 第 4 部分 · 执行器与回调</a>
+  <span class="spacer"></span>
+  <a href="06-生命周期.html">第 6 部分 · 生命周期 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

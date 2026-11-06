@@ -1,0 +1,6 @@
+int32 steps
+string label
+---
+bool success
+---
+int32 remaining

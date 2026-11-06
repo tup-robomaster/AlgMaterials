@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 部分 · 开始 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a class="active" href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" aria-current="page" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 0 部分 · 开始</div>
+  <a class="toc-l" href="#l0-1"><span class="n">0.1</span>课程地图与工作空间</a>
+  <a class="toc-sub" href="#s0-1-1">工作空间的四层</a>
+  <a class="toc-sub" href="#s0-1-2">构建与加载环境</a>
+  <a class="toc-sub" href="#s0-1-3">域号与日志格式</a>
+  <a class="toc-sub" href="#e0-1">例题：检查工作空间</a>
+  <a class="toc-l" href="#l0-2"><span class="n">0.2</span>第一个节点</a>
+  <a class="toc-sub" href="#s0-2-1">节点类与 main</a>
+  <a class="toc-sub" href="#s0-2-2">定时器与日志</a>
+  <a class="toc-sub" href="#e0-2">例题：hello_node</a>
+  <a class="toc-sub" href="#s0-2-3">让节点自行停止</a>
+  <a class="toc-l" href="#l0-3"><span class="n">0.3</span>节点名、命名空间与重映射</a>
+  <a class="toc-sub" href="#s0-3-1">完全限定名</a>
+  <a class="toc-sub" href="#s0-3-2">启动参数与重映射</a>
+  <a class="toc-sub" href="#e0-3">例题：两个同名可执行文件</a>
+  <a class="toc-sub" href="#s0-3-3">node info 看到什么</a>
+  <a class="toc-l" href="#l0-4"><span class="n">0.4</span>功能包、依赖与构建</a>
+  <a class="toc-sub" href="#s0-4-1">package.xml</a>
+  <a class="toc-sub" href="#s0-4-2">CMakeLists.txt</a>
+  <a class="toc-sub" href="#s0-4-3">依赖与构建顺序</a>
+  <a class="toc-sub" href="#e0-4">例题：构建 robot_nodes</a>
+  <a class="toc-l" href="#l0-5"><span class="n">0.5</span>命令行工具与运行观察</a>
+  <a class="toc-sub" href="#s0-5-1">包与可执行文件</a>
+  <a class="toc-sub" href="#s0-5-2">接口查看</a>
+  <a class="toc-sub" href="#e0-5">例题：从包到接口</a>
+  <a class="toc-l" href="#l0-6"><span class="n">0.6</span>小海龟：观察现成节点（选学）</a>
+  <a class="toc-sub" href="#s0-6-1">启动与操作</a>
+  <a class="toc-sub" href="#s0-6-2">话题、服务与动作</a>
+  <a class="toc-sub" href="#e0-6">例题：观察 turtle1</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 0 部分</div>
+  <h1>开始</h1>
+  <p class="part-lead">
+    这一部分把工作空间、第一个节点、节点命名、功能包与命令行工具走通：
+    读完以后，读者应当能复制并构建课程工作空间，运行一个自行停止的节点，
+    用启动参数改变节点名与命名空间，读懂功能包的两份构建文件，
+    并用命令行列出包、可执行文件与接口。0.6 是选学的小海龟观察。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页 0.1 会复制并构建课程工作空间；构建完成后，本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+# 0.1 构建完成后执行
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'
+# 启动发现守护进程，避免第一次查询赶上冷启动
+ros2 daemon start &gt;/dev/null</code></pre>
+  <p>
+    最后一行先启动发现守护进程。本页有只运行 1.5 秒的节点，若第一次查询
+    赶上守护进程冷启动，查询会错过这些节点。
+  </p>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="">
+  <b>前置</b>
+  <p>
+    课程假设读者已经会写 C++：类、继承、智能指针、lambda、<code>std::vector</code>
+    与 <code>std::string</code>，能用 <code>g++</code> 编译一个源文件，能在终端
+    执行命令。课程不重复讲这些语法。
+  </p>
+</div>
+
+<section class="lesson" id="l0-1">
+<h2><span class="no">0.1</span>课程地图与工作空间</h2>
+
+<p>
+  ROS 2（Robot Operating System 2，机器人操作系统 2）是一组用于组织机器人
+  软件的库与工具。一个程序通常被拆成若干<b>节点</b>（node），每个节点只做
+  一件事；节点之间通过<b>话题</b>（topic）、<b>服务</b>（service）与
+  <b>动作</b>（action）交换数据。这样拆分以后，感知、控制与记录可以分别
+  编写、分别启动，也可以只替换其中一个节点。
+</p>
+
+<p>
+  课程的工作空间（workspace）是一个目录，里面按固定层次放置源码、构建产物
+  与安装产物。工作空间与其中的功能包（package）是这一部分最先要弄清的两个
+  概念：功能包是构建的最小单位，工作空间把一组功能包放在一起构建。
+</p>
+
+<h3 id="s0-1-1">工作空间的四层</h3>
+
+<p>
+  课程工作空间的结构如下。只在 <code>src/</code> 里放源码与配置；
+  <code>build/</code>、<code>install/</code> 与 <code>log/</code> 都由构建工具
+  生成，删除后重新构建即可恢复。
+</p>
+
+<pre class="out" data-label="目录结构">ros2_ws/
+├── src/
+│   ├── robot_interfaces/   消息与服务定义
+│   ├── robot_nodes/        C++ 节点
+│   └── robot_bringup/      启动文件与配置
+├── build/                  中间产物
+├── install/                安装产物与环境脚本
+└── log/                    构建日志</pre>
+
+<p>
+  <code>src/</code> 里的每个子目录是一个功能包，每个功能包必须有
+  <code>package.xml</code> 与一份构建文件。构建工具从 <code>src/</code> 找到
+  全部功能包，按依赖关系排序，把产物写进 <code>build/</code> 与
+  <code>install/</code>。把生成物放进 <code>src/</code> 会让下一次构建把旧产物
+  当成源码扫描，也会让版本管理混入大量二进制文件。
+</p>
+
+<p>
+  课程把工作空间放在 <code>$HOME/ros2_ws</code>。ROS 2 的接口生成步骤按路径
+  拼接构建目标，路径中出现中文等非 ASCII 字符时，
+  <code>rosidl_generate_interfaces</code> 会报目标不存在；把工作空间复制到
+  只含 ASCII 字符的路径即可避开。源码随课程放在
+  <code>示例代码/ros2_ws/src/</code>，复制一次，之后都在
+  <code>$HOME/ros2_ws</code> 里构建。复制时一并带上课程提供的清理脚本；
+  它删除工作空间中的 <code>build/</code>、<code>install/</code> 与
+  <code>log/</code>，用于从干净状态重新构建。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：课程目录
+mkdir -p $HOME/ros2_ws
+cp -r 示例代码/ros2_ws/src $HOME/ros2_ws/
+cp 示例代码/ros2_ws/clean.sh $HOME/ros2_ws/
+# 进入工作空间
+cd $HOME/ros2_ws</code></pre>
+
+<h3 id="s0-1-2">构建与加载环境</h3>
+
+<p>
+  构建使用 <code>colcon build</code>。每个新终端先加载 ROS 2 本身，再加载
+  工作空间的安装环境；后一条脚本会把工作空间的包加入查找路径。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install
+source install/setup.bash</code></pre>
+
+<pre class="out" data-label="真实输出">Starting &gt;&gt;&gt; robot_interfaces
+Finished &lt;&lt;&lt; robot_interfaces [4.26s]
+Starting &gt;&gt;&gt; robot_nodes
+Finished &lt;&lt;&lt; robot_nodes [7.10s]
+Starting &gt;&gt;&gt; robot_bringup
+Finished &lt;&lt;&lt; robot_bringup [0.76s]
+
+Summary: 3 packages finished [12.2s]</pre>
+
+<p>
+  方括号里的时间随机器负载变化，页面不把它当作固定结果。功能包的顺序由依赖
+  决定：<code>robot_nodes</code> 使用 <code>robot_interfaces</code> 生成的头文件，
+  所以接口包先构建。
+</p>
+
+<p>
+  需要清理构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令：
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+
+<p>
+  脚本只删除 <code>build/</code>、<code>install/</code> 与
+  <code>log/</code>，删除前列出目录大小并询问确认；
+  加 <code>--yes</code> 可以跳过询问。
+</p>
+
+<p>
+  <code>--symlink-install</code> 让安装目录里的文件指向源码，修改 Python
+  启动文件或配置后不必重新安装；C++ 源码改动仍然需要重新构建。
+  <code>--packages-select</code> 只构建指定的包，例如只改了一个节点时可以写：
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_nodes</code></pre>
+
+<pre class="out" data-label="真实输出">Starting &gt;&gt;&gt; robot_nodes
+Finished &lt;&lt;&lt; robot_nodes [0.09s]
+
+Summary: 1 package finished [0.18s]</pre>
+
+<h3 id="s0-1-3">域号与日志格式</h3>
+
+<p>
+  ROS 2 节点通过域号（domain ID）分组。同一台机器上，域号不同的节点彼此
+  看不到，也不会交换消息。课程统一使用 42 号域，避免与其它终端或其它课程
+  的节点混在一起。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+
+<p>
+  第二条设置日志格式。默认格式在每行前面带时间戳，每次运行都不同，页面无法
+  逐行对照；这里只保留级别、节点名与消息。格式串只影响显示，不改变日志级别，
+  也不改变节点记录的内容。两条变量都只对当前终端有效，新开终端要重新设置。
+</p>
+
+<div class="eg" id="e0-1">
+  <div class="eg-h">例题 · 检查工作空间</div>
+  <p>
+    脚本接收一个工作空间路径，打印路径、<code>src/</code> 中的功能包与
+    <code>install/</code> 中的安装目录。下一条命令在本页所在目录执行；
+    路径中的个人目录在输出里写成 <code>$WORKSPACE</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：课程目录
+bash 示例代码/0.1-workspace-check.sh $HOME/ros2_ws</code></pre>
+  <pre class="out" data-label="真实输出">workspace: $WORKSPACE
+src packages:
+robot_bringup
+robot_interfaces
+robot_nodes
+install:
+robot_bringup
+robot_interfaces
+robot_nodes</pre>
+  <p>
+    三行包名与三个安装目录一一对应。若 <code>install:</code> 少了一行，
+    说明该包没有构建成功；先回到构建输出里找 <code>Failed</code> 的那一段。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-1</div>
+  <p>只构建接口包 <code>robot_interfaces</code>，构建完成后显示 <code>Target</code> 消息的字段定义。命令顺序不能颠倒；最后一条命令使用 <code>ros2 interface show --no-comments</code>。</p>
+  <pre class="out" data-label="预期输出">float64 x
+float64 y
+string label</pre>
+  <details class="ans" data-run="示例代码/答案/0-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    先构建接口包，安装目录里才会出现消息定义；再查询时，
+    <code>ros2 interface</code> 才能从安装环境里找到
+    <code>robot_interfaces/msg/Target</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_interfaces &gt;/dev/null 2&gt;&amp;1
+source install/setup.bash
+ros2 interface show --no-comments robot_interfaces/msg/Target</code></pre>
+  <pre class="out" data-label="真实输出">float64 x
+float64 y
+string label</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-2</div>
+  <p>列出工作空间中的三个功能包，并列出 <code>robot_nodes</code> 中名为 <code>hello_node</code> 的可执行文件。包名按字母顺序输出；可执行文件一行只保留 <code>包名 可执行文件名</code> 的形式。</p>
+  <pre class="out" data-label="预期输出">robot_bringup
+robot_interfaces
+robot_nodes
+robot_nodes hello_node</pre>
+  <details class="ans" data-run="示例代码/答案/0-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 pkg list</code> 会列出环境中的全部包，包含 ROS 2 自带的包；
+    过滤 <code>robot_</code> 开头的三个名字即可。
+    <code>ros2 pkg executables</code> 的第一个字段是包名。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 pkg list | grep -E '^robot_(bringup|interfaces|nodes)$' | sort
+ros2 pkg executables robot_nodes | grep ' hello_node$'</code></pre>
+  <pre class="out" data-label="真实输出">robot_bringup
+robot_interfaces
+robot_nodes
+robot_nodes hello_node</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>复制课程工作空间，用 <code>colcon build</code> 构建全部功能包，加载安装环境，并用一条命令确认 <code>src/</code> 与 <code>install/</code> 中的包一一对应。</p>
+</section>
+
+<section class="lesson" id="l0-2">
+<h2><span class="no">0.2</span>第一个节点</h2>
+
+<p>
+  节点是 ROS 2 进程中的一个对象。它有自己的名字，可以创建发布者、订阅者、
+  定时器与服务；<code>rclcpp::spin</code> 让节点持续等待并处理这些事件。
+  这一课写一个最小的节点：每 500 毫秒打印一行，第三行之后自行停止。
+</p>
+
+<h3 id="s0-2-1">节点类与 main</h3>
+
+<p>
+  节点类继承 <code>rclcpp::Node</code>，在构造函数里创建定时器；
+  <code>main</code> 负责初始化、交给执行器循环、最后关闭。下面这段包含
+  头文件、节点类与入口。
+</p>
+
+<pre data-lang="C++" data-name="hello_node.cpp"><code>// 0.2 的第一个节点：每 500 ms 打印一行，第三行之后自行停止。
+// 停止是为了让例子能在终端里结束，页面上的输出可以逐行对照。
+#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include &quot;rclcpp/rclcpp.hpp&quot;
+
+using namespace std::chrono_literals;
+
+class HelloNode : public rclcpp::Node
+{
+public:
+  HelloNode()
+  : Node(&quot;hello_node&quot;), count_(0)
+  {
+    timer_ = create_wall_timer(500ms, [this]() {
+      RCLCPP_INFO(get_logger(), &quot;hello %d&quot;, count_);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;HelloNode&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+
+<p>
+  <code>rclcpp::init</code> 解析命令行参数并初始化通信；少了它，
+  创建节点会直接终止。<code>rclcpp::spin</code> 阻塞在当前线程，
+  反复取回调并执行；回调返回后继续等待。最后一行 <code>rclcpp::shutdown</code>
+  在循环退出后清理资源，正常结束时进程返回 0。
+</p>
+
+<p>
+  <code>std::make_shared&lt;HelloNode&gt;()</code> 创建一个临时共享指针，
+  它在 <code>spin</code> 调用期间保持节点对象存活，函数返回后对象才析构。
+  节点名 <code>hello_node</code> 在构造函数的 <code>Node("hello_node")</code>
+  中给出，下一课会用启动参数修改它。
+</p>
+
+<h3 id="s0-2-2">定时器与日志</h3>
+
+<p>
+  <code>create_wall_timer</code> 按系统时间周期触发回调。第一个参数是周期，
+  <code>500ms</code> 来自 <code>std::chrono_literals</code>；第二个参数是
+  可调用对象，这里用 lambda 捕获 <code>this</code>，以便访问成员。
+</p>
+
+<p>
+  <code>RCLCPP_INFO(get_logger(), "hello %d", count_)</code> 写一条信息级
+  日志。<code>get_logger()</code> 返回节点自己的日志器，日志名默认是节点名；
+  格式串与参数之间用逗号分隔，写法与 <code>printf</code> 类似，参数按格式串
+  中的占位符依次填入。
+</p>
+
+<div class="eg" id="e0-2">
+  <div class="eg-h">例题 · hello_node</div>
+  <p>构建后直接运行。节点自己停止，命令会回到提示符。</p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes hello_node</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [hello_node]: hello 0
+[INFO] [hello_node]: hello 1
+[INFO] [hello_node]: hello 2</pre>
+  <p>
+    方括号中的 <code>INFO</code> 是级别，<code>hello_node</code> 是日志器名，
+    冒号后是消息。三行之间相隔约 500 毫秒；计数从 0 开始，是因为成员
+    <code>count_</code> 在构造函数里初始化为 0。
+  </p>
+</div>
+
+<h3 id="s0-2-3">让节点自行停止</h3>
+
+<p>
+  ROS 2 节点通常一直运行，等待消息或服务请求。课程例子需要逐行对照输出，
+  所以每个例子在完成固定次数后调用 <code>rclcpp::shutdown()</code>。
+  它让 <code>spin</code> 返回，<code>main</code> 随后正常结束。真实系统里
+  节点多由外部信号停止，不需要在回调里关闭自己。
+</p>
+
+<p>
+  计数器在打印之后自增，再判断是否达到 3。若把判断放在打印之前，
+  输出会少一行或多一行；这类边界错误在发布与订阅回调里同样会出现，
+  每次都要按“先处理这一条，再决定是否停止”的顺序写。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 0-3</div>
+  <p>把例题的周期改为 1 秒，共打印五行，仍然在第五行之后停止。节点名保持不变。</p>
+  <pre class="out" data-label="预期输出">[INFO] [hello_node]: hello 0
+[INFO] [hello_node]: hello 1
+[INFO] [hello_node]: hello 2
+[INFO] [hello_node]: hello 3
+[INFO] [hello_node]: hello 4</pre>
+  <details class="ans" data-run="示例代码/答案/0-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    周期写成 <code>1s</code>，停止条件改成 <code>count_ == 5</code>。
+    计数仍然从 0 开始，因此最后一行是 <code>hello 4</code>。
+  </p>
+      <pre data-lang="C++" data-name="hello_1s.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class HelloNode : public rclcpp::Node
+{
+public:
+  HelloNode()
+  : Node("hello_node"), count_(0)
+  {
+    timer_ = create_wall_timer(1s, [this]() {
+      RCLCPP_INFO(get_logger(), "hello %d", count_);
+      ++count_;
+      if (count_ == 5) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;HelloNode&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [hello_node]: hello 0
+[INFO] [hello_node]: hello 1
+[INFO] [hello_node]: hello 2
+[INFO] [hello_node]: hello 3
+[INFO] [hello_node]: hello 4</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-4</div>
+  <p>把节点名改为 <code>tick_node</code>，日志同时打印节点名与计数，格式为“节点名 空格 计数”。仍然打印三行后停止，使用 <code>get_name()</code> 取得节点名。</p>
+  <pre class="out" data-label="预期输出">[INFO] [tick_node]: tick_node 0
+[INFO] [tick_node]: tick_node 1
+[INFO] [tick_node]: tick_node 2</pre>
+  <details class="ans" data-run="示例代码/答案/0-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>get_name()</code> 返回不带命名空间的节点名。
+    日志器名已经由节点名决定，消息里再打印一次，便于确认节点名
+    是否改对。
+  </p>
+      <pre data-lang="C++" data-name="tick_node.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class TickNode : public rclcpp::Node
+{
+public:
+  TickNode()
+  : Node("tick_node"), count_(0)
+  {
+    timer_ = create_wall_timer(500ms, [this]() {
+      RCLCPP_INFO(get_logger(), "%s %d", get_name(), count_);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TickNode&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [tick_node]: tick_node 0
+[INFO] [tick_node]: tick_node 1
+[INFO] [tick_node]: tick_node 2</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个继承 <code>rclcpp::Node</code> 的节点，在定时器回调里按固定周期打印日志，并在指定次数后让进程自行结束。</p>
+</section>
+
+<section class="lesson" id="l0-3">
+<h2><span class="no">0.3</span>节点名、命名空间与重映射</h2>
+
+<p>
+  同一个可执行文件可以启动多次。每次启动都是一个独立节点，节点名与命名空间
+  决定它在图中的位置；启动参数可以在不改代码的前提下改变这些名字。
+  这一课用同一个 <code>hello_node</code> 启动两个实例，观察节点列表与节点信息。
+</p>
+
+<h3 id="s0-3-1">完全限定名</h3>
+
+<p>
+  节点名由命名空间（namespace）与基名组成，合起来叫完全限定名（fully
+  qualified name）。默认命名空间是 <code>/</code>，节点 <code>hello_node</code>
+  的完全限定名是 <code>/hello_node</code>。若命名空间是 <code>/lab</code>，
+  基名是 <code>worker</code>，完全限定名就是 <code>/lab/worker</code>。
+</p>
+
+<p>
+  ROS 2 允许两个节点使用相同的完全限定名。此时 <code>ros2 node list</code>
+  会给出警告并列出两行相同的名称，<code>ros2 node info</code> 只显示其中一个，
+  并说明图中有两个同名节点；参数查询、终止进程与日志来源都难以指认。
+  不同命名空间下的同名基名可以共存，因为完全限定名不同。命名时应当保证
+  完全限定名在域内唯一。
+</p>
+
+<h3 id="s0-3-2">启动参数与重映射</h3>
+
+<p>
+  <code>ros2 run</code> 后面的普通参数传给程序本身；<code>--ros-args</code>
+  之后是 ROS 2 的参数。节点名用 <code>--remap __node:=新名字</code> 或简写
+  <code>-r __node:=新名字</code>；命名空间用 <code>__ns:=/lab</code>。
+  话题、服务与动作也可以按 <code>原名:=新名</code> 重映射。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes hello_node \
+  --ros-args -r __node:=worker -r __ns:=/lab</code></pre>
+
+<p>
+  两条重映射同时生效时，节点完全限定名是 <code>/lab/worker</code>，
+  日志器名变成 <code>lab.worker</code>：命名空间中的斜杠在日志名里写成点。
+  这是排查日志来源时最容易忽略的一处变化。
+</p>
+
+<div class="eg" id="e0-3">
+  <div class="eg-h">例题 · 两个实例</div>
+  <p>
+    在同一个终端后台启动默认实例与改名实例，等半秒后查看节点列表；
+    再查看改名实例的完整端点信息。两个实例都在 1.5 秒后自行停止。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes hello_node &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes hello_node \
+  --ros-args -r __node:=worker -r __ns:=/lab &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 0.5
+ros2 node list | sort
+ros2 node info /lab/worker
+wait</code></pre>
+  <p>节点列表：</p>
+  <pre class="out" data-label="真实输出">/hello_node
+/lab/worker</pre>
+  <p>节点信息：</p>
+  <pre class="out" data-label="真实输出">/lab/worker
+  Subscribers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+  Publishers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /rosout: rcl_interfaces/msg/Log
+  Service Servers:
+    /lab/worker/describe_parameters: rcl_interfaces/srv/DescribeParameters
+    /lab/worker/get_parameter_types: rcl_interfaces/srv/GetParameterTypes
+    /lab/worker/get_parameters: rcl_interfaces/srv/GetParameters
+    /lab/worker/get_type_description: type_description_interfaces/srv/GetTypeDescription
+    /lab/worker/list_parameters: rcl_interfaces/srv/ListParameters
+    /lab/worker/set_parameters: rcl_interfaces/srv/SetParameters
+    /lab/worker/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically
+  Service Clients:
+
+  Action Servers:
+
+  Action Clients:</pre>
+  <p>
+    节点列表有两项。节点信息的第一行是节点名，后面的服务名都带
+    <code>/lab/worker/</code> 前缀，说明命名空间已经写进这些名称；
+    <code>/rosout</code> 与 <code>/parameter_events</code> 是系统话题。
+  </p>
+</div>
+
+<h3 id="s0-3-3">node info 看到什么</h3>
+
+<p>
+  <code>ros2 node info</code> 按订户、发布者、服务端、客户端、动作端分组列出
+  端点。订阅者与发布者后面是消息类型；服务端与客户端后面是服务类型。
+  即使节点代码里没有显式创建这些端点，<code>parameter_events</code> 与
+  <code>rosout</code> 也会出现，因为每个节点默认带参数服务与日志发布。
+</p>
+
+<p>
+  端点名称是否带命名空间，是判断相对名称与绝对名称的直接证据。
+  <code>create_publisher("chatter", …)</code> 用的是相对名称，
+  它会自动拼上节点命名空间；以 <code>/</code> 开头的名称则是绝对名称，
+  不再拼接。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 0-5</div>
+  <p>用启动参数把 <code>hello_node</code> 放进 <code>/lab</code> 命名空间，基名不变。节点运行期间用 <code>ros2 node list</code> 确认它的完全限定名。</p>
+  <pre class="out" data-label="预期输出">/lab/hello_node</pre>
+  <details class="ans" data-run="示例代码/答案/0-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    只改 <code>__ns</code>，基名仍是 <code>hello_node</code>。
+    列表里的名称是拼接后的完全限定名。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes hello_node --ros-args -r __ns:=/lab &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 0.5
+ros2 node list | grep '^/lab/hello_node$'
+wait</code></pre>
+  <pre class="out" data-label="真实输出">/lab/hello_node</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-6</div>
+  <p>把节点名改为 <code>worker</code>，命名空间设为 <code>/demo</code>，确认完全限定名。再用一句话说明这个完全限定名由哪两部分组成。</p>
+  <pre class="out" data-label="预期输出">/demo/worker</pre>
+  <details class="ans" data-run="示例代码/答案/0-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    完全限定名 <code>/demo/worker</code> 由命名空间 <code>/demo</code>
+    与节点基名 <code>worker</code> 组成。两条重映射分别设置这两部分，
+    顺序不影响结果。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes hello_node \
+  --ros-args -r __node:=worker -r __ns:=/demo &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 0.5
+ros2 node list | grep '^/demo/worker$'
+wait</code></pre>
+  <pre class="out" data-label="真实输出">/demo/worker</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>__node</code> 与 <code>__ns</code> 启动同一个节点，读出它的完全限定名，并从 <code>node info</code> 的端点名称判断相对名称最终落在哪个命名空间。</p>
+</section>
+
+<section class="lesson" id="l0-4">
+<h2><span class="no">0.4</span>功能包、依赖与构建</h2>
+
+<p>
+  功能包是 ROS 2 构建与分发的最小单位。一个 C++ 功能包至少有两份文件：
+  <code>package.xml</code> 声明包的元数据与依赖，<code>CMakeLists.txt</code>
+  声明怎样编译与安装。这一课读课程里的 <code>robot_nodes</code> 包，
+  再改它的依赖与可执行文件。
+</p>
+
+<h3 id="s0-4-1">package.xml</h3>
+
+<p>
+  根元素 <code>&lt;package format="3"&gt;</code> 指定格式版本。
+  <code>&lt;name&gt;</code> 是包名，必须与目录名一致；
+  <code>&lt;version&gt;</code>、<code>&lt;description&gt;</code>、
+  <code>&lt;maintainer&gt;</code> 与 <code>&lt;license&gt;</code> 是元数据。
+  <code>&lt;buildtool_depend&gt;</code> 声明构建工具，
+  <code>&lt;depend&gt;</code> 同时覆盖构建与运行依赖。
+</p>
+
+<pre data-lang="XML" data-name="package.xml"><code>&lt;?xml version="1.0"?&gt;
+&lt;package format="3"&gt;
+  &lt;name&gt;robot_nodes&lt;/name&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+  &lt;description&gt;课程用 C++ 节点&lt;/description&gt;
+  &lt;maintainer email="tup@example.com"&gt;TUP&lt;/maintainer&gt;
+  &lt;license&gt;Apache-2.0&lt;/license&gt;
+
+  &lt;buildtool_depend&gt;ament_cmake&lt;/buildtool_depend&gt;
+
+  &lt;depend&gt;rclcpp&lt;/depend&gt;
+  &lt;depend&gt;rclcpp_components&lt;/depend&gt;
+  &lt;depend&gt;rclcpp_action&lt;/depend&gt;
+  &lt;depend&gt;std_msgs&lt;/depend&gt;
+  &lt;depend&gt;example_interfaces&lt;/depend&gt;
+  &lt;depend&gt;rcl_interfaces&lt;/depend&gt;
+  &lt;depend&gt;robot_interfaces&lt;/depend&gt;
+
+  &lt;export&gt;
+    &lt;build_type&gt;ament_cmake&lt;/build_type&gt;
+  &lt;/export&gt;
+&lt;/package&gt;</code></pre>
+
+<p>
+  <code>ament_cmake</code> 是构建工具依赖，提供 CMake 宏；
+  其余 <code>&lt;depend&gt;</code> 是代码依赖，覆盖节点用到的客户端库与
+  接口包。构建工具会读取这些声明，安排包的构建顺序，并在安装环境里
+  记录运行依赖。
+</p>
+
+<h3 id="s0-4-2">CMakeLists.txt</h3>
+
+<p>
+  CMake 文件先声明最低版本与项目名，再查找依赖，随后为每个可执行文件写
+  <code>add_executable</code> 与 <code>ament_target_dependencies</code>，
+  最后安装到 <code>lib/包名</code>。最低版本写 3.16，与 ROS 2 Jazzy 使用的
+  CMake 版本范围一致。
+</p>
+
+<pre data-lang="CMake" data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(robot_nodes)
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(example_interfaces REQUIRED)
+find_package(rcl_interfaces REQUIRED)
+find_package(robot_interfaces REQUIRED)
+find_package(Threads REQUIRED)
+
+set(NODE_TARGETS
+  hello_node
+  talker
+  listener
+  target_talker
+  target_listener
+  qos_talker
+  qos_listener
+  qos_listener_best_effort
+  multi_talker
+  filter_listener
+  diag_talker
+  add_server
+  add_client
+  area_server
+  area_client
+  parameter_node
+  param_demo
+  patrol_server
+  patrol_client
+  patrol_cancel_client
+  queue_demo
+  executor_probe
+  group_probe
+  long_task_demo
+)
+
+add_executable(hello_node src/hello_node.cpp)
+ament_target_dependencies(hello_node rclcpp)
+
+add_executable(talker src/talker.cpp)
+ament_target_dependencies(talker rclcpp std_msgs)
+
+add_executable(listener src/listener.cpp)
+ament_target_dependencies(listener rclcpp std_msgs)
+
+add_executable(target_talker src/target_talker.cpp)
+ament_target_dependencies(target_talker rclcpp robot_interfaces)
+
+add_executable(target_listener src/target_listener.cpp)
+ament_target_dependencies(target_listener rclcpp robot_interfaces)
+
+add_executable(qos_talker src/qos_talker.cpp)
+ament_target_dependencies(qos_talker rclcpp std_msgs)
+
+add_executable(qos_listener src/qos_listener.cpp)
+ament_target_dependencies(qos_listener rclcpp std_msgs)
+
+add_executable(qos_listener_best_effort src/qos_listener_best_effort.cpp)
+ament_target_dependencies(qos_listener_best_effort rclcpp std_msgs)
+
+add_executable(multi_talker src/multi_talker.cpp)
+ament_target_dependencies(multi_talker rclcpp std_msgs)
+
+add_executable(filter_listener src/filter_listener.cpp)
+ament_target_dependencies(filter_listener rclcpp std_msgs)
+
+add_executable(diag_talker src/diag_talker.cpp)
+ament_target_dependencies(diag_talker rclcpp std_msgs)
+
+add_executable(add_server src/add_server.cpp)
+ament_target_dependencies(add_server rclcpp example_interfaces)
+
+add_executable(add_client src/add_client.cpp)
+ament_target_dependencies(add_client rclcpp example_interfaces)
+
+add_executable(area_server src/area_server.cpp)
+ament_target_dependencies(area_server rclcpp robot_interfaces)
+
+add_executable(area_client src/area_client.cpp)
+ament_target_dependencies(area_client rclcpp robot_interfaces)
+
+add_executable(parameter_node src/parameter_node.cpp)
+ament_target_dependencies(parameter_node rclcpp rcl_interfaces)
+
+add_executable(param_demo src/param_demo.cpp)
+ament_target_dependencies(param_demo rclcpp std_msgs rcl_interfaces)
+
+add_executable(patrol_server src/patrol_server.cpp)
+ament_target_dependencies(patrol_server rclcpp rclcpp_action robot_interfaces)
+
+add_executable(patrol_client src/patrol_client.cpp)
+ament_target_dependencies(patrol_client rclcpp rclcpp_action robot_interfaces)
+
+add_executable(patrol_cancel_client src/patrol_cancel_client.cpp)
+ament_target_dependencies(patrol_cancel_client rclcpp rclcpp_action robot_interfaces)
+
+# 第 4、5 部分的示例
+add_executable(queue_demo src/queue_demo.cpp)
+ament_target_dependencies(queue_demo rclcpp std_msgs)
+
+add_executable(executor_probe src/executor_probe.cpp)
+ament_target_dependencies(executor_probe rclcpp)
+target_link_libraries(executor_probe Threads::Threads)
+
+add_executable(group_probe src/group_probe.cpp)
+ament_target_dependencies(group_probe rclcpp)
+target_link_libraries(group_probe Threads::Threads)
+
+add_executable(long_task_demo src/long_task_demo.cpp)
+ament_target_dependencies(long_task_demo rclcpp)
+target_link_libraries(long_task_demo Threads::Threads)
+
+add_library(talker_component SHARED src/talker_component.cpp)
+ament_target_dependencies(talker_component rclcpp rclcpp_components std_msgs)
+rclcpp_components_register_nodes(talker_component "robot_nodes::TalkerComponent")
+
+install(TARGETS ${NODE_TARGETS}
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS talker_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_package()</code></pre>
+
+<p>
+  <code>CMAKE_CXX_STANDARD 17</code> 让全部目标使用 C++17。
+  <code>add_executable(目标名 源文件)</code> 的第一个参数是
+  目标名，也是安装后的可执行文件名；<code>ament_target_dependencies</code>
+  把依赖的头文件路径与链接库加到目标上。
+</p>
+
+<p>
+  <code>install(TARGETS … DESTINATION lib/${PROJECT_NAME})</code> 决定
+  <code>ros2 run</code> 能否找到程序。安装目录是
+  <code>install/robot_nodes/lib/robot_nodes/</code>，<code>ros2 run</code>
+  在包的 <code>lib/</code> 下按可执行文件名查找，不需要写完整路径。
+</p>
+
+<h3 id="s0-4-3">依赖与构建顺序</h3>
+
+<p>
+  接口包先生成消息代码，节点包再包含生成的头文件。构建单个节点包时，
+  若接口包尚未构建，CMake 会在 <code>find_package(robot_interfaces)</code>
+  处失败。正确顺序是先构建接口包，再构建节点包；或者一次构建整个工作空间，
+  由 <code>colcon</code> 按依赖排序。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_interfaces
+colcon build --symlink-install --packages-select robot_nodes</code></pre>
+
+<p>
+  修改了 <code>msg/Target.msg</code> 之后，使用该消息的节点必须重新构建。
+  只重新构建节点包而不构建接口包时，节点仍会包含旧的头文件；构建输出看起来
+  成功，运行结果却缺字段。这类问题先查接口包的构建时间，再查节点包。
+</p>
+
+<div class="eg" id="e0-4">
+  <div class="eg-h">例题 · 构建 robot_nodes</div>
+  <p>
+    在接口包已经构建的前提下，只构建节点包。输出保留开始、结束与汇总三行；
+    方括号里的时间随机器变化。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_nodes</code></pre>
+  <pre class="out" data-label="真实输出">Starting &gt;&gt;&gt; robot_nodes
+Finished &lt;&lt;&lt; robot_nodes [0.09s]
+
+Summary: 1 package finished [0.18s]</pre>
+  <p>
+    <code>Finished</code> 表示编译与安装都成功；若出现
+    <code>Failed</code>，该包后面的依赖包不会继续构建。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-7</div>
+  <p>为使用 <code>std_msgs/msg/String</code> 的节点补上依赖：在 <code>package.xml</code> 的依赖区写出正确的一行，并说明它为什么放在 <code>&lt;depend&gt;</code> 而不是 <code>&lt;buildtool_depend&gt;</code>。把这一行作为命令的输出。</p>
+  <pre class="out" data-label="预期输出">&lt;depend&gt;std_msgs&lt;/depend&gt;</pre>
+  <details class="ans" data-run="示例代码/答案/0-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>std_msgs</code> 是代码依赖，不是构建工具，所以写在
+    <code>&lt;depend&gt;</code> 中。<code>&lt;buildtool_depend&gt;</code>
+    留给 <code>ament_cmake</code> 这类提供构建脚本的包。
+  </p>
+  <pre data-lang="XML"><code>&lt;depend&gt;std_msgs&lt;/depend&gt;</code></pre>
+  <pre class="out" data-label="真实输出">&lt;depend&gt;std_msgs&lt;/depend&gt;</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-8</div>
+  <p>在 <code>robot_nodes</code> 中新增可执行文件 <code>info_node</code>，节点名也取 <code>info_node</code>：节点打印一行 <code>robot ready</code> 后停止。把它加入 CMake 的安装列表，构建后运行，确认输出。</p>
+  <pre class="out" data-label="预期输出">[INFO] [info_node]: robot ready</pre>
+  <details class="ans" data-run="示例代码/答案/0-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    新建一个源文件，内容如下；CMake 里加一个目标，再为它写一条安装规则。
+    节点只创建一次定时器，打印后立即关闭。
+  </p>
+      <pre data-lang="C++" data-name="info_node.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class InfoNode : public rclcpp::Node
+{
+public:
+  InfoNode()
+  : Node("info_node")
+  {
+    timer_ = create_wall_timer(100ms, [this]() {
+      RCLCPP_INFO(get_logger(), "robot ready");
+      rclcpp::shutdown();
+    });
+  }
+
+private:
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;InfoNode&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre data-lang="CMake"><code>add_executable(info_node src/info_node.cpp)
+ament_target_dependencies(info_node rclcpp)
+
+install(TARGETS info_node
+  DESTINATION lib/${PROJECT_NAME}
+)</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [info_node]: robot ready</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>为一个 C++ 功能包写 <code>package.xml</code> 与 <code>CMakeLists.txt</code>，声明依赖、编译可执行文件并安装到 <code>lib/包名</code>，再按依赖顺序构建接口包与节点包。</p>
+</section>
+
+<section class="lesson" id="l0-5">
+<h2><span class="no">0.5</span>命令行工具与运行观察</h2>
+
+<p>
+  ROS 2 的命令行工具以 <code>ros2</code> 开头，后面跟子命令。它们读取当前
+  终端的安装环境，不需要节点代码配合。这一课用四条命令观察课程工作空间：
+  有哪些包、包里有哪个可执行文件、包安装在哪里、接口有哪些字段。
+</p>
+
+<h3 id="s0-5-1">包与可执行文件</h3>
+
+<p>
+  <code>ros2 pkg list</code> 列出环境中可见的全部功能包；
+  <code>ros2 pkg executables 包名</code> 列出该包安装的可执行文件；
+  <code>ros2 pkg prefix 包名</code> 打印安装前缀。前缀下通常有
+  <code>lib/包名</code> 与 <code>share/包名</code>；导出头文件的包还会多一个
+  <code>include/包名</code>。
+</p>
+
+<p>
+  <code>ros2 run 包名 可执行文件名</code> 先在安装环境里找到包，再执行
+  <code>lib/包名/可执行文件名</code>。它不会改变当前目录，也不会自动加载
+  工作空间；这些都由终端的 <code>source</code> 完成。
+</p>
+
+<h3 id="s0-5-2">接口查看</h3>
+
+<p>
+  接口（interface）包括消息、服务与动作三类。
+  <code>ros2 interface list</code> 列出全部接口，
+  <code>ros2 interface show 类型名</code> 显示定义。类型名写成
+  <code>包名/msg/消息名</code>、<code>包名/srv/服务名</code> 或
+  <code>包名/action/动作名</code>。
+</p>
+
+<p>
+  生成的头文件路径与类型名对应：<code>std_msgs/msg/String</code> 对应
+  <code>std_msgs/msg/string.hpp</code>，C++ 命名空间是
+  <code>std_msgs::msg</code>，类名是 <code>String</code>。
+  自定义消息也遵循同一规则：包名与类型名决定生成的头文件路径与 C++ 命名空间。
+</p>
+
+<div class="eg" id="e0-5">
+  <div class="eg-h">例题 · 从包到接口</div>
+  <p>
+    依次列出课程包、<code>robot_nodes</code> 的 <code>hello_node</code>、
+    安装前缀与 <code>std_msgs/msg/String</code> 的字段。前缀中的个人目录
+    写成 <code>$WORKSPACE</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 pkg list | grep -E '^robot_(bringup|interfaces|nodes)$' | sort
+ros2 pkg executables robot_nodes | grep ' hello_node$'
+ros2 pkg prefix robot_nodes
+ros2 interface show --no-comments std_msgs/msg/String</code></pre>
+  <pre class="out" data-label="真实输出">robot_bringup
+robot_interfaces
+robot_nodes
+robot_nodes hello_node
+$WORKSPACE/install/robot_nodes
+string data</pre>
+  <p>
+    最后一行是消息定义：只有一个名为 <code>data</code> 的字符串字段。
+    前面几行说明包、可执行文件与安装位置之间的对应关系。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-9</div>
+  <p>用一条命令查看 <code>robot_nodes</code> 中的 <code>hello_node</code>，输出保留“包名 可执行文件名”这一行。</p>
+  <pre class="out" data-label="预期输出">robot_nodes hello_node</pre>
+  <details class="ans" data-run="示例代码/答案/0-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 pkg executables</code> 每行先打印包名，再打印可执行文件名；
+    用 <code>grep</code> 只留下 <code>hello_node</code> 那一行。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 pkg executables robot_nodes | grep ' hello_node$'</code></pre>
+  <pre class="out" data-label="真实输出">robot_nodes hello_node</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-10</div>
+  <p>显示 <code>std_msgs/msg/String</code> 的字段定义，不要注释与空行。</p>
+  <pre class="out" data-label="预期输出">string data</pre>
+  <details class="ans" data-run="示例代码/答案/0-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>--no-comments</code> 去掉定义文件里的注释；
+    输出只剩字段类型与字段名。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show --no-comments std_msgs/msg/String</code></pre>
+  <pre class="out" data-label="真实输出">string data</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>ros2 pkg</code> 确认一个包是否安装、安装在哪里、包含哪些可执行文件，并用 <code>ros2 interface show</code> 读出接口字段。</p>
+</section>
+
+<section class="lesson" id="l0-6">
+<h2><span class="no">0.6</span>小海龟：观察现成节点（选学）</h2>
+
+<p>
+  <code>turtlesim</code> 是 ROS 2 自带的二维仿真包，提供一个海龟窗口与操作
+  终端。它不是课程工作空间的一部分，也不要求安装；测试机已经装好，
+  没有图形界面时跳过这一课。这一课只观察现成节点，不修改它的源码，
+  目的是把前面学到的节点、话题、服务与动作放到一个真实节点上对照。
+</p>
+
+<h3 id="s0-6-1">启动与操作</h3>
+
+<p>
+  需要两个终端。第一个终端启动仿真器，出现一个带海龟的窗口；第二个终端
+  启动键盘操作节点，按方向键让海龟移动。两个节点在同一个域中，
+  操作节点向仿真器发布速度指令。
+</p>
+
+<pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run turtlesim turtlesim_node</code></pre>
+
+<pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 run turtlesim turtle_teleop_key</code></pre>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/turtlesim-initial.png" alt="蓝色窗口中央有一只海龟，四周没有轨迹" width="500" height="500">
+  <figcaption>
+    启动仿真器后的窗口。背景为蓝色，中央是 <code>turtle1</code> 的初始位置；
+    此时还没有收到速度指令。
+  </figcaption>
+</figure>
+
+<p>
+  操作节点的终端必须保持焦点，方向键才会被读取。海龟移动时，仿真器窗口里
+  的轨迹会保留。操作终端把按键转换成速度指令，仿真器接收指令并更新位姿，
+  两个节点之间因此有持续的数据流动。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/turtlesim-trail.png" alt="蓝色窗口中出现一条白色方形轨迹，海龟停在轨迹的左下角" width="500" height="500">
+  <figcaption>
+    海龟移动后留下的轨迹。轨迹会保留在窗口中，直到调用 <code>/clear</code>
+    服务清屏。
+  </figcaption>
+</figure>
+
+<h3 id="s0-6-2">话题、服务与动作</h3>
+
+<p>
+  <code>turtlesim_node</code> 发布位姿与颜色，订阅速度指令；它还提供清屏、
+  重置、生成、删除与传送等服务，以及一个旋转到指定角度的动作。
+  用 <code>ros2 topic list -t</code>、<code>ros2 service list -t</code> 与
+  <code>ros2 action list -t</code> 可以分别看到这三类接口。
+</p>
+
+<table>
+  <thead>
+    <tr><th>名称</th><th>类别</th><th>类型</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/turtle1/cmd_vel</code></td><td>话题</td><td><code>geometry_msgs/msg/Twist</code></td></tr>
+    <tr><td><code>/turtle1/pose</code></td><td>话题</td><td><code>turtlesim/msg/Pose</code></td></tr>
+    <tr><td><code>/clear</code></td><td>服务</td><td><code>std_srvs/srv/Empty</code></td></tr>
+    <tr><td><code>/spawn</code></td><td>服务</td><td><code>turtlesim/srv/Spawn</code></td></tr>
+    <tr><td><code>/turtle1/rotate_absolute</code></td><td>动作</td><td><code>turtlesim/action/RotateAbsolute</code></td></tr>
+  </tbody>
+</table>
+
+<p>
+  三类通信的差别在请求与反馈的形式：话题持续发送，服务一次请求一次响应，
+  动作带目标、反馈与结果。
+</p>
+
+<div class="eg" id="e0-6">
+  <div class="eg-h">例题 · 观察 turtle1</div>
+  <p>
+    仿真器已经启动时，运行观察脚本：列出 <code>turtle1</code> 的话题、服务与
+    动作，读一次位姿，再调用 <code>/clear</code>。位姿数值随海龟位置变化，
+    这里保留一次真实读数。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：课程目录
+bash 示例代码/0.6-observe_turtle.sh</code></pre>
+  <pre class="out" data-label="真实输出">topics:
+/turtle1/cmd_vel [geometry_msgs/msg/Twist]
+/turtle1/color_sensor [turtlesim/msg/Color]
+/turtle1/pose [turtlesim/msg/Pose]
+services:
+/clear [std_srvs/srv/Empty]
+/kill [turtlesim/srv/Kill]
+/reset [std_srvs/srv/Empty]
+/spawn [turtlesim/srv/Spawn]
+/turtle1/set_pen [turtlesim/srv/SetPen]
+/turtle1/teleport_absolute [turtlesim/srv/TeleportAbsolute]
+/turtle1/teleport_relative [turtlesim/srv/TeleportRelative]
+actions:
+/turtle1/rotate_absolute [turtlesim/action/RotateAbsolute]
+pose:
+x: 5.544444561004639
+y: 5.544444561004639
+theta: 0.0
+linear_velocity: 0.0
+angular_velocity: 0.0
+---
+clear:
+waiting for service to become available...
+requester: making request: std_srvs.srv.Empty_Request()
+
+response:
+std_srvs.srv.Empty_Response()</pre>
+  <p>
+    <code>x</code>、<code>y</code> 的数值依赖海龟当前的位置，海龟移动后
+    会变化；<code>theta</code> 是朝向角，单位为弧度。服务调用输出里的
+    <code>Empty_Request</code> 与 <code>Empty_Response</code> 都没有字段，
+    这是因为清屏服务不需要参数，也不返回数据。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-11</div>
+  <p>启动 <code>turtlesim_node</code>，列出与 <code>turtle1</code> 有关的全部话题。只保留以 <code>/turtle1/</code> 开头的话题，按字母顺序输出。</p>
+  <pre class="out" data-label="预期输出">/turtle1/cmd_vel
+/turtle1/color_sensor
+/turtle1/pose</pre>
+  <details class="ans" data-run="示例代码/答案/0-11/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    仿真器启动后，<code>turtle1</code> 的三条话题才会出现；
+    系统话题 <code>/parameter_events</code> 与 <code>/rosout</code>
+    不以 <code>/turtle1/</code> 开头，被过滤掉。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run turtlesim turtlesim_node &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 2
+ros2 topic list | grep '^/turtle1/' | sort</code></pre>
+  <pre class="out" data-label="真实输出">/turtle1/cmd_vel
+/turtle1/color_sensor
+/turtle1/pose</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 0-12</div>
+  <p>在 <code>/spawn</code> 服务中生成一只名为 <code>turtle2</code> 的海龟，位置为 <code>(2.0, 2.0)</code>，朝向为 0；然后列出以 <code>/turtle2/</code> 开头的话题。服务调用的返回内容不需要输出。</p>
+  <pre class="out" data-label="预期输出">/turtle2/cmd_vel
+/turtle2/color_sensor
+/turtle2/pose</pre>
+  <details class="ans" data-run="示例代码/答案/0-12/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>/spawn</code> 的请求字段是 <code>x</code>、<code>y</code>、
+    <code>theta</code> 与 <code>name</code>。生成后，新海龟拥有与
+    <code>turtle1</code> 同构的三条话题，动作也增加一项。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run turtlesim turtlesim_node &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 2
+ros2 service call /spawn turtlesim/srv/Spawn \
+  "{x: 2.0, y: 2.0, theta: 0.0, name: 'turtle2'}" &gt;/dev/null
+sleep 0.5
+ros2 topic list | grep '^/turtle2/' | sort</code></pre>
+  <pre class="out" data-label="真实输出">/turtle2/cmd_vel
+/turtle2/color_sensor
+/turtle2/pose</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>启动一个现成节点，分别列出它的话题、服务与动作，读一次话题消息，并调用一次服务，把观察到的接口与通信类别对应起来。</p>
+</section>
+
+<nav class="pager">
+  <a href="index.html">← 回课程目录</a>
+  <span class="spacer"></span>
+  <a href="01-话题.html">第 1 部分 · 话题 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

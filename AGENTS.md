@@ -1,6 +1,6 @@
 # 给 AI 助手的说明
 
-这是 TUP 战队算法组手写的一套课，七门：C++ 基础、C++ 进阶、其他基础、OpenCV、Python、ROS 2、机器学习。现在写完的是五门课：C++ 基础课、C++ 进阶课、其他基础、OpenCV 与 Python。学生多半是拿着它
+这是 TUP 战队算法组手写的一套课，七门：C++ 基础、C++ 进阶、其他基础、OpenCV、Python、ROS 2、机器学习。现在写完的是六门课：C++ 基础课、C++ 进阶课、其他基础、OpenCV、Python 与 ROS 2。学生多半是拿着它
 自己学，学的过程中把 agent 叫过来问问题——这份文件讲清楚三件事：这是什么、
 怎么跑、帮学生的时候什么能做、什么不能做。（`CLAUDE.md` 是给 Claude Code 的
 同一个入口。）
@@ -36,8 +36,12 @@
         00-开始.html 起的十页   正文，最后一页是 09-检测题.html
         示例代码/               课里的程序、练习答案与素材生成脚本
         素材/                   合成图、视频、CSV 与结果图
-      ros2/                     其余两门还没写，各只有一页占位
-      machine_learning/
+      ros2/                     第六门，ROS 2
+        index.html              目录页，第 0–10 部分共 51 课
+        00-开始.html 起的十一页 正文，最后一页是 10-检测题.html
+        示例代码/               课里的程序、练习答案与工作空间
+        素材/                   rqt 图、终端截图与生成脚本
+      machine_learning/         其余一门还没写，只有一页占位
     reference/附录.html         基础课的附录：A 编译报错速查、B 语法速查表、
                                 C std 常用（课里没讲的现成写法）
     reference/附录-进阶.html    进阶课的附录：A 编译与链接报错、B cmake、
@@ -54,7 +58,9 @@
 
 OpenCV 课的程序用页面给出的 `g++` 命令编译，链接参数由
 `pkg-config --cflags --libs opencv4` 提供。Python 课的程序用
-`python3 程序.py` 运行，命令写在每一页上。
+`python3 程序.py` 运行，命令写在每一页上。ROS 2 课在 Ubuntu 24.04
+与 ROS 2 Jazzy 下编写：先 `source /opt/ros/jazzy/setup.bash`，在工作空间里
+用 `colcon build` 构建，每条命令都写在页面上。
 
 想一次看 `示例代码/` 里所有程序的真实输出：
 

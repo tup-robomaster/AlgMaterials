@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 1 部分 · 话题 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a class="active" href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" aria-current="page" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 1 部分 · 话题</div>
+  <a class="toc-l" href="#l1-1"><span class="n">1.1</span>发布者</a>
+  <a class="toc-sub" href="#s1-1-1">创建发布者</a>
+  <a class="toc-sub" href="#s1-1-2">消息与定时器</a>
+  <a class="toc-sub" href="#e1-1">例题：talker</a>
+  <a class="toc-l" href="#l1-2"><span class="n">1.2</span>订阅者</a>
+  <a class="toc-sub" href="#s1-2-1">创建订阅者</a>
+  <a class="toc-sub" href="#s1-2-2">启动顺序与回调</a>
+  <a class="toc-sub" href="#e1-2">例题：listener</a>
+  <a class="toc-l" href="#l1-3"><span class="n">1.3</span>自定义消息</a>
+  <a class="toc-sub" href="#s1-3-1">接口包与 .msg</a>
+  <a class="toc-sub" href="#s1-3-2">生成头文件</a>
+  <a class="toc-sub" href="#s1-3-3">发布与读取 Target</a>
+  <a class="toc-sub" href="#e1-3">例题：Target 发布与订阅</a>
+  <a class="toc-l" href="#l1-4"><span class="n">1.4</span>QoS</a>
+  <a class="toc-sub" href="#s1-4-1">可靠性与历史</a>
+  <a class="toc-sub" href="#s1-4-2">兼容性</a>
+  <a class="toc-sub" href="#e1-4">例题：不兼容与匹配</a>
+  <a class="toc-sub" href="#s1-4-3">持久性与 SensorDataQoS</a>
+  <a class="toc-l" href="#l1-5"><span class="n">1.5</span>多发布者与消息筛选</a>
+  <a class="toc-sub" href="#s1-5-1">端点计数与命名空间</a>
+  <a class="toc-sub" href="#s1-5-2">回调筛选</a>
+  <a class="toc-sub" href="#e1-5">例题：两个命名空间</a>
+  <a class="toc-l" href="#l1-6"><span class="n">1.6</span>话题诊断</a>
+  <a class="toc-sub" href="#s1-6-1">读话题</a>
+  <a class="toc-sub" href="#s1-6-2">频率与排查顺序</a>
+  <a class="toc-sub" href="#e1-6">例题：诊断脚本</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 1 部分</div>
+  <h1>话题</h1>
+  <p class="part-lead">
+    话题是节点之间持续传递数据的通道。这一部分从发布者与订阅者写起，
+    再定义自己的消息类型，解释 QoS 如何决定两端能否连接，
+    最后用多个发布者、多个订阅者与命令行工具观察话题。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="0.1 0.2 0.3 0.4 0.5">
+  <b>前置</b>
+  <p>
+    先读完第 0 部分的 0.1–0.5：会复制并构建 <code>$HOME/ros2_ws</code>，
+    会运行 <code>robot_nodes</code> 中的可执行文件，会用启动参数改写节点名，
+    会读 <code>package.xml</code> 与 <code>CMakeLists.txt</code>。
+    0.6 是选学，不影响这一部分。
+  </p>
+</div>
+
+<section class="lesson" id="l1-1">
+<h2><span class="no">1.1</span>发布者</h2>
+
+<p>
+  发布者（publisher）把消息写入一个话题（topic）。它不关心谁在接收，
+  也不等待接收方；消息进入中间件后，已经连接的订阅者各自取走一份。
+  这一课写一个每 500 毫秒发布一条字符串的节点，并在三次之后停止。
+</p>
+
+<h3 id="s1-1-1">创建发布者</h3>
+
+<p>
+  发布者的类型由消息类型决定。下面这行创建一个
+  <code>std_msgs::msg::String</code> 的发布者，话题名是
+  <code>chatter</code>，队列深度是 10：
+</p>
+
+<pre><code>publisher_ = create_publisher&lt;std_msgs::msg::String&gt;("chatter", 10);</code></pre>
+
+<p>
+  话题名 <code>chatter</code> 没有前导斜杠，是相对名称；节点在
+  <code>/</code> 命名空间下时，它解析成 <code>/chatter</code>。若节点被放进
+  <code>/robot1</code>，同一个相对名称解析成 <code>/robot1/chatter</code>。
+  第二个参数 10 是历史深度：队列满时保留最近的 10 条，旧的被丢弃。
+</p>
+
+<p>
+  <code>publisher_</code> 是 <code>rclcpp::Publisher&lt;…&gt;::SharedPtr</code>。
+  发布者句柄必须活得比使用它的回调长；把它存成节点成员，节点析构时句柄
+  才释放。若只在构造函数里创建局部句柄，构造结束句柄就销毁，之后发布不会
+  到达任何订阅者。
+</p>
+
+<h3 id="s1-1-2">消息与定时器</h3>
+
+<p>
+  消息是普通对象。先声明 <code>std_msgs::msg::String message</code>，再给
+  <code>message.data</code> 赋值，最后传给 <code>publish</code>。发布之后
+  修改同一个对象不会改变已经发出的消息；中间件在调用时完成序列化或复制。
+</p>
+
+<p>
+  定时器回调每 500 毫秒执行一次。计数在发布之后自增，达到 3 时关闭节点，
+  因此输出三行，内容分别是 <code>hello 0</code>、<code>hello 1</code> 与
+  <code>hello 2</code>。日志写在发布之后，看到一行日志就说明那一条消息
+  已经交给中间件。
+</p>
+
+<pre data-lang="C++" data-name="talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include &quot;rclcpp/rclcpp.hpp&quot;
+#include &quot;std_msgs/msg/string.hpp&quot;
+
+using namespace std::chrono_literals;
+
+class Talker : public rclcpp::Node
+{
+public:
+  explicit Talker(int count)
+  : Node(&quot;talker&quot;), count_(0), count_limit_(count)
+  {
+    wait_for_subscriber_ = declare_parameter&lt;bool&gt;(&quot;wait_for_subscriber&quot;, false);
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;(&quot;chatter&quot;, 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      if (wait_for_subscriber_ &amp;&amp; publisher_-&gt;get_subscription_count() == 0) {
+        return;
+      }
+      std_msgs::msg::String message;
+      message.data = &quot;hello &quot; + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), &quot;publishing: '%s'&quot;, message.data.c_str());
+      ++count_;
+      if (count_ == count_limit_) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  bool wait_for_subscriber_{false};
+  int count_;
+  int count_limit_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  const auto args = rclcpp::remove_ros_arguments(argc, argv);
+  const int count = args.size() &gt; 1 ? std::stoi(args[1]) : 3;
+  rclcpp::spin(std::make_shared&lt;Talker&gt;(count));
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e1-1">
+  <div class="eg-h">例题 · talker</div>
+  <p>
+    直接运行发布者。没有订阅者时它仍然发布，三行日志之后自行结束。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes talker</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [talker]: publishing: 'hello 0'
+[INFO] [talker]: publishing: 'hello 1'
+[INFO] [talker]: publishing: 'hello 2'</pre>
+  <p>
+    每行相隔约 500 毫秒。日志中的 <code>talker</code> 是节点名，
+    <code>publishing: '…'</code> 是消息内容；消息内容与日志之间没有额外
+    空格，引号是格式串里写进去的。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-1</div>
+  <p>写一个发布者，节点名取 <code>counter_talker</code>，在 <code>counter</code> 话题上发布 <code>std_msgs/msg/Int32</code>，值为 0、1、2，每 500 毫秒一条，第三条之后停止。日志格式为 <code>counter: 值</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [counter_talker]: counter: 0
+[INFO] [counter_talker]: counter: 1
+[INFO] [counter_talker]: counter: 2</pre>
+  <details class="ans" data-run="示例代码/答案/1-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>std_msgs::msg::Int32</code> 的字段名是 <code>data</code>，
+    类型是 <code>int32_t</code>。节点名取 <code>counter_talker</code>，
+    话题名取题目要求的 <code>counter</code>。
+  </p>
+      <pre data-lang="C++" data-name="counter_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/int32.hpp"
+
+using namespace std::chrono_literals;
+
+class CounterTalker : public rclcpp::Node
+{
+public:
+  CounterTalker()
+  : Node("counter_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::Int32&gt;("counter", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::Int32 message;
+      message.data = count_;
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), "counter: %d", message.data);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::Int32&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;CounterTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [counter_talker]: counter: 0
+[INFO] [counter_talker]: counter: 1
+[INFO] [counter_talker]: counter: 2</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-2</div>
+  <p>写一个节点名取 <code>prefix_talker</code> 的发布者，在 <code>chatter</code> 话题上发布字符串 <code>target-0</code>、<code>target-1</code> 与 <code>target-2</code>，每 500 毫秒一条，第三条之后停止。日志格式为 <code>publishing: '值'</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [prefix_talker]: publishing: 'target-0'
+[INFO] [prefix_talker]: publishing: 'target-1'
+[INFO] [prefix_talker]: publishing: 'target-2'</pre>
+  <details class="ans" data-run="示例代码/答案/1-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    节点名取 <code>prefix_talker</code>；前缀与计数用字符串拼接得到。
+    计数从 0 开始，所以最大值是 2；先发布再自增，停止条件才与输出对齐。
+  </p>
+      <pre data-lang="C++" data-name="prefix_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class PrefixTalker : public rclcpp::Node
+{
+public:
+  PrefixTalker()
+  : Node("prefix_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;("chatter", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::String message;
+      message.data = "target-" + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), "publishing: '%s'", message.data.c_str());
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;PrefixTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [prefix_talker]: publishing: 'target-0'
+[INFO] [prefix_talker]: publishing: 'target-1'
+[INFO] [prefix_talker]: publishing: 'target-2'</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个发布者节点，在指定话题上按固定周期发布消息，给消息字段赋值，并在固定条数后停止。</p>
+</section>
+
+<section class="lesson" id="l1-2">
+<h2><span class="no">1.2</span>订阅者</h2>
+
+<p>
+  订阅者（subscriber）在话题上注册一个回调。每当消息到达，执行器取出消息
+  并调用回调；回调返回后，执行器继续等待下一条。订阅者不主动索取消息，
+  也不控制发布者的节奏。
+</p>
+
+<h3 id="s1-2-1">创建订阅者</h3>
+
+<p>
+  <code>create_subscription</code> 的三个参数是话题名、队列深度与回调。
+  模板参数写明消息类型，回调参数是该消息类型的共享指针：
+</p>
+
+<pre><code>subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+  "chatter", 10, [this](const std_msgs::msg::String::SharedPtr message) {
+    RCLCPP_INFO(get_logger(), "I heard: '%s'", message-&gt;data.c_str());
+  });</code></pre>
+
+<p>
+  回调参数是消息的 <code>SharedPtr</code>，回调期间对象保持有效；
+  回调返回后指针随参数销毁。需要把消息留到回调之外时，可以在回调里再
+  保存一份。读取字符串字段时用 <code>message-&gt;data</code>，再通过
+  <code>c_str()</code> 交给 <code>%s</code>。
+</p>
+
+<p>
+  话题名同样是相对名称，会拼上节点命名空间。发布者与订阅者必须使用同一
+  话题名与同一消息类型；类型不同时，两端不会建立连接。
+</p>
+
+<h3 id="s1-2-2">启动顺序与回调</h3>
+
+<p>
+  默认 QoS 是 <code>volatile</code>：订阅者只收到建立连接之后发布的消息。
+  先启动订阅者，等一秒让发现完成，再启动发布者；若顺序相反，发布者可能
+  在订阅者连接前就把三条发完，订阅者只收到剩下的部分。
+</p>
+
+<p>
+  回调里的计数达到 3 时关闭节点。关闭发生在处理第三条消息的回调里，
+  因此第三条日志仍会打印；之后的回调不会再执行。两个终端分别运行时，
+  发布者与订阅者各自结束，命令回到提示符。
+</p>
+
+<pre data-lang="C++" data-name="listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class Listener : public rclcpp::Node
+{
+public:
+  Listener()
+  : Node("listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "chatter", 10, [this](const std_msgs::msg::String::SharedPtr message) {
+        RCLCPP_INFO(get_logger(), "I heard: '%s'", message-&gt;data.c_str());
+        ++count_;
+        if (count_ == 3) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;Listener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e1-2">
+  <div class="eg-h">例题 · listener</div>
+  <p>
+    第一个终端启动订阅者，第二个终端等一秒后启动发布者。下面只抄订阅者
+    的输出；发布者的三行与上一课相同。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes listener
+
+# 终端二（$HOME/ros2_ws，等一秒后）
+ros2 run robot_nodes talker</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [listener]: I heard: 'hello 0'
+[INFO] [listener]: I heard: 'hello 1'
+[INFO] [listener]: I heard: 'hello 2'</pre>
+  <p>
+    三行内容与发布者的三行一一对应。若只看到后两行，说明发布者启动得
+    太早，第一条在连接建立前已经发出；按上面的顺序重跑即可。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-3</div>
+  <p>写一个节点名取 <code>even_listener</code> 的订阅者，订阅 <code>numbers</code> 话题上的 <code>std_msgs/msg/Int32</code>，只打印偶数，格式为 <code>even: 值</code>；收到第 5 个偶数后停止。测试时由辅助发布者依次发送 0 到 9。</p>
+  <pre class="out" data-label="预期输出">[INFO] [even_listener]: even: 0
+[INFO] [even_listener]: even: 2
+[INFO] [even_listener]: even: 4
+[INFO] [even_listener]: even: 6
+[INFO] [even_listener]: even: 8</pre>
+  <details class="ans" data-run="示例代码/答案/1-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    用 <code>data % 2</code> 判断奇偶，奇数直接返回，不计数也不打印。
+    计数只统计已经打印的偶数，因此停止条件与输出行数一致。
+    运行脚本会先启动订阅者，再用辅助发布者发送 0 到 9。
+  </p>
+      <pre data-lang="C++" data-name="even_listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/int32.hpp"
+
+class EvenListener : public rclcpp::Node
+{
+public:
+  EvenListener()
+  : Node("even_listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::Int32&gt;(
+      "numbers", 10, [this](const std_msgs::msg::Int32::SharedPtr message) {
+        if (message-&gt;data % 2 != 0) {
+          return;
+        }
+        RCLCPP_INFO(get_logger(), "even: %d", message-&gt;data);
+        ++count_;
+        if (count_ == 5) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::Int32&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;EvenListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [even_listener]: even: 0
+[INFO] [even_listener]: even: 2
+[INFO] [even_listener]: even: 4
+[INFO] [even_listener]: even: 6
+[INFO] [even_listener]: even: 8</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-4</div>
+  <p>写一个节点名取 <code>length_listener</code> 的订阅者，订阅 <code>words</code> 话题上的 <code>std_msgs/msg/String</code>，打印每个字符串的长度，格式为 <code>length: 长度</code>；收到三条后停止。测试时由辅助发布者依次发送 <code>ros</code>、<code>robot</code>、<code>navigation</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [length_listener]: length: 3
+[INFO] [length_listener]: length: 5
+[INFO] [length_listener]: length: 10</pre>
+  <details class="ans" data-run="示例代码/答案/1-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>std::string::size()</code> 返回字节数，对只含 ASCII 字母的
+    三个单词也就是字符数。格式串用 <code>%zu</code>，与
+    <code>size()</code> 的返回类型 <code>std::size_t</code> 对应。
+    运行脚本用辅助发布者依次发送三个单词。
+  </p>
+      <pre data-lang="C++" data-name="length_listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class LengthListener : public rclcpp::Node
+{
+public:
+  LengthListener()
+  : Node("length_listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "words", 10, [this](const std_msgs::msg::String::SharedPtr message) {
+        RCLCPP_INFO(get_logger(), "length: %zu", message-&gt;data.size());
+        ++count_;
+        if (count_ == 3) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;LengthListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [length_listener]: length: 3
+[INFO] [length_listener]: length: 5
+[INFO] [length_listener]: length: 10</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写一个订阅者节点，读取消息字段、按条件筛选，并在收到指定条数后停止；能按正确顺序启动发布者与订阅者。</p>
+</section>
+
+<section class="lesson" id="l1-3">
+<h2><span class="no">1.3</span>自定义消息</h2>
+
+<p>
+  标准消息只覆盖常见类型。机器人任务常需要把几个字段放在同一条消息里，
+  例如目标点的坐标与标签。自定义消息定义在接口包中，由构建工具生成各语言
+  的头文件，发布者与订阅者再按生成类型使用。
+</p>
+
+<h3 id="s1-3-1">接口包与 .msg</h3>
+
+<p>
+  接口包是只放消息、服务与动作定义的普通功能包。文件放在
+  <code>msg/</code> 下，每行一个字段，写法是“类型 字段名”。下面定义
+  <code>Target</code>，包含两个双精度浮点数与一个字符串：
+</p>
+
+<pre data-lang="MSG" data-name="Target.msg"><code>float64 x
+float64 y
+string label</code></pre>
+<p>
+  字段名由小写字母、数字与下划线组成，不以数字开头。字段类型可以是内置类型
+  （<code>float64</code>、<code>int32</code>、<code>string</code> 等），
+  也可以是其它消息类型或数组。没有赋值的字段在 C++ 对象里是默认值：
+  数值为 0，字符串为空。
+</p>
+
+<h3 id="s1-3-2">生成头文件</h3>
+
+<p>
+  接口包的 <code>CMakeLists.txt</code> 调用
+  <code>rosidl_generate_interfaces</code>，把 <code>msg/Target.msg</code>
+  加入生成列表；<code>package.xml</code> 声明
+  <code>rosidl_default_generators</code>、<code>rosidl_default_runtime</code>
+  依赖，并加入 <code>rosidl_interface_packages</code> 组。构建后生成
+  <code>robot_interfaces/msg/target.hpp</code>，C++ 类型是
+  <code>robot_interfaces::msg::Target</code>。
+</p>
+
+<p>
+  生成头文件在 <code>install/robot_interfaces/include/</code> 下。使用它的
+  节点包必须在 <code>package.xml</code> 中声明
+  <code>&lt;depend&gt;robot_interfaces&lt;/depend&gt;</code>，在
+  <code>CMakeLists.txt</code> 中 <code>find_package(robot_interfaces REQUIRED)</code>，
+  并把依赖加到目标上。否则编译时找不到头文件。
+</p>
+
+<h3 id="s1-3-3">发布与读取 Target</h3>
+
+<p>
+  发布者的模板参数写成 <code>robot_interfaces::msg::Target</code>，
+  话题名取 <code>target</code>。每条消息给 <code>x</code>、<code>y</code>
+  与 <code>label</code> 赋值，再调用 <code>publish</code>。订阅者用同一
+  类型创建订阅，读取三个字段并打印。
+</p>
+
+<pre data-lang="C++" data-name="target_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/target.hpp"
+
+using namespace std::chrono_literals;
+
+class TargetTalker : public rclcpp::Node
+{
+public:
+  TargetTalker()
+  : Node("target_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;robot_interfaces::msg::Target&gt;("target", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      const double coordinates[3][2] = {{1.0, 2.0}, {2.5, 3.5}, {4.0, 5.0}};
+      const char * labels[3] = {"dock", "aisle", "exit"};
+
+      robot_interfaces::msg::Target target;
+      target.x = coordinates[count_][0];
+      target.y = coordinates[count_][1];
+      target.label = labels[count_];
+
+      publisher_-&gt;publish(target);
+      RCLCPP_INFO(
+        get_logger(), "publishing: label=%s x=%.1f y=%.1f",
+        target.label.c_str(), target.x, target.y);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;robot_interfaces::msg::Target&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TargetTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<pre data-lang="C++" data-name="target_listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/target.hpp"
+
+class TargetListener : public rclcpp::Node
+{
+public:
+  TargetListener()
+  : Node("target_listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;robot_interfaces::msg::Target&gt;(
+      "target", 10, [this](const robot_interfaces::msg::Target::SharedPtr message) {
+        RCLCPP_INFO(
+          get_logger(), "target: label=%s x=%.1f y=%.1f",
+          message-&gt;label.c_str(), message-&gt;x, message-&gt;y);
+        ++count_;
+        if (count_ == 3) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;robot_interfaces::msg::Target&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TargetListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e1-3">
+  <div class="eg-h">例题 · Target 发布与订阅</div>
+  <p>
+    先启动订阅者，等一秒后启动发布者。输出保留订阅者读到的三个字段。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes target_listener
+
+# 终端二（$HOME/ros2_ws，等一秒后）
+ros2 run robot_nodes target_talker</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [target_listener]: target: label=dock x=1.0 y=2.0
+[INFO] [target_listener]: target: label=aisle x=2.5 y=3.5
+[INFO] [target_listener]: target: label=exit x=4.0 y=5.0</pre>
+  <p>
+    三个字段的顺序与打印顺序一致：标签、横坐标、纵坐标。坐标用
+    <code>%.1f</code> 格式化，因此 <code>1</code> 显示为
+    <code>1.0</code>，<code>2.5</code> 保持一位小数。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-5</div>
+  <p>给 <code>Target</code> 增加 <code>float64 confidence</code> 字段，写一个节点名取 <code>confidence_talker</code> 的发布者，依次发布 <code>dock/0.90</code>、<code>aisle/0.75</code>、<code>exit/0.60</code>，日志格式为 <code>label=… confidence=…</code>，置信度保留两位小数。</p>
+  <pre class="out" data-label="预期输出">[INFO] [confidence_talker]: label=dock confidence=0.90
+[INFO] [confidence_talker]: label=aisle confidence=0.75
+[INFO] [confidence_talker]: label=exit confidence=0.60</pre>
+  <details class="ans" data-run="示例代码/答案/1-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    先在 <code>Target.msg</code> 末尾加一行
+    <code>float64 confidence</code>，重新构建接口包，再构建节点包。
+    发布时给新字段赋值，日志用 <code>%.2f</code> 保留两位小数。
+  </p>
+      <pre data-lang="MSG" data-name="Target.msg"><code>float64 x
+float64 y
+string label
+float64 confidence</code></pre>
+      <pre data-lang="C++" data-name="confidence_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/target.hpp"
+
+using namespace std::chrono_literals;
+
+class ConfidenceTalker : public rclcpp::Node
+{
+public:
+  ConfidenceTalker()
+  : Node("confidence_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;robot_interfaces::msg::Target&gt;("target", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      const char * labels[3] = {"dock", "aisle", "exit"};
+      const double scores[3] = {0.90, 0.75, 0.60};
+
+      robot_interfaces::msg::Target target;
+      target.x = 1.0 + count_;
+      target.y = 2.0;
+      target.label = labels[count_];
+      target.confidence = scores[count_];
+
+      publisher_-&gt;publish(target);
+      RCLCPP_INFO(
+        get_logger(), "label=%s confidence=%.2f",
+        target.label.c_str(), target.confidence);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;robot_interfaces::msg::Target&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;ConfidenceTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [confidence_talker]: label=dock confidence=0.90
+[INFO] [confidence_talker]: label=aisle confidence=0.75
+[INFO] [confidence_talker]: label=exit confidence=0.60</pre>
+  <p>
+    答案在独立工作空间里修改接口，避免基础 <code>Target</code> 被改动后
+    影响后面按原字段编写的例子；在自己的练习工作空间里直接修改也可以。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-6</div>
+  <p>新建消息 <code>Status.msg</code>，包含 <code>string state</code> 与 <code>int32 code</code>；写一个节点名取 <code>status_talker</code> 的发布者，在 <code>status</code> 话题上依次发布 <code>idle/0</code>、<code>moving/1</code>、<code>ready/2</code>，日志格式为 <code>state=… code=…</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [status_talker]: state=idle code=0
+[INFO] [status_talker]: state=moving code=1
+[INFO] [status_talker]: state=ready code=2</pre>
+  <details class="ans" data-run="示例代码/答案/1-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    在接口包的 <code>msg/</code> 下新建 <code>Status.msg</code>，
+    把文件加入 <code>rosidl_generate_interfaces</code> 的列表，
+    重新构建接口包。发布者包含生成的头文件
+    <code>robot_interfaces/msg/status.hpp</code>。
+  </p>
+      <pre data-lang="MSG" data-name="Status.msg"><code>string state
+int32 code</code></pre>
+      <pre data-lang="C++" data-name="status_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/status.hpp"
+
+using namespace std::chrono_literals;
+
+class StatusTalker : public rclcpp::Node
+{
+public:
+  StatusTalker()
+  : Node("status_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;robot_interfaces::msg::Status&gt;("status", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      const char * states[3] = {"idle", "moving", "ready"};
+      const int codes[3] = {0, 1, 2};
+
+      robot_interfaces::msg::Status status;
+      status.state = states[count_];
+      status.code = codes[count_];
+
+      publisher_-&gt;publish(status);
+      RCLCPP_INFO(
+        get_logger(), "state=%s code=%d",
+        status.state.c_str(), status.code);
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;robot_interfaces::msg::Status&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;StatusTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [status_talker]: state=idle code=0
+[INFO] [status_talker]: state=moving code=1
+[INFO] [status_talker]: state=ready code=2</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>定义一个包含多个字段的消息，在接口包里生成 C++ 类型，写发布者赋值并写订阅者读取这些字段。</p>
+</section>
+
+<section class="lesson" id="l1-4">
+<h2><span class="no">1.4</span>QoS</h2>
+
+<p>
+  QoS（Quality of Service，服务质量）决定发布者与订阅者之间怎样传输消息：
+  是否重传、保留多少条、晚加入的订阅者能否收到旧消息。两端的 QoS 必须
+  兼容才能建立连接；不兼容时节点仍会运行，但消息不会送达。
+</p>
+
+<h3 id="s1-4-1">可靠性与历史</h3>
+
+<p>
+  可靠性有两种常用取值。<code>reliable</code> 要求中间件在丢失时重传，
+  适合控制指令与状态；<code>best_effort</code> 不重传，适合高频传感器数据，
+  丢一帧不影响后续处理。历史策略 <code>keep_last(depth)</code> 只保留最近
+  <code>depth</code> 条，<code>keep_all</code> 保留全部可用消息。
+</p>
+
+<p>
+  <code>rclcpp::QoS(10)</code> 默认是 <code>reliable</code> 与
+  <code>keep_last(10)</code>。链式调用
+  <code>.best_effort()</code>、<code>.reliable()</code>、
+  <code>.transient_local()</code> 分别修改对应策略。订阅者与发布者各自
+  设置，兼容性由中间件按策略组合判断。
+</p>
+
+<h3 id="s1-4-2">兼容性</h3>
+
+<p>
+  可靠性的一条基本规则是：<code>best_effort</code> 发布者可以连接
+  <code>best_effort</code> 订阅者；<code>reliable</code> 发布者可以连接
+  两种订阅者；<code>best_effort</code> 发布者不能连接
+  <code>reliable</code> 订阅者。后一种组合中，订阅者要求重传，发布者
+  不提供重传，中间件拒绝建立连接。
+</p>
+
+<p>
+  不兼容时两端都会打印 <code>incompatible QoS</code> 警告，并指出
+  不兼容的策略是 <code>RELIABILITY_QOS_POLICY</code>。看到这条警告，
+  先核对两端的可靠性设置，而不是检查话题名或域号；话题名与类型都对，
+  连接仍然不会建立。
+</p>
+
+<p>
+  例题用到两个程序。发布者 <code>qos_talker</code> 每 500 毫秒发布一条消息，
+  三条后退出；订阅者 <code>qos_listener</code> 收到消息就打印，并在三秒后
+  打印总数、停止节点。工作空间里还有一个对照订阅者
+  <code>qos_listener_best_effort</code>，节点名与类名随程序改变，订阅的
+  可靠性设为 <code>best_effort</code>，其余与 <code>qos_listener</code> 相同。
+</p>
+
+<pre data-lang="C++" data-name="qos_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class QosTalker : public rclcpp::Node
+{
+public:
+  QosTalker()
+  : Node("qos_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;(
+      "qos_chatter", rclcpp::QoS(10).best_effort());
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::String message;
+      message.data = "qos " + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), "sent: '%s'", message.data.c_str());
+      ++count_;
+      if (count_ == 3) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;QosTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<pre data-lang="C++" data-name="qos_listener.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class QosListener : public rclcpp::Node
+{
+public:
+  QosListener()
+  : Node("qos_listener"), count_(0), ticks_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "qos_chatter", rclcpp::QoS(10).reliable(),
+      [this](const std_msgs::msg::String::SharedPtr message) {
+        RCLCPP_INFO(get_logger(), "I heard: '%s'", message-&gt;data.c_str());
+        ++count_;
+      });
+    timer_ = create_wall_timer(1s, [this]() {
+      ++ticks_;
+      if (ticks_ == 3) {
+        RCLCPP_INFO(get_logger(), "total: %d messages", count_);
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+  int ticks_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;QosListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e1-4">
+  <div class="eg-h">例题 · 不兼容与匹配</div>
+  <p>
+    第一组先启动 <code>qos_listener</code>（reliable），等一秒后启动
+    <code>qos_talker</code>（best_effort）。第二组把订阅者换成
+    <code>qos_listener_best_effort</code>，消息内容与发布者不变。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+# 不兼容
+ros2 run robot_nodes qos_listener &amp;
+sleep 1
+ros2 run robot_nodes qos_talker
+wait
+
+# 匹配
+ros2 run robot_nodes qos_listener_best_effort &amp;
+sleep 1
+ros2 run robot_nodes qos_talker
+wait</code></pre>
+  <p>第一组的真实输出：</p>
+  <pre class="out diag" data-label="真实输出">[WARN] [qos_listener]: New publisher discovered on topic '/qos_chatter', offering incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY_QOS_POLICY
+[WARN] [qos_talker]: New subscription discovered on topic '/qos_chatter', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY_QOS_POLICY
+[INFO] [qos_talker]: sent: 'qos 0'
+[INFO] [qos_talker]: sent: 'qos 1'
+[INFO] [qos_talker]: sent: 'qos 2'
+[INFO] [qos_listener]: total: 0 messages</pre>
+  <p>
+    第一组订阅者一行也没收到，三秒后打印 <code>total: 0 messages</code>。
+    警告里的策略名说明问题出在可靠性，不是话题名。
+  </p>
+  <p>第二组的真实输出：</p>
+  <pre class="out" data-label="真实输出">[INFO] [qos_talker]: sent: 'qos 0'
+[INFO] [qos_listener_best_effort]: I heard: 'qos 0'
+[INFO] [qos_talker]: sent: 'qos 1'
+[INFO] [qos_listener_best_effort]: I heard: 'qos 1'
+[INFO] [qos_talker]: sent: 'qos 2'
+[INFO] [qos_listener_best_effort]: I heard: 'qos 2'
+[INFO] [qos_listener_best_effort]: total: 3 messages</pre>
+  <p>
+    第二组两端都是 <code>best_effort</code>，连接建立；两个进程的日志交替
+    出现，订阅者收到三条并打印 <code>total: 3 messages</code>。两组使用的
+    消息内容相同，差别只在订阅者的可靠性设置。
+  </p>
+</div>
+
+<h3 id="s1-4-3">持久性与 SensorDataQoS</h3>
+
+<p>
+  持久性 <code>transient_local</code> 让发布者保留最近的消息，数量由历史
+  深度决定；晚加入的订阅者连接后会收到这些消息。默认的
+  <code>volatile</code> 不保留。发布者与订阅者都设为
+  <code>transient_local</code> 才会生效。这个策略适合配置、地图或最后
+  一条状态，不适合连续变化的传感器流。
+</p>
+
+<p>
+  <code>rclcpp::SensorDataQoS()</code> 是一组预置策略，可靠性为
+  <code>best_effort</code>，历史深度较小，适合图像、雷达等高频数据。
+  两端都使用同一个预置时兼容；一端用默认可靠 QoS、另一端用
+  <code>SensorDataQoS</code> 时，能否连接取决于哪一端是发布者：
+  可靠发布者可以服务 best_effort 订阅者，反过来不行。
+</p>
+
+<div class="ex">
+  <div class="ex-h">练习 1-7</div>
+  <p>写一个发布者与一个订阅者，节点名分别取 <code>late_talker</code> 与 <code>late_listener</code>，话题为 <code>late_chatter</code>，两端都使用 <code>rclcpp::QoS(1).transient_local()</code>。发布者先发三条 <code>late 0</code> 到 <code>late 2</code>，订阅者晚两秒启动，只打印收到的最后一条，格式为 <code>late: '值'</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [late_listener]: late: 'late 2'</pre>
+  <details class="ans" data-run="示例代码/答案/1-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    发布者用 <code>create_wall_timer(3s, …)</code> 保持存活三秒，
+    让晚加入的订阅者有时间连接；订阅者只处理第一条到达的消息，
+    然后关闭。历史深度设为 1，保留的是最后一条。
+  </p>
+      <pre data-lang="C++" data-name="late_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class LateTalker : public rclcpp::Node
+{
+public:
+  LateTalker()
+  : Node("late_talker"), count_(0)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;(
+      "late_chatter", rclcpp::QoS(1).transient_local());
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::String message;
+      message.data = "late " + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), "published: '%s'", message.data.c_str());
+      ++count_;
+      if (count_ == 3) {
+        timer_-&gt;cancel();
+      }
+    });
+    stop_timer_ = create_wall_timer(3s, [this]() {
+      rclcpp::shutdown();
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr stop_timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;LateTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="late_listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class LateListener : public rclcpp::Node
+{
+public:
+  LateListener()
+  : Node("late_listener")
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "late_chatter", rclcpp::QoS(1).transient_local(),
+      [this](const std_msgs::msg::String::SharedPtr message) {
+        RCLCPP_INFO(get_logger(), "late: '%s'", message-&gt;data.c_str());
+        rclcpp::shutdown();
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;LateListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [late_listener]: late: 'late 2'</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-8</div>
+  <p>写一个发布者与一个订阅者，节点名分别取 <code>sensor_talker</code> 与 <code>sensor_listener</code>，话题为 <code>sensor_chatter</code>，两端都使用 <code>rclcpp::SensorDataQoS()</code>。先启动订阅者；发布者等订阅者连接后发五条消息，订阅者统计收到的条数，三秒后打印 <code>received: 条数</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [sensor_listener]: received: 5</pre>
+  <details class="ans" data-run="示例代码/答案/1-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    发布者先等订阅者连接，再开始发送；定时器周期是 200 毫秒，五条在
+    一秒内发完。订阅者的统计定时器设为 3 秒，留出发现与传输时间。
+    两端使用同一个 <code>SensorDataQoS()</code>，可靠性都是
+    <code>best_effort</code>。
+  </p>
+      <pre data-lang="C++" data-name="sensor_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class SensorTalker : public rclcpp::Node
+{
+public:
+  SensorTalker()
+  : Node("sensor_talker"), count_(0), started_(false)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;(
+      "sensor_chatter", rclcpp::SensorDataQoS());
+    timer_ = create_wall_timer(200ms, [this]() {
+      if (!started_ &amp;&amp; publisher_-&gt;get_subscription_count() == 0) {
+        return;
+      }
+      started_ = true;
+      std_msgs::msg::String message;
+      message.data = "sample " + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      ++count_;
+      if (count_ == 5) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+  bool started_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;SensorTalker&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="sensor_listener.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class SensorListener : public rclcpp::Node
+{
+public:
+  SensorListener()
+  : Node("sensor_listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "sensor_chatter", rclcpp::SensorDataQoS(),
+      [this](const std_msgs::msg::String::SharedPtr) {
+        ++count_;
+      });
+    timer_ = create_wall_timer(3s, [this]() {
+      RCLCPP_INFO(get_logger(), "received: %d", count_);
+      rclcpp::shutdown();
+    });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;SensorListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [sensor_listener]: received: 5</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>为发布者与订阅者设置可靠性、历史深度与持久性，判断两端 QoS 是否兼容，并用 <code>transient_local</code> 或 <code>SensorDataQoS</code> 解决对应的传输需求。</p>
+</section>
+
+<section class="lesson" id="l1-5">
+<h2><span class="no">1.5</span>多发布者、多订阅者与消息筛选</h2>
+
+<p>
+  一个话题可以连接多个发布者与多个订阅者。发布者之间不互相通信，
+  订阅者各自收到所有匹配发布者的消息。这一课用命名空间把两个发布者
+  分到不同话题，再用绝对话题名让订阅者只处理其中一个。
+</p>
+
+<h3 id="s1-5-1">端点计数与命名空间</h3>
+
+<p>
+  <code>ros2 topic info</code> 显示话题的发布者数量与订阅者数量。
+  同一话题上启动两个发布者，计数变成 2；每增加一个订阅者，订阅计数加一。
+  这些计数是排查“消息有没有人发、有没有人收”的第一项证据。
+</p>
+
+<p>
+  节点名与话题名是两套名称。节点名由 <code>__node</code> 与
+  <code>__ns</code> 决定；话题名由 <code>create_publisher</code> 的第一个
+  参数决定，再拼上节点命名空间。两个节点可以同名；在不同命名空间下
+  使用相同的相对话题名时，最终的话题完全限定名不同。
+</p>
+
+<h3 id="s1-5-2">回调筛选</h3>
+
+<p>
+  筛选发生在订阅者回调内部：回调先检查字段或前缀，不满足就返回。
+  话题本身仍然传递全部消息，发布者与 <code>ros2 topic echo</code> 看到的
+  是完整流；只有这个订阅者选择不处理其中一部分。筛选条件写在回调里，
+  不需要改话题名或 QoS。
+</p>
+
+<pre data-lang="C++" data-name="multi_talker.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+using namespace std::chrono_literals;
+
+class MultiTalker : public rclcpp::Node
+{
+public:
+  explicit MultiTalker(const std::string &amp; id, int count)
+  : Node("multi_talker"), id_(id), count_(0), count_limit_(count)
+  {
+    publisher_ = create_publisher&lt;std_msgs::msg::String&gt;("chatter", 10);
+    timer_ = create_wall_timer(500ms, [this]() {
+      std_msgs::msg::String message;
+      message.data = id_ + "-" + std::to_string(count_);
+      publisher_-&gt;publish(message);
+      RCLCPP_INFO(get_logger(), "publishing: '%s'", message.data.c_str());
+      ++count_;
+      if (count_ == count_limit_) {
+        rclcpp::shutdown();
+      }
+    });
+  }
+
+private:
+  rclcpp::Publisher&lt;std_msgs::msg::String&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  std::string id_;
+  int count_;
+  int count_limit_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  const auto args = rclcpp::remove_ros_arguments(argc, argv);
+  const std::string id = args.size() &gt; 1 ? args[1] : "robot";
+  const int count = args.size() &gt; 2 ? std::stoi(args[2]) : 3;
+  rclcpp::spin(std::make_shared&lt;MultiTalker&gt;(id, count));
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<pre data-lang="C++" data-name="filter_listener.cpp"><code>#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class FilterListener : public rclcpp::Node
+{
+public:
+  FilterListener()
+  : Node("filter_listener"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "/robot1/chatter", 10,
+      [this](const std_msgs::msg::String::SharedPtr message) {
+        RCLCPP_INFO(get_logger(), "from robot1: '%s'", message-&gt;data.c_str());
+        ++count_;
+        if (count_ == 3) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;FilterListener&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e1-5">
+  <div class="eg-h">例题 · 两个命名空间</div>
+  <p>
+    先启动只订阅 <code>/robot1/chatter</code> 的筛选订阅者，等一秒后
+    启动两个发布者：一个在 <code>/robot1</code>，一个在 <code>/robot2</code>。
+    两个发布者都向相对话题 <code>chatter</code> 发布。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes filter_listener &amp;
+sleep 1
+ros2 run robot_nodes multi_talker robot1 --ros-args -r __ns:=/robot1 &amp;
+ros2 run robot_nodes multi_talker robot2 --ros-args -r __ns:=/robot2 &amp;
+wait</code></pre>
+  <p>
+    三个进程同时写同一个终端，日志会交错；下面保留一次真实运行的结果。
+  </p>
+  <pre class="out" data-label="真实输出">[INFO] [robot1.multi_talker]: publishing: 'robot1-0'
+[INFO] [filter_listener]: from robot1: 'robot1-0'
+[INFO] [robot2.multi_talker]: publishing: 'robot2-0'
+[INFO] [robot1.multi_talker]: publishing: 'robot1-1'
+[INFO] [filter_listener]: from robot1: 'robot1-1'
+[INFO] [robot2.multi_talker]: publishing: 'robot2-1'
+[INFO] [robot1.multi_talker]: publishing: 'robot1-2'
+[INFO] [filter_listener]: from robot1: 'robot1-2'
+[INFO] [robot2.multi_talker]: publishing: 'robot2-2'</pre>
+  <p>
+    订阅者只打印 <code>robot1</code> 的三条，<code>robot2</code> 的消息
+    没有被处理。发布者日志里的 <code>robot1.multi_talker</code> 是
+    命名空间与节点名拼接后的日志器名。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-9</div>
+  <p>在同一话题 <code>/chatter</code> 上启动两个发布者，节点名分别改为 <code>talker_a</code> 与 <code>talker_b</code>，两者都向相对话题 <code>chatter</code> 发布。运行期间查看该话题的发布者数量与订阅者数量。</p>
+  <pre class="out" data-label="预期输出">Publisher count: 2
+Subscription count: 0</pre>
+  <details class="ans" data-run="示例代码/答案/1-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    两个实例使用同一个可执行文件，靠 <code>__node</code> 区分节点名；
+    它们都没有改命名空间，所以相对话题 <code>chatter</code> 都解析成
+    <code>/chatter</code>。第二个参数让每个实例发 10 条消息后退出。
+    发现需要一点时间，脚本先等 1.5 秒，再轮询话题信息，直到两个发布者
+    都出现或等待超时。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes multi_talker left 10 \
+  --ros-args -r __node:=talker_a &gt;/dev/null 2&gt;&amp;1 &amp;
+ros2 run robot_nodes multi_talker right 10 \
+  --ros-args -r __node:=talker_b &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1.5
+for _ in $(seq 1 40); do
+  info=$(ros2 topic info /chatter)
+  if grep -q 'Publisher count: 2' &lt;&lt;&lt;"$info"; then
+    break
+  fi
+  sleep 0.25
+done
+grep -E 'Publisher count|Subscription count' &lt;&lt;&lt;"$info"
+wait</code></pre>
+  <pre class="out" data-label="真实输出">Publisher count: 2
+Subscription count: 0</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-10</div>
+  <p>写一个节点名取 <code>prefix_filter</code> 的订阅者，订阅 <code>chatter</code> 话题上的字符串，只打印以 <code>target-</code> 开头的消息，格式为 <code>target: '值'</code>；收到两条后停止。测试时由辅助发布者依次发送 <code>target-alpha</code>、<code>noise</code>、<code>target-beta</code>、<code>noise 2</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [prefix_filter]: target: 'target-alpha'
+[INFO] [prefix_filter]: target: 'target-beta'</pre>
+  <details class="ans" data-run="示例代码/答案/1-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>compare(0, prefix.size(), prefix)</code> 比较字符串开头；
+    返回值不为 0 就返回，不打印也不计数。收到两个匹配项后关闭。
+    运行脚本用辅助发布者混发带前缀与不带前缀的四条消息。
+  </p>
+      <pre data-lang="C++" data-name="prefix_filter.cpp"><code>#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
+
+class PrefixFilter : public rclcpp::Node
+{
+public:
+  PrefixFilter()
+  : Node("prefix_filter"), count_(0)
+  {
+    subscription_ = create_subscription&lt;std_msgs::msg::String&gt;(
+      "chatter", 10, [this](const std_msgs::msg::String::SharedPtr message) {
+        const std::string prefix = "target-";
+        if (message-&gt;data.compare(0, prefix.size(), prefix) != 0) {
+          return;
+        }
+        RCLCPP_INFO(get_logger(), "target: '%s'", message-&gt;data.c_str());
+        ++count_;
+        if (count_ == 2) {
+          rclcpp::shutdown();
+        }
+      });
+  }
+
+private:
+  rclcpp::Subscription&lt;std_msgs::msg::String&gt;::SharedPtr subscription_;
+  int count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;PrefixFilter&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [prefix_filter]: target: 'target-alpha'
+[INFO] [prefix_filter]: target: 'target-beta'</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在同一话题上运行多个发布者，用命名空间区分它们的完全限定话题名，并在订阅者回调里按字段或前缀筛选消息。</p>
+</section>
+
+<section class="lesson" id="l1-6">
+<h2><span class="no">1.6</span>话题诊断</h2>
+
+<p>
+  节点不按预期收发消息时，先用命令行确认话题是否存在、类型是否一致、
+  两端是否连接、消息是否真的在流动。这些检查不改代码，也不依赖发布者
+  或订阅者的日志。
+</p>
+
+<h3 id="s1-6-1">读话题</h3>
+
+<p>
+  <code>ros2 topic list -t</code> 列出话题与类型；
+  <code>ros2 topic info</code> 显示发布者与订阅者数量；
+  <code>ros2 topic echo</code> 打印消息内容。加上 <code>--once</code>
+  只取一条，加上 <code>--field data</code> 只显示某个字段。
+</p>
+
+<p>
+  <code>ros2 topic echo</code> 在话题没有发布者时会提示
+  <code>does not appear to be published yet</code>，然后等待。先确认发布者
+  已经启动，再看 QoS 与域号；域号不同时，两端在同一台机器上也互相看不见。
+</p>
+
+<h3 id="s1-6-2">频率与排查顺序</h3>
+
+<p>
+  <code>ros2 topic hz</code> 统计接收频率，输出平均值、最小与最大间隔、
+  标准差和窗口内消息数。窗口默认很大，前面的几行可能只覆盖少量消息；
+  用 <code>--window 10</code> 可以让统计更快稳定。频率受机器负载与调度
+  影响，数值不必与标称值完全相等。
+</p>
+
+<p>
+  排查顺序是：先看 <code>list -t</code> 的话题名与类型，再看
+  <code>info</code> 的端点数量，再看 <code>echo</code> 是否收到消息，
+  最后用 <code>hz</code> 看节奏。话题名对了但端点为 0，问题在启动、命名
+  空间或域号；端点存在但收不到，问题多半在 QoS。
+</p>
+
+<div class="eg" id="e1-6">
+  <div class="eg-h">例题 · 诊断脚本</div>
+  <p>
+    脚本启动一个 10 Hz 的 CLI 发布者，依次列出话题、端点、取一条消息，
+    再保留第一条频率统计。频率与间隔随运行环境变化，下面是一次真实结果。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：课程目录
+bash 示例代码/1.6-topic_tools.sh</code></pre>
+  <pre class="out" data-label="真实输出">list:
+/diag_chatter [std_msgs/msg/String]
+info:
+Type: std_msgs/msg/String
+Publisher count: 1
+Subscription count: 0
+echo:
+data: diag
+---
+hz:
+average rate: 9.999
+	min: 0.099s max: 0.101s std dev: 0.00035s window: 10</pre>
+  <p>
+    <code>echo</code> 输出末尾的 <code>---</code> 是消息分隔符；
+    <code>hz</code> 的 <code>average rate</code> 接近 10，
+    最小与最大间隔接近 0.1 秒。具体小数位与窗口数每次运行都可能不同。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-11</div>
+  <p>启动一个持续发布字符串 <code>probe</code> 的发布者，用一条命令只取该话题一条消息的 <code>data</code> 字段。输出包含字段值与消息分隔符。</p>
+  <pre class="out" data-label="预期输出">probe
+---</pre>
+  <details class="ans" data-run="示例代码/答案/1-11/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>--once</code> 让 <code>echo</code> 在第一条消息后退出；
+    <code>--field data</code> 只打印 <code>data</code> 字段，不打印字段名。
+    发布者要先启动，否则 <code>echo</code> 会一直等待；取到一条后要结束发布者，
+    否则它留在后台，下一个练习会多看到一个发布者。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 topic pub -r 10 /chatter std_msgs/msg/String "{data: probe}" &gt;/dev/null 2&gt;&amp;1 &amp;
+pub=$!
+sleep 2
+ros2 topic echo --once --field data /chatter
+kill "$pub"
+wait "$pub" 2>/dev/null || true</code></pre>
+  <pre class="out" data-label="真实输出">probe
+---</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 1-12</div>
+  <p>启动 <code>talker</code>，查看 <code>/chatter</code> 的发布者数量、发布者节点名与可靠性。输出保留这三项，节点名只要 <code>talker</code> 那一行。</p>
+  <pre class="out" data-label="预期输出">Publisher count: 1
+Node name: talker
+  Reliability: RELIABLE</pre>
+  <details class="ans" data-run="示例代码/答案/1-12/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>talker</code> 的第二个参数让发布者发 10 条消息（约 5 秒）后退出，
+    给查看留出时间。<code>topic info --verbose</code> 列出每个端点的节点名与 QoS。
+    用 <code>grep</code> 只保留发布者计数、<code>talker</code> 的节点名
+    与可靠性三行；订阅者数量与其它端点不显示。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes talker 10 &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1.5
+ros2 topic info --verbose /chatter \
+  | grep -E 'Publisher count|Node name: talker|Reliability'
+wait</code></pre>
+  <pre class="out" data-label="真实输出">Publisher count: 1
+Node name: talker
+  Reliability: RELIABLE</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用命令行确认话题的名称、类型、端点数量与消息内容，读取一条消息的指定字段，并解释频率统计中哪些数值会随环境变化。</p>
+</section>
+
+<nav class="pager">
+  <a href="00-开始.html">← 第 0 部分 · 开始</a>
+  <span class="spacer"></span>
+  <a href="02-服务与参数.html">第 2 部分 · 服务与参数 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

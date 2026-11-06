@@ -1,0 +1,12 @@
+<launch>
+  <node pkg="robot_nodes" exec="lifecycle_listener"
+        name="lifecycle_listener" output="screen"/>
+  <node pkg="robot_nodes" exec="lifecycle_talker"
+        name="lifecycle_talker" output="screen"/>
+  <node pkg="robot_nodes" exec="lifecycle_manager"
+        name="lifecycle_manager" output="screen" on_exit="shutdown">
+    <param name="nodes" value="/lifecycle_listener,/lifecycle_talker"/>
+    <param name="hold_ms" value="1500"/>
+    <param name="gap_ms" value="300"/>
+  </node>
+</launch>

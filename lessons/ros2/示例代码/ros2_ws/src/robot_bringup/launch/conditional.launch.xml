@@ -1,0 +1,7 @@
+<launch>
+  <arg name="with_hello" default="true"/>
+  <include file="$(find-pkg-share robot_bringup)/launch/hello.launch.xml"
+           if="$(var with_hello)"/>
+  <node pkg="robot_nodes" exec="talker" name="talker" output="screen"
+        unless="$(var with_hello)"/>
+</launch>

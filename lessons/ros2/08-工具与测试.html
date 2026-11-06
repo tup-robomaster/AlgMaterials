@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 8 部分 · 工具与测试 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 8.4 的测试结果里有一行超过阅读栏宽；终端遇到长行本来就会折，
+   这里只让本页的输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a class="active" href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" aria-current="page" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 8 部分 · 工具与测试</div>
+  <a class="toc-l" href="#l8-1"><span class="n">8.1</span>日志与诊断</a>
+  <a class="toc-sub" href="#s8-1-1">日志级别</a>
+  <a class="toc-sub" href="#s8-1-2">运行时级别</a>
+  <a class="toc-sub" href="#s8-1-3">节流</a>
+  <a class="toc-sub" href="#e8-1">例题：分级日志</a>
+  <a class="toc-l" href="#l8-2"><span class="n">8.2</span>ros2 bag</a>
+  <a class="toc-sub" href="#s8-2-1">录制</a>
+  <a class="toc-sub" href="#s8-2-2">查看</a>
+  <a class="toc-sub" href="#s8-2-3">回放</a>
+  <a class="toc-sub" href="#e8-2">例题：录制与查看</a>
+  <a class="toc-l" href="#l8-3"><span class="n">8.3</span>rqt（选学）</a>
+  <a class="toc-sub" href="#s8-3-1">节点图</a>
+  <a class="toc-sub" href="#s8-3-2">话题与消息</a>
+  <a class="toc-sub" href="#s8-3-3">命令行核对</a>
+  <a class="toc-sub" href="#e8-3">例题：查看节点图</a>
+  <a class="toc-l" href="#l8-4"><span class="n">8.4</span>单元测试与 launch_testing</a>
+  <a class="toc-sub" href="#s8-4-1">gtest</a>
+  <a class="toc-sub" href="#s8-4-2">launch_testing</a>
+  <a class="toc-sub" href="#s8-4-3">运行测试</a>
+  <a class="toc-sub" href="#e8-4">例题：面积测试与启动测试</a>
+  <a class="toc-l" href="#l8-5"><span class="n">8.5</span>包依赖、安装规则与工程质量</a>
+  <a class="toc-sub" href="#s8-5-1">依赖类型</a>
+  <a class="toc-sub" href="#s8-5-2">安装规则</a>
+  <a class="toc-sub" href="#s8-5-3">代码检查</a>
+  <a class="toc-sub" href="#e8-5">例题：检查依赖与安装</a>
+</nav>
+
+<main class="main">
+
+<div class="part-head">
+  <div class="kicker">第 8 部分</div>
+  <h1>工具与测试</h1>
+  <p class="lead">
+    节点能运行之后，下一步是让它可观察、可复现、可验证。本部分使用日志、
+    <code>ros2 bag</code>、rqt、单元测试、launch_testing 与包检查工具，
+    把调试和验收变成固定流程。
+  </p>
+</div>
+
+<div class="aside req" data-prereq="0.1 0.4 1.1 1.2 2.4 5.1 5.2">
+  <b>前置</b>
+  <p>
+    先读过 0.1、0.4、1.1、1.2、2.4 与 5.1–5.2：会构建工作空间，会写
+    发布者与订阅者，会声明节点参数，会写 launch 文件。工作空间位于
+    <code>$HOME/ros2_ws</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l8-1">
+<h2><span class="no">8.1</span>日志与诊断</h2>
+
+<p>
+  日志是节点在运行期间留下的结构化记录。ROS 2 的日志接口按严重程度
+  分成五级：<code>DEBUG</code>、<code>INFO</code>、<code>WARN</code>、
+  <code>ERROR</code>、<code>FATAL</code>。默认级别是
+  <code>INFO</code>，低于该级别的 <code>DEBUG</code> 不输出。
+  每条日志同时写入终端与 <code>/rosout</code> 话题，远程工具可以订阅
+  <code>/rosout</code> 收集全部节点的记录。
+</p>
+
+<h3 id="s8-1-1">日志级别</h3>
+
+<p>
+  C++ 节点使用 <code>RCLCPP_INFO</code>、<code>RCLCPP_WARN</code> 等宏，
+  第一个参数是日志器，通常取 <code>get_logger()</code>。级别用于区分
+  信息的用途：<code>INFO</code> 报告正常运行状态，<code>WARN</code>
+  报告可恢复的异常，<code>ERROR</code> 报告本次操作失败，
+  <code>FATAL</code> 表示节点无法继续。
+</p>
+
+<p>
+  日志器名默认等于节点名。下面的节点在启动时分别打印四个级别，
+  随后以 100 毫秒为周期打印八次计数，并在固定时刻插入警告与错误。
+  计数到八后主动关闭，因此每次运行的输出长度一致。
+</p>
+
+<pre data-lang="C++" data-name="8.1-logging.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class LoggingDemo : public rclcpp::Node
+{
+public:
+  LoggingDemo()
+  : Node("logging_demo")
+  {
+    burst_ = declare_parameter&lt;bool&gt;("burst_throttled", false);
+
+    RCLCPP_DEBUG(get_logger(), "debug: 这条默认不显示");
+    RCLCPP_INFO(get_logger(), "info: 节点启动");
+    RCLCPP_WARN(get_logger(), "warn: 电池电量 35%%");
+    RCLCPP_ERROR(get_logger(), "error: 激光雷达未就绪");
+
+    if (burst_) {
+      RCLCPP_INFO(get_logger(), "burst: 连续调用 5 次节流日志");
+      for (int i = 0; i &lt; 5; ++i) {
+        RCLCPP_INFO_THROTTLE(
+          get_logger(), *get_clock(), 1000, "throttled: 同一秒内只显示一次");
+      }
+      RCLCPP_INFO(get_logger(), "burst: 调用结束");
+      timer_ = create_wall_timer(
+        200ms, [this]() {
+          RCLCPP_INFO(get_logger(), "done");
+          rclcpp::shutdown();
+        });
+      return;
+    }
+
+    timer_ = create_wall_timer(100ms, [this]() {tick();});
+  }
+
+private:
+  void tick()
+  {
+    ++tick_;
+    RCLCPP_DEBUG(get_logger(), "debug: tick=%d", tick_);
+    RCLCPP_INFO(get_logger(), "tick=%d", tick_);
+    if (tick_ == 3) {
+      RCLCPP_WARN(get_logger(), "warn: tick=3 温度 41.0");
+    }
+    if (tick_ == 6) {
+      RCLCPP_ERROR(get_logger(), "error: tick=6 雷达丢帧");
+    }
+    if (tick_ &gt;= 8) {
+      RCLCPP_INFO(get_logger(), "done");
+      rclcpp::shutdown();
+    }
+  }
+
+  bool burst_{false};
+  int tick_{0};
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;LoggingDemo&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<h3 id="s8-1-2">运行时级别</h3>
+
+<p>
+  <code>--log-level</code> 可以在启动节点时修改日志级别，不必重新编译。
+  写法是 <code>--log-level 日志器名:=级别</code>；只写
+  <code>--log-level debug</code> 会把 ROS 2 客户端库内部的调试日志也打开，
+  输出会混入大量库函数记录。指定节点自己的日志器名，才能只看到本节点的
+  调试信息。
+</p>
+
+<h3 id="s8-1-3">节流</h3>
+
+<p>
+  高频循环里的日志会淹没终端。带 <code>_THROTTLE</code> 后缀的宏接受
+  一个时间窗口，同一个调用点在窗口内只输出第一次，其余调用被丢弃。
+  <code>RCLCPP_INFO_THROTTLE(logger, clock, 1000, ...)</code> 表示每秒
+  最多输出一条。窗口由时钟计算，与循环次数无关。
+</p>
+
+<div class="eg" id="e8-1">
+  <div class="eg-h">例题 · 分级日志</div>
+  <p>
+    默认级别下运行节点，<code>DEBUG</code> 不出现；两条警告与两条错误
+    夹在计数日志之间。最后一行 <code>done</code> 表示节点已准备关闭。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes logging_demo</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [logging_demo]: info: 节点启动
+[WARN] [logging_demo]: warn: 电池电量 35%
+[ERROR] [logging_demo]: error: 激光雷达未就绪
+[INFO] [logging_demo]: tick=1
+[INFO] [logging_demo]: tick=2
+[INFO] [logging_demo]: tick=3
+[WARN] [logging_demo]: warn: tick=3 温度 41.0
+[INFO] [logging_demo]: tick=4
+[INFO] [logging_demo]: tick=5
+[INFO] [logging_demo]: tick=6
+[ERROR] [logging_demo]: error: tick=6 雷达丢帧
+[INFO] [logging_demo]: tick=7
+[INFO] [logging_demo]: tick=8
+[INFO] [logging_demo]: done</pre>
+  <p>
+    启动时那条 <code>debug: 这条默认不显示</code> 没有出现在输出里，
+    说明默认阈值高于 <code>DEBUG</code>。每条日志的方括号内是级别与
+    日志器名，后面是消息正文。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-1</div>
+  <p>用 <code>--log-level</code> 只把 <code>logging_demo</code> 的级别降到 <code>debug</code>，运行节点并确认启动日志与每次计数前都多出一条 <code>DEBUG</code>。</p>
+  <pre class="out" data-label="预期输出">[DEBUG] [logging_demo]: debug: 这条默认不显示
+[INFO] [logging_demo]: info: 节点启动
+[WARN] [logging_demo]: warn: 电池电量 35%
+[ERROR] [logging_demo]: error: 激光雷达未就绪
+[DEBUG] [logging_demo]: debug: tick=1
+[INFO] [logging_demo]: tick=1
+[DEBUG] [logging_demo]: debug: tick=2
+[INFO] [logging_demo]: tick=2
+[DEBUG] [logging_demo]: debug: tick=3
+[INFO] [logging_demo]: tick=3
+[WARN] [logging_demo]: warn: tick=3 温度 41.0
+[DEBUG] [logging_demo]: debug: tick=4
+[INFO] [logging_demo]: tick=4
+[DEBUG] [logging_demo]: debug: tick=5
+[INFO] [logging_demo]: tick=5
+[DEBUG] [logging_demo]: debug: tick=6
+[INFO] [logging_demo]: tick=6
+[ERROR] [logging_demo]: error: tick=6 雷达丢帧
+[DEBUG] [logging_demo]: debug: tick=7
+[INFO] [logging_demo]: tick=7
+[DEBUG] [logging_demo]: debug: tick=8
+[INFO] [logging_demo]: tick=8
+[INFO] [logging_demo]: done</pre>
+  <details class="ans" data-run="示例代码/答案/8-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>--log-level</code> 接受 <code>日志器名:=级别</code> 的形式。
+    只写 <code>debug</code> 会把整个进程的日志器都降到调试级，
+    连带打开 <code>rcl</code> 与 <code>rclcpp</code> 的内部输出；
+    指定 <code>logging_demo</code> 后只影响本节点。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes logging_demo --ros-args --log-level logging_demo:=debug</code></pre>
+  <pre class="out" data-label="真实输出">[DEBUG] [logging_demo]: debug: 这条默认不显示
+[INFO] [logging_demo]: info: 节点启动
+[WARN] [logging_demo]: warn: 电池电量 35%
+[ERROR] [logging_demo]: error: 激光雷达未就绪
+[DEBUG] [logging_demo]: debug: tick=1
+[INFO] [logging_demo]: tick=1
+[DEBUG] [logging_demo]: debug: tick=2
+[INFO] [logging_demo]: tick=2
+[DEBUG] [logging_demo]: debug: tick=3
+[INFO] [logging_demo]: tick=3
+[WARN] [logging_demo]: warn: tick=3 温度 41.0
+[DEBUG] [logging_demo]: debug: tick=4
+[INFO] [logging_demo]: tick=4
+[DEBUG] [logging_demo]: debug: tick=5
+[INFO] [logging_demo]: tick=5
+[DEBUG] [logging_demo]: debug: tick=6
+[INFO] [logging_demo]: tick=6
+[ERROR] [logging_demo]: error: tick=6 雷达丢帧
+[DEBUG] [logging_demo]: debug: tick=7
+[INFO] [logging_demo]: tick=7
+[DEBUG] [logging_demo]: debug: tick=8
+[INFO] [logging_demo]: tick=8
+[INFO] [logging_demo]: done</pre>
+  <p>
+    每次计数前多出的 <code>DEBUG</code> 行来自调试日志；级别降到
+    <code>debug</code> 后它才越过阈值。其余 <code>INFO</code>、
+    <code>WARN</code>、<code>ERROR</code> 行不受影响。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-2</div>
+  <p>用参数 <code>burst_throttled:=true</code> 让节点连续调用五次节流日志，确认一秒内只保留第一条。</p>
+  <pre class="out" data-label="预期输出">[INFO] [logging_demo]: info: 节点启动
+[WARN] [logging_demo]: warn: 电池电量 35%
+[ERROR] [logging_demo]: error: 激光雷达未就绪
+[INFO] [logging_demo]: burst: 连续调用 5 次节流日志
+[INFO] [logging_demo]: throttled: 同一秒内只显示一次
+[INFO] [logging_demo]: burst: 调用结束
+[INFO] [logging_demo]: done</pre>
+  <details class="ans" data-run="示例代码/答案/8-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    参数为真时，节点在定时器第一次回调里连续调用五次
+    <code>RCLCPP_INFO_THROTTLE</code>，周期为一秒。五次调用落在同一秒，
+    宏只放行第一次，其余四次被丢弃。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes logging_demo --ros-args -p burst_throttled:=true</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [logging_demo]: info: 节点启动
+[WARN] [logging_demo]: warn: 电池电量 35%
+[ERROR] [logging_demo]: error: 激光雷达未就绪
+[INFO] [logging_demo]: burst: 连续调用 5 次节流日志
+[INFO] [logging_demo]: throttled: 同一秒内只显示一次
+[INFO] [logging_demo]: burst: 调用结束
+[INFO] [logging_demo]: done</pre>
+  <p>
+    输出里只有一条 <code>throttled</code>，前后各有一条
+    <code>burst</code> 标记。节流只减少重复日志，不改变程序逻辑。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按级别写日志，用 <code>--log-level</code> 只打开指定日志器的调试输出，并用节流宏限制高频日志的数量。</p>
+</section>
+
+<section class="lesson" id="l8-2">
+<h2><span class="no">8.2</span>ros2 bag</h2>
+
+<p>
+  <code>ros2 bag</code> 把话题消息按时间顺序写入磁盘，之后可以离线查看
+  或重新发布。录制文件称为包（bag），默认存储格式是 MCAP。包保留消息的
+  原始时间戳，回放时按原时间间隔发送，因此适合复现一次运行。
+</p>
+
+<h3 id="s8-2-1">录制</h3>
+
+<p>
+  <code>ros2 bag record -o 目录名 /话题名</code> 启动录制节点，
+  <code>-o</code> 指定输出目录，目录不存在时自动创建。按
+  <kbd>Ctrl+C</kbd> 结束录制并写完文件。若录制开始时话题还没有发布者，
+  加上 <code>--include-unpublished-topics</code> 可以先建立订阅，
+  等发布者出现后立即记录。发布者可以用参数
+  <code>wait_for_subscriber:=true</code> 等到订阅者连接后再发送，
+  避免开头几条消息丢失。
+</p>
+
+<h3 id="s8-2-2">查看</h3>
+
+<p>
+  <code>ros2 bag info 目录名</code> 打印文件大小、存储格式、起止时间、
+  消息总数与每个话题的条数。消息条数由录制期间实际收到的消息决定，
+  时长由首尾消息的时间戳决定；两者都不等于命令运行的时间。
+</p>
+
+<h3 id="s8-2-3">回放</h3>
+
+<p>
+  <code>ros2 bag play 目录名</code> 把包重新发布到同名话题。
+  回放期间可以像对待实时节点一样订阅、查看或记录。包里的时间戳是过去的
+  时刻，直接按原速回放时消息会追着实时时钟发送；加
+  <code>--delay</code> 可以先等待订阅者连接，加 <code>--rate</code>
+  可以放慢速度，便于观察。
+</p>
+
+<div class="eg" id="e8-2">
+  <div class="eg-h">例题 · 录制与查看</div>
+  <p>
+    终端 A 启动录制，终端 B 启动发布者。发布者等到录制端订阅后再发三条
+    消息，停止录制时包里正好三条。停止录制后用
+    <code>bag info</code> 检查条数。
+  </p>
+  <pre data-lang="终端"><code># 终端 A，当前目录：$HOME/ros2_ws
+ros2 bag record -o demo_bag --include-unpublished-topics /chatter</code></pre>
+  <pre data-lang="终端"><code># 终端 B，当前目录：$HOME/ros2_ws
+ros2 run robot_nodes talker 3 --ros-args -p wait_for_subscriber:=true</code></pre>
+  <pre data-lang="终端"><code># 终端 A，按 Ctrl+C 结束录制后
+ros2 bag info demo_bag | grep -E '^(Messages|Topic information)'</code></pre>
+  <pre class="out" data-label="真实输出">Messages:          3
+Topic information: Topic: /chatter | Type: std_msgs/msg/String | Count: 3 | Serialization Format: cdr</pre>
+  <p>
+    发布者总共发了三条，包里也是三条。话题信息一行给出话题名、消息类型、
+    条数与序列化格式。<code>Messages</code> 后面的空格由
+    <code>bag info</code> 对齐输出，复制时不必保留这些空格。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-3</div>
+  <p>录制三条 <code>/chatter</code> 消息，回放这个包，并用 <code>ros2 topic echo</code> 只取第一条消息的 <code>data</code> 字段。</p>
+  <pre class="out" data-label="预期输出">[INFO] [talker]: publishing: 'hello 0'
+[INFO] [talker]: publishing: 'hello 1'
+[INFO] [talker]: publishing: 'hello 2'
+hello 0
+---</pre>
+  <details class="ans" data-run="示例代码/答案/8-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    Jazzy 的 <code>ros2 bag record</code> 没有按时间自动停止的参数，
+    因此用 <code>timeout -s INT</code> 在六秒后发送中断信号，让录制正常
+    收尾。<code>--include-unpublished-topics</code> 让录制端提前建立订阅，
+    避免发布者先启动、录制端后连接而漏掉开头。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+tmp=$(mktemp -d)
+bag="$tmp/bag"
+timeout -s INT 6s ros2 bag record -o "$bag" \
+  --include-unpublished-topics /chatter &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes talker 3 --ros-args -p wait_for_subscriber:=true
+wait || true
+timeout 15 ros2 topic echo /chatter std_msgs/msg/String --once --field data &amp;
+sleep 1
+ros2 bag play --delay 2 --rate 0.2 "$bag" &gt;/dev/null 2&gt;&amp;1
+wait
+rm -rf "$tmp"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [talker]: publishing: 'hello 0'
+[INFO] [talker]: publishing: 'hello 1'
+[INFO] [talker]: publishing: 'hello 2'
+hello 0
+---</pre>
+  <p>
+    <code>talker</code> 等待订阅者连接后才发送，录制端因此能收到三条。
+    回放时 <code>--delay 2</code> 给 <code>echo</code> 留出启动时间，
+    <code>--rate 0.2</code> 放慢速度；<code>--once</code> 只取第一条，
+    所以最终只打印 <code>hello 0</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-4</div>
+  <p>只录制两条 <code>/chatter</code> 消息，用 <code>bag info</code> 打印消息总数和话题条数，确认两者都是 2。</p>
+  <pre class="out" data-label="预期输出">[INFO] [talker]: publishing: 'hello 0'
+[INFO] [talker]: publishing: 'hello 1'
+Messages: 2
+Topic information: Topic: /chatter | Type: std_msgs/msg/String | Count: 2</pre>
+  <details class="ans" data-run="示例代码/答案/8-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    录制流程与上一题相同，只把发布条数改成两条。发布者退出后录制端继续
+    运行到超时，包文件因此完整。再用 <code>bag info</code> 读取元数据。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+tmp=$(mktemp -d)
+bag="$tmp/two_messages"
+timeout -s INT 5s ros2 bag record -o "$bag" \
+  --include-unpublished-topics /chatter &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes talker 2 --ros-args -p wait_for_subscriber:=true
+wait || true
+ros2 bag info "$bag" | awk '
+  /^Messages:/ {print "Messages: " $2}
+  /^Topic information:/ {
+    sub(/ \| Serialization Format: cdr/, "")
+    print
+  }
+'
+rm -rf "$tmp"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [talker]: publishing: 'hello 0'
+[INFO] [talker]: publishing: 'hello 1'
+Messages: 2
+Topic information: Topic: /chatter | Type: std_msgs/msg/String | Count: 2</pre>
+  <p>
+    <code>Messages</code> 是包内消息总数，话题信息里的 <code>Count</code>
+    是该话题的条数。两者都是 2，说明两条消息都写入了同一个话题。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按话题录制包，用 <code>bag info</code> 核对消息条数与时长，回放包并用话题命令读取其中的消息。</p>
+</section>
+
+<section class="lesson" id="l8-3">
+<h2><span class="no">8.3</span>rqt（选学）</h2>
+
+<p>
+  rqt 是基于 Qt 的图形工具集合，每个功能是一个插件。它不改变节点行为，
+  只把节点图、话题内容、参数与服务调用集中到窗口里。没有图形界面或
+  远程连接时，可以用同名的命令行工具完成同样的检查。
+</p>
+
+<h3 id="s8-3-1">节点图</h3>
+
+<p>
+  <code>ros2 run rqt_graph rqt_graph</code> 打开节点图。方框表示节点，
+  箭头表示消息流向，边上的标签是话题名。发布者指向订阅者；双向箭头说明
+  两端同时发布和订阅同一个话题。图里出现 <code>/ros2cli</code>
+  这类临时节点是命令行查询自身创建的，不代表业务节点。
+</p>
+
+<figure class="fig">
+  <img class="zoomable" tabindex="0" title="双击放大，滚轮缩放" src="素材/rqt-graph.png" alt="左侧为 talker 发布者节点，右侧为 listener 订阅者节点，中间有指向右侧的 chatter 话题箭头" width="900" height="520">
+  <figcaption>
+    两个节点通过 <code>/chatter</code> 连接时的拓扑。箭头从发布者
+    <code>/talker</code> 指向订阅者 <code>/listener</code>，边上标注
+    消息类型 <code>std_msgs/msg/String</code>。
+  </figcaption>
+</figure>
+
+<h3 id="s8-3-2">话题与消息</h3>
+
+<p>
+  <code>rqt_topic</code> 列出所有话题、类型、带宽与发布/订阅计数，
+  展开话题可以查看最近一条消息的字段。<code>rqt_console</code>
+  汇总 <code>/rosout</code> 的日志，可以按级别过滤；<code>rqt_plot</code>
+  把数值字段画成曲线，字符串消息不能直接绘图。
+</p>
+
+<h3 id="s8-3-3">命令行核对</h3>
+
+<p>
+  图形窗口里的信息来自 ROS 2 图。用 <code>ros2 node list</code> 看节点，
+  用 <code>ros2 topic info</code> 看发布者与订阅者数量，用
+  <code>ros2 topic echo</code> 看消息内容。命令行输出适合记录在报告里，
+  也适合在没有显示器的机器上使用。
+</p>
+
+<div class="eg" id="e8-3">
+  <div class="eg-h">例题 · 查看节点图</div>
+  <p>
+    先在一个终端运行 <code>listener</code>，再在另一个终端运行发布者，
+    然后打开节点图。图中应出现一条从 <code>/talker</code> 到
+    <code>/listener</code> 的边。关闭图形窗口后，用命令行核对节点名。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run rqt_graph rqt_graph</code></pre>
+  <pre data-lang="终端"><code># 图形窗口关闭后，在节点仍运行的终端旁执行
+ros2 node list | sort</code></pre>
+  <pre class="out" data-label="真实输出">/listener
+/talker</pre>
+  <p>
+    两个节点名都是完全限定名。节点图里如果还出现
+    <code>/ros2cli_数字</code>，那是执行 <code>node list</code> 时临时
+    创建的查询节点，查询结束后消失。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-5</div>
+  <p>启动一个订阅者和一个发布者，用 <code>ros2 node list</code> 列出节点，再用 <code>ros2 topic info /chatter</code> 确认发布者与订阅者各有一个。</p>
+  <pre class="out" data-label="预期输出">/listener
+/talker
+Type: std_msgs/msg/String
+Publisher count: 1
+Subscription count: 1</pre>
+  <details class="ans" data-run="示例代码/答案/8-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    先启动订阅者，再启动发布者，两个节点都出现后查询。节点列表按字母
+    排序，因此 <code>/listener</code> 在前。<code>topic info</code>
+    统计的是当前存活的端点，不是历史连接。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes listener &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 0.5
+ros2 run robot_nodes talker 20 &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 0.5
+ros2 node list | grep -E '^/(listener|talker)$' | sort
+ros2 topic info /chatter</code></pre>
+  <pre class="out" data-label="真实输出">/listener
+/talker
+Type: std_msgs/msg/String
+Publisher count: 1
+Subscription count: 1</pre>
+  <p>
+    类型行给出消息类型，后两行分别是发布端与订阅端数量。两个计数都是 1，
+    与启动的节点数一致。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-6</div>
+  <p>用 <code>ros2 topic echo</code> 读取 <code>/chatter</code> 的第一条消息，只打印 <code>data</code> 字段；发布者要等订阅者连接后再发送。</p>
+  <pre class="out" data-label="预期输出">[INFO] [talker]: publishing: 'hello 0'
+hello 0
+---</pre>
+  <details class="ans" data-run="示例代码/答案/8-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 topic echo</code> 的 <code>--once</code> 在收到第一条消息后
+    退出；<code>--field data</code> 只打印字段值。发布者的
+    <code>wait_for_subscriber</code> 保证 <code>echo</code> 已经订阅后再
+    发布，否则第一条消息可能在连接完成前发出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+timeout 15 ros2 topic echo /chatter std_msgs/msg/String --once --field data &amp;
+sleep 1
+ros2 run robot_nodes talker 1 --ros-args -p wait_for_subscriber:=true
+wait</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [talker]: publishing: 'hello 0'
+hello 0
+---</pre>
+  <p>
+    第一行是发布者自己的日志，后两行来自 <code>echo</code>：字段值和分隔
+    线。<code>talker</code> 只发一条，因此 <code>echo</code> 不会读到
+    <code>hello 1</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 <code>rqt_graph</code> 读节点与话题的拓扑，用 <code>rqt_topic</code> 与 <code>rqt_console</code> 查看消息和日志，并在没有图形界面时用命令行完成同样的核对。</p>
+</section>
+
+<section class="lesson" id="l8-4">
+<h2><span class="no">8.4</span>单元测试与 launch_testing</h2>
+
+<p>
+  单元测试检查不依赖 ROS 通信的函数，启动测试检查节点启动后的实际行为。
+  两者都由 <code>colcon test</code> 调用，结果写入
+  <code>build/包名/test_results</code>。测试失败不会阻止构建产物生成，
+  但会让 <code>colcon test</code> 的退出码非零。
+</p>
+
+<h3 id="s8-4-1">gtest</h3>
+
+<p>
+  <code>ament_cmake_gtest</code> 提供 <code>ament_add_gtest</code>，
+  把测试源文件编译成可执行文件，并注册到 CTest。测试函数用
+  <code>TEST(套件名, 用例名)</code> 定义，断言用
+  <code>EXPECT_*</code> 或 <code>ASSERT_*</code>。下面的面积函数在宽或高
+  为负数时抛出 <code>std::invalid_argument</code>，测试只检查合法输入。
+</p>
+
+<pre data-lang="C++" data-name="area.hpp"><code>#ifndef ROBOT_NODES__AREA_HPP_
+#define ROBOT_NODES__AREA_HPP_
+
+namespace robot_nodes
+{
+
+// 计算矩形面积。宽或高为负数时抛出 std::invalid_argument。
+double rectangle_area(double width, double height);
+
+}  // namespace robot_nodes
+
+#endif  // ROBOT_NODES__AREA_HPP_</code></pre>
+<pre data-lang="C++" data-name="area.cpp"><code>#include "robot_nodes/area.hpp"
+
+#include &lt;stdexcept&gt;
+
+namespace robot_nodes
+{
+
+double rectangle_area(double width, double height)
+{
+  if (width &lt; 0.0 || height &lt; 0.0) {
+    throw std::invalid_argument("width and height must be non-negative");
+  }
+  return width * height;
+}
+
+}  // namespace robot_nodes</code></pre>
+<pre data-lang="C++" data-name="test_area.cpp"><code>#include &lt;gtest/gtest.h&gt;
+
+#include "robot_nodes/area.hpp"
+
+TEST(AreaTest, ComputesProduct)
+{
+  EXPECT_DOUBLE_EQ(robot_nodes::rectangle_area(2.0, 3.0), 6.0);
+}
+
+TEST(AreaTest, ZeroSideGivesZero)
+{
+  EXPECT_DOUBLE_EQ(robot_nodes::rectangle_area(0.0, 5.0), 0.0);
+}</code></pre>
+<p>
+  CMake 中用 <code>ament_add_gtest(test_area test/test_area.cpp src/area.cpp)</code>
+  把函数实现和测试一起编译，<code>target_include_directories</code>
+  指向头文件目录。测试目标只在 <code>BUILD_TESTING</code> 打开时生成。
+</p>
+
+<h3 id="s8-4-2">launch_testing</h3>
+
+<p>
+  <code>launch_testing</code> 把 launch 与 <code>unittest</code> 组合：
+  <code>generate_test_description</code> 返回要启动的节点，
+  <code>ReadyToTest</code> 标记启动完成，测试类在节点运行期间执行断言。
+  启动测试适合检查话题是否出现、消息内容是否正确、节点退出码是否为零。
+</p>
+
+<pre data-lang="Python" data-name="test_talker.launch.py"><code>import time
+import unittest
+
+import launch
+import launch_ros.actions
+import launch_testing
+import launch_testing.actions
+import rclpy
+from std_msgs.msg import String
+
+
+def generate_test_description():
+    talker = launch_ros.actions.Node(
+        package="robot_nodes",
+        executable="talker",
+        arguments=["3"],
+        parameters=[{"wait_for_subscriber": True}],
+    )
+    return (
+        launch.LaunchDescription(
+            [
+                talker,
+                launch_testing.actions.ReadyToTest(),
+            ]
+        ),
+        {"talker": talker},
+    )
+
+
+class TestTalker(unittest.TestCase):
+    def test_first_message(self):
+        rclpy.init()
+        node = rclpy.create_node("test_listener")
+        messages = []
+        subscription = node.create_subscription(
+            String, "/chatter", lambda msg: messages.append(msg.data), 10
+        )
+        deadline = time.time() + 5.0
+        while time.time() &lt; deadline and not messages:
+            rclpy.spin_once(node, timeout_sec=0.1)
+        node.destroy_node()
+        rclpy.shutdown()
+        self.assertTrue(messages, "没有收到 /chatter 消息")
+        self.assertEqual(messages[0], "hello 0")</code></pre>
+<p>
+  <code>launch_ros.actions.Node</code> 的参数与命令行一致；
+  <code>parameters</code> 里的 <code>wait_for_subscriber</code> 让发布者
+  等到测试订阅者连接后再发送，避免第一条消息丢失。测试类创建订阅者，
+  在五秒内循环 <code>spin_once</code>，收到消息后断言内容是
+  <code>hello 0</code>。
+</p>
+
+<h3 id="s8-4-3">运行测试</h3>
+
+<p>
+  <code>colcon test --packages-select 包名</code> 运行该包注册的全部测试。
+  <code>--ctest-args -R 正则</code> 只运行名字匹配的测试。
+  <code>colcon test-result --verbose</code> 汇总每个测试的结果与日志路径。
+  测试超时、断言失败与进程崩溃都会记为失败。
+</p>
+
+<div class="eg" id="e8-4">
+  <div class="eg-h">例题 · 面积测试与启动测试</div>
+  <p>
+    两个测试分别覆盖纯函数与节点启动。第一个是 gtest，第二个是
+    launch_testing；运行后汇总结果显示五项测试全部通过。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon test --packages-select robot_nodes \
+  --ctest-args -R 'test_area|test_talker'
+colcon test-result --verbose</code></pre>
+  <pre class="out" data-label="真实输出">Starting &gt;&gt;&gt; robot_nodes
+...
+Finished &lt;&lt;&lt; robot_nodes
+Summary: 5 tests, 0 errors, 0 failures, 0 skipped</pre>
+  <p>
+    第一行与最后一行来自 <code>colcon test</code>，中间的
+    <code>Summary</code> 来自 <code>colcon test-result</code>。
+    省略号处是每个测试的启动与计时信息，不影响结果。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-7</div>
+  <p>给面积函数增加一个边界测试：宽为负数时抛出 <code>std::invalid_argument</code>。用 gtest 编译并运行，确认一个用例通过。</p>
+  <pre class="out" data-label="预期输出">Running main() from ./googletest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AreaTest
+[ RUN      ] AreaTest.NegativeSideThrows
+[       OK ] AreaTest.NegativeSideThrows (0 ms)
+[----------] 1 test from AreaTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.</pre>
+  <details class="ans" data-run="示例代码/答案/8-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    测试文件只包含 gtest 头文件、标准异常头文件与面积函数声明。把文件保存到
+    <code>src/robot_nodes/test/</code> 下。编译时把仓库里的 <code>area.cpp</code>
+    一起传给 <code>g++</code>，链接 <code>gtest</code> 与 <code>gtest_main</code>
+    即可。<code>EXPECT_THROW</code> 断言表达式抛出指定类型的异常。
+  </p>
+      <pre data-lang="C++" data-name="test_negative.cpp"><code>#include &lt;gtest/gtest.h&gt;
+
+#include &lt;stdexcept&gt;
+
+#include "robot_nodes/area.hpp"
+
+TEST(AreaTest, NegativeSideThrows)
+{
+  EXPECT_THROW(robot_nodes::rectangle_area(-1.0, 2.0), std::invalid_argument);
+}</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+tmp=$(mktemp -d)
+g++ -std=c++17 -I "$HOME/ros2_ws/src/robot_nodes/include" \
+  src/robot_nodes/test/test_negative.cpp \
+  "$HOME/ros2_ws/src/robot_nodes/src/area.cpp" \
+  -lgtest -lgtest_main -lpthread -o "$tmp/test_negative"
+"$tmp/test_negative"
+rm -rf "$tmp"</code></pre>
+  <pre class="out" data-label="真实输出">Running main() from ./googletest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AreaTest
+[ RUN      ] AreaTest.NegativeSideThrows
+[       OK ] AreaTest.NegativeSideThrows (0 ms)
+[----------] 1 test from AreaTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.</pre>
+  <p>
+    输出只运行一个用例，<code>[ PASSED ] 1 test.</code> 表示通过。
+    用例名 <code>NegativeSideThrows</code> 与测试文件中的名字一致。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-8</div>
+  <p>写一个 launch_testing 测试：启动发布者，订阅 <code>/chatter</code>，断言第一条消息是 <code>hello 0</code>，并检查发布者退出码为 0。</p>
+  <pre class="out" data-label="预期输出">Ran 1 test
+OK</pre>
+  <details class="ans" data-run="示例代码/答案/8-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    测试文件分两部分。<code>generate_test_description</code> 启动发布者并
+    插入 <code>ReadyToTest</code>；普通测试类订阅 <code>/chatter</code>，
+    在五秒内等待第一条消息；<code>post_shutdown_test</code> 在进程退出后
+    检查退出码。把文件保存到 <code>src/robot_nodes/test/</code> 下，
+    <code>launch_test</code> 直接运行该文件，不需要构建包。
+  </p>
+      <pre data-lang="Python" data-name="test_subscriber.launch.py"><code>import time
+import unittest
+
+import launch
+import launch_ros.actions
+import launch_testing
+import launch_testing.actions
+import launch_testing.asserts
+import rclpy
+from std_msgs.msg import String
+
+
+def generate_test_description():
+    talker = launch_ros.actions.Node(
+        package="robot_nodes",
+        executable="talker",
+        arguments=["2"],
+        parameters=[{"wait_for_subscriber": True}],
+    )
+    return (
+        launch.LaunchDescription(
+            [
+                talker,
+                launch_testing.actions.ReadyToTest(),
+            ]
+        ),
+        {"talker": talker},
+    )
+
+
+class TestSubscriber(unittest.TestCase):
+    def test_first_message(self):
+        rclpy.init()
+        node = rclpy.create_node("test_subscriber")
+        messages = []
+        node.create_subscription(
+            String, "/chatter", lambda msg: messages.append(msg.data), 10
+        )
+        deadline = time.time() + 5.0
+        while time.time() &lt; deadline and not messages:
+            rclpy.spin_once(node, timeout_sec=0.1)
+        node.destroy_node()
+        rclpy.shutdown()
+        self.assertTrue(messages, "没有收到 /chatter 消息")
+        self.assertEqual(messages[0], "hello 0")
+
+
+@launch_testing.post_shutdown_test()
+class TestExit(unittest.TestCase):
+    def test_exit_code(self, proc_info):
+        launch_testing.asserts.assertExitCodes(proc_info, allowable_exit_codes=[0])</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+launch_test src/robot_nodes/test/test_subscriber.launch.py 2&gt;&amp;1 |
+  sed -n 's/^Ran 1 test.*/Ran 1 test/p; /^OK$/p' |
+  awk '!seen[$0]++'</code></pre>
+  <pre class="out" data-label="真实输出">Ran 1 test
+OK</pre>
+  <p>
+    <code>launch_test</code> 用 Python 的 unittest 运行测试，最后的
+    <code>OK</code> 表示订阅断言与退出码断言都通过。前一行给出运行的
+    测试数量；<code>sed</code> 去掉该行的计时，并只保留这一行与
+    <code>OK</code>。结果会打印两遍，<code>awk</code> 去掉重复行。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用 gtest 测试纯函数，用 launch_testing 启动节点并断言话题内容与退出码，再用 <code>colcon test</code> 与 <code>test-result</code> 运行和汇总结果。</p>
+</section>
+
+<section class="lesson" id="l8-5">
+<h2><span class="no">8.5</span>包依赖、安装规则与工程质量</h2>
+
+<p>
+  包能否被别的包找到，取决于 <code>package.xml</code> 的依赖声明与 CMake
+  的安装规则。依赖声明影响构建顺序和环境变量，安装规则决定文件被复制到
+  <code>install/包名</code> 的哪个子目录。两者都正确，包才能被
+  <code>ros2 run</code> 与 <code>ros2 launch</code> 使用。
+</p>
+
+<h3 id="s8-5-1">依赖类型</h3>
+
+<p>
+  <code>build_depend</code> 只在构建时需要，<code>exec_depend</code>
+  只在运行时需要，<code>build_export_depend</code> 用于把头文件或库
+  暴露给下游包，<code>depend</code> 同时包含构建、导出与运行三种。
+  节点直接包含的头文件所对应的包应写在 <code>depend</code> 中。
+  CMake 里用 <code>ament_export_dependencies</code> 把依赖继续传给
+  下游包。
+</p>
+
+<h3 id="s8-5-2">安装规则</h3>
+
+<p>
+  <code>install(TARGETS ... DESTINATION lib/${PROJECT_NAME})</code>
+  把可执行文件放到 <code>lib/包名</code>，这是 <code>ros2 run</code>
+  查找的位置。<code>install(DIRECTORY launch config ... DESTINATION
+  share/${PROJECT_NAME})</code> 把目录复制到
+  <code>share/包名</code>，launch 文件与参数文件从这里加载。
+  <code>ros2 pkg prefix 包名</code> 打印安装前缀，
+  <code>ros2 pkg executables 包名</code> 列出已安装的可执行文件。
+</p>
+
+<h3 id="s8-5-3">代码检查</h3>
+
+<p>
+  <code>ament_lint_auto</code> 根据 <code>package.xml</code> 里的
+  lint 依赖调用 <code>ament_cppcheck</code>、<code>ament_uncrustify</code>
+  等检查器。lint 失败与编译失败不同：编译失败没有生成可执行文件；lint
+  失败通常已经生成可执行文件，只是测试阶段报告格式或静态检查问题。
+</p>
+
+<div class="eg" id="e8-5">
+  <div class="eg-h">例题 · 检查依赖与安装</div>
+  <p>
+    先查依赖声明，再查安装后的可执行文件。三个第 9 部分要用的节点已经
+    安装到 <code>lib/robot_nodes</code>，因此能被 <code>ros2 run</code>
+    找到。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 pkg xml robot_nodes | grep -E '&lt;depend&gt;(rclcpp|robot_interfaces)&lt;/depend&gt;'
+ros2 pkg executables robot_nodes | grep -E 'patrol_(controller|server)|target_source'</code></pre>
+  <pre class="out" data-label="真实输出">  &lt;depend&gt;rclcpp&lt;/depend&gt;
+  &lt;depend&gt;robot_interfaces&lt;/depend&gt;
+robot_nodes  patrol_controller
+robot_nodes  patrol_server
+robot_nodes  target_source</pre>
+  <p>
+    <code>ros2 pkg xml</code> 读取的是安装目录里的 <code>package.xml</code>，
+    修改源文件后要重新构建才会反映到查询结果。
+    <code>ros2 pkg executables</code> 的第一个字段是包名，第二个字段是
+    可执行文件名。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-9</div>
+  <p>下面的依赖片段漏掉了发布者使用的 <code>std_msgs</code>。补上一条 <code>&lt;depend&gt;std_msgs&lt;/depend&gt;</code>，重新构建，并用 <code>ros2 pkg xml</code> 确认声明已经进入安装目录。</p>
+  <pre data-lang="XML"><code>&lt;depend&gt;rclcpp&lt;/depend&gt;
+&lt;depend&gt;robot_interfaces&lt;/depend&gt;</code></pre>
+  <pre class="out" data-label="预期输出">  &lt;depend&gt;std_msgs&lt;/depend&gt;</pre>
+  <details class="ans" data-run="示例代码/答案/8-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    发布者使用 <code>std_msgs::msg::String</code>，所以包在运行与构建时都
+    依赖 <code>std_msgs</code>。<code>&lt;depend&gt;</code> 同时表达这两种
+    依赖，是消息类型最常用的声明方式。
+  </p>
+  <pre data-lang="XML"><code>&lt;depend&gt;std_msgs&lt;/depend&gt;</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-select robot_nodes &gt;/dev/null 2&gt;&amp;1
+source install/setup.bash
+ros2 pkg xml robot_nodes | grep -E '&lt;depend&gt;std_msgs&lt;/depend&gt;'</code></pre>
+  <pre class="out" data-label="真实输出">  &lt;depend&gt;std_msgs&lt;/depend&gt;</pre>
+  <p>
+    <code>ros2 pkg xml</code> 读取的是安装目录里的清单副本。重新构建后
+    新声明才会出现；只改源文件而不构建，查询结果仍是旧的。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 8-10</div>
+  <p>给 <code>robot_bringup</code> 安装 <code>launch</code> 目录，重新构建，然后用 <code>ros2 pkg prefix</code> 找到安装前缀并列出其中的 launch 文件。</p>
+  <pre class="out" data-label="预期输出">$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/6.4-lifecycle.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/9.4-patrol.launch.py
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/9.4-verify.sh
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/conditional.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/hello.launch.py
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/hello.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/lifecycle_two.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/param_nodes.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/talker.launch.xml</pre>
+  <details class="ans" data-run="示例代码/答案/8-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 pkg prefix</code> 打印包的安装前缀，launch 文件位于
+    前缀下的 <code>share/包名/launch</code>。用 <code>find</code> 列出
+    一层目录，既匹配普通文件，也匹配符号链接。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+prefix=$(ros2 pkg prefix robot_bringup)
+find "$prefix/share/robot_bringup/launch" -maxdepth 1 \( -type f -o -type l \) | sort</code></pre>
+  <pre class="out" data-label="真实输出">$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/10.1-inspect.launch.py
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/6.4-lifecycle.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/9.4-patrol.launch.py
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/9.4-verify.sh
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/conditional.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/hello.launch.py
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/hello.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/lifecycle_two.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/param_nodes.launch.xml
+$HOME/ros2_ws/install/robot_bringup/share/robot_bringup/launch/talker.launch.xml</pre>
+  <p>
+    九个文件都来自 <code>install/robot_bringup/share/robot_bringup/launch</code>。
+    路径前缀已换成读者环境中的 <code>$HOME/ros2_ws</code>；实际前缀由
+    <code>ros2 pkg prefix</code> 决定。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在 <code>package.xml</code> 中区分构建、运行与导出依赖，用 <code>install</code> 规则把可执行文件与 launch 目录放到正确位置，并用 <code>ros2 pkg prefix</code> 与 <code>ros2 pkg executables</code> 验证安装结果。</p>
+</section>
+
+<nav class="pager">
+  <a href="07-TF2.html">← 第 7 部分 · TF2</a>
+  <span class="spacer"></span>
+  <a href="09-综合.html">第 9 部分 · 综合：巡检流程 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+<script src="../../assets/zoom.js"></script>
+</body>
+</html>

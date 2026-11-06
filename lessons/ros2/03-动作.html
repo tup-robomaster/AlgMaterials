@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 部分 · 动作 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a class="active" href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" aria-current="page" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 3 部分 · 动作</div>
+  <a class="toc-l" href="#l3-1"><span class="n">3.1</span>动作接口与目标、反馈、结果</a>
+  <a class="toc-sub" href="#s3-1-1">长任务与动作</a>
+  <a class="toc-sub" href="#s3-1-2">三段结构</a>
+  <a class="toc-sub" href="#s3-1-3">查看动作接口</a>
+  <a class="toc-sub" href="#e3-1">例题：Patrol 接口</a>
+  <a class="toc-l" href="#l3-2"><span class="n">3.2</span>动作服务端</a>
+  <a class="toc-sub" href="#s3-2-1">三个回调</a>
+  <a class="toc-sub" href="#s3-2-2">执行与结果</a>
+  <a class="toc-sub" href="#e3-2">例题：patrol_server</a>
+  <a class="toc-l" href="#l3-3"><span class="n">3.3</span>动作客户端</a>
+  <a class="toc-sub" href="#s3-3-1">发送目标</a>
+  <a class="toc-sub" href="#s3-3-2">反馈与结果</a>
+  <a class="toc-sub" href="#e3-3">例题：patrol_client</a>
+  <a class="toc-l" href="#l3-4"><span class="n">3.4</span>取消、超时与抢占</a>
+  <a class="toc-sub" href="#s3-4-1">取消</a>
+  <a class="toc-sub" href="#s3-4-2">超时</a>
+  <a class="toc-sub" href="#s3-4-3">新目标</a>
+  <a class="toc-sub" href="#e3-4">例题：取消客户端</a>
+  <a class="toc-l" href="#l3-5"><span class="n">3.5</span>动作诊断</a>
+  <a class="toc-sub" href="#s3-5-1">命令行工具</a>
+  <a class="toc-sub" href="#s3-5-2">排查顺序</a>
+  <a class="toc-sub" href="#e3-5">例题：命令行发送目标</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 3 部分</div>
+  <h1>动作</h1>
+  <p class="part-lead">
+    动作用于持续一段时间、需要报告进度的任务。客户端发送目标，
+    服务端周期发布反馈，结束时返回结果；任务进行中可以取消。
+    这一部分定义动作接口，写服务端与客户端，处理取消与超时，
+    最后用命令行观察目标、反馈与结果。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="2.1 2.2 2.3">
+  <b>前置</b>
+  <p>
+    先读完第 2 部分的 2.1–2.3：会写服务端与客户端，会在接口包中增加
+    <code>.srv</code> 文件并重新构建。动作接口的构建流程与自定义服务相同，
+    只是文件扩展名与生成类型不同。
+  </p>
+</div>
+
+<section class="lesson" id="l3-1">
+<h2><span class="no">3.1</span>动作接口与目标、反馈、结果</h2>
+
+<p>
+  话题持续传递数据，服务完成一次短调用；两者都不适合描述“执行一段时间、
+  期间报告进度、可以中途停止”的任务。动作（action）为这类任务提供目标
+  （goal）、反馈（feedback）与结果（result）三种消息，并支持取消（cancel）
+  与抢占（preemption）。
+</p>
+
+<h3 id="s3-1-1">长任务与动作</h3>
+
+<p>
+  客户端发送一个目标，服务端在接受后开始执行。执行期间，服务端可以按
+  固定周期发布反馈，客户端据此更新进度；执行结束后，服务端返回结果。
+  一个目标只能有一个最终状态：成功、取消或中止。
+</p>
+
+<p>
+  动作建立在服务与话题之上：发送目标、取消目标与获取结果走服务，
+  反馈与状态走话题。这些底层端点由 <code>rclcpp_action</code> 创建，
+  调用方不需要手动管理。
+</p>
+
+<h3 id="s3-1-2">三段结构</h3>
+
+<p>
+  动作接口（action interface）由 <code>.action</code> 文件定义，按固定顺序
+  写三段：第一段是目标字段，第二段是结果字段，第三段是反馈字段，段与段
+  之间用 <code>---</code> 分隔。
+  顺序不能交换：生成器按“目标、结果、反馈”依次读取。
+</p>
+
+<pre data-lang="ACTION" data-name="Patrol.action"><code>int32 steps
+---
+bool success
+---
+int32 remaining</code></pre>
+<p>
+  这个接口描述一次巡逻：目标是要走的步数 <code>steps</code>，结果是
+  是否成功 <code>success</code>，反馈是剩余步数 <code>remaining</code>。
+  结果只在结束时发送一次，反馈在执行期间可以发送多次。
+</p>
+
+<h3 id="s3-1-3">查看动作接口</h3>
+
+<p>
+  <code>ros2 interface show</code> 打印接口文件的内容，
+  <code>ros2 action list -t</code> 列出当前动作及类型，
+  <code>ros2 action info</code> 显示某个动作的服务端与客户端数量。
+  生成的头文件位于 <code>robot_interfaces/action/patrol.hpp</code>，
+  类型名是 <code>robot_interfaces::action::Patrol</code>。
+</p>
+
+<div class="eg" id="e3-1">
+  <div class="eg-h">例题 · Patrol 接口</div>
+  <p>
+    查询接口定义，确认三段字段与顺序。输出中的两条分隔线与文件中的
+    <code>---</code> 一一对应。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show robot_interfaces/action/Patrol</code></pre>
+  <pre class="out" data-label="真实输出">int32 steps
+---
+bool success
+---
+int32 remaining</pre>
+  <p>
+    第一段是目标，第二段是结果，第三段是反馈。生成的头文件把三段分别
+    映射为 <code>Patrol::Goal</code>、<code>Patrol::Result</code> 与
+    <code>Patrol::Feedback</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-1</div>
+  <p>给巡逻目标增加一个字符串字段 <code>label</code>，放在 <code>steps</code> 之后；结果与反馈不变。重新构建接口包，用 <code>ros2 interface show</code> 查看修改后的三段结构。</p>
+  <pre class="out" data-label="预期输出">int32 steps
+string label
+---
+bool success
+---
+int32 remaining</pre>
+  <details class="ans" data-run="示例代码/答案/3-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    在 <code>steps</code> 后加一行 <code>string label</code>，结果段与反馈段
+    不动。把 <code>action/Patrol.action</code> 加入接口包的生成列表，
+    重新构建接口包，再构建节点包，生成的头文件才会包含新字段。
+  </p>
+      <pre data-lang="ACTION" data-name="Patrol.action"><code>int32 steps
+string label
+---
+bool success
+---
+int32 remaining</code></pre>
+  <pre data-lang="CMake"><code>rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/Patrol.action"
+)</code></pre>
+  <pre class="out" data-label="真实输出">int32 steps
+string label
+---
+bool success
+---
+int32 remaining</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-2</div>
+  <p>用 <code>ros2 interface show --no-comments</code> 查看 <code>turtlesim/action/RotateAbsolute</code>，指出目标、结果与反馈各有哪些字段，并根据字段含义说明 <code>delta</code> 与 <code>remaining</code> 为什么同时存在。</p>
+  <pre class="out" data-label="预期输出">float32 theta
+---
+float32 delta
+---
+float32 remaining</pre>
+  <details class="ans" data-run="示例代码/答案/3-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>RotateAbsolute</code> 是海龟的绝对角度动作。目标字段
+    <code>theta</code> 是目标朝向；结果字段 <code>delta</code> 是从起始朝向
+    到目标朝向的角位移；反馈字段 <code>remaining</code> 是执行过程中还剩的
+    旋转量。结果只在结束时给出一次，反馈在执行期间可以多次给出，所以两者
+    不能合并。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show --no-comments turtlesim/action/RotateAbsolute</code></pre>
+  <pre class="out" data-label="真实输出">float32 theta
+---
+float32 delta
+---
+float32 remaining</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>定义动作文件的三段字段，重新构建接口包，查看生成类型，并说明目标、反馈与结果各自承载什么。</p>
+</section>
+
+<section class="lesson" id="l3-2">
+<h2><span class="no">3.2</span>动作服务端</h2>
+
+<p>
+  动作服务端（action server）接收目标、决定是否接受、执行任务并返回结果。
+  <code>rclcpp_action::create_server</code> 注册三个回调：目标到达时调用
+  <code>handle_goal</code>，取消请求到达时调用 <code>handle_cancel</code>，
+  目标被接受后调用 <code>handle_accepted</code>。
+</p>
+
+<h3 id="s3-2-1">三个回调</h3>
+
+<p>
+  <code>handle_goal</code> 返回 <code>ACCEPT_AND_EXECUTE</code> 或
+  <code>REJECT</code>。拒绝时目标不会进入执行；接受时继续调用
+  <code>handle_accepted</code>。这个回调应当快速返回，不能在里执行
+  长时间任务。
+</p>
+
+<p>
+  <code>handle_cancel</code> 返回 <code>ACCEPT</code> 或
+  <code>REJECT</code>。接受取消只是允许取消，真正的停止仍要在
+  <code>execute</code> 中检查 <code>is_canceling</code> 并退出循环。
+</p>
+
+<p>
+  <code>handle_accepted</code> 在目标被接受后执行，负责启动任务。
+  例题把执行放进独立线程，避免长时间循环阻塞执行器处理其它回调；
+  同时用 <code>busy_</code> 标记当前有目标在执行。
+</p>
+
+<h3 id="s3-2-2">执行与结果</h3>
+
+<p>
+  <code>execute</code> 接收目标句柄（goal handle），按目标参数执行任务。每完成一步，
+  先检查 <code>is_canceling</code>；没有取消时发布反馈。全部完成后调用
+  <code>succeed(result)</code>，无法完成时调用 <code>abort(result)</code>，
+  被取消时调用 <code>canceled(result)</code>。三个调用只能选一个，
+  并且只能调用一次。
+</p>
+
+<p>
+  例题的 <code>handle_goal</code> 拒绝步数非正的目标，也拒绝在已有目标
+  执行时到达的新目标；后者对应 3.4 的“拒绝”策略。
+</p>
+
+<pre data-lang="C++" data-name="patrol_server.cpp"><code>#include &lt;atomic&gt;
+#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;thread&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class PatrolServer : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ServerGoalHandle&lt;Patrol&gt;;
+
+  PatrolServer()
+  : Node("patrol_server"), busy_(false)
+  {
+    server_ = rclcpp_action::create_server&lt;Patrol&gt;(
+      this,
+      "patrol",
+      [this](
+        const rclcpp_action::GoalUUID &amp; uuid,
+        std::shared_ptr&lt;const Patrol::Goal&gt; goal) {
+        return handle_goal(uuid, goal);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        return handle_cancel(goal_handle);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        handle_accepted(goal_handle);
+      });
+  }
+
+private:
+  rclcpp_action::GoalResponse handle_goal(
+    const rclcpp_action::GoalUUID &amp;,
+    std::shared_ptr&lt;const Patrol::Goal&gt; goal)
+  {
+    if (goal-&gt;steps &lt;= 0) {
+      RCLCPP_INFO(get_logger(), "goal rejected: steps=%d", goal-&gt;steps);
+      return rclcpp_action::GoalResponse::REJECT;
+    }
+    if (busy_.load()) {
+      RCLCPP_INFO(get_logger(), "goal rejected: another patrol is running");
+      return rclcpp_action::GoalResponse::REJECT;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted: steps=%d", goal-&gt;steps);
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
+
+  rclcpp_action::CancelResponse handle_cancel(
+    const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    RCLCPP_INFO(
+      get_logger(), "cancel requested: steps=%d",
+      goal_handle-&gt;get_goal()-&gt;steps);
+    return rclcpp_action::CancelResponse::ACCEPT;
+  }
+
+  void handle_accepted(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    busy_.store(true);
+    std::thread{&amp;PatrolServer::execute, this, goal_handle}.detach();
+  }
+
+  void execute(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    const auto goal = goal_handle-&gt;get_goal();
+    auto feedback = std::make_shared&lt;Patrol::Feedback&gt;();
+    auto result = std::make_shared&lt;Patrol::Result&gt;();
+
+    for (int32_t remaining = goal-&gt;steps - 1; remaining &gt;= 0; --remaining) {
+      std::this_thread::sleep_for(1s);
+      if (goal_handle-&gt;is_canceling()) {
+        result-&gt;success = false;
+        busy_.store(false);
+        goal_handle-&gt;canceled(result);
+        RCLCPP_INFO(get_logger(), "goal canceled");
+        return;
+      }
+      feedback-&gt;remaining = remaining;
+      goal_handle-&gt;publish_feedback(feedback);
+      RCLCPP_INFO(get_logger(), "feedback: remaining=%d", remaining);
+    }
+
+    result-&gt;success = true;
+    busy_.store(false);
+    goal_handle-&gt;succeed(result);
+    RCLCPP_INFO(get_logger(), "goal succeeded");
+  }
+
+  rclcpp_action::Server&lt;Patrol&gt;::SharedPtr server_;
+  std::atomic&lt;bool&gt; busy_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;PatrolServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e3-2">
+  <div class="eg-h">例题 · patrol_server</div>
+  <p>
+    启动服务端，用命令行发送 5 步目标并打开反馈。服务端每秒发布一次
+    剩余步数，客户端逐条打印反馈，最后打印结果。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes patrol_server
+
+# 终端二（$HOME/ros2_ws）
+ros2 action send_goal /patrol robot_interfaces/action/Patrol "{steps: 5}" --feedback</code></pre>
+  <pre class="out" data-label="真实输出">Waiting for an action server to become available...
+Sending goal:
+     steps: 5
+
+Goal accepted with ID: &lt;goal-id&gt;
+
+Feedback:
+    remaining: 4
+
+Feedback:
+    remaining: 3
+
+Feedback:
+    remaining: 2
+
+Feedback:
+    remaining: 1
+
+Feedback:
+    remaining: 0
+
+Result:
+    success: true
+
+Goal finished with status: SUCCEEDED</pre>
+  <p>
+    目标 ID 由运行时生成，每次不同；上面的 <code>&lt;goal-id&gt;</code>
+    是替换后的写法。反馈从 4 递减到 0，共五条；结果只有一条，
+    <code>success</code> 为 <code>true</code>，最终状态是
+    <code>SUCCEEDED</code>。服务端同时打印每一行
+    <code>feedback: remaining=…</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-3</div>
+  <p>把反馈值改为剩余步数的两倍：服务端每秒发布的 <code>remaining</code> 写 <code>剩余步数 × 2</code>，结果仍为成功。用发送 3 步目标的客户端观察反馈。</p>
+  <pre class="out" data-label="预期输出">[INFO] [short_client]: goal accepted
+[INFO] [short_client]: feedback: remaining=4
+[INFO] [short_client]: feedback: remaining=2
+[INFO] [short_client]: feedback: remaining=0
+[INFO] [short_client]: result: success=true</pre>
+  <details class="ans" data-run="示例代码/答案/3-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    反馈字段在发布前乘以 2；步数仍是 3，服务端循环中的
+    <code>remaining</code> 依次为 2、1、0，发布出去就是 4、2、0。
+    客户端只打印收到的值，不参与计算。
+  </p>
+      <pre data-lang="C++" data-name="a3_3.cpp"><code>#include &lt;atomic&gt;
+#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;thread&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class DoubleFeedbackServer : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ServerGoalHandle&lt;Patrol&gt;;
+
+  DoubleFeedbackServer()
+  : Node("double_feedback_server"), busy_(false)
+  {
+    server_ = rclcpp_action::create_server&lt;Patrol&gt;(
+      this,
+      "patrol",
+      [this](
+        const rclcpp_action::GoalUUID &amp; uuid,
+        std::shared_ptr&lt;const Patrol::Goal&gt; goal) {
+        return handle_goal(uuid, goal);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        return handle_cancel(goal_handle);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        handle_accepted(goal_handle);
+      });
+  }
+
+private:
+  rclcpp_action::GoalResponse handle_goal(
+    const rclcpp_action::GoalUUID &amp;,
+    std::shared_ptr&lt;const Patrol::Goal&gt; goal)
+  {
+    if (goal-&gt;steps &lt;= 0 || busy_.load()) {
+      RCLCPP_INFO(get_logger(), "goal rejected: steps=%d", goal-&gt;steps);
+      return rclcpp_action::GoalResponse::REJECT;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted: steps=%d", goal-&gt;steps);
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
+
+  rclcpp_action::CancelResponse handle_cancel(
+    const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    RCLCPP_INFO(
+      get_logger(), "cancel requested: steps=%d",
+      goal_handle-&gt;get_goal()-&gt;steps);
+    return rclcpp_action::CancelResponse::ACCEPT;
+  }
+
+  void handle_accepted(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    busy_.store(true);
+    std::thread{&amp;DoubleFeedbackServer::execute, this, goal_handle}.detach();
+  }
+
+  void execute(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    const auto goal = goal_handle-&gt;get_goal();
+    auto feedback = std::make_shared&lt;Patrol::Feedback&gt;();
+    auto result = std::make_shared&lt;Patrol::Result&gt;();
+
+    for (int32_t remaining = goal-&gt;steps - 1; remaining &gt;= 0; --remaining) {
+      std::this_thread::sleep_for(1s);
+      if (goal_handle-&gt;is_canceling()) {
+        result-&gt;success = false;
+        busy_.store(false);
+        goal_handle-&gt;canceled(result);
+        RCLCPP_INFO(get_logger(), "goal canceled");
+        return;
+      }
+      feedback-&gt;remaining = remaining * 2;
+      goal_handle-&gt;publish_feedback(feedback);
+      RCLCPP_INFO(get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+    }
+
+    result-&gt;success = true;
+    busy_.store(false);
+    goal_handle-&gt;succeed(result);
+    RCLCPP_INFO(get_logger(), "goal succeeded");
+  }
+
+  rclcpp_action::Server&lt;Patrol&gt;::SharedPtr server_;
+  std::atomic&lt;bool&gt; busy_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;DoubleFeedbackServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [short_client]: goal accepted
+[INFO] [short_client]: feedback: remaining=4
+[INFO] [short_client]: feedback: remaining=2
+[INFO] [short_client]: feedback: remaining=0
+[INFO] [short_client]: result: success=true</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-4</div>
+  <p>写一个服务端：接受所有目标，但目标步数小于等于 0 时在执行阶段直接中止，结果 <code>success</code> 为 <code>false</code>，并打印 <code>goal aborted: steps=值</code>。用发送 0 步目标的客户端观察最终状态。</p>
+  <pre class="out" data-label="预期输出">[INFO] [invalid_client]: goal accepted
+[INFO] [invalid_client]: result: aborted</pre>
+  <details class="ans" data-run="示例代码/答案/3-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>handle_goal</code> 只检查是否有目标在执行，因此 0 步目标会被接受；
+    <code>execute</code> 发现 <code>steps &lt;= 0</code> 后调用
+    <code>abort</code>，结果 <code>success</code> 为 <code>false</code>。
+    客户端根据 <code>ResultCode::ABORTED</code> 打印
+    <code>result: aborted</code>。
+  </p>
+      <pre data-lang="C++" data-name="a3_4.cpp"><code>#include &lt;atomic&gt;
+#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;thread&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class InvalidPatrolServer : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ServerGoalHandle&lt;Patrol&gt;;
+
+  InvalidPatrolServer()
+  : Node("invalid_patrol_server"), busy_(false)
+  {
+    server_ = rclcpp_action::create_server&lt;Patrol&gt;(
+      this,
+      "patrol",
+      [this](
+        const rclcpp_action::GoalUUID &amp; uuid,
+        std::shared_ptr&lt;const Patrol::Goal&gt; goal) {
+        return handle_goal(uuid, goal);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        return handle_cancel(goal_handle);
+      },
+      [this](const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle) {
+        handle_accepted(goal_handle);
+      });
+  }
+
+private:
+  rclcpp_action::GoalResponse handle_goal(
+    const rclcpp_action::GoalUUID &amp;,
+    std::shared_ptr&lt;const Patrol::Goal&gt; goal)
+  {
+    if (busy_.load()) {
+      RCLCPP_INFO(get_logger(), "goal rejected: another patrol is running");
+      return rclcpp_action::GoalResponse::REJECT;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted: steps=%d", goal-&gt;steps);
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
+
+  rclcpp_action::CancelResponse handle_cancel(
+    const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    RCLCPP_INFO(
+      get_logger(), "cancel requested: steps=%d",
+      goal_handle-&gt;get_goal()-&gt;steps);
+    return rclcpp_action::CancelResponse::ACCEPT;
+  }
+
+  void handle_accepted(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    busy_.store(true);
+    std::thread{&amp;InvalidPatrolServer::execute, this, goal_handle}.detach();
+  }
+
+  void execute(const std::shared_ptr&lt;GoalHandlePatrol&gt; goal_handle)
+  {
+    const auto goal = goal_handle-&gt;get_goal();
+    auto result = std::make_shared&lt;Patrol::Result&gt;();
+    if (goal-&gt;steps &lt;= 0) {
+      result-&gt;success = false;
+      busy_.store(false);
+      goal_handle-&gt;abort(result);
+      RCLCPP_INFO(get_logger(), "goal aborted: steps=%d", goal-&gt;steps);
+      return;
+    }
+
+    auto feedback = std::make_shared&lt;Patrol::Feedback&gt;();
+    for (int32_t remaining = goal-&gt;steps - 1; remaining &gt;= 0; --remaining) {
+      std::this_thread::sleep_for(1s);
+      if (goal_handle-&gt;is_canceling()) {
+        result-&gt;success = false;
+        busy_.store(false);
+        goal_handle-&gt;canceled(result);
+        RCLCPP_INFO(get_logger(), "goal canceled");
+        return;
+      }
+      feedback-&gt;remaining = remaining;
+      goal_handle-&gt;publish_feedback(feedback);
+      RCLCPP_INFO(get_logger(), "feedback: remaining=%d", remaining);
+    }
+
+    result-&gt;success = true;
+    busy_.store(false);
+    goal_handle-&gt;succeed(result);
+    RCLCPP_INFO(get_logger(), "goal succeeded");
+  }
+
+  rclcpp_action::Server&lt;Patrol&gt;::SharedPtr server_;
+  std::atomic&lt;bool&gt; busy_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;InvalidPatrolServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="a3_4_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class InvalidClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  InvalidClient()
+  : Node("invalid_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::ABORTED) {
+        RCLCPP_INFO(get_logger(), "result: aborted");
+      } else if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "result: canceled");
+      } else {
+        RCLCPP_INFO(get_logger(), "result: success");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_INFO(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;InvalidClient&gt;();
+  const bool ok = node-&gt;send(0);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [invalid_client]: goal accepted
+[INFO] [invalid_client]: result: aborted</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写动作服务端，在三个回调中决定接受与取消，在执行循环中发布反馈、检查取消并设置最终结果。</p>
+</section>
+
+<section class="lesson" id="l3-3">
+<h2><span class="no">3.3</span>动作客户端</h2>
+
+<p>
+  动作客户端（action client）发送目标，接收反馈，等待结果。与服务客户端
+  相同，客户端只通过名称与类型找到服务端；不同之处是目标被接受后，
+  客户端还要等待执行结束，期间持续接收反馈。
+</p>
+
+<h3 id="s3-3-1">发送目标</h3>
+
+<p>
+  <code>create_client&lt;动作类型&gt;(名称)</code> 创建客户端；
+  <code>wait_for_action_server(2s)</code> 等待服务端就绪，返回布尔值。
+  未就绪时不应发送目标。
+</p>
+
+<p>
+  <code>async_send_goal(goal, options)</code> 返回一个 future，结果为
+  目标句柄。句柄为空表示目标被拒绝。<code>options</code> 里可以设置
+  反馈回调与结果回调，两者都在执行器处理消息时调用。
+</p>
+
+<h3 id="s3-3-2">反馈与结果</h3>
+
+<p>
+  反馈回调的签名是
+  <code>(GoalHandle::SharedPtr, std::shared_ptr&lt;const Feedback&gt;)</code>，
+  第二个参数是本次反馈消息。结果回调收到
+  <code>WrappedResult</code>，其中 <code>code</code> 是最终状态，
+  <code>result</code> 是结果消息。
+</p>
+
+<p>
+  发送目标后，用 <code>async_get_result(goal_handle)</code> 取得结果的
+  future，再调用 <code>spin_until_future_complete</code> 等待。等待期间
+  执行器同时处理反馈，因此反馈回调会在结果之前多次执行。
+</p>
+
+<pre data-lang="C++" data-name="patrol_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class PatrolClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  PatrolClient()
+  : Node("patrol_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.feedback_callback = [this](
+      GoalHandlePatrol::SharedPtr,
+      const std::shared_ptr&lt;const Patrol::Feedback&gt; feedback) {
+        RCLCPP_INFO(get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+      };
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+        RCLCPP_INFO(
+          get_logger(), "result: success=%s",
+          result.result-&gt;success ? "true" : "false");
+      } else if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "result: canceled");
+      } else {
+        RCLCPP_INFO(get_logger(), "result: aborted");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;PatrolClient&gt;();
+  const bool ok = node-&gt;send(5);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+<div class="eg" id="e3-3">
+  <div class="eg-h">例题 · patrol_client</div>
+  <p>
+    先启动 3.2 的服务端，再运行客户端。客户端发送 5 步目标，打印每条
+    反馈与最终结果后退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes patrol_client</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [patrol_client]: goal accepted
+[INFO] [patrol_client]: feedback: remaining=4
+[INFO] [patrol_client]: feedback: remaining=3
+[INFO] [patrol_client]: feedback: remaining=2
+[INFO] [patrol_client]: feedback: remaining=1
+[INFO] [patrol_client]: feedback: remaining=0
+[INFO] [patrol_client]: result: success=true</pre>
+  <p>
+    <code>goal accepted</code> 在目标句柄就绪后打印；五条反馈在等待结果
+    期间到达；<code>result</code> 在结果 future 就绪后打印。若服务端
+    没有启动，客户端在等待 2 秒后打印
+    <code>action server /patrol not available after 2s</code> 并退出。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-5</div>
+  <p>写一个客户端：节点名取 <code>short_client</code>，向 <code>patrol</code> 发送 3 步目标，打印每条反馈与最终结果。先启动 3.2 的 <code>patrol_server</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [short_client]: goal accepted
+[INFO] [short_client]: feedback: remaining=2
+[INFO] [short_client]: feedback: remaining=1
+[INFO] [short_client]: feedback: remaining=0
+[INFO] [short_client]: result: success=true</pre>
+  <details class="ans" data-run="示例代码/答案/3-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    客户端先等待服务端，再发送 3 步目标。反馈回调打印每条
+    <code>remaining</code>；结果回调按 <code>ResultCode</code> 分支，
+    成功时读取 <code>result-&gt;success</code>。
+  </p>
+      <pre data-lang="C++" data-name="a3_5.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class ShortClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  ShortClient()
+  : Node("short_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.feedback_callback = [this](
+      GoalHandlePatrol::SharedPtr,
+      const std::shared_ptr&lt;const Patrol::Feedback&gt; feedback) {
+        RCLCPP_INFO(get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+      };
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+        RCLCPP_INFO(
+          get_logger(), "result: success=%s",
+          result.result-&gt;success ? "true" : "false");
+      } else if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "result: canceled");
+      } else {
+        RCLCPP_INFO(get_logger(), "result: aborted");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;ShortClient&gt;();
+  const bool ok = node-&gt;send(3);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [short_client]: goal accepted
+[INFO] [short_client]: feedback: remaining=2
+[INFO] [short_client]: feedback: remaining=1
+[INFO] [short_client]: feedback: remaining=0
+[INFO] [short_client]: result: success=true</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-6</div>
+  <p>写一个客户端：节点名取 <code>status_client</code>，发送 4 步目标，打印目标是否被接受，以及最终状态的大写名称（<code>SUCCEEDED</code>、<code>CANCELED</code> 或 <code>ABORTED</code>）。</p>
+  <pre class="out" data-label="预期输出">[INFO] [status_client]: goal accepted: true
+[INFO] [status_client]: final status: SUCCEEDED</pre>
+  <details class="ans" data-run="示例代码/答案/3-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>status_name</code> 把 <code>ResultCode</code> 的三个枚举值转成
+    题目要求的大写名称。发送 4 步目标后，服务端逐秒发布反馈；客户端只打印
+    是否接受与最终状态，不打印反馈。
+  </p>
+      <pre data-lang="C++" data-name="a3_6.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+const char * status_name(rclcpp_action::ResultCode code)
+{
+  switch (code) {
+    case rclcpp_action::ResultCode::SUCCEEDED:
+      return "SUCCEEDED";
+    case rclcpp_action::ResultCode::CANCELED:
+      return "CANCELED";
+    case rclcpp_action::ResultCode::ABORTED:
+      return "ABORTED";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+class StatusClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  StatusClient()
+  : Node("status_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      RCLCPP_INFO(get_logger(), "final status: %s", status_name(result.code));
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_INFO(get_logger(), "goal accepted: false");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted: true");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;StatusClient&gt;();
+  const bool ok = node-&gt;send(4);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [status_client]: goal accepted: true
+[INFO] [status_client]: final status: SUCCEEDED</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>写动作客户端，等待服务端，发送目标并判断是否被接受，接收反馈，等待结果并打印最终状态。</p>
+</section>
+
+<section class="lesson" id="l3-4">
+<h2><span class="no">3.4</span>取消、超时与抢占</h2>
+
+<p>
+  取消（cancel）由客户端发起，服务端决定是否接受，并在执行循环中检查。
+  客户端还可以为等待结果设定时限，超时（timeout）后取消目标。新目标在
+  旧目标执行期间到达时，服务端可以选择拒绝、排队或抢占。
+</p>
+
+<h3 id="s3-4-1">取消</h3>
+
+<p>
+  客户端调用 <code>async_cancel_goal(goal_handle)</code> 发送取消请求。
+  服务端的 <code>handle_cancel</code> 返回 <code>ACCEPT</code> 后，
+  <code>execute</code> 中的 <code>is_canceling()</code> 变为真；
+  执行循环检查到取消即退出，并调用 <code>canceled(result)</code>，
+  客户端收到 <code>ResultCode::CANCELED</code>。
+</p>
+
+<p>
+  取消采用协作式（cooperative）机制：服务端不检查 <code>is_canceling</code>
+  时，取消请求不会让循环停止。检查的位置决定最多多执行多久；例题在每次发布反馈
+  之前检查，因此取消后最多再等一个周期。
+</p>
+
+<h3 id="s3-4-2">超时</h3>
+
+<p>
+  客户端可以在目标接受后计时，到达时限仍未结束就取消。例题在目标接受
+  后固定等待 100 毫秒再发送取消；服务端第一个周期是 1 秒，因此取消在
+  第一次反馈之前到达，客户端不会收到反馈，最终状态是
+  <code>CANCELED</code>。
+</p>
+
+<h3 id="s3-4-3">新目标</h3>
+
+<p>
+  同一时间只处理一个目标时，新目标到达需要处理。例题采用拒绝策略：
+  <code>busy_</code> 为真时 <code>handle_goal</code> 返回
+  <code>REJECT</code>，并打印
+  <code>goal rejected: another patrol is running</code>。排队与抢占是
+  另外两种策略，分别对应等待旧目标结束与中止旧目标。
+</p>
+
+<pre data-lang="C++" data-name="patrol_cancel_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class PatrolCancelClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  PatrolCancelClient()
+  : Node("patrol_cancel_client"), feedback_count_(0)
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.feedback_callback = [this](
+      GoalHandlePatrol::SharedPtr goal_handle,
+      const std::shared_ptr&lt;const Patrol::Feedback&gt; feedback) {
+        RCLCPP_INFO(get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+        ++feedback_count_;
+        if (feedback_count_ == 2) {
+          RCLCPP_INFO(get_logger(), "cancel requested");
+          client_-&gt;async_cancel_goal(goal_handle);
+        }
+      };
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "result: canceled");
+      } else if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+        RCLCPP_INFO(get_logger(), "result: succeeded");
+      } else {
+        RCLCPP_INFO(get_logger(), "result: aborted");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+  int feedback_count_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;PatrolCancelClient&gt;();
+  const bool ok = node-&gt;send(10);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+<div class="eg" id="e3-4">
+  <div class="eg-h">例题 · 取消客户端</div>
+  <p>
+    先启动 3.2 的服务端，再运行取消客户端。客户端发送 10 步目标，
+    收到第二条反馈后请求取消。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes patrol_cancel_client</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [patrol_cancel_client]: goal accepted
+[INFO] [patrol_cancel_client]: feedback: remaining=9
+[INFO] [patrol_cancel_client]: feedback: remaining=8
+[INFO] [patrol_cancel_client]: cancel requested
+[INFO] [patrol_cancel_client]: result: canceled</pre>
+  <p>
+    服务端在第三条反馈之前检查到取消，退出循环并返回
+    <code>CANCELED</code>。客户端不再收到后续反馈，结果回调打印
+    <code>result: canceled</code>。服务端日志同时出现
+    <code>cancel requested: steps=10</code> 与
+    <code>goal canceled</code>。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-7</div>
+  <p>写一个客户端：节点名取 <code>cancel_at_remaining_client</code>，发送 8 步目标，在反馈 <code>remaining</code> 等于 2 时请求取消，打印每条反馈、取消请求与最终状态。</p>
+  <pre class="out" data-label="预期输出">[INFO] [cancel_at_remaining_client]: goal accepted
+[INFO] [cancel_at_remaining_client]: feedback: remaining=7
+[INFO] [cancel_at_remaining_client]: feedback: remaining=6
+[INFO] [cancel_at_remaining_client]: feedback: remaining=5
+[INFO] [cancel_at_remaining_client]: feedback: remaining=4
+[INFO] [cancel_at_remaining_client]: feedback: remaining=3
+[INFO] [cancel_at_remaining_client]: feedback: remaining=2
+[INFO] [cancel_at_remaining_client]: cancel requested
+[INFO] [cancel_at_remaining_client]: final status: CANCELED</pre>
+  <details class="ans" data-run="示例代码/答案/3-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    反馈回调在 <code>remaining == 2</code> 时调用
+    <code>async_cancel_goal</code>。取消请求发出时，2 这条反馈已经打印；
+    服务端在下一轮循环开头检查 <code>is_canceling</code>，随后返回
+    <code>CANCELED</code>，因此没有 1 与 0 两条反馈。
+  </p>
+      <pre data-lang="C++" data-name="a3_7.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class CancelAtRemainingClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  CancelAtRemainingClient()
+  : Node("cancel_at_remaining_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.feedback_callback = [this](
+      GoalHandlePatrol::SharedPtr goal_handle,
+      const std::shared_ptr&lt;const Patrol::Feedback&gt; feedback) {
+        RCLCPP_INFO(get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+        if (feedback-&gt;remaining == 2) {
+          RCLCPP_INFO(get_logger(), "cancel requested");
+          client_-&gt;async_cancel_goal(goal_handle);
+        }
+      };
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "final status: CANCELED");
+      } else if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+        RCLCPP_INFO(get_logger(), "final status: SUCCEEDED");
+      } else {
+        RCLCPP_INFO(get_logger(), "final status: ABORTED");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;CancelAtRemainingClient&gt;();
+  const bool ok = node-&gt;send(8);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [cancel_at_remaining_client]: goal accepted
+[INFO] [cancel_at_remaining_client]: feedback: remaining=7
+[INFO] [cancel_at_remaining_client]: feedback: remaining=6
+[INFO] [cancel_at_remaining_client]: feedback: remaining=5
+[INFO] [cancel_at_remaining_client]: feedback: remaining=4
+[INFO] [cancel_at_remaining_client]: feedback: remaining=3
+[INFO] [cancel_at_remaining_client]: feedback: remaining=2
+[INFO] [cancel_at_remaining_client]: cancel requested
+[INFO] [cancel_at_remaining_client]: final status: CANCELED</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-8</div>
+  <p>写一个客户端：节点名取 <code>timeout_cancel_client</code>，发送 10 步目标，目标接受后等待 100 毫秒仍未结束就请求取消，最后打印最终状态。</p>
+  <pre class="out" data-label="预期输出">[INFO] [timeout_cancel_client]: goal accepted
+[INFO] [timeout_cancel_client]: cancel requested after 100ms
+[INFO] [timeout_cancel_client]: final status: CANCELED</pre>
+  <details class="ans" data-run="示例代码/答案/3-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    目标被接受后，客户端等待 100 毫秒再取消。服务端每轮循环先等待 1 秒，
+    第一次检查取消时已经收到请求，于是直接返回 <code>CANCELED</code>，
+    没有发布任何反馈。
+  </p>
+      <pre data-lang="C++" data-name="a3_8.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;thread&gt;
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_interfaces/action/patrol.hpp"
+
+using namespace std::chrono_literals;
+
+class TimeoutCancelClient : public rclcpp::Node
+{
+public:
+  using Patrol = robot_interfaces::action::Patrol;
+  using GoalHandlePatrol = rclcpp_action::ClientGoalHandle&lt;Patrol&gt;;
+
+  TimeoutCancelClient()
+  : Node("timeout_cancel_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Patrol&gt;(this, "patrol");
+  }
+
+  bool send(int32_t steps)
+  {
+    if (!client_-&gt;wait_for_action_server(2s)) {
+      RCLCPP_ERROR(get_logger(), "action server /patrol not available after 2s");
+      return false;
+    }
+
+    auto goal = Patrol::Goal();
+    goal.steps = steps;
+
+    auto options = rclcpp_action::Client&lt;Patrol&gt;::SendGoalOptions();
+    options.result_callback = [this](const GoalHandlePatrol::WrappedResult &amp; result) {
+      if (result.code == rclcpp_action::ResultCode::CANCELED) {
+        RCLCPP_INFO(get_logger(), "final status: CANCELED");
+      } else if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+        RCLCPP_INFO(get_logger(), "final status: SUCCEEDED");
+      } else {
+        RCLCPP_INFO(get_logger(), "final status: ABORTED");
+      }
+    };
+
+    auto goal_future = client_-&gt;async_send_goal(goal, options);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), goal_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "send goal failed");
+      return false;
+    }
+    auto goal_handle = goal_future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(get_logger(), "goal rejected");
+      return false;
+    }
+    RCLCPP_INFO(get_logger(), "goal accepted");
+
+    std::this_thread::sleep_for(100ms);
+    RCLCPP_INFO(get_logger(), "cancel requested after 100ms");
+    client_-&gt;async_cancel_goal(goal_handle);
+
+    auto result_future = client_-&gt;async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(shared_from_this(), result_future) !=
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_ERROR(get_logger(), "get result failed");
+      return false;
+    }
+    return true;
+  }
+
+private:
+  rclcpp_action::Client&lt;Patrol&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;TimeoutCancelClient&gt;();
+  const bool ok = node-&gt;send(10);
+  rclcpp::shutdown();
+  return ok ? 0 : 1;
+}</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [timeout_cancel_client]: goal accepted
+[INFO] [timeout_cancel_client]: cancel requested after 100ms
+[INFO] [timeout_cancel_client]: final status: CANCELED</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>在客户端发起取消，在服务端检查取消并返回取消状态，为等待结果设定时限，并说明新目标到达时的三种处理策略。</p>
+</section>
+
+<section class="lesson" id="l3-5">
+<h2><span class="no">3.5</span>动作诊断</h2>
+
+<p>
+  动作的诊断入口与话题、服务不同：先看动作名称与类型，再看服务端是否
+  存在，最后用命令行发送目标观察反馈与结果。动作的底层话题与服务端点
+  由框架管理，通常不直接操作。
+</p>
+
+<h3 id="s3-5-1">命令行工具</h3>
+
+<p>
+  <code>ros2 action list -t</code> 列出动作名称与类型；
+  <code>ros2 action info /patrol</code> 显示服务端与客户端数量；
+  <code>ros2 action send_goal 名称 类型 "{字段: 值}" --feedback</code>
+  发送目标并持续打印反馈。命令行的结果与客户端看到的结果应当一致。
+</p>
+
+<p>
+  命令行输出中的目标 ID 由运行时生成，每次不同。页面与答案里的输出
+  把它写成 <code>&lt;goal-id&gt;</code>，其余字段与真实输出一致。
+</p>
+
+<h3 id="s3-5-2">排查顺序</h3>
+
+<p>
+  第一步用 <code>ros2 action list -t</code> 确认动作存在且类型正确；
+  第二步用 <code>ros2 action info</code> 确认服务端数量不为 0；
+  第三步用 <code>send_goal</code> 观察反馈与结果。动作不存在时，先查
+  服务端节点是否启动、动作名是否被命名空间改写；类型不匹配时，命令行
+  无法解析目标字段。
+</p>
+
+<p>
+  与话题相比，动作多了一层“服务端是否接受目标”的判断：端点存在不代表
+  目标会被接受，<code>handle_goal</code> 的拒绝也会让调用失败。与服务
+  相比，动作的反馈是持续到达的，诊断时要同时看反馈顺序与最终状态。
+</p>
+
+<div class="eg" id="e3-5">
+  <div class="eg-h">例题 · 命令行发送目标</div>
+  <p>
+    启动 3.2 的服务端，用命令行发送 3 步目标并打开反馈。最后一条反馈的
+    <code>remaining</code> 为 0，随后是结果与最终状态。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 action send_goal /patrol robot_interfaces/action/Patrol "{steps: 3}" --feedback</code></pre>
+  <pre class="out" data-label="真实输出">Waiting for an action server to become available...
+Sending goal:
+     steps: 3
+
+Goal accepted with ID: &lt;goal-id&gt;
+
+Feedback:
+    remaining: 2
+
+Feedback:
+    remaining: 1
+
+Feedback:
+    remaining: 0
+
+Result:
+    success: true
+
+Goal finished with status: SUCCEEDED</pre>
+  <p>
+    三次反馈、一次结果，顺序与 3.3 的客户端输出一致。命令行在发现
+    服务端之前打印 <code>Waiting for an action server to become available...</code>，
+    这条提示不影响目标发送。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-9</div>
+  <p>启动 3.2 的服务端，列出当前动作及其类型。只保留动作名与类型一行。</p>
+  <pre class="out" data-label="预期输出">/patrol [robot_interfaces/action/Patrol]</pre>
+  <details class="ans" data-run="示例代码/答案/3-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 action list -t</code> 在动作名后列出类型；服务端启动后，
+    <code>/patrol</code> 的类型是 <code>robot_interfaces/action/Patrol</code>。
+    方括号是命令行的显示格式，不是动作名的一部分。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 action list -t</code></pre>
+  <pre class="out" data-label="真实输出">/patrol [robot_interfaces/action/Patrol]</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 3-10</div>
+  <p>用命令行向 <code>patrol</code> 发送 4 步目标并打开反馈。输出保留目标、全部反馈、结果与最终状态；目标 ID 写成 <code>&lt;goal-id&gt;</code>。</p>
+  <pre class="out" data-label="预期输出">Waiting for an action server to become available...
+Sending goal:
+     steps: 4
+
+Goal accepted with ID: &lt;goal-id&gt;
+
+Feedback:
+    remaining: 3
+
+Feedback:
+    remaining: 2
+
+Feedback:
+    remaining: 1
+
+Feedback:
+    remaining: 0
+
+Result:
+    success: true
+
+Goal finished with status: SUCCEEDED</pre>
+  <details class="ans" data-run="示例代码/答案/3-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    命令行发送 4 步目标并打开反馈，反馈依次为 3、2、1、0。
+    目标 ID 每次不同，脚本用 <code>sed</code> 把 32 位十六进制串替换成
+    <code>&lt;goal-id&gt;</code>，其余输出逐字保留。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 action send_goal /patrol robot_interfaces/action/Patrol "{steps: 4}" --feedback</code></pre>
+  <pre class="out" data-label="真实输出">Waiting for an action server to become available...
+Sending goal:
+     steps: 4
+
+Goal accepted with ID: &lt;goal-id&gt;
+
+Feedback:
+    remaining: 3
+
+Feedback:
+    remaining: 2
+
+Feedback:
+    remaining: 1
+
+Feedback:
+    remaining: 0
+
+Result:
+    success: true
+
+Goal finished with status: SUCCEEDED</pre>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用命令行确认动作名称与类型，发送带反馈的目标，读取最终状态，并按动作、服务端、目标接受的顺序排查问题。</p>
+</section>
+
+<nav class="pager">
+  <a href="02-服务与参数.html">← 第 2 部分 · 服务与参数</a>
+  <span class="spacer"></span>
+  <a href="04-执行器与回调.html">第 4 部分 · 执行器与回调 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

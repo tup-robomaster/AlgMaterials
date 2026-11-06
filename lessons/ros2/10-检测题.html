@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 10 部分 · 检测题 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 10-7 的 bag 信息与 10.1 的节点信息有长行；终端遇到长行本来就会折，
+   这里只让本页的输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a class="active" href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" aria-current="page" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 10 部分 · 检测题</div>
+  <a class="toc-l" href="#l10-1"><span class="n">10.1</span>综合检测：多节点数据流</a>
+  <a class="toc-sub" href="#s10-1-1">检测环境</a>
+  <a class="toc-sub" href="#s10-1-2">节点与接口</a>
+  <a class="toc-sub" href="#s10-1-3">动作服务端</a>
+  <a class="toc-sub" href="#e10-1">例题：读出完整数据流</a>
+  <a class="toc-l" href="#l10-2"><span class="n">10.2</span>五道检测题与答案</a>
+  <a class="toc-sub" href="#s10-2-1">题目范围</a>
+  <a class="toc-sub" href="#s10-2-2">答案工作空间</a>
+  <a class="toc-sub" href="#e10-2">例题：查看接口与可执行文件</a>
+</nav>
+
+<main class="main">
+
+<div class="part-head">
+  <div class="kicker">第 10 部分</div>
+  <h1>检测题</h1>
+  <p class="lead">
+    本部分不引入新的接口或工具，而是把前九部分的内容放进一个运行中的系统：
+    先从一个四节点 launch 里读出节点、话题、服务与动作的对应关系，再完成
+    五道覆盖接口、动作、launch、TF2 与 bag 的检测题。
+  </p>
+</div>
+
+<div class="aside req" data-prereq="1.1 1.2 2.1 2.2 2.3 2.4 3.1 3.2 3.3 5.1 5.2 5.3 7.1 7.2 7.3 7.4 8.2 9.1 9.2 9.3 9.4">
+  <b>前置</b>
+  <p>
+    先读过 1.1–1.2、2.1–2.4、3.1–3.3、5.1–5.3、7.1–7.4、8.2 与
+    9.1–9.4：会写话题、服务与动作，会写 launch 与设置参数，会使用
+    TF2，会录制与回放 bag，读过巡检流程的四个节点。工作空间位于
+    <code>$HOME/ros2_ws</code>。
+  </p>
+</div>
+
+<section class="lesson" id="l10-1">
+<h2><span class="no">10.1</span>综合检测：多节点数据流</h2>
+
+<p>
+  检测环境是一个已经构建好的工作空间。<code>robot_bringup</code> 里的
+  <code>10.1-inspect.launch.py</code> 启动四个节点：静态坐标广播
+  <code>static_tf</code>、动作服务端 <code>patrol_server</code>、巡检控制器
+  <code>patrol_controller</code> 与目标源 <code>target_source</code>。
+  控制器订阅 <code>/target</code>，发布 <code>/patrol_status</code>，
+  提供 <code>/set_mode</code> 服务，并作为动作客户端调用
+  <code>/patrol</code>；服务端提供 <code>/patrol</code> 动作；目标源发布
+  <code>/target</code>；静态广播发布 <code>/tf_static</code>。
+</p>
+
+<h3 id="s10-1-1">检测环境</h3>
+
+<p>
+  launch 文件声明四个可覆盖参数：<code>start_delay_ms</code> 控制目标源
+  在启动后等待多久再发布，<code>start_server</code> 控制是否启动动作
+  服务端，<code>server_namespace</code> 改变服务端的命名空间，
+  <code>steps_per_target</code> 控制每个目标分几步完成。检测时把
+  <code>start_delay_ms</code> 设为 6000，命令行有足够时间查询；默认的
+  1500 毫秒会在查询完成前结束流程。
+</p>
+
+<pre data-lang="Python" data-name="10.1-inspect.launch.py"><code>from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+
+
+def generate_launch_description():
+    start_server = LaunchConfiguration("start_server")
+    server_namespace = LaunchConfiguration("server_namespace")
+    steps = LaunchConfiguration("steps_per_target")
+    delay = LaunchConfiguration("start_delay_ms")
+
+    static_tf = Node(
+        package="robot_nodes",
+        executable="static_tf",
+        parameters=[
+            {
+                "parent_frame": "map",
+                "child_frame": "base_link",
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "yaw_deg": 0.0,
+            }
+        ],
+    )
+
+    patrol_server = Node(
+        package="robot_nodes",
+        executable="patrol_server",
+        namespace=server_namespace,
+        condition=IfCondition(start_server),
+    )
+
+    controller = Node(
+        package="robot_nodes",
+        executable="patrol_controller",
+        parameters=[
+            {"initial_mode": "patrol"},
+            {"steps_per_target": ParameterValue(steps, value_type=int)},
+            {"finish_when_empty": True},
+        ],
+    )
+
+    target_source = Node(
+        package="robot_nodes",
+        executable="target_source",
+        parameters=[
+            {"start_delay_ms": ParameterValue(delay, value_type=int)},
+            {"max_distance": 0.0},
+            {"wait_for_subscriber": True},
+        ],
+    )
+
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument("start_server", default_value="true"),
+            DeclareLaunchArgument("server_namespace", default_value=""),
+            DeclareLaunchArgument("steps_per_target", default_value="1"),
+            DeclareLaunchArgument("start_delay_ms", default_value="1500"),
+            static_tf,
+            patrol_server,
+            controller,
+            target_source,
+        ]
+    )</code></pre>
+<p>
+  启动命令保持在前台运行，查询放在另一个终端。结束时按
+  <kbd>Ctrl+C</kbd>；控制器在目标处理完后也会自行退出。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 10.1-inspect.launch.py start_delay_ms:=6000</code></pre>
+
+<h3 id="s10-1-2">节点与接口</h3>
+
+<p>
+  四条命令分别查看节点、话题、服务与动作。<code>ros2 topic list</code> 与
+  <code>ros2 service list</code> 会带上参数事件、日志与每个节点的参数服务；
+  检测业务接口时先用 <code>grep</code> 去掉这些固定项。
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 node list | sort
+ros2 topic list | grep -v -E '^/(parameter_events|rosout)$' | sort
+ros2 service list | grep -v -E 'parameter|type_description' | sort
+ros2 action list</code></pre>
+
+<p>
+  节点级对应关系用 <code>ros2 node info</code>。下面的过滤只保留
+  <code>Subscribers:</code> 与 <code>Publishers:</code> 两节里与业务有关
+  的两行：
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 node info /patrol_controller |
+  grep -E 'Subscribers:|Publishers:|^    /(target|patrol_status):'</code></pre>
+<pre class="out" data-label="真实输出">  Subscribers:
+    /target: robot_interfaces/msg/Target
+  Publishers:
+    /patrol_status: robot_interfaces/msg/PatrolStatus</pre>
+
+<p>
+  这两行说明数据流的方向：<code>target_source</code> 发布
+  <code>/target</code>，控制器订阅同一话题；控制器发布
+  <code>/patrol_status</code>，外部工具订阅它即可看到进度。服务
+  <code>/set_mode</code> 由控制器提供，动作 <code>/patrol</code> 由服务端
+  提供、控制器调用。
+</p>
+
+<h3 id="s10-1-3">动作服务端</h3>
+
+<p>
+  <code>ros2 action list</code> 只回答“图里有没有这个动作名”。客户端声明
+  动作客户端后，名字也会出现在列表里，因此列表里有名字不代表服务端存在。
+  判断动作能否调用要看 <code>ros2 action info</code> 的
+  <code>Action servers</code> 计数。
+</p>
+
+<p>
+  把服务端放进 <code>lab</code> 命名空间后，查询结果如下：
+</p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 10.1-inspect.launch.py \
+  server_namespace:=lab start_delay_ms:=6000 &amp;
+sleep 3
+ros2 action list -t | grep '^/.*patrol' | sort
+ros2 action info /patrol</code></pre>
+<pre class="out" data-label="真实输出">/lab/patrol [robot_interfaces/action/Patrol]
+/patrol [robot_interfaces/action/Patrol]
+Action: /patrol
+Action clients: 1
+    /patrol_controller
+Action servers: 0</pre>
+
+<p>
+  两个名字的类型相同，说明客户端与服务端指向同一个接口，但完整名字不同。
+  客户端等待 <code>/patrol</code>，服务端注册在 <code>/lab/patrol</code>，
+  两侧没有匹配。随后控制器打印
+  <code>action server /patrol not available</code> 并退出。修复方式有两种：
+  启动时把 <code>server_namespace</code> 设为空，或在客户端一侧做命名空间
+  或重映射。检测题优先检查启动参数，因为它不需要改源码。
+</p>
+
+<div class="eg" id="e10-1">
+  <div class="eg-h">例题 · 读出完整数据流</div>
+  <p>
+    默认参数启动后，依次列出节点、业务话题、业务服务、动作，再查看动作
+    服务端计数。输出中的四行节点名与三行话题名构成完整的数据流。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 10.1-inspect.launch.py start_delay_ms:=6000 &amp;
+sleep 3
+ros2 node list | sort
+ros2 topic list | grep -v -E '^/(parameter_events|rosout)$' | sort
+ros2 service list | grep -v -E 'parameter|type_description' | sort
+ros2 action list
+ros2 action info /patrol</code></pre>
+  <pre class="out" data-label="真实输出">/patrol_controller
+/patrol_server
+/static_tf
+/target_source
+/patrol_status
+/target
+/tf_static
+/set_mode
+/patrol
+Action: /patrol
+Action clients: 1
+    /patrol_controller
+Action servers: 1
+    /patrol_server</pre>
+  <p>
+    四个节点全部在根命名空间。<code>/set_mode</code> 是唯一的业务服务，
+    <code>/patrol</code> 有一个客户端与一个服务端。动作服务端计数为 1，
+    控制器可以正常发送目标；这正是 10.1.2 与 10.1.3 所读的那张图。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-1</div>
+  <p>运行默认 launch，列出四个节点及其业务话题，写出数据流中每条边的发布者与订阅者。动作服务端不发布业务话题，单独说明它提供哪个动作。</p>
+  <pre class="out" data-label="预期输出">/patrol_controller
+  sub /target: robot_interfaces/msg/Target
+  pub /patrol_status: robot_interfaces/msg/PatrolStatus
+/patrol_server
+/static_tf
+  pub /tf_static: tf2_msgs/msg/TFMessage
+/target_source
+  pub /target: robot_interfaces/msg/Target</pre>
+  <details class="ans" data-run="示例代码/答案/10-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    循环对每个节点执行一次 <code>ros2 node info</code>，只保留
+    <code>Subscribers:</code> 与 <code>Publishers:</code> 两节里的业务行。
+    控制器订阅 <code>/target</code>、发布 <code>/patrol_status</code>；
+    目标源发布 <code>/target</code>；静态广播发布 <code>/tf_static</code>；
+    动作服务端不发布业务话题，它提供 <code>/patrol</code> 动作。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 10.1-inspect.launch.py start_delay_ms:=6000 &amp;
+sleep 3
+for node in $(ros2 node list | sort); do
+  echo "$node"
+  ros2 node info "$node" | awk '
+    /Publishers:/ {sec = "pub"; next}
+    /Subscribers:/ {sec = "sub"; next}
+    /Service Servers:|Service Clients:|Action Servers:|Action Clients:/ {
+      sec = ""; next
+    }
+    /^[[:space:]]+\// &amp;&amp; sec != "" {
+      line = $0
+      sub(/^[[:space:]]+/, "", line)
+      if (line !~ /parameter|rosout/) print "  " sec " " line
+    }'
+done</code></pre>
+  <pre class="out" data-label="真实输出">/patrol_controller
+  sub /target: robot_interfaces/msg/Target
+  pub /patrol_status: robot_interfaces/msg/PatrolStatus
+/patrol_server
+/static_tf
+  pub /tf_static: tf2_msgs/msg/TFMessage
+/target_source
+  pub /target: robot_interfaces/msg/Target</pre>
+  <p>
+    数据流有四条边：目标源发布 <code>/target</code>、控制器订阅
+    <code>/target</code>；控制器发布 <code>/patrol_status</code>；静态广播
+    发布 <code>/tf_static</code>；控制器作为动作客户端调用
+    <code>/patrol</code>，服务端提供同一动作。动作不经过业务话题，因此
+    不会出现在前三条话题边里。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-2</div>
+  <p><code>ros2 launch robot_bringup 10.1-inspect.launch.py start_server:=false</code> 启动后，控制器在 5 秒后报告动作服务端不可用。用 <code>ros2 action info</code> 与 <code>ros2 action list -t</code> 判断故障属于服务端缺失还是命名空间不一致，给出修复命令，并运行到控制器完成。</p>
+  <pre class="out" data-label="预期输出">Action: /patrol
+Action clients: 1
+    /patrol_controller
+Action servers: 0
+/patrol [robot_interfaces/action/Patrol]
+[ERROR] [patrol_controller]: action server /patrol not available
+[INFO] [patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <details class="ans" data-run="示例代码/答案/10-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>start_server:=false</code> 让 launch 跳过动作服务端。
+    <code>ros2 action info /patrol</code> 显示 1 个客户端、0 个服务端；
+    <code>ros2 action list -t</code> 只有一个 <code>/patrol</code>，说明不是
+    命名空间不一致。控制器等待 5 秒后打印错误并退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch robot_bringup 10.1-inspect.launch.py start_server:=false &amp;
+sleep 3
+ros2 action info /patrol
+ros2 action list -t | grep '^/.*patrol' | sort
+# 等控制器打印错误后按 Ctrl+C 结束
+ros2 launch robot_bringup 10.1-inspect.launch.py</code></pre>
+  <pre class="out" data-label="真实输出">Action: /patrol
+Action clients: 1
+    /patrol_controller
+Action servers: 0
+/patrol [robot_interfaces/action/Patrol]
+[ERROR] [patrol_controller]: action server /patrol not available
+[INFO] [patrol_controller]: controller done: received=5 accepted=4 completed=4 failed=0 canceled=0</pre>
+  <p>
+    第二条命令不带 <code>start_server:=false</code>，launch 使用默认值
+    <code>true</code>，服务端注册 <code>/patrol</code>。控制器拿到四个目标
+    并全部完成。动作名只有一个时，优先检查启动文件是否关闭了服务端；
+    出现两个名字时才检查命名空间与重映射。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>能从运行中的图里读出节点、话题、服务与动作的对应关系，依据 <code>Action servers</code> 计数判断动作服务端是否存在，并区分服务端缺失与命名空间不一致。</p>
+</section>
+
+<section class="lesson" id="l10-2">
+<h2><span class="no">10.2</span>五道检测题与答案</h2>
+
+<p>
+  五道题按依赖顺序排列：10-3 从消息与服务开始，10-4 使用动作，10-5 组合
+  launch，10-6 使用 TF2，10-7 使用 bag。每题都给出要求与关键输出；答案
+  给出接口文件、节点源码、运行命令与真实输出。
+</p>
+
+<h3 id="s10-2-1">题目范围</h3>
+
+<table class="compare">
+  <thead>
+    <tr><th>题号</th><th>内容</th><th>关键输出</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>10-3</td><td>消息、服务、发布者与服务端</td><td>三条读数、最新读数与换算结果</td></tr>
+    <tr><td>10-4</td><td>动作服务端与客户端</td><td>目标接受、三次反馈与最终结果</td></tr>
+    <tr><td>10-5</td><td>launch 的命名空间、重映射与参数</td><td><code>/lab/lab_chatter</code> 与两个参数值</td></tr>
+    <tr><td>10-6</td><td>静态与动态 TF2、点变换</td><td><code>point in map: (1.000, 2.700, 0.000)</code></td></tr>
+    <tr><td>10-7</td><td>bag 录制、查看与回放</td><td>消息数、话题信息与回放的一条消息</td></tr>
+  </tbody>
+</table>
+
+<p>
+  每题都要求在 <code>$HOME/ros2_ws</code> 下用 <code>colcon build</code>
+  构建，运行输出与给定关键行一致；日志时间与进程编号不要求一致。
+</p>
+
+<h3 id="s10-2-2">答案工作空间</h3>
+
+<p>
+  答案把第 10 部分的三个接口集中在一个 <code>answer_interfaces</code> 包里，
+  节点与启动文件放在 <code>part10_answers</code> 包里。接口包只依赖
+  <code>rosidl_default_generators</code> 与 <code>rosidl_default_runtime</code>，
+  节点包依赖 <code>rclcpp</code>、<code>rclcpp_action</code>、
+  <code>answer_interfaces</code>、<code>tf2_ros</code>、
+  <code>tf2_geometry_msgs</code> 与 <code>geometry_msgs</code>。
+</p>
+
+<pre data-lang="MSG" data-name="Reading.msg"><code>string sensor
+float64 value
+int32 sequence</code></pre>
+<pre data-lang="SRV" data-name="Scale.srv"><code>float64 factor
+---
+float64 value
+bool ok</code></pre>
+<pre data-lang="ACTION" data-name="Countdown.action"><code>int32 count
+---
+int32 total
+---
+int32 remaining</code></pre>
+<pre data-lang="CMake" data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(answer_interfaces)
+
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Reading.msg"
+  "srv/Scale.srv"
+  "action/Countdown.action"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+ament_package()</code></pre>
+<pre data-lang="XML" data-name="package.xml"><code>&lt;?xml version="1.0"?&gt;
+&lt;package format="3"&gt;
+  &lt;name&gt;answer_interfaces&lt;/name&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+  &lt;description&gt;第 10 部分检测题用的消息、服务与动作接口&lt;/description&gt;
+  &lt;maintainer email="tup@example.com"&gt;TUP&lt;/maintainer&gt;
+  &lt;license&gt;Apache-2.0&lt;/license&gt;
+
+  &lt;buildtool_depend&gt;ament_cmake&lt;/buildtool_depend&gt;
+  &lt;buildtool_depend&gt;rosidl_default_generators&lt;/buildtool_depend&gt;
+  &lt;depend&gt;rosidl_default_runtime&lt;/depend&gt;
+
+  &lt;member_of_group&gt;rosidl_interface_packages&lt;/member_of_group&gt;
+
+  &lt;export&gt;
+    &lt;build_type&gt;ament_cmake&lt;/build_type&gt;
+  &lt;/export&gt;
+&lt;/package&gt;</code></pre>
+<p>
+  节点包的目录里放源码与 <code>launch</code>。课程答案把六个可执行文件的
+  源码留在 <code>答案/10-3</code>、<code>答案/10-4</code> 与
+  <code>答案/10-6</code> 下，<code>CMakeLists.txt</code> 用
+  <code>ANSWER_DIR</code> 指回这些目录；在自己的工作空间里，把源码放进
+  <code>part10_answers/src</code>，把 <code>add_executable</code> 的第二个
+  参数改成源码在 <code>src</code> 下的相对路径即可。
+</p>
+
+<pre data-lang="CMake" data-name="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.16)
+project(part10_answers)
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(answer_interfaces REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+set(ANSWER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
+
+add_executable(a10_3_publisher "${ANSWER_DIR}/10-3/reading_publisher.cpp")
+ament_target_dependencies(a10_3_publisher rclcpp answer_interfaces)
+
+add_executable(a10_3_server "${ANSWER_DIR}/10-3/scale_server.cpp")
+ament_target_dependencies(a10_3_server rclcpp answer_interfaces)
+
+add_executable(a10_4_server "${ANSWER_DIR}/10-4/countdown_server.cpp")
+ament_target_dependencies(a10_4_server rclcpp rclcpp_action answer_interfaces)
+
+add_executable(a10_4_client "${ANSWER_DIR}/10-4/countdown_client.cpp")
+ament_target_dependencies(a10_4_client rclcpp rclcpp_action answer_interfaces)
+
+add_executable(a10_6_broadcaster "${ANSWER_DIR}/10-6/tf_broadcaster.cpp")
+ament_target_dependencies(a10_6_broadcaster rclcpp tf2_ros geometry_msgs)
+
+add_executable(a10_6_listener "${ANSWER_DIR}/10-6/tf_point_listener.cpp")
+ament_target_dependencies(a10_6_listener rclcpp tf2_ros tf2_geometry_msgs geometry_msgs)
+
+install(TARGETS
+  a10_3_publisher a10_3_server a10_4_server a10_4_client
+  a10_6_broadcaster a10_6_listener
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_package()</code></pre>
+<pre data-lang="XML" data-name="package.xml"><code>&lt;?xml version="1.0"?&gt;
+&lt;package format="3"&gt;
+  &lt;name&gt;part10_answers&lt;/name&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+  &lt;description&gt;第 10 部分检测题的节点与启动文件&lt;/description&gt;
+  &lt;maintainer email="tup@example.com"&gt;TUP&lt;/maintainer&gt;
+  &lt;license&gt;Apache-2.0&lt;/license&gt;
+
+  &lt;buildtool_depend&gt;ament_cmake&lt;/buildtool_depend&gt;
+  &lt;depend&gt;rclcpp&lt;/depend&gt;
+  &lt;depend&gt;rclcpp_action&lt;/depend&gt;
+  &lt;depend&gt;answer_interfaces&lt;/depend&gt;
+  &lt;depend&gt;tf2_ros&lt;/depend&gt;
+  &lt;depend&gt;tf2_geometry_msgs&lt;/depend&gt;
+  &lt;depend&gt;geometry_msgs&lt;/depend&gt;
+
+  &lt;export&gt;
+    &lt;build_type&gt;ament_cmake&lt;/build_type&gt;
+  &lt;/export&gt;
+&lt;/package&gt;</code></pre>
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+colcon build --symlink-install --packages-up-to part10_answers
+source install/setup.bash</code></pre>
+
+<div class="eg" id="e10-2">
+  <div class="eg-h">例题 · 查看接口与可执行文件</div>
+  <p>
+    接口包构建后，<code>ros2 interface show</code> 按定义顺序打印字段，
+    动作用两条横线分成目标、结果与反馈三段。<code>ros2 pkg executables</code>
+    列出节点包里的六个可执行文件，分属 10-3、10-4 与 10-6 三道需要
+    写节点的题。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 interface show answer_interfaces/msg/Reading
+ros2 interface show answer_interfaces/srv/Scale
+ros2 interface show answer_interfaces/action/Countdown
+ros2 pkg executables part10_answers</code></pre>
+  <pre class="out" data-label="真实输出">string sensor
+float64 value
+int32 sequence
+float64 factor
+---
+float64 value
+bool ok
+int32 count
+---
+int32 total
+---
+int32 remaining
+part10_answers a10_3_publisher
+part10_answers a10_3_server
+part10_answers a10_4_client
+part10_answers a10_4_server
+part10_answers a10_6_broadcaster
+part10_answers a10_6_listener</pre>
+  <p>
+    10-5 不需要新节点，使用已有的 <code>talker</code>、<code>listener</code>
+    与 <code>parameter_node</code>，因此没有对应的可执行文件；10-7 使用已有的
+    <code>target_source</code>。这两个任务的答案只增加 launch 文件或运行
+    命令。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-3</div>
+  <p>定义 <code>Reading.msg</code>（<code>string sensor</code>、<code>float64 value</code>、<code>int32 sequence</code>）与 <code>Scale.srv</code>（请求 <code>float64 factor</code>，响应 <code>float64 value</code> 与 <code>bool ok</code>）。写发布者每 300 毫秒发布三条读数，服务端保存最新一条；收到请求时按 <code>factor</code> 换算，没有读数时返回 <code>ok=false</code>。在发布结束后用 <code>ros2 service call</code> 请求 <code>factor=2.0</code>。</p>
+  <pre class="out" data-label="预期输出">[INFO] [reading_publisher]: publish: left 1.5 #1
+[INFO] [reading_publisher]: publish: left 2.0 #2
+[INFO] [reading_publisher]: publish: right 3.5 #3
+[INFO] [scale_server]: latest: right 3.5 #3
+[INFO] [scale_server]: scale: right 3.5 * 2.0 = 7.0 ok=true</pre>
+  <details class="ans" data-run="示例代码/答案/10-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>Reading</code> 有三个字段，<code>Scale</code> 的请求是系数、响应
+    是换算结果与是否成功。发布者在构造时等待订阅者出现，随后每 300 毫秒
+    发布一条读数；服务端在订阅回调里保存最新读数，收到请求时按
+    <code>factor</code> 换算。
+  </p>
+      <pre data-lang="C++" data-name="reading_publisher.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;thread&gt;
+
+#include "answer_interfaces/msg/reading.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+using namespace std::chrono_literals;
+
+class ReadingPublisher : public rclcpp::Node
+{
+public:
+  ReadingPublisher()
+  : Node("reading_publisher"), index_(0)
+  {
+    const bool wait = declare_parameter&lt;bool&gt;("wait_for_subscriber", true);
+    publisher_ = create_publisher&lt;answer_interfaces::msg::Reading&gt;("reading", 10);
+
+    if (wait) {
+      for (int i = 0; i &lt; 60 &amp;&amp; publisher_-&gt;get_subscription_count() == 0; ++i) {
+        std::this_thread::sleep_for(50ms);
+      }
+    }
+
+    timer_ = create_wall_timer(300ms, [this]() { publish_one(); });
+  }
+
+private:
+  void publish_one()
+  {
+    static const char * sensors[] = {"left", "left", "right"};
+    static const double values[] = {1.5, 2.0, 3.5};
+
+    answer_interfaces::msg::Reading reading;
+    reading.sensor = sensors[index_];
+    reading.value = values[index_];
+    reading.sequence = index_ + 1;
+    publisher_-&gt;publish(reading);
+    RCLCPP_INFO(
+      get_logger(), "publish: %s %.1f #%d",
+      reading.sensor.c_str(), reading.value, reading.sequence);
+
+    ++index_;
+    if (index_ == 3) {
+      rclcpp::shutdown();
+    }
+  }
+
+  int index_;
+  rclcpp::Publisher&lt;answer_interfaces::msg::Reading&gt;::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;ReadingPublisher&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="scale_server.cpp"><code>#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "answer_interfaces/msg/reading.hpp"
+#include "answer_interfaces/srv/scale.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+class ScaleServer : public rclcpp::Node
+{
+public:
+  ScaleServer()
+  : Node("scale_server"), has_reading_(false)
+  {
+    subscription_ = create_subscription&lt;answer_interfaces::msg::Reading&gt;(
+      "reading", 10,
+      [this](const answer_interfaces::msg::Reading::SharedPtr message) {
+        latest_ = *message;
+        has_reading_ = true;
+        RCLCPP_INFO(
+          get_logger(), "latest: %s %.1f #%d",
+          latest_.sensor.c_str(), latest_.value, latest_.sequence);
+      });
+
+    service_ = create_service&lt;answer_interfaces::srv::Scale&gt;(
+      "scale",
+      [this](
+        const std::shared_ptr&lt;answer_interfaces::srv::Scale::Request&gt; request,
+        std::shared_ptr&lt;answer_interfaces::srv::Scale::Response&gt; response) {
+        if (!has_reading_) {
+          response-&gt;ok = false;
+          RCLCPP_INFO(get_logger(), "scale: no reading yet");
+          return;
+        }
+        response-&gt;value = latest_.value * request-&gt;factor;
+        response-&gt;ok = true;
+        RCLCPP_INFO(
+          get_logger(), "scale: %s %.1f * %.1f = %.1f ok=true",
+          latest_.sensor.c_str(), latest_.value, request-&gt;factor,
+          response-&gt;value);
+      });
+  }
+
+private:
+  bool has_reading_;
+  answer_interfaces::msg::Reading latest_;
+  rclcpp::Subscription&lt;answer_interfaces::msg::Reading&gt;::SharedPtr subscription_;
+  rclcpp::Service&lt;answer_interfaces::srv::Scale&gt;::SharedPtr service_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;ScaleServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run part10_answers a10_3_server &amp;
+ros2 run part10_answers a10_3_publisher
+ros2 service call /scale answer_interfaces/srv/Scale "{factor: 2.0}"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [reading_publisher]: publish: left 1.5 #1
+[INFO] [reading_publisher]: publish: left 2.0 #2
+[INFO] [reading_publisher]: publish: right 3.5 #3
+[INFO] [scale_server]: latest: left 1.5 #1
+[INFO] [scale_server]: latest: left 2.0 #2
+[INFO] [scale_server]: latest: right 3.5 #3
+[INFO] [scale_server]: scale: right 3.5 * 2.0 = 7.0 ok=true</pre>
+  <p>
+    发布者依次发出 <code>left 1.5</code>、<code>left 2.0</code> 与
+    <code>right 3.5</code>。服务端每收到一条就更新最新读数，因此
+    <code>latest</code> 最后一行是 <code>right 3.5</code>；服务调用把
+    3.5 乘以 2.0，得到 7.0 并返回 <code>ok=true</code>。如果服务端还没有
+    收到任何读数，响应中的 <code>ok</code> 为 <code>false</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-4</div>
+  <p>定义 <code>Countdown.action</code>（目标 <code>int32 count</code>，结果 <code>int32 total</code>，反馈 <code>int32 remaining</code>）。服务端接受正数目标，每隔 200 毫秒发布剩余数，从 <code>count-1</code> 递减到 0，最后返回 <code>total=count</code>；客户端发送 <code>count=3</code> 并打印反馈与结果。</p>
+  <pre class="out" data-label="预期输出">[INFO] [countdown_server]: goal accepted: count=3
+[INFO] [countdown_server]: feedback: remaining=2
+[INFO] [countdown_server]: feedback: remaining=1
+[INFO] [countdown_server]: feedback: remaining=0
+[INFO] [countdown_server]: result: total=3
+[INFO] [countdown_client]: result: total=3 success=true</pre>
+  <details class="ans" data-run="示例代码/答案/10-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    动作服务端在目标回调里检查 <code>count</code>，正数才接受；执行线程
+    每隔 200 毫秒发布一次反馈，<code>remaining</code> 从
+    <code>count-1</code> 递减到 0，最后用 <code>succeed</code> 返回
+    <code>total=count</code>。客户端等待服务端出现后发送 <code>count=3</code>，
+    分别在目标响应、反馈与结果回调里打印。
+  </p>
+      <pre data-lang="C++" data-name="countdown_server.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;thread&gt;
+
+#include "answer_interfaces/action/countdown.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+
+using namespace std::chrono_literals;
+
+class CountdownServer : public rclcpp::Node
+{
+public:
+  using Countdown = answer_interfaces::action::Countdown;
+  using GoalHandle = rclcpp_action::ServerGoalHandle&lt;Countdown&gt;;
+
+  CountdownServer()
+  : Node("countdown_server")
+  {
+    server_ = rclcpp_action::create_server&lt;Countdown&gt;(
+      this,
+      "countdown",
+      [this](
+        const rclcpp_action::GoalUUID &amp;,
+        std::shared_ptr&lt;const Countdown::Goal&gt; goal) {
+        if (goal-&gt;count &lt;= 0) {
+          RCLCPP_INFO(get_logger(), "goal rejected: count=%d", goal-&gt;count);
+          return rclcpp_action::GoalResponse::REJECT;
+        }
+        RCLCPP_INFO(get_logger(), "goal accepted: count=%d", goal-&gt;count);
+        return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+      },
+      [](const std::shared_ptr&lt;GoalHandle&gt;) {
+        return rclcpp_action::CancelResponse::ACCEPT;
+      },
+      [this](const std::shared_ptr&lt;GoalHandle&gt; goal_handle) {
+        std::thread{&amp;CountdownServer::execute, this, goal_handle}.detach();
+      });
+  }
+
+private:
+  void execute(const std::shared_ptr&lt;GoalHandle&gt; goal_handle)
+  {
+    const auto goal = goal_handle-&gt;get_goal();
+    auto feedback = std::make_shared&lt;Countdown::Feedback&gt;();
+    auto result = std::make_shared&lt;Countdown::Result&gt;();
+
+    for (int32_t remaining = goal-&gt;count; remaining &gt; 0; --remaining) {
+      std::this_thread::sleep_for(200ms);
+      feedback-&gt;remaining = remaining - 1;
+      goal_handle-&gt;publish_feedback(feedback);
+      RCLCPP_INFO(
+        get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+    }
+
+    result-&gt;total = goal-&gt;count;
+    goal_handle-&gt;succeed(result);
+    RCLCPP_INFO(get_logger(), "result: total=%d", result-&gt;total);
+  }
+
+  rclcpp_action::Server&lt;Countdown&gt;::SharedPtr server_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;CountdownServer&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="countdown_client.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+
+#include "answer_interfaces/action/countdown.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+
+using namespace std::chrono_literals;
+
+class CountdownClient : public rclcpp::Node
+{
+public:
+  using Countdown = answer_interfaces::action::Countdown;
+
+  CountdownClient()
+  : Node("countdown_client")
+  {
+    client_ = rclcpp_action::create_client&lt;Countdown&gt;(this, "countdown");
+    if (!client_-&gt;wait_for_action_server(5s)) {
+      RCLCPP_ERROR(get_logger(), "action server /countdown not available");
+      rclcpp::shutdown();
+    }
+  }
+
+  bool ready() const { return rclcpp::ok(); }
+
+  void send()
+  {
+    Countdown::Goal goal;
+    goal.count = 3;
+
+    auto options = rclcpp_action::Client&lt;Countdown&gt;::SendGoalOptions();
+    options.goal_response_callback =
+      [this](const GoalHandle::SharedPtr &amp; goal_handle) {
+        if (!goal_handle) {
+          RCLCPP_INFO(get_logger(), "goal rejected");
+          return;
+        }
+        RCLCPP_INFO(get_logger(), "goal accepted");
+      };
+    options.feedback_callback =
+      [this](
+        GoalHandle::SharedPtr,
+        const std::shared_ptr&lt;const Countdown::Feedback&gt; feedback) {
+        RCLCPP_INFO(
+          get_logger(), "feedback: remaining=%d", feedback-&gt;remaining);
+      };
+    options.result_callback =
+      [this](const GoalHandle::WrappedResult &amp; result) {
+        const bool success =
+          result.code == rclcpp_action::ResultCode::SUCCEEDED;
+        RCLCPP_INFO(
+          get_logger(), "result: total=%d success=%s",
+          result.result-&gt;total, success ? "true" : "false");
+        rclcpp::shutdown();
+      };
+    client_-&gt;async_send_goal(goal, options);
+  }
+
+private:
+  using GoalHandle = rclcpp_action::ClientGoalHandle&lt;Countdown&gt;;
+  rclcpp_action::Client&lt;Countdown&gt;::SharedPtr client_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;CountdownClient&gt;();
+  if (node-&gt;ready()) {
+    node-&gt;send();
+    rclcpp::spin(node);
+  }
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run part10_answers a10_4_server &amp;
+ros2 run part10_answers a10_4_client</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [countdown_server]: goal accepted: count=3
+[INFO] [countdown_server]: feedback: remaining=2
+[INFO] [countdown_server]: feedback: remaining=1
+[INFO] [countdown_server]: feedback: remaining=0
+[INFO] [countdown_server]: result: total=3
+[INFO] [countdown_client]: goal accepted
+[INFO] [countdown_client]: feedback: remaining=2
+[INFO] [countdown_client]: feedback: remaining=1
+[INFO] [countdown_client]: feedback: remaining=0
+[INFO] [countdown_client]: result: total=3 success=true</pre>
+  <p>
+    服务端先接受目标，再依次发布 2、1、0 三次反馈，最后返回总数 3。
+    客户端收到的反馈与服务端一致，结果回调中的 <code>success=true</code>
+    表示动作以 <code>SUCCEEDED</code> 结束。反馈在目标执行期间到达，
+    结果只在动作结束时到达一次。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-5</div>
+  <p>写一个 launch 文件，把 <code>talker</code> 与 <code>listener</code> 放入 <code>lab</code> 命名空间，把相对话题 <code>chatter</code> 重映射为 <code>lab_chatter</code>；把 <code>parameter_node</code> 也放入 <code>lab</code>，设置 <code>rate_ms=250</code>、<code>message='lab'</code>。启动后查看 <code>/lab/</code> 下的话题与两个参数。</p>
+  <pre class="out" data-label="预期输出">/lab/lab_chatter
+String value is: lab
+Integer value is: 250
+[INFO] [lab.talker]: publishing: 'hello 0'
+[INFO] [lab.talker]: publishing: 'hello 1'
+[INFO] [lab.talker]: publishing: 'hello 2'
+[INFO] [lab.listener]: I heard: 'hello 0'
+[INFO] [lab.listener]: I heard: 'hello 1'
+[INFO] [lab.listener]: I heard: 'hello 2'</pre>
+  <details class="ans" data-run="示例代码/答案/10-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    launch 文件给三个节点都加上 <code>namespace="lab"</code>，因此节点名与
+    相对话题都带 <code>/lab</code> 前缀。<code>talker</code> 与
+    <code>listener</code> 的 <code>remappings</code> 把相对话题
+    <code>chatter</code> 改成 <code>lab_chatter</code>，两者仍指向同一话题。
+    <code>parameter_node</code> 的参数在 <code>parameters</code> 里设置。
+  </p>
+      <pre data-lang="Python" data-name="10.5-lab.launch.py"><code>from launch import LaunchDescription
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    talker = Node(
+        package="robot_nodes",
+        executable="talker",
+        namespace="lab",
+        remappings=[("chatter", "lab_chatter")],
+        parameters=[{"wait_for_subscriber": True}],
+    )
+
+    listener = Node(
+        package="robot_nodes",
+        executable="listener",
+        namespace="lab",
+        remappings=[("chatter", "lab_chatter")],
+    )
+
+    parameter_node = Node(
+        package="robot_nodes",
+        executable="parameter_node",
+        namespace="lab",
+        parameters=[{"rate_ms": 250, "message": "lab"}],
+    )
+
+    return LaunchDescription([talker, listener, parameter_node])</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 launch part10_answers 10.5-lab.launch.py &amp;
+ros2 topic list | grep '^/lab/' | sort
+ros2 param get /lab/parameter_node message
+ros2 param get /lab/parameter_node rate_ms</code></pre>
+  <pre class="out" data-label="真实输出">/lab/lab_chatter
+String value is: lab
+Integer value is: 250
+[INFO] [lab.talker]: publishing: 'hello 0'
+[INFO] [lab.talker]: publishing: 'hello 1'
+[INFO] [lab.talker]: publishing: 'hello 2'
+[INFO] [lab.listener]: I heard: 'hello 0'
+[INFO] [lab.listener]: I heard: 'hello 1'
+[INFO] [lab.listener]: I heard: 'hello 2'</pre>
+  <p>
+    话题的完整名字是 <code>/lab/lab_chatter</code>：命名空间贡献
+    <code>/lab</code>，重映射贡献 <code>lab_chatter</code>。两个参数查询
+    返回 <code>lab</code> 与 <code>250</code>，说明 launch 里的
+    <code>parameters</code> 已生效。日志前缀 <code>lab.talker</code> 与
+    <code>lab.listener</code> 也说明节点在 <code>lab</code> 命名空间下。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-6</div>
+  <p>广播静态变换 <code>map → base_link</code>，平移 <code>(1, 2, 0)</code>，绕 <code>z</code> 轴 90°；广播动态变换 <code>base_link → sensor</code>，平移 <code>(0.5, 0, 0)</code>，每 100 毫秒一次。监听器把 <code>sensor</code> 坐标系中的点 <code>(0.2, 0, 0)</code> 转换到 <code>map</code>，打印三个坐标。</p>
+  <pre class="out" data-label="预期输出">point in map: (1.000, 2.700, 0.000)</pre>
+  <details class="ans" data-run="示例代码/答案/10-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    广播者发送一个静态变换与一个动态变换。静态变换只发一次，放在
+    <code>/tf_static</code>；动态变换用 100 毫秒定时器反复发送，放在
+    <code>/tf</code>。监听者用 <code>Buffer</code> 与
+    <code>TransformListener</code> 收变换，再用 <code>canTransform</code>
+    等到 <code>map</code> 与 <code>sensor</code> 连通后调用
+    <code>lookupTransform</code>。
+  </p>
+      <pre data-lang="C++" data-name="tf_broadcaster.cpp"><code>#include &lt;chrono&gt;
+#include &lt;cmath&gt;
+#include &lt;memory&gt;
+
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "tf2_ros/transform_broadcaster.h"
+
+using namespace std::chrono_literals;
+
+namespace
+{
+constexpr double kPi = 3.14159265358979323846;
+}
+
+class TfBroadcaster : public rclcpp::Node
+{
+public:
+  TfBroadcaster()
+  : Node("tf_broadcaster")
+  {
+    tf2::Quaternion yaw;
+    yaw.setRPY(0.0, 0.0, 90.0 * kPi / 180.0);
+
+    geometry_msgs::msg::TransformStamped map_to_base;
+    map_to_base.header.stamp = now();
+    map_to_base.header.frame_id = "map";
+    map_to_base.child_frame_id = "base_link";
+    map_to_base.transform.translation.x = 1.0;
+    map_to_base.transform.translation.y = 2.0;
+    map_to_base.transform.rotation.x = yaw.x();
+    map_to_base.transform.rotation.y = yaw.y();
+    map_to_base.transform.rotation.z = yaw.z();
+    map_to_base.transform.rotation.w = yaw.w();
+
+    static_broadcaster_ =
+      std::make_shared&lt;tf2_ros::StaticTransformBroadcaster&gt;(*this);
+    static_broadcaster_-&gt;sendTransform(map_to_base);
+    RCLCPP_INFO(get_logger(), "static: map -&gt; base_link");
+
+    dynamic_broadcaster_ = std::make_unique&lt;tf2_ros::TransformBroadcaster&gt;(*this);
+    timer_ = create_wall_timer(100ms, [this]() { publish_sensor(); });
+  }
+
+private:
+  void publish_sensor()
+  {
+    geometry_msgs::msg::TransformStamped base_to_sensor;
+    base_to_sensor.header.stamp = now();
+    base_to_sensor.header.frame_id = "base_link";
+    base_to_sensor.child_frame_id = "sensor";
+    base_to_sensor.transform.translation.x = 0.5;
+    base_to_sensor.transform.rotation.w = 1.0;
+    dynamic_broadcaster_-&gt;sendTransform(base_to_sensor);
+  }
+
+  std::shared_ptr&lt;tf2_ros::StaticTransformBroadcaster&gt; static_broadcaster_;
+  std::unique_ptr&lt;tf2_ros::TransformBroadcaster&gt; dynamic_broadcaster_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;TfBroadcaster&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+      <pre data-lang="C++" data-name="tf_point_listener.cpp"><code>#include &lt;chrono&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "geometry_msgs/msg/point_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
+
+using namespace std::chrono_literals;
+
+class TfPointListener : public rclcpp::Node
+{
+public:
+  TfPointListener()
+  : Node("tf_point_listener")
+  {
+    buffer_ = std::make_shared&lt;tf2_ros::Buffer&gt;(get_clock());
+  }
+
+  void start()
+  {
+    listener_ = std::make_shared&lt;tf2_ros::TransformListener&gt;(
+      *buffer_, shared_from_this(), false);
+    started_at_ = now();
+    timer_ = create_wall_timer(100ms, [this]() { try_transform(); });
+  }
+
+private:
+  void try_transform()
+  {
+    if (!buffer_-&gt;canTransform("map", "sensor", tf2::TimePointZero)) {
+      if ((now() - started_at_).seconds() &gt; 5.0) {
+        std::cout &lt;&lt; "lookup failed: map -&gt; sensor not available\n";
+        rclcpp::shutdown();
+      }
+      return;
+    }
+
+    const auto transform = buffer_-&gt;lookupTransform(
+      "map", "sensor", tf2::TimePointZero);
+
+    geometry_msgs::msg::PointStamped point;
+    point.header.frame_id = "sensor";
+    point.header.stamp = now();
+    point.point.x = 0.2;
+
+    geometry_msgs::msg::PointStamped converted;
+    tf2::doTransform(point, converted, transform);
+    std::cout &lt;&lt; "point in map: (" &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+              &lt;&lt; converted.point.x &lt;&lt; ", " &lt;&lt; converted.point.y &lt;&lt; ", "
+              &lt;&lt; converted.point.z &lt;&lt; ")\n";
+    rclcpp::shutdown();
+  }
+
+  rclcpp::Time started_at_;
+  std::shared_ptr&lt;tf2_ros::Buffer&gt; buffer_;
+  std::shared_ptr&lt;tf2_ros::TransformListener&gt; listener_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;TfPointListener&gt;();
+  node-&gt;start();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run part10_answers a10_6_broadcaster &amp;
+ros2 run part10_answers a10_6_listener</code></pre>
+  <pre class="out" data-label="真实输出">point in map: (1.000, 2.700, 0.000)</pre>
+  <p>
+    <code>map → base_link</code> 的平移是 <code>(1, 2, 0)</code>，旋转是
+    绕 <code>z</code> 轴 90°；<code>base_link → sensor</code> 的平移是
+    <code>(0.5, 0, 0)</code>。先算传感器原点在 <code>map</code> 中的位置：
+    <code>(0.5, 0, 0)</code> 旋转 90° 后变成 <code>(0, 0.5, 0)</code>，
+    再加 <code>(1, 2, 0)</code>，得到 <code>(1, 2.5, 0)</code>。
+    点 <code>(0.2, 0, 0)</code> 加上传感器相对 <code>base_link</code>
+    的偏移 <code>(0.5, 0, 0)</code> 得 <code>(0.7, 0, 0)</code>，
+    旋转 90° 后是 <code>(0, 0.7, 0)</code>，再加
+    <code>(1, 2, 0)</code>，得到 <code>(1, 2.7, 0)</code>。输出保留
+    三位小数。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 10-7</div>
+  <p>录制 <code>/target</code> 的五条消息到 <code>lab_bag</code>，用 <code>ros2 bag info</code> 查看消息数与话题；回放时用 <code>ros2 topic echo /target --once</code> 收到第一条，并解释回放延迟或 QoS 对结果的影响。</p>
+  <pre class="out" data-label="预期输出">Messages:          5
+Topic information: Topic: /target | Type: robot_interfaces/msg/Target | Count: 5 | Serialization Format: cdr
+x: 1.0
+y: 0.0
+label: alpha
+---</pre>
+  <details class="ans" data-run="示例代码/答案/10-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>ros2 bag record</code> 订阅 <code>/target</code> 并把收到的消息写入
+    <code>lab_bag</code>。<code>target_source</code> 在检测到订阅者后才发布，
+    因此录制文件里有完整的五条消息。录制结束后用
+    <code>ros2 bag info</code> 查看消息数与话题类型，再用
+    <code>ros2 bag play</code> 回放。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 bag record --topics /target -o lab_bag &amp;
+recorder=$!
+ros2 run robot_nodes target_source --ros-args -p wait_for_subscriber:=true
+kill -TERM "$recorder"
+wait "$recorder"
+ros2 bag info lab_bag
+ros2 topic echo /target --once &amp;
+ros2 bag play --delay 2.0 lab_bag</code></pre>
+  <pre class="out" data-label="真实输出">Messages:          5
+Topic information: Topic: /target | Type: robot_interfaces/msg/Target | Count: 5 | Serialization Format: cdr
+x: 1.0
+y: 0.0
+label: alpha
+---</pre>
+  <p>
+    <code>Messages: 5</code> 与 <code>Count: 5</code> 说明五条都录到了。
+    回放时 <code>--delay 2.0</code> 先等两秒再发布，给
+    <code>ros2 topic echo</code> 留出发现发布者的时间；如果立即回放，
+    <code>echo</code> 可能还没匹配上，第一条消息已经过去，
+    <code>--once</code> 就要等到下一条。bag 中保存的是录制时的接收时间，
+    回放默认按这些时间戳的间隔发布，<code>--delay</code> 只影响开始时刻。
+    QoS 也要匹配：录制端默认使用可靠订阅，发布端若只提供
+    <code>best_effort</code>，可靠订阅无法与它匹配，录制会收不到数据。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>能独立完成五个组合任务：定义消息、服务与动作并写出对应节点，用 launch 配置命名空间、重映射与参数，用 TF2 广播并变换坐标，用 bag 录制、查看与回放数据。</p>
+</section>
+
+<nav class="pager">
+  <a href="09-综合.html">← 第 9 部分 · 综合：巡检流程</a>
+  <span class="spacer"></span>
+  <a href="index.html">回课程目录 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.16)
+project(robot_interfaces)
+
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Target.msg"
+  "msg/PatrolStatus.msg"
+  "srv/Echo.srv"
+  "srv/ComputeArea.srv"
+  "srv/SetMode.srv"
+  "action/Patrol.action"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+ament_package()

@@ -3,28 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROS 2 — TUP 算法组</title>
+<title>ROS 2 机器人软件基础 — TUP 算法组</title>
 <link rel="stylesheet" href="../../assets/style.css">
-<style>
-/* 占位页的版式：一栏字、没有目录栏，跟 TUP.html 首页是一套。
-   样式写在本页里，不动 style.css，别的页不受影响。 */
-.stub {
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 5rem 1.5rem 4rem;
-}
-.stub-slot {
-  margin: 2rem 0 0;
-  padding: 1.1rem 1.3rem;
-  background: var(--code-bg);
-  border-left: 3px solid var(--rule-strong);
-  border-radius: 0 4px 4px 0;
-  color: var(--ink-soft);
-  font-size: 0.94rem;
-}
-.stub-slot > b { color: var(--ink-mid); }
-.stub-slot p:last-child { margin-bottom: 0; }
-</style>
 <script src="../../assets/theme.js"></script>
 </head>
 <body>
@@ -36,6 +16,19 @@
   </a>
   <span class="sep" aria-hidden="true"></span>
   <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
     <nav class="nav-courses" aria-label="课程">
       <a href="../cpp_Basics/index.html">C++ 基础课</a>
       <a href="../cpp_advanced/index.html">C++ 进阶课</a>
@@ -50,20 +43,671 @@
   <button class="theme-btn" type="button"></button>
 </header>
 
-<main class="stub">
+<div class="wrap">
 
-  <h1>ROS 2</h1>
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
 
-  <div class="stub-slot">
-    <p><b>作者很懒，还没写....</b></p>
-    <p>已经写好的是 <a href="../cpp_Basics/index.html">C++ 基础课</a>和 <a href="../cpp_advanced/index.html">C++ 进阶课</a>。</p>
+<nav class="toc">
+  <div class="toc-part">课程目录</div>
+  <a class="toc-l" href="#how">怎么读这门课</a>
+  <a class="toc-l" href="#structure">课程结构</a>
+  <a class="toc-l" href="#paths">推荐路径</a>
+  <a class="toc-l" href="#media">示例与答案</a>
+  <a class="toc-l" href="#p0">第 0 部分 · 开始</a>
+  <a class="toc-l" href="#p1">第 1 部分 · 话题</a>
+  <a class="toc-l" href="#p2">第 2 部分 · 服务与参数</a>
+  <a class="toc-l" href="#p3">第 3 部分 · 动作</a>
+  <a class="toc-l" href="#p4">第 4 部分 · 执行器与回调</a>
+  <a class="toc-l" href="#p5">第 5 部分 · Launch 与组合</a>
+  <a class="toc-l" href="#p6">第 6 部分 · 生命周期</a>
+  <a class="toc-l" href="#p7">第 7 部分 · TF2</a>
+  <a class="toc-l" href="#p8">第 8 部分 · 工具与测试</a>
+  <a class="toc-l" href="#p9">第 9 部分 · 综合：巡检流程</a>
+  <a class="toc-l" href="#p10">第 10 部分 · 检测题</a>
+</nav>
+
+<main>
+
+<header class="cover">
+  <div class="part-no">TUP 战队 · 算法组</div>
+  <h1>ROS 2 机器人软件基础</h1>
+  <p class="part-lead">
+    这门课讲怎样用 C++ 在 ROS 2 中组织机器人软件：从工作空间与功能包开始，
+    依次写节点、话题、服务、参数与动作，再进入执行器、launch、生命周期、
+    坐标变换、数据记录与测试，最后完成一条可运行的合成巡检流程。
+  </p>
+</header>
+
+<section id="how">
+  <h2 class="sec-plain">怎么读这门课</h2>
+
+  <p>
+    全课 11 个部分、51 课，分三档要求。<b>第 0–1 部分是基础</b>，
+    建议按顺序读完，并亲手构建、运行、修改例子。<b>第 2–8 部分按需阅读</b>：
+    每一部分开头先列前置课，读完前置再按当前任务选读；
+    <b>第 6 部分整体选学</b>，可以整部分跳过。
+    <b>第 9–10 部分是综合练习</b>，建议在读完相关必读课之后再做。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>档次</th><th>部分</th><th>读到什么程度</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>基础</b></td>
+        <td>第 0–1 部分</td>
+        <td>按顺序读；每个例子都要构建并运行，参数要能改，输出要能解释</td>
+      </tr>
+      <tr>
+        <td><b>按需</b></td>
+        <td>第 2–8 部分</td>
+        <td>先读该部分列出的前置课，再按任务选读；不要求从头到尾</td>
+      </tr>
+      <tr>
+        <td><b>综合</b></td>
+        <td>第 9–10 部分</td>
+        <td>独立完成一条多节点流程与一组检测题</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    具体到每一课，用四个词标注要求。<b>会用</b>指能运行、能改参数、能解释输出；
+    <b>掌握</b>指能独立写出完整节点或配置文件并定位常见错误；<b>看懂</b>指能读懂
+    代码与参数，不要求独立实现；<b>了解</b>指知道概念、流程与适用场景。
+  </p>
+
+  <p>
+    全课有七课标为<b>选学</b>：0.6、5.5、8.3，以及第 6 部分的 6.1–6.4。
+    选学课可以跳过，也不进入任何部分的前置；第 6 部分整体选学，
+    可整部分跳过。0.6 需要图形界面，没有图形界面时直接跳过。
+  </p>
+
+  <h3>环境与工作空间</h3>
+
+  <p>
+    课程在测试机上使用 Ubuntu 24.04、ROS 2 Jazzy、C++17、<code>colcon</code> 与
+    <code>ament_cmake</code>。测试机上已装好下列功能包：<code>rclcpp</code>、
+    <code>std_msgs</code>、<code>example_interfaces</code>、<code>tf2_ros</code>、
+    <code>rclcpp_components</code>、<code>rclcpp_lifecycle</code>、
+    <code>rosbag2</code>、<code>turtlesim</code> 与 <code>rqt</code>。
+    读者的 ROS 2 发行版与安装路径
+    可能不同，命令中的 <code>/opt/ros/jazzy</code> 要按实际安装位置替换。
+  </p>
+
+  <p>
+    <code>$HOME</code> 是当前登录用户主目录（home directory）的环境变量。
+    若登录用户名为 <code>用户名</code>，<code>$HOME</code> 通常是
+    <code>/home/用户名</code>；命令里的 <code>$HOME/ros2_ws</code> 就是该目录
+    下的 <code>ros2_ws</code>。
+  </p>
+
+  <p>
+    ROS 2 的接口生成步骤按路径拼接构建目标，工作空间路径里出现中文等非 ASCII
+    字符时，<code>rosidl_generate_interfaces</code> 会报目标不存在。课程把示例
+    工作空间复制到 <code>$HOME/ros2_ws</code> 再构建；这个路径只含 ASCII 字符，
+    所有命令与页面输出都以它为准。源码仍然随课程放在
+    <code>示例代码/ros2_ws/</code>，复制一次即可。
+  </p>
+
+<pre data-lang="终端"><code># 当前目录：课程目录
+mkdir -p $HOME/ros2_ws
+cp -r 示例代码/ros2_ws/src $HOME/ros2_ws/
+cp 示例代码/ros2_ws/clean.sh $HOME/ros2_ws/
+# 进入工作空间
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install
+source install/setup.bash</code></pre>
+
+  <p>
+    需要清理构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令：
+  </p>
+
+<pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+
+  <p>
+    脚本只删除 <code>build/</code>、<code>install/</code> 与
+    <code>log/</code>，删除前会列出目录大小并询问确认。
+  </p>
+
+  <p>
+    每开一个新终端，都要先 <code>source /opt/ros/jazzy/setup.bash</code>，
+    再 <code>source $HOME/ros2_ws/install/setup.bash</code>。前一条提供 ROS 2
+    本身，后一条提供课程的功能包；两组路径都会保留在当前终端的环境里。
+  </p>
+
+  <p>
+    课程统一在独立域中运行，避免与测试机上的其它节点混在一起。两条
+    环境变量只影响当前终端：
+  </p>
+
+<pre data-lang="终端"><code># 当前目录：任意目录
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+
+  <p>
+    第一条把节点放进 42 号域；第二条去掉日志里的时间戳，页面上的输出才能逐行
+    对照。格式串只改变显示，不改变日志级别与内容；需要时间戳时去掉它即可。
+  </p>
+
+  <h3>每页怎么读</h3>
+
+  <p>
+    课里的 C++ 例子都是完整程序，代码块后紧跟真实输出；涉及多个终端的例子
+    会写明哪个终端先启动。练习先自己写，卡住了再展开答案。答案里的程序与
+    页面上的代码逐行一致，输出由脚本重新运行得到。练习的判据是逐字符一致，
+    差一个空格也算不同。
+  </p>
+</section>
+
+<section id="structure">
+  <h2 class="sec-plain">课程结构</h2>
+
+  <p>
+    下表给出 11 个部分的分工、课数、前置与主要内容。“前置”只列必读课，
+    不列选学课。
+  </p>
+
+  <table class="structure">
+    <colgroup>
+      <col style="width: 21%"><col style="width: 9%"><col style="width: 8%">
+      <col style="width: 23%"><col style="width: 39%">
+    </colgroup>
+    <thead>
+      <tr><th>部分</th><th>类型</th><th>课数</th><th>前置</th><th>主要内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>0 开始</b></td>
+        <td>基础</td><td>6</td><td>无</td>
+        <td>工作空间、第一个节点、命名、功能包、命令行工具、小海龟观察（0.6 选学）</td>
+      </tr>
+      <tr>
+        <td><b>1 话题</b></td>
+        <td>基础</td><td>6</td><td>0.1–0.5</td>
+        <td>发布者、订阅者、自定义消息、QoS、多节点、话题诊断</td>
+      </tr>
+      <tr>
+        <td><b>2 服务与参数</b></td>
+        <td>按需</td><td>5</td><td>1.1–1.3</td>
+        <td>服务端、客户端、自定义服务、参数、参数文件</td>
+      </tr>
+      <tr>
+        <td><b>3 动作</b></td>
+        <td>按需</td><td>5</td><td>2.1–2.3</td>
+        <td>动作接口、服务端、客户端、取消与超时、动作诊断</td>
+      </tr>
+      <tr>
+        <td><b>4 执行器与回调</b></td>
+        <td>按需</td><td>4</td><td>1.1–1.2、2.2</td>
+        <td>回调队列、单线程与多线程执行器、回调组、耗时任务</td>
+      </tr>
+      <tr>
+        <td><b>5 Launch 与组合</b></td>
+        <td>按需</td><td>5</td><td>0.4、1.1–1.2、2.4</td>
+        <td>XML launch、Python launch、参数与命名空间、条件与包含、组件（5.5 选学）</td>
+      </tr>
+      <tr>
+        <td><b>6 生命周期</b></td>
+        <td>按需</td><td>4</td><td>1.1–1.2、2.2、5.1–5.3</td>
+        <td>状态机、生命周期节点、管理节点、启动顺序（整部分选学）</td>
+      </tr>
+      <tr>
+        <td><b>7 TF2</b></td>
+        <td>按需</td><td>5</td><td>1.3、2.2、5.3</td>
+        <td>坐标系与四元数、静态广播、动态广播、监听与点变换、时间与异常</td>
+      </tr>
+      <tr>
+        <td><b>8 工具与测试</b></td>
+        <td>按需</td><td>5</td><td>1.6、2.2、5.1</td>
+        <td>日志与诊断、bag、rqt、单元测试与 launch_testing、包依赖与质量（8.3 选学）</td>
+      </tr>
+      <tr>
+        <td><b>9 综合：巡检流程</b></td>
+        <td>综合</td><td>4</td><td>0.4、1.1–1.3、2.1–2.4、3.1–3.3、5.1–5.3、7.2–7.4</td>
+        <td>接口设计、感知节点、控制节点、启动与验收</td>
+      </tr>
+      <tr>
+        <td><b>10 检测题</b></td>
+        <td>综合</td><td>2</td><td>第 1–5 部分、第 7–8 部分</td>
+        <td>综合检测、五道检测题与答案</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    合计 6 + 6 + 5 + 5 + 4 + 5 + 4 + 5 + 5 + 4 + 2 = 51 课。
+    第 0–9 部分每课两道练习；第 10 部分的两课共七道检测题。
+    全课练习与检测题合计 105 道。
+  </p>
+</section>
+
+<section id="paths">
+  <h2 class="sec-plain">推荐路径</h2>
+
+  <p>
+    不要求按 0 到 10 的顺序读完。可以按目标选一条路径，先读前置，
+    再读该路径列出的课。路径里的编号都指课程编号，不是页码。
+  </p>
+
+  <table class="paths">
+    <thead>
+      <tr><th>目标</th><th>建议顺序</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>基础通信</td>
+        <td>0 → 1 → 2</td>
+        <td>节点、话题、服务、参数；能写一个小型多节点系统</td>
+      </tr>
+      <tr>
+        <td>小海龟观察</td>
+        <td>0.1 → 0.5 → 0.6</td>
+        <td>用现成节点看话题、服务与动作；需要图形界面</td>
+      </tr>
+      <tr>
+        <td>任务与动作</td>
+        <td>0 → 1 → 2 → 3</td>
+        <td>在基础通信上增加长任务、反馈与取消</td>
+      </tr>
+      <tr>
+        <td>系统集成</td>
+        <td>0 → 1 → 2 → 3 → 4 → 5</td>
+        <td>执行器、launch、参数文件与组合节点</td>
+      </tr>
+      <tr>
+        <td>坐标变换</td>
+        <td>0 → 1 → 2 → 5 → 7</td>
+        <td>话题、接口、launch 与 TF2；适合接入传感器数据</td>
+      </tr>
+      <tr>
+        <td>调试与测试</td>
+        <td>0 → 1 → 2 → 5 → 8</td>
+        <td>日志、bag、单元测试与 launch_testing</td>
+      </tr>
+      <tr>
+        <td>全课</td>
+        <td>0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10</td>
+        <td>顺序读完，第 6 部分可跳过，第 9–10 部分独立完成</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="media">
+  <h2 class="sec-plain">示例与答案</h2>
+
+  <p>
+    示例源码在 <code>示例代码/ros2_ws/src/</code>，按功能包分成三部分：
+    <code>robot_interfaces</code> 放消息与服务定义，<code>robot_nodes</code>
+    放 C++ 节点，<code>robot_bringup</code> 放启动文件与配置。
+    练习答案在 <code>示例代码/答案/</code>，每个练习一个目录，
+    目录里的脚本会构建并运行该练习的答案。
+  </p>
+
+  <p>
+    第 0–1 部分除 0.6 外只使用终端输出，不需要图形界面。0.6 观察小海龟时
+    会出现图形窗口；没有图形界面时跳过这一课，后续必读课不依赖它。
+    所有输出都在 <code>ROS_DOMAIN_ID=42</code> 与去掉时间戳的日志格式下取得，
+    路径中的个人目录在页面上写成 <code>$HOME</code> 或 <code>$WORKSPACE</code>。
+  </p>
+
+  <div class="aside tip">
+    <b>关于输出里的数字</b>
+    <p>
+      带有 <code>data-label="真实输出"</code> 的块来自一次实际运行。
+      计时、发现与频率数值会随机器负载变化，页面会在块前说明哪几位不固定；
+      标为“预期输出”的练习结果则要求逐字符一致。
+    </p>
   </div>
+</section>
 
-  <footer class="site-footer">
-    TUP 战队算法组 · ROS 2
-  </footer>
+<div class="outline-part" id="p0">
+  <h2><a href="00-开始.html">第 0 部分 · 开始</a></h2>
+  <p class="part-note">
+    基础，6 课，无前置。只要求能读懂 C++ 基本语句与类。
+    这一部分把工作空间、第一个节点、命名、功能包与命令行工具走通；
+    0.6 为选学的小海龟观察。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">0.1</span><span class="body">
+      <a class="t" href="00-开始.html#l0-1">课程地图与工作空间</a>
+      <span class="d">课程目录；<code>src/build/install/log</code>；<code>colcon build</code>；域号与日志格式</span>
+    </span></li>
+    <li><span class="n">0.2</span><span class="body">
+      <a class="t" href="00-开始.html#l0-2">第一个节点</a>
+      <span class="d"><code>rclcpp::init</code>、<code>spin</code>、<code>shutdown</code>；定时器；日志；自行停止</span>
+    </span></li>
+    <li><span class="n">0.3</span><span class="body">
+      <a class="t" href="00-开始.html#l0-3">节点名、命名空间与重映射</a>
+      <span class="d">完全限定名；<code>__node</code>、<code>__ns</code>；<code>ros2 node list/info</code></span>
+    </span></li>
+    <li><span class="n">0.4</span><span class="body">
+      <a class="t" href="00-开始.html#l0-4">功能包、依赖与构建</a>
+      <span class="d"><code>package.xml</code>；<code>CMakeLists.txt</code>；接口包的构建顺序</span>
+    </span></li>
+    <li><span class="n">0.5</span><span class="body">
+      <a class="t" href="00-开始.html#l0-5">命令行工具与运行观察</a>
+      <span class="d"><code>ros2 pkg</code>、<code>ros2 run</code>、<code>ros2 node</code>、<code>ros2 interface</code></span>
+    </span></li>
+    <li><span class="n">0.6</span><span class="body">
+      <a class="t" href="00-开始.html#l0-6">小海龟：观察现成节点（选学）</a>
+      <span class="d"><code>turtlesim</code> 的话题、服务与动作；读一次位姿</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p1">
+  <h2><a href="01-话题.html">第 1 部分 · 话题</a></h2>
+  <p class="part-note">
+    基础，6 课，前置 0.1–0.5。这一部分从发布者与订阅者开始，
+    讲清自定义消息、QoS、多节点通信与话题诊断；读完能写一个
+    由多个节点组成的小型话题系统。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">1.1</span><span class="body">
+      <a class="t" href="01-话题.html#l1-1">发布者</a>
+      <span class="d"><code>create_publisher</code>；消息字段；定时发布与停止</span>
+    </span></li>
+    <li><span class="n">1.2</span><span class="body">
+      <a class="t" href="01-话题.html#l1-2">订阅者</a>
+      <span class="d"><code>create_subscription</code>；共享指针参数；启动顺序</span>
+    </span></li>
+    <li><span class="n">1.3</span><span class="body">
+      <a class="t" href="01-话题.html#l1-3">自定义消息</a>
+      <span class="d"><code>msg/Target.msg</code>；<code>rosidl_generate_interfaces</code>；生成头文件</span>
+    </span></li>
+    <li><span class="n">1.4</span><span class="body">
+      <a class="t" href="01-话题.html#l1-4">QoS</a>
+      <span class="d">可靠性、历史、持久性；兼容性；<code>topic info --verbose</code></span>
+    </span></li>
+    <li><span class="n">1.5</span><span class="body">
+      <a class="t" href="01-话题.html#l1-5">多发布者、多订阅者与消息筛选</a>
+      <span class="d">命名空间；端点计数；按字段与前缀筛选</span>
+    </span></li>
+    <li><span class="n">1.6</span><span class="body">
+      <a class="t" href="01-话题.html#l1-6">话题诊断</a>
+      <span class="d"><code>list -t</code>、<code>info</code>、<code>echo</code>、<code>hz</code>；排查顺序</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p2">
+  <h2><a href="02-服务与参数.html">第 2 部分 · 服务与参数</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 1.1–1.3。这一部分从一次请求与响应开始，
+    讲清自定义服务、参数与参数文件；读完能写服务端与客户端，
+    并用参数文件和命令行控制节点行为。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">2.1</span><span class="body">
+      <a class="t" href="02-服务与参数.html#l2-1">服务端</a>
+      <span class="d"><code>create_service</code>；请求与响应；回调参数</span>
+    </span></li>
+    <li><span class="n">2.2</span><span class="body">
+      <a class="t" href="02-服务与参数.html#l2-2">客户端</a>
+      <span class="d"><code>create_client</code>；<code>wait_for_service</code>；<code>async_send_request</code></span>
+    </span></li>
+    <li><span class="n">2.3</span><span class="body">
+      <a class="t" href="02-服务与参数.html#l2-3">自定义服务</a>
+      <span class="d"><code>.srv</code>；<code>rosidl_generate_interfaces</code>；输入校验</span>
+    </span></li>
+    <li><span class="n">2.4</span><span class="body">
+      <a class="t" href="02-服务与参数.html#l2-4">参数</a>
+      <span class="d"><code>declare_parameter</code>；<code>ros2 param</code>；设置回调</span>
+    </span></li>
+    <li><span class="n">2.5</span><span class="body">
+      <a class="t" href="02-服务与参数.html#l2-5">参数文件与动态修改</a>
+      <span class="d">YAML 层级；<code>--params-file</code>；命令行覆盖；<code>dump</code></span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p3">
+  <h2><a href="03-动作.html">第 3 部分 · 动作</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 2.1–2.3。这一部分定义动作接口，写服务端与客户端，
+    处理取消与超时，最后用命令行观察目标、反馈与结果。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">3.1</span><span class="body">
+      <a class="t" href="03-动作.html#l3-1">动作接口与目标、反馈、结果</a>
+      <span class="d"><code>.action</code> 三段；生成类型；<code>interface show</code></span>
+    </span></li>
+    <li><span class="n">3.2</span><span class="body">
+      <a class="t" href="03-动作.html#l3-2">动作服务端</a>
+      <span class="d"><code>create_server</code>；三个回调；反馈；最终结果</span>
+    </span></li>
+    <li><span class="n">3.3</span><span class="body">
+      <a class="t" href="03-动作.html#l3-3">动作客户端</a>
+      <span class="d"><code>async_send_goal</code>；反馈回调；<code>async_get_result</code></span>
+    </span></li>
+    <li><span class="n">3.4</span><span class="body">
+      <a class="t" href="03-动作.html#l3-4">取消、超时与抢占</a>
+      <span class="d"><code>async_cancel_goal</code>；<code>is_canceling</code>；新目标策略</span>
+    </span></li>
+    <li><span class="n">3.5</span><span class="body">
+      <a class="t" href="03-动作.html#l3-5">动作诊断</a>
+      <span class="d"><code>action list/info/send_goal</code>；排查顺序</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p4">
+  <h2><a href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a></h2>
+  <p class="part-note">
+    按需，4 课，前置 1.1–1.2、2.2。回调队列、单线程与多线程执行器、
+    回调组与耗时任务。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">4.1</span><span class="body">
+      <a class="t" href="04-执行器与回调.html#l4-1">执行器与回调队列</a>
+      <span class="d">执行器；回调队列；一个执行器里的两个节点</span>
+    </span></li>
+    <li><span class="n">4.2</span><span class="body">
+      <a class="t" href="04-执行器与回调.html#l4-2">单线程与多线程执行器</a>
+      <span class="d"><code>SingleThreadedExecutor</code>、<code>MultiThreadedExecutor</code>；回调组的影响；重叠测量</span>
+    </span></li>
+    <li><span class="n">4.3</span><span class="body">
+      <a class="t" href="04-执行器与回调.html#l4-3">回调组与并发</a>
+      <span class="d">互斥组；可重入组；怎样选组</span>
+    </span></li>
+    <li><span class="n">4.4</span><span class="body">
+      <a class="t" href="04-执行器与回调.html#l4-4">耗时任务与执行器</a>
+      <span class="d">阻塞回调；工作线程；边界</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p5">
+  <h2><a href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 0.4、1.1–1.2、2.4。XML launch、Python launch、
+    参数与命名空间、条件与包含、组件；5.5 为选学。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">5.1</span><span class="body">
+      <a class="t" href="05-Launch与组合.html#l5-1">XML launch</a>
+      <span class="d">启动文件；<code>&lt;node&gt;</code>；运行与日志</span>
+    </span></li>
+    <li><span class="n">5.2</span><span class="body">
+      <a class="t" href="05-Launch与组合.html#l5-2">Python launch</a>
+      <span class="d"><code>LaunchDescription</code>；<code>Node</code> 动作；两种写法</span>
+    </span></li>
+    <li><span class="n">5.3</span><span class="body">
+      <a class="t" href="05-Launch与组合.html#l5-3">参数与命名空间</a>
+      <span class="d">命名空间；节点参数；<code>ros2 param get</code></span>
+    </span></li>
+    <li><span class="n">5.4</span><span class="body">
+      <a class="t" href="05-Launch与组合.html#l5-4">条件与包含</a>
+      <span class="d"><code>&lt;arg&gt;</code>；<code>&lt;include&gt;</code>；<code>if</code> 与 <code>unless</code></span>
+    </span></li>
+    <li><span class="n">5.5</span><span class="body">
+      <a class="t" href="05-Launch与组合.html#l5-5">组件（选学）</a>
+      <span class="d">组合；注册与构建；加载与查看</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p6">
+  <h2><a href="06-生命周期.html">第 6 部分 · 生命周期</a></h2>
+  <p class="part-note">
+    按需，4 课，整部分选学，前置 1.1–1.2、2.2、5.1–5.3。状态机、
+    生命周期节点、管理节点与启动顺序；不需要时整部分跳过。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">6.1</span><span class="body">
+      <a class="t" href="06-生命周期.html#l6-1">生命周期与状态机</a>
+      <span class="d">四个状态；状态转换；何时使用</span>
+    </span></li>
+    <li><span class="n">6.2</span><span class="body">
+      <a class="t" href="06-生命周期.html#l6-2">生命周期节点</a>
+      <span class="d"><code>LifecycleNode</code>；回调；生命周期发布者</span>
+    </span></li>
+    <li><span class="n">6.3</span><span class="body">
+      <a class="t" href="06-生命周期.html#l6-3">生命周期管理节点</a>
+      <span class="d"><code>ChangeState</code>；启动顺序；失败处理</span>
+    </span></li>
+    <li><span class="n">6.4</span><span class="body">
+      <a class="t" href="06-生命周期.html#l6-4">启动文件与启动顺序</a>
+      <span class="d">launch；顺序与依赖；端点检查</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p7">
+  <h2><a href="07-TF2.html">第 7 部分 · TF2</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 1.3、2.2、5.3。坐标系与四元数、静态广播、动态广播、
+    监听与点变换、时间与异常。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">7.1</span><span class="body">
+      <a class="t" href="07-TF2.html#l7-1">坐标系与四元数</a>
+      <span class="d">坐标系；四元数；yaw 与四元数</span>
+    </span></li>
+    <li><span class="n">7.2</span><span class="body">
+      <a class="t" href="07-TF2.html#l7-2">静态坐标广播</a>
+      <span class="d"><code>TransformStamped</code>；<code>StaticTransformBroadcaster</code>；<code>tf2_echo</code></span>
+    </span></li>
+    <li><span class="n">7.3</span><span class="body">
+      <a class="t" href="07-TF2.html#l7-3">动态坐标广播</a>
+      <span class="d">定时广播；时间戳；查看 <code>/tf</code></span>
+    </span></li>
+    <li><span class="n">7.4</span><span class="body">
+      <a class="t" href="07-TF2.html#l7-4">监听与点变换</a>
+      <span class="d"><code>Buffer</code> 与 <code>Listener</code>；<code>lookupTransform</code>；<code>doTransform</code></span>
+    </span></li>
+    <li><span class="n">7.5</span><span class="body">
+      <a class="t" href="07-TF2.html#l7-5">时间与异常</a>
+      <span class="d">时间点；插值；外推异常</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p8">
+  <h2><a href="08-工具与测试.html">第 8 部分 · 工具与测试</a></h2>
+  <p class="part-note">
+    按需，5 课，前置 1.6、2.2、5.1。日志与诊断、bag、rqt、
+    单元测试与 launch_testing、包依赖与质量；8.3 为选学。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">8.1</span><span class="body">
+      <a class="t" href="08-工具与测试.html#l8-1">日志与诊断</a>
+      <span class="d">级别；<code>RCLCPP_*</code>；<code>--log-level</code>；节流</span>
+    </span></li>
+    <li><span class="n">8.2</span><span class="body">
+      <a class="t" href="08-工具与测试.html#l8-2">ros2 bag</a>
+      <span class="d">录制；<code>bag info</code>；回放</span>
+    </span></li>
+    <li><span class="n">8.3</span><span class="body">
+      <a class="t" href="08-工具与测试.html#l8-3">rqt（选学）</a>
+      <span class="d">节点图；话题与消息；命令行核对</span>
+    </span></li>
+    <li><span class="n">8.4</span><span class="body">
+      <a class="t" href="08-工具与测试.html#l8-4">单元测试与 launch_testing</a>
+      <span class="d">gtest；<code>launch_test</code>；<code>colcon test</code></span>
+    </span></li>
+    <li><span class="n">8.5</span><span class="body">
+      <a class="t" href="08-工具与测试.html#l8-5">包依赖、安装规则与工程质量</a>
+      <span class="d">依赖类型；安装目录；<code>ros2 pkg</code> 检查</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p9">
+  <h2><a href="09-综合.html">第 9 部分 · 综合：巡检流程</a></h2>
+  <p class="part-note">
+    综合，4 课。接口设计、感知节点、控制节点、启动与验收，
+    完成一条可运行的合成巡检流程。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">9.1</span><span class="body">
+      <a class="t" href="09-综合.html#l9-1">项目拆分与接口设计</a>
+      <span class="d">包结构；消息与服务；动作与状态</span>
+    </span></li>
+    <li><span class="n">9.2</span><span class="body">
+      <a class="t" href="09-综合.html#l9-2">感知节点</a>
+      <span class="d">目标序列；过滤与顺序；发布时机</span>
+    </span></li>
+    <li><span class="n">9.3</span><span class="body">
+      <a class="t" href="09-综合.html#l9-3">控制节点</a>
+      <span class="d">模式服务；动作客户端；状态与计数</span>
+    </span></li>
+    <li><span class="n">9.4</span><span class="body">
+      <a class="t" href="09-综合.html#l9-4">启动、参数、回放与验收</a>
+      <span class="d">启动文件；参数覆盖；验收脚本</span>
+    </span></li>
+  </ul>
+</div>
+
+<div class="outline-part" id="p10">
+  <h2><a href="10-检测题.html">第 10 部分 · 检测题</a></h2>
+  <p class="part-note">
+    综合，2 课。综合检测、五道检测题与答案。
+  </p>
+  <ul class="ol-list">
+    <li><span class="n">10.1</span><span class="body">
+      <a class="t" href="10-检测题.html#l10-1">综合检测：多节点数据流</a>
+      <span class="d">检测环境；节点与接口；动作服务端</span>
+    </span></li>
+    <li><span class="n">10.2</span><span class="body">
+      <a class="t" href="10-检测题.html#l10-2">五道检测题与答案</a>
+      <span class="d">题目范围；答案工作空间；五道题</span>
+    </span></li>
+  </ul>
+</div>
+
+<nav class="pager">
+  <a href="../../TUP.html">← 回总入口</a>
+  <span class="spacer"></span>
+  <a href="00-开始.html">第 0 部分 · 开始 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
 
 </main>
+</div>
 
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
 </body>
 </html>

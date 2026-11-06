@@ -1,0 +1,4 @@
+float64 factor
+---
+float64 value
+bool ok

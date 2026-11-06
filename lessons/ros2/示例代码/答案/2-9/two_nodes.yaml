@@ -1,0 +1,9 @@
+parameter_node:
+  ros__parameters:
+    rate_ms: 300
+    message: "node one"
+
+param_demo:
+  ros__parameters:
+    rate_ms: 400
+    message: "node two"

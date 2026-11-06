@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="robot_nodes" exec="hello_node" name="hello_node" output="screen"/>
+</launch>

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 7 部分 · TF2 — ROS 2 机器人软件基础</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/theme.js"></script>
+<style>
+/* 7.8 与 7.10 的输出里有一行超过阅读栏宽；终端遇到长行本来就会折，
+   这里只让本页的输出块折行，字符不增不减。 */
+pre.out { white-space: pre-wrap; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="team" href="../../TUP.html">
+    <img class="logo" src="../../assets/logo.png" alt="TUP" width="526" height="231">
+    <span>算法组</span>
+  </a>
+  <span class="sep" aria-hidden="true"></span>
+  <div class="topbar-navs">
+    <nav class="nav-parts">
+      <a href="00-开始.html">第 0 部分</a>
+      <a href="01-话题.html">第 1 部分</a>
+      <a href="02-服务与参数.html">第 2 部分</a>
+      <a href="03-动作.html">第 3 部分</a>
+      <a href="04-执行器与回调.html">第 4 部分</a>
+      <a href="05-Launch与组合.html">第 5 部分</a>
+      <a href="06-生命周期.html">第 6 部分</a>
+      <a class="active" href="07-TF2.html">第 7 部分</a>
+      <a href="08-工具与测试.html">第 8 部分</a>
+      <a href="09-综合.html">第 9 部分</a>
+      <a href="10-检测题.html">第 10 部分</a>
+    </nav>
+    <nav class="nav-courses" aria-label="课程">
+      <a href="../cpp_Basics/index.html">C++ 基础课</a>
+      <a href="../cpp_advanced/index.html">C++ 进阶课</a>
+      <a href="../other_basics/index.html">其他基础</a>
+      <a href="../opencv/index.html">OpenCV</a>
+      <a href="../python/index.html">Python</a>
+      <a class="active" href="index.html">ROS 2</a>
+      <a href="../machine_learning/index.html">机器学习</a>
+    </nav>
+  </div>
+  <span class="spacer"></span>
+  <button class="theme-btn" type="button"></button>
+</header>
+
+<div class="wrap">
+
+<nav class="rail-tree" aria-label="课程目录">
+  <div class="rail-h">十一个部分</div>
+  <a class="tree-l" href="00-开始.html">第 0 部分 · 开始</a>
+  <a class="tree-l" href="01-话题.html">第 1 部分 · 话题</a>
+  <a class="tree-l" href="02-服务与参数.html">第 2 部分 · 服务与参数</a>
+  <a class="tree-l" href="03-动作.html">第 3 部分 · 动作</a>
+  <a class="tree-l" href="04-执行器与回调.html">第 4 部分 · 执行器与回调</a>
+  <a class="tree-l" href="05-Launch与组合.html">第 5 部分 · Launch 与组合</a>
+  <a class="tree-l" href="06-生命周期.html">第 6 部分 · 生命周期</a>
+  <a class="tree-l" aria-current="page" href="07-TF2.html">第 7 部分 · TF2</a>
+  <a class="tree-l" href="08-工具与测试.html">第 8 部分 · 工具与测试</a>
+  <a class="tree-l" href="09-综合.html">第 9 部分 · 综合：巡检流程</a>
+  <a class="tree-l" href="10-检测题.html">第 10 部分 · 检测题</a>
+</nav>
+
+<nav class="toc">
+  <div class="toc-part">第 7 部分 · TF2</div>
+  <a class="toc-l" href="#l7-1"><span class="n">7.1</span>坐标系与四元数</a>
+  <a class="toc-sub" href="#s7-1-1">坐标系</a>
+  <a class="toc-sub" href="#s7-1-2">四元数</a>
+  <a class="toc-sub" href="#s7-1-3">yaw 与四元数</a>
+  <a class="toc-sub" href="#e7-1">例题：yaw 转四元数</a>
+  <a class="toc-l" href="#l7-2"><span class="n">7.2</span>静态坐标广播</a>
+  <a class="toc-sub" href="#s7-2-1">变换消息</a>
+  <a class="toc-sub" href="#s7-2-2">静态广播者</a>
+  <a class="toc-sub" href="#s7-2-3">查看</a>
+  <a class="toc-sub" href="#e7-2">例题：base_link 到 laser_link</a>
+  <a class="toc-l" href="#l7-3"><span class="n">7.3</span>动态坐标广播</a>
+  <a class="toc-sub" href="#s7-3-1">定时广播</a>
+  <a class="toc-sub" href="#s7-3-2">时间戳</a>
+  <a class="toc-sub" href="#s7-3-3">查看</a>
+  <a class="toc-sub" href="#e7-3">例题：移动的 base_link</a>
+  <a class="toc-l" href="#l7-4"><span class="n">7.4</span>监听与点变换</a>
+  <a class="toc-sub" href="#s7-4-1">Buffer 与 Listener</a>
+  <a class="toc-sub" href="#s7-4-2">lookupTransform</a>
+  <a class="toc-sub" href="#s7-4-3">doTransform</a>
+  <a class="toc-sub" href="#e7-4">例题：激光点换到 base_link</a>
+  <a class="toc-l" href="#l7-5"><span class="n">7.5</span>时间与异常</a>
+  <a class="toc-sub" href="#s7-5-1">时间点</a>
+  <a class="toc-sub" href="#s7-5-2">插值</a>
+  <a class="toc-sub" href="#s7-5-3">异常</a>
+  <a class="toc-sub" href="#e7-5">例题：缓存查询</a>
+</nav>
+
+<main>
+
+<header class="part-head">
+  <div class="part-no">第 7 部分</div>
+  <h1>TF2</h1>
+  <p class="part-lead">
+    机器人上的传感器、底盘与地图各自使用不同的坐标系。TF2 把这些坐标系
+    之间的平移与旋转组织成一棵变换树，节点广播变换，其他节点按时间查询
+    变换，再把点、向量或位姿从一个坐标系换到另一个坐标系。这一部分先讲
+    坐标系与四元数，再写静态与动态广播，最后监听变换并处理时间异常。
+  </p>
+</header>
+
+<div class="aside">
+  <b>终端位置</b>
+  <p>
+    本页命令默认在课程工作空间 <code>$HOME/ros2_ws</code> 中执行；开头标有
+    <code># 当前目录：课程目录</code> 的命令在本页所在目录执行，该目录包含
+    <code>示例代码/</code>。新开终端先进入工作空间并加载环境：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+cd $HOME/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+export ROS_DOMAIN_ID=42
+export RCUTILS_CONSOLE_OUTPUT_FORMAT='[{severity}] [{name}]: {message}'</code></pre>
+  <p>
+    需要清掉旧的构建产物时，在 <code>$HOME/ros2_ws</code> 中执行下面的命令，
+    再重新构建：
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+bash clean.sh</code></pre>
+</div>
+
+<div class="aside req" data-prereq="1.3 2.2 5.3">
+  <b>前置</b>
+  <p>
+    先读过 1.3、2.2 与 5.3：会使用自定义消息，会声明节点参数，会在启动
+    文件或命令行中设置参数。TF2 的广播者与监听者建立在这些接口之上。
+  </p>
+</div>
+
+<section class="lesson" id="l7-1">
+<h2><span class="no">7.1</span>坐标系与四元数</h2>
+
+<p>
+  坐标变换（coordinate transform）描述两个坐标系之间的相对位置与姿态。
+  TF2 用父子关系把它们连成一棵树：每个坐标系只有一个父坐标系，变换的
+  方向从父到子。查询时给出目标坐标系（target frame）与源坐标系
+  （source frame），得到把源坐标系中的坐标换到目标坐标系的变换。
+</p>
+
+<h3 id="s7-1-1">坐标系</h3>
+
+<p>
+  机器人常用的坐标系有 <code>map</code>、<code>odom</code>、
+  <code>base_link</code> 与传感器坐标系。<code>map</code> 是全局地图，
+  <code>odom</code> 是里程计累积的局部坐标，<code>base_link</code> 固定在
+  底盘中心，激光雷达、相机等传感器各有自己的坐标系。变换树把
+  <code>map</code> 连到 <code>odom</code>，再连到 <code>base_link</code>，
+  最后连到各个传感器。
+</p>
+
+<p>
+  平移用三个分量 <code>x</code>、<code>y</code>、<code>z</code> 表示，
+  旋转用四元数表示。坐标系的轴向按右手定则：<code>x</code> 向前，
+  <code>y</code> 向左，<code>z</code> 向上；绕 <code>z</code> 轴正方向
+  旋转，从上方看是逆时针。
+</p>
+
+<h3 id="s7-1-2">四元数</h3>
+
+<p>
+  四元数（quaternion）用四个数 <code>x</code>、<code>y</code>、<code>z</code>、
+  <code>w</code> 表示三维旋转。它没有欧拉角的万向节锁问题，插值也平滑，
+  因此 TF2 的消息统一使用四元数。代价是四个分量不直观，手工计算容易出错，
+  通常用库函数在欧拉角与四元数之间转换。
+</p>
+
+<p>
+  <code>tf2::Quaternion</code> 的 <code>setRPY(roll, pitch, yaw)</code>
+  按弧度设置旋转，<code>tf2::getYaw(q)</code> 从四元数取回绕
+  <code>z</code> 轴的偏航角。四元数相乘表示旋转的复合：<code>q1 * q2</code>
+  表示先施加 <code>q2</code>，再施加 <code>q1</code>；绕同一轴的旋转可以
+  交换顺序。
+</p>
+
+<h3 id="s7-1-3">yaw 与四元数</h3>
+
+<p>
+  平面机器人只绕 <code>z</code> 轴旋转，偏航角（yaw）为
+  <code>θ</code> 时，四元数是
+  <code>(0, 0, sin(θ/2), cos(θ/2))</code>。偏航角 90° 对应
+  <code>z=0.707107</code>、<code>w=0.707107</code>；偏航角 180° 对应
+  <code>z=1</code>、<code>w=0</code>。反算时 <code>tf2::getYaw</code>
+  返回的角在 <code>-π</code> 到 <code>π</code> 之间。
+</p>
+
+<pre data-lang="C++" data-name="7.1-yaw_to_quaternion.cpp"><code>#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/utils.h"
+
+namespace
+{
+constexpr double kPi = 3.14159265358979323846;
+
+void print_yaw(double degrees)
+{
+  tf2::Quaternion q;
+  q.setRPY(0.0, 0.0, degrees * kPi / 180.0);
+
+  std::cout &lt;&lt; "yaw " &lt;&lt; std::defaultfloat &lt;&lt; degrees &lt;&lt; "°: x=" &lt;&lt; std::fixed
+            &lt;&lt; std::setprecision(6) &lt;&lt; q.x() &lt;&lt; " y=" &lt;&lt; q.y() &lt;&lt; " z=" &lt;&lt; q.z()
+            &lt;&lt; " w=" &lt;&lt; q.w() &lt;&lt; "\n";
+  std::cout &lt;&lt; "getYaw: " &lt;&lt; tf2::getYaw(q) * 180.0 / kPi &lt;&lt; "°\n";
+}
+}  // namespace
+
+int main(int argc, char ** argv)
+{
+  std::vector&lt;double&gt; angles;
+  for (int i = 1; i &lt; argc; ++i) {
+    angles.push_back(std::stod(argv[i]));
+  }
+  if (angles.empty()) {
+    angles = {90.0, 180.0};
+  }
+  for (const double angle : angles) {
+    print_yaw(angle);
+  }
+  return 0;
+}</code></pre>
+<div class="eg" id="e7-1">
+  <div class="eg-h">例题 · yaw 转四元数</div>
+  <p>
+    程序不带参数时打印 90° 与 180° 两个例子。每段先输出四元数的四个分量，
+    再用 <code>tf2::getYaw</code> 换回角度，确认转换可逆。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes yaw_to_quaternion</code></pre>
+<pre class="out" data-label="预期输出">yaw 90°: x=0.000000 y=0.000000 z=0.707107 w=0.707107
+getYaw: 90.000000°
+yaw 180°: x=0.000000 y=0.000000 z=1.000000 w=0.000000
+getYaw: 180.000000°</pre>
+  <p>
+    <code>getYaw</code> 的输出与输入角度一致，说明四元数没有写错。注意
+    180° 时 <code>w</code> 为 0，<code>z</code> 为 1；这是单位四元数，
+    平方和仍为 1。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-1</div>
+  <p>把偏航角 −90° 换成四元数，再用 <code>tf2::getYaw</code> 换回角度。</p>
+<pre class="out" data-label="预期输出">yaw -90°: x=0.000000 y=0.000000 z=-0.707107 w=0.707107
+getYaw: -90.000000°</pre>
+  <details class="ans" data-run="示例代码/答案/7-1/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    偏航角 −90° 对应四元数
+    <code>(0, 0, sin(−45°), cos(−45°))</code>，即
+    <code>z=−0.707107</code>、<code>w=0.707107</code>。
+    <code>tf2::getYaw</code> 按同一公式反算，得到负角度。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes yaw_to_quaternion -90</code></pre>
+  <pre class="out" data-label="真实输出">yaw -90°: x=0.000000 y=0.000000 z=-0.707107 w=0.707107
+getYaw: -90.000000°</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-2</div>
+  <p>把 30° 与 60° 两个绕 <code>z</code> 轴的旋转相乘，打印乘积的四个分量、乘积的偏航角，以及单位化后的模长。</p>
+<pre class="out" data-label="预期输出">q30 * q60: x=0.000000 y=0.000000 z=0.707107 w=0.707107
+getYaw: 90.000000°
+normalized norm: 1.000000</pre>
+  <details class="ans" data-run="示例代码/答案/7-2/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    两个绕同一轴旋转的四元数相乘，角度相加：30° 加 60° 等于 90°。
+    乘积已经是单位四元数，单位化后模长仍为 1。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes quaternion_compose 30 60</code></pre>
+  <pre class="out" data-label="真实输出">q30 * q60: x=0.000000 y=0.000000 z=0.707107 w=0.707107
+getYaw: 90.000000°
+normalized norm: 1.000000</pre>
+  <p>
+    <code>q30 * q60</code> 与直接构造 90° 的四元数相同：
+    <code>z=0.707107</code>、<code>w=0.707107</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>把绕 <code>z</code> 轴的偏航角换成四元数并还原，理解四元数四个分量的含义，并用四元数乘法复合两个旋转。</p>
+</section>
+
+<section class="lesson" id="l7-2">
+<h2><span class="no">7.2</span>静态坐标广播</h2>
+
+<p>
+  传感器在底盘上的安装位置固定不变，对应的变换适合用静态坐标广播
+  （static transform broadcast）。广播者把变换发布到
+  <code>/tf_static</code>，只发送一次；新加入的监听者仍能收到，因为
+  静态话题使用保留历史的 QoS 设置。
+</p>
+
+<h3 id="s7-2-1">变换消息</h3>
+
+<p>
+  一条变换是 <code>geometry_msgs/msg/TransformStamped</code>。头部的
+  <code>frame_id</code> 写父坐标系，<code>child_frame_id</code> 写子坐标系；
+  <code>transform.translation</code> 是子坐标系原点在父坐标系中的位置，
+  <code>transform.rotation</code> 是子坐标系相对父坐标系的旋转。时间戳
+  在静态变换里不参与插值，但仍要填写。
+</p>
+
+<h3 id="s7-2-2">静态广播者</h3>
+
+<p>
+  <code>tf2_ros::StaticTransformBroadcaster</code> 在构造时绑定节点，
+  调用 <code>sendTransform</code> 发布。它内部使用
+  <code>/tf_static</code> 话题与静态 QoS；同一个父坐标系下可以有多个
+  子坐标系，但同一个子坐标系只能有一个父坐标系。
+</p>
+
+<pre data-lang="C++" data-name="7.2-static_tf.cpp"><code>#include &lt;cmath&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+
+namespace
+{
+constexpr double kPi = 3.14159265358979323846;
+}
+
+class StaticTf : public rclcpp::Node
+{
+public:
+  StaticTf()
+  : Node("static_tf")
+  {
+    const auto parent = declare_parameter&lt;std::string&gt;("parent_frame", "base_link");
+    const auto child = declare_parameter&lt;std::string&gt;("child_frame", "laser_link");
+    const auto x = declare_parameter&lt;double&gt;("x", 0.2);
+    const auto y = declare_parameter&lt;double&gt;("y", 0.0);
+    const auto z = declare_parameter&lt;double&gt;("z", 0.3);
+    const auto yaw_deg = declare_parameter&lt;double&gt;("yaw_deg", 45.0);
+
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, yaw_deg * kPi / 180.0);
+
+    geometry_msgs::msg::TransformStamped transform;
+    transform.header.stamp = now();
+    transform.header.frame_id = parent;
+    transform.child_frame_id = child;
+    transform.transform.translation.x = x;
+    transform.transform.translation.y = y;
+    transform.transform.translation.z = z;
+    transform.transform.rotation.x = q.x();
+    transform.transform.rotation.y = q.y();
+    transform.transform.rotation.z = q.z();
+    transform.transform.rotation.w = q.w();
+
+    broadcaster_ = std::make_shared&lt;tf2_ros::StaticTransformBroadcaster&gt;(*this);
+    broadcaster_-&gt;sendTransform(transform);
+    RCLCPP_INFO(
+      get_logger(), "static transform %s -&gt; %s", parent.c_str(), child.c_str());
+  }
+
+private:
+  std::shared_ptr&lt;tf2_ros::StaticTransformBroadcaster&gt; broadcaster_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;StaticTf&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<h3 id="s7-2-3">查看</h3>
+
+<p>
+  <code>tf2_echo</code> 按固定周期查询并打印两个坐标系之间的变换。
+  输出里的 <code>At time</code> 一行带查询时刻，随运行时间变化；下面的
+  例子只保留平移与旋转四行。静态变换的旋转 45° 对应四元数
+  <code>z=0.383</code>、<code>w=0.924</code>。
+</p>
+
+<div class="eg" id="e7-2">
+  <div class="eg-h">例题 · base_link 到 laser_link</div>
+  <p>
+    终端一用默认参数启动 <code>static_tf</code>：父坐标系
+    <code>base_link</code>，子坐标系 <code>laser_link</code>，平移
+    <code>(0.2, 0.0, 0.3)</code>，偏航角 45°。终端二查询并只保留四行。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes static_tf</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+timeout 4 ros2 run tf2_ros tf2_echo base_link laser_link 2&gt;/dev/null \
+  | grep -E 'Translation|Rotation' | head -n4</code></pre>
+<pre class="out" data-label="预期输出">- Translation: [0.200, 0.000, 0.300]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.383, 0.924]
+- Rotation: in RPY (radian) [0.000, -0.000, 0.785]
+- Rotation: in RPY (degree) [0.000, -0.000, 45.000]</pre>
+  <p>
+    平移与参数一致，旋转的弧度值 <code>0.785</code> 约等于
+    <code>π/4</code>，角度值 45°。静态变换不会随时间变化，查询时不需要
+    指定时间点。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-3</div>
+  <p>广播 <code>base_link</code> 到 <code>camera_link</code> 的静态变换：平移 <code>(0.1, 0.0, 0.5)</code>，偏航角 0°。查询并打印平移与旋转四行。</p>
+<pre class="out" data-label="预期输出">- Translation: [0.100, 0.000, 0.500]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.000, 1.000]
+- Rotation: in RPY (radian) [0.000, -0.000, 0.000]
+- Rotation: in RPY (degree) [0.000, -0.000, 0.000]</pre>
+  <details class="ans" data-run="示例代码/答案/7-3/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    相机安装在底盘前方 0.1 米、上方 0.5 米，姿态与底盘一致。
+    <code>yaw_deg:=0.0</code> 使旋转为单位四元数，平移就是安装位置。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes static_tf --ros-args \
+  -p child_frame:=camera_link -p x:=0.1 -p y:=0.0 -p z:=0.5 \
+  -p yaw_deg:=0.0 &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+timeout 4 ros2 run tf2_ros tf2_echo base_link camera_link 2&gt;/dev/null \
+  | grep -E 'Translation|Rotation' | head -n4</code></pre>
+  <pre class="out" data-label="真实输出">- Translation: [0.100, 0.000, 0.500]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.000, 1.000]
+- Rotation: in RPY (radian) [0.000, -0.000, 0.000]
+- Rotation: in RPY (degree) [0.000, -0.000, 0.000]</pre>
+  <p>
+    <code>tf2_echo</code> 的 <code>At time</code> 行随时间变化，已被过滤；
+    保留的四行只包含平移与旋转。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-4</div>
+  <p>用默认参数启动 <code>static_tf</code>，查询 <code>base_link</code> 到 <code>laser_link</code> 的变换，只打印平移那一行。</p>
+<pre class="out" data-label="预期输出">- Translation: [0.200, 0.000, 0.300]</pre>
+  <details class="ans" data-run="示例代码/答案/7-4/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    默认参数把雷达放在底盘前方 0.2 米、上方 0.3 米，并绕
+    <code>z</code> 轴转 45°。只取平移行即可核对安装位置。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes static_tf &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+timeout 4 ros2 run tf2_ros tf2_echo base_link laser_link 2&gt;/dev/null \
+  | grep -m1 'Translation'</code></pre>
+  <pre class="out" data-label="真实输出">- Translation: [0.200, 0.000, 0.300]</pre>
+  <p>
+    <code>grep -m1</code> 在找到第一条平移行后停止，不必等
+    <code>tf2_echo</code> 被超时命令终止。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>填写 <code>TransformStamped</code> 的父坐标系、子坐标系、平移与四元数，用 <code>StaticTransformBroadcaster</code> 发布固定安装位置，并用 <code>tf2_echo</code> 核对结果。</p>
+</section>
+
+<section class="lesson" id="l7-3">
+<h2><span class="no">7.3</span>动态坐标广播</h2>
+
+<p>
+  底盘相对里程计的位置会变化，对应的变换需要持续广播。动态坐标广播
+  （dynamic transform broadcast）使用
+  <code>tf2_ros::TransformBroadcaster</code>，按固定周期把最新位姿发布到
+  <code>/tf</code>。监听者按时间戳在缓存中查找，因此每一帧都要写当前时间。
+</p>
+
+<h3 id="s7-3-1">定时广播</h3>
+
+<p>
+  广播者在构造函数中创建，定时器周期由参数给出。定时器回调里组装
+  <code>TransformStamped</code>，写父坐标系、子坐标系、平移与旋转，再调用
+  <code>sendTransform</code>。下面的程序沿 <code>x</code> 轴每次前进
+  <code>step</code> 米，走完 <code>steps</code> 步后保持最后一个位姿，
+  并用新的时间戳继续广播，方便晚加入的监听者。
+</p>
+
+<h3 id="s7-3-2">时间戳</h3>
+
+<p>
+  <code>header.stamp</code> 用 <code>now()</code> 取当前时刻。不要复用
+  上一帧的时间戳，也不要把时间戳写成 0；时间戳决定这一帧在缓存中的位置，
+  写错会让查询得到旧数据或插值失败。仿真时节点通常使用
+  <code>use_sim_time</code>，时间来自 <code>/clock</code> 话题而不是系统时钟。
+</p>
+
+<pre data-lang="C++" data-name="7.3-dynamic_tf.cpp"><code>#include &lt;chrono&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/transform_broadcaster.h"
+
+class DynamicTf : public rclcpp::Node
+{
+public:
+  DynamicTf()
+  : Node("dynamic_tf")
+  {
+    parent_ = declare_parameter&lt;std::string&gt;("parent_frame", "odom");
+    child_ = declare_parameter&lt;std::string&gt;("child_frame", "base_link");
+    steps_ = declare_parameter&lt;int&gt;("steps", 5);
+    step_ = declare_parameter&lt;double&gt;("step", 0.5);
+    const auto period_ms = declare_parameter&lt;int&gt;("period_ms", 500);
+
+    broadcaster_ = std::make_unique&lt;tf2_ros::TransformBroadcaster&gt;(*this);
+    timer_ = create_wall_timer(
+      std::chrono::milliseconds(period_ms), [this]() { publish_step(); });
+  }
+
+private:
+  void publish_step()
+  {
+    const int shown = index_ &lt; steps_ ? index_ : steps_ - 1;
+
+    geometry_msgs::msg::TransformStamped transform;
+    transform.header.stamp = now();
+    transform.header.frame_id = parent_;
+    transform.child_frame_id = child_;
+    transform.transform.translation.x = shown * step_;
+    transform.transform.rotation.w = 1.0;
+    broadcaster_-&gt;sendTransform(transform);
+    if (index_ &lt; steps_) {
+      RCLCPP_INFO(get_logger(), "step %d: x=%.3f", shown, shown * step_);
+      ++index_;
+    }
+  }
+
+  std::string parent_;
+  std::string child_;
+  int steps_;
+  double step_;
+  int index_ = 0;
+  std::unique_ptr&lt;tf2_ros::TransformBroadcaster&gt; broadcaster_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared&lt;DynamicTf&gt;());
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<h3 id="s7-3-3">查看</h3>
+
+<p>
+  <code>tf2_echo</code> 会持续打印最新变换；<code>ros2 topic echo</code>
+  可以直接看 <code>/tf</code> 消息的字段。下面的例子把步数改成 3、周期
+  改成 300 毫秒，日志只打印前三步的 <code>x</code>。
+</p>
+
+<div class="eg" id="e7-3">
+  <div class="eg-h">例题 · 移动的 base_link</div>
+  <p>
+    终端启动 <code>dynamic_tf</code>，父坐标系 <code>odom</code>，子坐标系
+    <code>base_link</code>，步长 0.5 米。程序走完三步后继续广播最后一个
+    位姿，按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 结束。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes dynamic_tf --ros-args \
+  -p steps:=3 -p period_ms:=300</code></pre>
+<pre class="out" data-label="预期输出">[INFO] [dynamic_tf]: step 0: x=0.000
+[INFO] [dynamic_tf]: step 1: x=0.500
+[INFO] [dynamic_tf]: step 2: x=1.000</pre>
+  <p>
+    每一步的平移是步序号乘以步长。走完三步后日志不再增加，但
+    <code>/tf</code> 仍以 300 毫秒的周期发布最后一位姿，监听者不会因为
+    广播停止而查不到数据。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-5</div>
+  <p>用默认参数启动 <code>dynamic_tf</code>，走完五步，只保留节点日志中的五条 <code>step</code> 行。</p>
+<pre class="out" data-label="预期输出">[INFO] [dynamic_tf]: step 0: x=0.000
+[INFO] [dynamic_tf]: step 1: x=0.500
+[INFO] [dynamic_tf]: step 2: x=1.000
+[INFO] [dynamic_tf]: step 3: x=1.500
+[INFO] [dynamic_tf]: step 4: x=2.000</pre>
+  <details class="ans" data-run="示例代码/答案/7-5/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>dynamic_tf</code> 默认走五步，每步 0.5 米，周期 500 毫秒。
+    节点日志在前五步各打印一行，之后只继续广播最后位姿。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+log=/tmp/dynamic_tf.log
+ros2 run robot_nodes dynamic_tf &gt;"$log" 2&gt;&amp;1 &amp;
+sleep 3
+grep -E '^\[INFO\] \[dynamic_tf\]: step' "$log"</code></pre>
+  <pre class="out" data-label="真实输出">[INFO] [dynamic_tf]: step 0: x=0.000
+[INFO] [dynamic_tf]: step 1: x=0.500
+[INFO] [dynamic_tf]: step 2: x=1.000
+[INFO] [dynamic_tf]: step 3: x=1.500
+[INFO] [dynamic_tf]: step 4: x=2.000</pre>
+  <p>
+    五行的 <code>x</code> 从 0 增加到 2，对应步序号 0 到 4。
+  </p>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-6</div>
+  <p>启动 <code>dynamic_tf</code>，读取一条 <code>/tf</code> 消息，只打印父坐标系与子坐标系字段。</p>
+<pre class="out" data-label="预期输出">frame_id: odom
+child_frame_id: base_link</pre>
+  <details class="ans" data-run="示例代码/答案/7-6/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>/tf</code> 的话题类型是 <code>tf2_msgs/msg/TFMessage</code>，
+    消息里含一个变换数组。读取一条后只保留每个变换的父、子坐标系字段。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes dynamic_tf &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+timeout 3 ros2 topic echo --once /tf &gt;/tmp/tf_message.log 2&gt;/dev/null || true
+grep -E 'frame_id|child_frame_id' /tmp/tf_message.log | sed 's/^ *//'</code></pre>
+  <pre class="out" data-label="真实输出">frame_id: odom
+child_frame_id: base_link</pre>
+  <p>
+    <code>frame_id</code> 是父坐标系 <code>odom</code>，
+    <code>child_frame_id</code> 是子坐标系 <code>base_link</code>。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>用定时器和 <code>TransformBroadcaster</code> 按固定周期广播动态变换，每帧写入当前时间戳，并用 <code>tf2_echo</code> 或 <code>ros2 topic echo</code> 检查广播内容。</p>
+</section>
+
+<section class="lesson" id="l7-4">
+<h2><span class="no">7.4</span>监听与点变换</h2>
+
+<p>
+  广播者只负责发布变换，使用变换的节点需要监听。TF2 的监听由
+  <code>tf2_ros::Buffer</code> 与 <code>tf2_ros::TransformListener</code>
+  组成：监听者订阅 <code>/tf</code> 与 <code>/tf_static</code>，把收到的
+  变换按时间存进缓冲区；查询时从缓冲区里取。
+</p>
+
+<h3 id="s7-4-1">Buffer 与 Listener</h3>
+
+<p>
+  <code>Buffer</code> 在构造时接收节点时钟，缓存一段时间的变换。
+  <code>TransformListener</code> 在构造时绑定缓冲区与节点，并启动订阅。
+  监听者应在节点开始自旋前创建；本课的程序在 <code>start()</code> 中创建，
+  再用定时器反复尝试查询，直到缓存里出现所需变换。
+</p>
+
+<h3 id="s7-4-2">lookupTransform</h3>
+
+<p>
+  <code>lookupTransform(target, source, time)</code> 返回把
+  <code>source</code> 坐标系中的坐标换到 <code>target</code> 坐标系的变换。
+  第三个参数用 <code>tf2::TimePointZero</code> 表示取最新可用的变换；
+  指定具体时间时，缓冲区会找最近的两帧并插值。
+  <code>canTransform</code> 先检查能否查询，避免直接抛异常。
+</p>
+
+<h3 id="s7-4-3">doTransform</h3>
+
+<p>
+  <code>tf2::doTransform</code> 把一个带坐标系与时间戳的点、向量或位姿
+  按变换转换。输入点的 <code>header.frame_id</code> 必须写源坐标系，
+  输出点的坐标系由变换决定。转换只改变坐标数值，不改变点的物理位置。
+</p>
+
+<pre data-lang="C++" data-name="7.4-tf_listener.cpp"><code>#include &lt;chrono&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "geometry_msgs/msg/point_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
+
+using namespace std::chrono_literals;
+
+class TfListener : public rclcpp::Node
+{
+public:
+  TfListener()
+  : Node("tf_listener")
+  {
+    target_ = declare_parameter&lt;std::string&gt;("target_frame", "base_link");
+    source_ = declare_parameter&lt;std::string&gt;("source_frame", "laser_link");
+    px_ = declare_parameter&lt;double&gt;("px", 0.1);
+    py_ = declare_parameter&lt;double&gt;("py", 0.2);
+    pz_ = declare_parameter&lt;double&gt;("pz", 0.0);
+    timeout_ms_ = declare_parameter&lt;int&gt;("timeout_ms", 3000);
+    buffer_ = std::make_shared&lt;tf2_ros::Buffer&gt;(get_clock());
+  }
+
+  void start()
+  {
+    listener_ = std::make_shared&lt;tf2_ros::TransformListener&gt;(
+      *buffer_, shared_from_this(), false);
+    started_at_ = now();
+    timer_ = create_wall_timer(200ms, [this]() { try_transform(); });
+  }
+
+private:
+  void try_transform()
+  {
+    std::string error;
+    if (buffer_-&gt;canTransform(target_, source_, tf2::TimePointZero, &amp;error)) {
+      try {
+        const auto transform = buffer_-&gt;lookupTransform(
+          target_, source_, tf2::TimePointZero);
+        geometry_msgs::msg::PointStamped point;
+        point.header.frame_id = source_;
+        point.header.stamp = now();
+        point.point.x = px_;
+        point.point.y = py_;
+        point.point.z = pz_;
+
+        geometry_msgs::msg::PointStamped converted;
+        tf2::doTransform(point, converted, transform);
+        std::cout &lt;&lt; "point (" &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+                  &lt;&lt; px_ &lt;&lt; ", " &lt;&lt; py_ &lt;&lt; ", " &lt;&lt; pz_ &lt;&lt; ") in " &lt;&lt; target_
+                  &lt;&lt; ": (" &lt;&lt; converted.point.x &lt;&lt; ", " &lt;&lt; converted.point.y
+                  &lt;&lt; ", " &lt;&lt; converted.point.z &lt;&lt; ")\n";
+      } catch (const tf2::TransformException &amp; exception) {
+        std::cout &lt;&lt; "lookup failed: " &lt;&lt; exception.what() &lt;&lt; "\n";
+      }
+      rclcpp::shutdown();
+      return;
+    }
+
+    if ((now() - started_at_).seconds() * 1000.0 &gt; timeout_ms_) {
+      std::cout &lt;&lt; "lookup failed: " &lt;&lt; error &lt;&lt; "\n";
+      rclcpp::shutdown();
+    }
+  }
+
+  std::string target_;
+  std::string source_;
+  double px_;
+  double py_;
+  double pz_;
+  int timeout_ms_;
+  rclcpp::Time started_at_;
+  std::shared_ptr&lt;tf2_ros::Buffer&gt; buffer_;
+  std::shared_ptr&lt;tf2_ros::TransformListener&gt; listener_;
+  rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared&lt;TfListener&gt;();
+  node-&gt;start();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e7-4">
+  <div class="eg-h">例题 · 激光点换到 base_link</div>
+  <p>
+    终端一用默认参数启动静态广播：<code>base_link</code> 到
+    <code>laser_link</code>，平移 <code>(0.2, 0.0, 0.3)</code>，偏航角
+    45°。终端二把一个激光点 <code>(0.1, 0.2, 0.0)</code> 换到
+    <code>base_link</code>。
+  </p>
+  <pre data-lang="终端"><code># 终端一（$HOME/ros2_ws）
+ros2 run robot_nodes static_tf</code></pre>
+  <pre data-lang="终端"><code># 终端二（$HOME/ros2_ws）
+ros2 run robot_nodes tf_listener</code></pre>
+<pre class="out" data-label="预期输出">point (0.100, 0.200, 0.000) in base_link: (0.129, 0.212, 0.300)</pre>
+  <p>
+    点先绕 <code>z</code> 轴旋转 45°，再加上安装位置。<code>x</code> 分量
+    <code>0.2 + 0.1cos45° − 0.2sin45° ≈ 0.129</code>，
+    <code>y</code> 分量 <code>0.1sin45° + 0.2cos45° ≈ 0.212</code>，
+    <code>z</code> 只加安装高度 0.3。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-7</div>
+  <p>广播 <code>base_link</code> 到 <code>camera_link</code> 的静态变换：平移 <code>(0.1, 0.0, 0.5)</code>，偏航角 0°。把相机点 <code>(0.1, 0.2, 0.0)</code> 换到 <code>base_link</code>。</p>
+<pre class="out" data-label="预期输出">point (0.100, 0.200, 0.000) in base_link: (0.200, 0.200, 0.500)</pre>
+  <details class="ans" data-run="示例代码/答案/7-7/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    相机与底盘没有相对旋转，点变换只做平移：相机坐标
+    <code>(0.1, 0.2, 0.0)</code> 加上安装位置
+    <code>(0.1, 0.0, 0.5)</code>，得到
+    <code>(0.2, 0.2, 0.5)</code>。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes static_tf --ros-args \
+  -p child_frame:=camera_link -p x:=0.1 -p y:=0.0 -p z:=0.5 \
+  -p yaw_deg:=0.0 &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes tf_listener --ros-args \
+  -p source_frame:=camera_link -p px:=0.1 -p py:=0.2 -p pz:=0.0</code></pre>
+  <pre class="out" data-label="真实输出">point (0.100, 0.200, 0.000) in base_link: (0.200, 0.200, 0.500)</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-8</div>
+  <p>启动默认的 <code>static_tf</code>，让 <code>tf_listener</code> 以 <code>map</code> 为源坐标系查询。变换树中没有 <code>map</code>，程序应打印失败原因后退出。</p>
+<pre class="out" data-label="预期输出">lookup failed: Invalid frame ID "map" passed to canTransform argument source_frame - frame does not exist</pre>
+  <details class="ans" data-run="示例代码/答案/7-8/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    变换树里只有 <code>base_link</code> 到 <code>laser_link</code>，
+    没有 <code>map</code>。<code>canTransform</code> 返回假并给出原因，
+    程序在超时后打印该原因并退出。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes static_tf &gt;/dev/null 2&gt;&amp;1 &amp;
+sleep 1
+ros2 run robot_nodes tf_listener --ros-args -p source_frame:=map</code></pre>
+  <pre class="out" data-label="真实输出">lookup failed: Invalid frame ID "map" passed to canTransform argument source_frame - frame does not exist</pre>
+  <p>
+    错误文本里的 <code>source_frame</code> 指查询的源坐标系。要消除这个
+    错误，需要先广播 <code>map</code> 到已有坐标系的变换。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>创建 <code>Buffer</code> 与 <code>TransformListener</code>，用 <code>lookupTransform</code> 查询两个坐标系的变换，再用 <code>doTransform</code> 把一个点换到目标坐标系。</p>
+</section>
+
+<section class="lesson" id="l7-5">
+<h2><span class="no">7.5</span>时间与异常</h2>
+
+<p>
+  TF2 的缓冲区按时间保存变换，查询时刻决定取哪一帧。最新查询用
+  <code>tf2::TimePointZero</code>，指定时刻用
+  <code>tf2::timeFromSec</code> 构造时间点。缓存里没有刚好对应时刻的
+  两帧时，查询会插值；超出缓存范围时，查询抛出
+  <code>tf2::TransformException</code>。
+</p>
+
+<h3 id="s7-5-1">时间点</h3>
+
+<p>
+  <code>tf2::TimePointZero</code> 是一个特殊时间点，表示“取最新可用”。
+  指定时刻时，时间点与变换的时间戳使用同一时间基准；仿真时间与系统时间
+  不能混用。查询失败时异常文本会给出请求时刻、最早数据时刻与涉及的两个
+  坐标系，便于判断是数据没到还是时刻写错。
+</p>
+
+<h3 id="s7-5-2">插值</h3>
+
+<p>
+  缓存里有 100 秒与 102 秒两帧，平移分别是 1 与 3。查询 101 秒时，
+  缓冲区按时间比例插值，得到平移 2。插值只对平移与旋转做线性或球面
+  插值，不推断机器人的运动模型；两帧之间如果发生突变或跳变，插值结果
+  不代表真实轨迹。
+</p>
+
+<h3 id="s7-5-3">异常</h3>
+
+<p>
+  查询 80 秒时，缓存中最早的数据在 100 秒，缓冲区无法向过去外推，抛出
+  <code>Lookup would require extrapolation into the past</code>。查询晚于
+  最新数据太多时，会得到未来的外推错误。程序应捕获
+  <code>tf2::TransformException</code>，打印原因并决定重试或退出，不要
+  让异常穿过回调导致进程终止。
+</p>
+
+<pre data-lang="C++" data-name="7.5-tf_time.cpp"><code>#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/exceptions.h"
+#include "tf2/time.h"
+#include "tf2_ros/buffer.h"
+
+namespace
+{
+geometry_msgs::msg::TransformStamped make_transform(double seconds, double x)
+{
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.stamp = rclcpp::Time(static_cast&lt;int64_t&gt;(seconds), 0);
+  transform.header.frame_id = "base_link";
+  transform.child_frame_id = "marker";
+  transform.transform.translation.x = x;
+  transform.transform.rotation.w = 1.0;
+  return transform;
+}
+
+double x_of(const tf2_ros::Buffer &amp; buffer, double seconds)
+{
+  const auto transform = buffer.lookupTransform(
+    "base_link", "marker", tf2::timeFromSec(seconds));
+  return transform.transform.translation.x;
+}
+}  // namespace
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto clock = std::make_shared&lt;rclcpp::Clock&gt;(RCL_ROS_TIME);
+  tf2_ros::Buffer buffer(clock);
+  buffer.setTransform(make_transform(100.0, 1.0), "course");
+  buffer.setTransform(make_transform(102.0, 3.0), "course");
+
+  const std::string mode = argc &gt; 1 ? argv[1] : "all";
+  if (mode == "all" || mode == "latest") {
+    const auto latest = buffer.lookupTransform(
+      "base_link", "marker", tf2::TimePointZero);
+    std::cout &lt;&lt; "latest: x=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+              &lt;&lt; latest.transform.translation.x &lt;&lt; "\n";
+  }
+  if (mode == "all" || mode == "interp") {
+    std::cout &lt;&lt; "interpolated at 101s: x=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+              &lt;&lt; x_of(buffer, 101.0) &lt;&lt; "\n";
+  }
+  if (mode == "all" || mode == "outside") {
+    try {
+      x_of(buffer, 80.0);
+      std::cout &lt;&lt; "outside: unexpectedly succeeded\n";
+    } catch (const tf2::TransformException &amp; exception) {
+      std::cout &lt;&lt; "outside: " &lt;&lt; exception.what() &lt;&lt; "\n";
+    }
+  }
+  rclcpp::shutdown();
+  return 0;
+}</code></pre>
+<div class="eg" id="e7-5">
+  <div class="eg-h">例题 · 缓存查询</div>
+  <p>
+    程序向缓冲区写入 100 秒与 102 秒两帧，然后分别查询最新、101 秒与
+    80 秒。第三种查询在缓存范围之外，异常文本被捕获并打印。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes tf_time all</code></pre>
+<pre class="out" data-label="预期输出">latest: x=3.000
+interpolated at 101s: x=2.000
+outside: Lookup would require extrapolation into the past.  Requested time 80.000000 but the earliest data is at time 100.000000, when looking up transform from frame [marker] to frame [base_link]</pre>
+  <p>
+    最新查询取 102 秒的 <code>x=3</code>；101 秒位于两帧之间，插值得到
+    <code>x=2</code>；80 秒早于最早数据，查询失败。异常文本里的两个空格
+    位于句号之后，是 TF2 自己的格式。
+  </p>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-9</div>
+  <p>只查询缓冲区中最新的变换，打印平移的 <code>x</code>。</p>
+<pre class="out" data-label="预期输出">latest: x=3.000</pre>
+  <details class="ans" data-run="示例代码/答案/7-9/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>tf_time latest</code> 只执行最新查询。
+    <code>tf2::TimePointZero</code> 让缓冲区取时间戳最大的那一帧，
+    也就是 102 秒、<code>x=3</code> 的变换。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes tf_time latest</code></pre>
+  <pre class="out" data-label="真实输出">latest: x=3.000</pre>
+    </div>
+  </details>
+</div>
+
+<div class="ex">
+  <div class="ex-h">练习 7-10</div>
+  <p>查询 80 秒处的变换。该时刻早于缓存中最早的数据，捕获异常并打印原因。</p>
+<pre class="out" data-label="预期输出">outside: Lookup would require extrapolation into the past.  Requested time 80.000000 but the earliest data is at time 100.000000, when looking up transform from frame [marker] to frame [base_link]</pre>
+  <details class="ans" data-run="示例代码/答案/7-10/run.sh">
+    <summary>看答案</summary>
+    <div class="ans-b">
+  <p>
+    <code>tf_time outside</code> 查询 80 秒。缓存最早的数据在 100 秒，
+    缓冲区不能向过去外推，抛出 <code>tf2::TransformException</code>；
+    程序捕获后打印 <code>outside:</code> 与异常文本。
+  </p>
+  <pre data-lang="终端"><code># 当前目录：$HOME/ros2_ws
+ros2 run robot_nodes tf_time outside</code></pre>
+  <pre class="out" data-label="真实输出">outside: Lookup would require extrapolation into the past.  Requested time 80.000000 but the earliest data is at time 100.000000, when looking up transform from frame [marker] to frame [base_link]</pre>
+  <p>
+    异常文本较长，输出块按阅读栏宽度折行；折行只改变排版，不改变异常
+    文本的内容。
+  </p>
+    </div>
+  </details>
+</div>
+
+<p class="can"><b>你现在能写什么：</b>按最新时刻或指定时刻查询 TF2 缓存，解释插值与外推的差别，并捕获 <code>TransformException</code> 打印失败原因。</p>
+</section>
+
+<nav class="pager">
+  <a href="06-生命周期.html">← 第 6 部分 · 生命周期</a>
+  <span class="spacer"></span>
+  <a href="08-工具与测试.html">第 8 部分 · 工具与测试 →</a>
+</nav>
+
+<footer class="site-footer">
+  TUP 战队算法组 · ROS 2 机器人软件基础
+</footer>
+
+</main>
+</div>
+
+<script src="../../assets/toc.js"></script>
+<script src="../../assets/code.js"></script>
+</body>
+</html>
